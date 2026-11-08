@@ -1,20 +1,22 @@
 """Tables and numbers of the section on the product's own contributions (sections/17-proposed.tex).
 
-Every table and every number macro is computed from the committed documents of ``data/derived`` (cases C01, C03, C04, C11, C12,
-C13, C15, C16, C17, C18, C22) and, for the sequential monitor on the C11 windows, from the installed engine ``riskvalidation``
-1.1.0 applied to the committed exceedance days. The values that only the design document states (the SDD section on the
-contributions beyond the practice) are the constants of ``SDD`` below, each with its line, so that no number of the section
-is typed in the LaTeX. Output: ``tables/proposed-*.tex`` and ``tables/proposed-numbers.tex``.
+Every table and every number macro is computed from the committed documents of ``data/derived`` (cases C01, C03, C04, C06, C07,
+C10, C11, C12, C13, C14, C15, C16, C17, C18, C22), from the committed number files and result files of the sixteen method
+manuscripts (``manuscripts/<slug>/tables/numbers.tex``, ``numbers.tex``, ``experiments/results.json``), and, for the sequential
+monitor on the C11 windows, from the installed engine ``riskvalidation`` 1.1.0 applied to the committed exceedance days. No value is
+copied from the design document: the source of each macro (the file and the key it was read from) is written to
+``tables/proposed-numbers-sources.csv``. Output: ``tables/proposed-*.tex`` and ``tables/proposed-numbers.tex``.
 
-Run from the repository root::
+Run from the repository root with the Python of the product's virtual environment::
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/contraste-technical-report/tables/make_proposed.py
+    python manuscripts/contraste-technical-report/tables/make_proposed.py
 """
 from __future__ import annotations
 
 import json
 import decimal
 import pathlib
+import re
 import sys
 
 import numpy as np
@@ -22,6 +24,48 @@ import numpy as np
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "_shared"))
 import figkit  # noqa: E402
+
+MS = HERE.parents[1]  # the manuscripts folder
+#: macro -> (source file relative to the repository root, key read there), written to proposed-numbers-sources.csv
+SOURCES: dict[str, tuple[str, str]] = {}
+
+_MAC = re.compile(r"\\newcommand\{\\(\w+)\}\{((?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*)\}")
+_NV = re.compile(r"\\expandafter\\def\\csname num@([^\\]+)\\endcsname\{((?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*)\}")
+_PAPER_CACHE: dict[str, tuple[dict[str, tuple[str, str]], str]] = {}
+
+
+def paper(slug: str) -> tuple[dict[str, tuple[str, str]], str]:
+    """The number macros of a method manuscript (newcommand or csname num@key definitions) and, per macro, the value and the file."""
+    if slug not in _PAPER_CACHE:
+        vals: dict[str, tuple[str, str]] = {}
+        files = sorted((MS / slug / "tables").glob("*.tex")) + [MS / slug / "numbers.tex"]
+        for p in files:
+            if not p.exists():
+                continue
+            txt = p.read_text(encoding="utf-8")
+            rel = f"manuscripts/{slug}/{p.relative_to(MS / slug).as_posix()}"
+            for m in list(_MAC.finditer(txt)) + list(_NV.finditer(txt)):
+                vals.setdefault(m.group(1), (m.group(2), rel))
+        if not vals:
+            raise FileNotFoundError(f"no number macros in manuscripts/{slug}")
+        _PAPER_CACHE[slug] = (vals, "")
+    return _PAPER_CACHE[slug]
+
+
+def pv(slug: str, key: str) -> str:
+    """One value of a method manuscript's number files, as LaTeX text (a thousands brace group becomes a comma)."""
+    vals, _ = paper(slug)
+    if key not in vals:
+        raise KeyError(f"{key} is not defined in the number files of manuscripts/{slug}")
+    return vals[key][0].replace("{,}", ",")
+
+
+def pfile(slug: str, key: str) -> str:
+    return paper(slug)[0][key][1]
+
+
+def results_json(slug: str, rel: str = "experiments/results.json"):
+    return json.loads((MS / slug / rel).read_text(encoding="utf-8"))
 
 OUT = HERE
 EIGHT = ["null", "miscalibration", "clustering", "drift", "discrimination-decay", "leakage", "broken-monotonicity", "concentration"]
@@ -31,39 +75,6 @@ VLABEL = {"none": "no deficiency", "missing-basis": "missing basis", "stale-vola
 WINDOWS = ["equity-2007-09", "fx-2008", "equity-2020", "rates-2022", "calm-2004-06", "mixed-2023"]
 STRESS = ["equity-2007-09", "equity-2020", "rates-2022"]
 MODEL_LABEL = {"hs-250": "HS-250", "garch-t": "GARCH-t", "fhs": "FHS"}
-
-#: Values that the design document states and the committed artifacts do not recompute here (SDD = docs/design/SDD.md).
-SDD = {
-    "oneRegCerepLong": ("26.64", "SDD.md section on contributions beyond the practice, the entry on the default definition"),
-    "oneRegTransLong": ("8.61", "same entry"),
-    "fourRwBefore": ("58.0", "same entry"),
-    "fourRwAfter": ("47.5", "same entry"),
-    "twoPrinted": ("413", "SDD.md, the entry on reconciliations"),
-    "twoReproduced": ("296", "same entry"),
-    "twoGridCases": ("36", "same entry"),
-    "sevenSingleLow": ("6.8", "SDD.md, the entry on the UF"),
-    "sevenSingleHigh": ("8.8", "same entry"),
-    "sevenEveLow": ("10", "same entry"),
-    "sevenEveHigh": ("27", "same entry"),
-    "eightRedDates": ("2", "SDD.md, the entry on the behavioural test"),
-    "tenBinomLow": ("0.1587", "SDD.md, the entry on the batch 3 corrections"),
-    "tenBinomHigh": ("0.3893", "same entry"),
-    "tenBetaBin": ("0.044", "same entry"),
-    "tenFixedFive": ("0.2000", "same entry"),
-    "tenFixedTen": ("0.0833", "same entry"),
-    "tenPerm": ("0.0667", "same entry"),
-    "tenCutTenth": ("0.0850", "same entry"),
-    "tenCutFifth": ("0.0150", "same entry"),
-    "elevenSvb": ("0.1708", "SDD.md, the entry on reverse liquidity stress"),
-    "twelveRedRows": ("92", "SDD.md, the entry on the instability of the operational-risk capital"),
-    "twelveInfLow": ("27", "same entry"),
-    "twelveInfHigh": ("34", "same entry"),
-    "twelveFiniteLow": ("9", "same entry"),
-    "twelveFiniteHigh": ("27", "same entry"),
-    "fiveWeighted": ("2.68", "SDD.md ladder row on the IFRS 9 engine"),
-    "fiveAverage": ("1.80", "same row"),
-}
-
 
 def D(rel: str):
     d = figkit.doc(rel)
@@ -114,15 +125,18 @@ def load() -> dict:
     A["ore"] = {}
     for v in ["single-swap", "netting-set", "csa-mpor-10d", "csa-mpor-20d", "with-im"]:
         A["ore"][v] = D(f"C12/{v}.json")["ore_reconciliation"]
+    A["ore_paths"] = D("C12/single-swap.json")["named_parameters"]["path_count"]["value"]
     # BS-4
     w = D("C04/withdrawals.json")
     A["wd"] = w
     A["thin"] = D("C04/thin.json")
+    A["sp_impact"] = figkit.doc("C04/sp.json")["impact"]
     # BS-7, BS-9, BS-11, BS-12
     A["short_uf"] = D("C15/short-uf.json")
     A["long_uf"] = D("C15/long-uf.json")
     A["band"] = D("C18/baseline.json")["aggregation"]["band"]
     A["rev"] = D("C16/reverse-stress.json")
+    A["fast_run"] = D("C16/fast-run.json")
     A["c17"] = {x: D(f"C17/{x}.json") for x in ["xi-0-6", "xi-0-8", "xi-0-96", "xi-1-1"]}
     # BS-13
     A["c13"] = {v: D(f"C13/{v}.json") for v in VARIANTS}
@@ -184,8 +198,13 @@ def build() -> dict:
     A = load()
     N: dict[str, str] = {}
 
-    def put(k, v):
+    def put(k, v, src=None):
         N[k] = str(v)
+        SOURCES[k] = src or ("data/derived", "computed by make_proposed.py from the committed documents")
+
+    def ppt(k, slug, key):
+        """A number copied from the number file of a method manuscript, with its source."""
+        put(k, pv(slug, key), (pfile(slug, key), key))
 
     # ---- BS-1
     rows = A["c22_rows"]
@@ -212,11 +231,24 @@ def build() -> dict:
     put("oneNullReps", f"{tests[0]['n_rep']:,}")
     put("oneNullTotal", f"{sum(s['n_rep'] for s in tests):,}")
     lk = A["leak"]
-    put("oneLeakAucOne", pct(lk[("disc.auc_vs_initial", 1)]["rate"], 1))
-    put("oneLeakAucTwo", pct(lk[("disc.auc_vs_initial", 2)]["rate"], 1))
-    put("oneLeakCsiFive", pct(lk[("stability.csi", 5)]["rate"], 1))
-    put("oneLeakCsiOne", pct(lk[("stability.csi", 1)]["rate"], 1))
+    put("oneLeakAucOne", pct_half_up(lk[("disc.auc_vs_initial", 1)]["rate"], 1))
+    put("oneLeakAucTwo", pct_half_up(lk[("disc.auc_vs_initial", 2)]["rate"], 1))
+    put("oneLeakCsiFive", pct_half_up(lk[("stability.csi", 5)]["rate"], 1))
+    put("oneLeakCsiOne", pct_half_up(lk[("stability.csi", 1)]["rate"], 1))
     put("oneLeakReps", f"{lk[('disc.auc_vs_initial', 1)]['n']:,}")
+    put("oneHoldFive", len(tests) - len(over))
+    jeff = [s for s in tests if s["test_id"] == "pd.jeffreys"][0]
+    put("oneJeffExactOne", pct(jeff["exact"]["p<0.01"], 2), ("data/derived/C22/null.json", "pd.jeffreys exact p<0.01"))
+    put("oneJeffExactFive", pct(jeff["exact"]["p<0.05"], 2), ("data/derived/C22/null.json", "pd.jeffreys exact p<0.05"))
+    hhi = [s for s in tests if s["test_id"] == "rating.hhi"][0]
+    put("oneHhiRate", pct(hhi["rates"]["p<0.05"]["rate"], 2), ("data/derived/C22/null.json", "rating.hhi rate p<0.05"))
+    mig = [s for s in tests if s["test_id"] == "rating.migration_ztests"][0]
+    put("oneMigRate", pct(mig["rates"]["p<0.05"]["rate"], 2), ("data/derived/C22/null.json", "rating.migration_ztests rate p<0.05"))
+    put("oneBoundOne", f"{100 * A['size_bounds']['p<0.01']:.2f}")
+    put("oneLeakPowerReps", f"{lk[('disc.auc_vs_initial', 1)]['n']:,}")
+    put("oneLeakCsiThree", pct(lk[("stability.csi", 3)]["rate"], 1))
+    put("oneLeakCsiTwo", pct(lk[("stability.csi", 2)]["rate"], 1))
+    put("oneLeakCsiFour", pct(lk[("stability.csi", 4)]["rate"], 1))
     # ---- BS-2
     for v, key in [("single-swap", "Single"), ("netting-set", "Netting"), ("csa-mpor-10d", "CsaTen"), ("csa-mpor-20d", "CsaTwenty"),
                    ("with-im", "Im")]:
@@ -228,7 +260,9 @@ def build() -> dict:
         put(f"two{key}Eepe", f"{abs(r['eepe_agreement']['difference']) / r['eepe_agreement']['combined_se']:.2f}")
         put(f"two{key}Cva", f"{abs(r['cva_agreement']['difference']) / r['cva_agreement']['combined_se']:.2f}")
     put("twoOreVersion", A["ore"]["single-swap"]["ore_version"])
-    put("twoOreSamples", "10,000")
+    put("twoEnginePaths", f"{A['ore_paths']:,}", ("data/derived/C12/single-swap.json", "outputs.named_parameters.path_count"))
+    m = re.search(r"(\d+) samples", A["ore"]["single-swap"]["platform"])
+    put("twoOreSamples", f"{int(m.group(1)):,}", ("data/derived/C12/single-swap.json", "outputs.ore_reconciliation.platform"))
     # ---- BS-4
     wd = A["wd"]
     r9 = [r for r in wd["rungs"] if r["value"] == 9.0][0]
@@ -240,6 +274,20 @@ def build() -> dict:
         put(f"four{nm}B", f"{100 * (r9[k]['mean'][ib] - truth) / truth:.0f}")
     r0 = wd["rungs"][0]
     put("fourRemovedZero", f"{100 * (r0['pd_removed']['mean'][ib] - truth) / truth:+.0f}")
+    for k, nm in [("pd_removed", "Removed"), ("pd_kept", "Kept"), ("pd_followed", "Followed")]:
+        put(f"four{nm}Se", f"{100 * r9[k]['bias_mcse'][ib] / truth:.1f}", ("data/derived/C04/withdrawals.json", f"rungs[9].{k}.bias_mcse"))
+    put("fourRemovedZeroSe", f"{100 * r0['pd_removed']['bias_mcse'][ib] / truth:.1f}", ("data/derived/C04/withdrawals.json", "rungs[0].pd_removed.bias_mcse"))
+    put("fourReps", r9["pd_removed"]["n"][ib] if isinstance(r9["pd_removed"]["n"], list) else r9["pd_removed"]["n"])
+    sims = {s["key"]: s for s in wd["simulations"]}
+    for tid, nm in [("rating.time_homogeneity", "Th"), ("rating.matrix_reference", "Mr")]:
+        rr = sims[f"{tid}@k9"]["rates"]["p<0.05"]
+        put(f"four{nm}Nine", pct(rr["rate"], 1), ("data/derived/C04/withdrawals.json", f"simulations {tid}@k9 p<0.05"))
+        put(f"four{nm}NineHi", pct(rr["wilson_high"], 1), ("data/derived/C04/withdrawals.json", f"simulations {tid}@k9 wilson_high"))
+    sp_imp = A["sp_impact"]
+    put("oneRegCerepLong", f"{100 * sp_imp['lra_d2_ccc_c']['value']:.2f}", ("data/derived/C04/sp.json", "impact.lra_d2_ccc_c"))
+    put("oneRegTransLong", f"{100 * sp_imp['lra_d4_ccc_c']['value']:.2f}", ("data/derived/C04/sp.json", "impact.lra_d4_ccc_c"))
+    put("fourRwBefore", f"{100 * sp_imp['rw_d2']['value']:.1f}", ("data/derived/C04/sp.json", "impact.rw_d2"))
+    put("fourRwAfter", f"{100 * sp_imp['rw_d4']['value']:.1f}", ("data/derived/C04/sp.json", "impact.rw_d4"))
     thin = A["thin"]["rungs"][0]
     put("fourThinN", thin["value"])
     put("fourWaldAaa", pct(thin["coverage"]["wald"][0], 2))
@@ -249,6 +297,7 @@ def build() -> dict:
     put("sevenCharge", f"{su['indexation_charge']['charge']:,.1f}")
     put("sevenShare", pct(su["indexation_charge"]["charge"] / su["nii"]["delta_nii"], 1))
     put("sevenFloorBp", f"{min(d['distance_bp'] for d in su['floors']['distances'] if d['leg'] != 'CLP'):.2f}")
+    put("sevenChargeUnit", su["indexation_charge"].get("unit", "currency units"))
     # ---- BS-9
     band = A["band"]
     sums = {(r["method"], r["nu"]): r["capital_clp_m"] for r in band}
@@ -259,8 +308,23 @@ def build() -> dict:
     put("nineVc", f"{sums[('variance-covariance', None)]:,.0f}")
     put("nineTfour", f"{sums[('t-copula', 4.0)]:,.0f}")
     put("nineRows", len(band))
+    se = {(r["method"], r["nu"]): r["mc_se_clp_m"] for r in band}
+    put("nineGaussSe", f"{se[('gaussian-copula', None)]:,.0f}", ("data/derived/C18/baseline.json", "aggregation.band mc_se_clp_m"))
+    put("nineTfourSe", f"{se[('t-copula', 4.0)]:,.0f}", ("data/derived/C18/baseline.json", "aggregation.band mc_se_clp_m"))
+    put("nineTfourEightSe", f"{se[('t-copula', 8.0)]:,.0f}", ("data/derived/C18/baseline.json", "aggregation.band mc_se_clp_m"))
     put("nineWorstRatio", f"{sums[('worst-case', None)] / sums[('simple-sum', None)]:.2f}")
     put("nineGaussRatio", f"{sums[('gaussian-copula', None)] / sums[('simple-sum', None)]:.2f}")
+    # ---- BS-8
+    import glob
+    lights = []
+    for f in sorted(glob.glob(str(figkit.DERIVED / "C14" / "vd-*.json"))):
+        d = json.loads(pathlib.Path(f).read_text(encoding="utf-8"))
+        for tt in d["tests"]:
+            if tt["test_id"] == "irrbb.behavioural_change_at_breach":
+                lights.append(tt["light"])
+    put("eightRedDates", sum(1 for x in lights if x == "red"), ("data/derived/C14/vd-*.json", "irrbb.behavioural_change_at_breach light"))
+    put("eightDatesEvaluated", sum(1 for x in lights if x != "not_evaluated"), ("data/derived/C14/vd-*.json", "irrbb.behavioural_change_at_breach light"))
+    put("eightDates", len(lights), ("data/derived/C14/vd-*.json", "irrbb.behavioural_change_at_breach light"))
     # ---- BS-11
     for b in A["rev"]["bases"]:
         s = b["solved"]
@@ -268,6 +332,7 @@ def build() -> dict:
         put(f"eleven{key}", f"{s['multiplier']:.6f}" if s["status"] == "solved" else "refused")
         put(f"eleven{key}Day", b["base_survival"]["day"] if b["base_survival"]["day"] else b["base_survival"]["horizon_days"])
     put("elevenTarget", A["rev"]["target"]["days"])
+    put("elevenSvb", f"{A['fast_run']['scoring']['denominators'][0]['modelled_share']:.4f}", ("data/derived/C16/fast-run.json", "outputs.scoring.denominators[0].modelled_share"))
     put("elevenCapAdverse", f"{[b for b in A['rev']['bases'] if b['base_id'] == 'list-adverse'][0]['max_multiplier']:.1f}")
     # ---- BS-12
     cells = []
@@ -279,6 +344,23 @@ def build() -> dict:
     put("twelveHistories", f"{sum(c['replications']['n_replications'] for _, c in cells):,}")
     put("twelveIqrMin", f"{min(iqr):.2f}")
     put("twelveIqrMax", f"{max(iqr):.2f}")
+    rows12 = [tt for tag in A["c17"] for tt in figkit.doc(f"C17/{tag}.json")["tests"] if tt["test_id"] == "oprisk.capital_stability"]
+    put("twelveRedRows", sum(1 for tt in rows12 if tt["light"] == "red"), ("data/derived/C17/xi-*.json", "tests oprisk.capital_stability light"))
+    put("twelveRows", len(rows12), ("data/derived/C17/xi-*.json", "tests oprisk.capital_stability"))
+    put("twelveRungs", len({tt["model_id"] for tt in rows12}), ("data/derived/C17/xi-*.json", "tests oprisk.capital_stability model_id"))
+    share = {}
+    for tag in ("xi-0-96", "xi-1-1"):
+        share[tag] = [x["share_at_least_one"] for c in A["c17"][tag]["cells"] for x in c["threshold_stability"]
+                      if x["threshold_eur"] == c["collection_threshold_eur"]]
+    put("twelveInfLow", pct(min(share["xi-0-96"]), 1), ("data/derived/C17/xi-0-96.json", "cells[].threshold_stability.share_at_least_one"))
+    put("twelveInfHigh", pct(max(share["xi-0-96"]), 1), ("data/derived/C17/xi-0-96.json", "cells[].threshold_stability.share_at_least_one"))
+    put("twelveFiniteLow", pct(1 - max(share["xi-1-1"]), 1), ("data/derived/C17/xi-1-1.json", "cells[].threshold_stability.share_at_least_one"))
+    put("twelveFiniteHigh", pct(1 - min(share["xi-1-1"]), 1), ("data/derived/C17/xi-1-1.json", "cells[].threshold_stability.share_at_least_one"))
+    c096 = A["c17"]["xi-0-96"]["cells"][0]["capital"]
+    put("twelveLnShare", pct(c096["lda_lognormal"]["share_underestimating"], 0), ("data/derived/C17/xi-0-96.json", "cells[0].capital.lda_lognormal.share_underestimating"))
+    put("twelveLnIqr", pct(c096["lda_lognormal"]["iqr_over_truth"], 2), ("data/derived/C17/xi-0-96.json", "cells[0].capital.lda_lognormal.iqr_over_truth"))
+    put("twelveTruncShare", pct(c096["lda_lognormal_truncated"]["share_underestimating"], 0), ("data/derived/C17/xi-0-96.json", "cells[0].capital.lda_lognormal_truncated.share_underestimating"))
+    put("twelveHistoriesPerCell", A["c17"]["xi-0-96"]["cells"][0]["replications"]["n_replications"])
     # ---- BS-13
     c13 = A["c13"]
     stale = c13["stale-volatility"]["pla_complement"]
@@ -462,7 +544,6 @@ def build() -> dict:
     put("fiveCmfCov", pct(reg["cmf-b1"]["coverage_rate"], 2))
     put("fiveIfrsCov", pct(reg["ifrs9"]["coverage_rate"], 2))
     put("fiveBdeCov", pct(reg["bde-annex9"]["coverage_rate"], 2))
-    put("fiveScenarios", len([x for x in ["base", "combined-severe", "consumer-arrears-shock", "house-price-fall", "recession", "uf-inflation-spike"]]))
     steps = {x["id"]: x["amount"] for x in c07["gap_bridge"]["steps"]}
     put("fiveBridgeBasis", f"{steps['measurement-basis'] / 1e9:,.1f}")
     put("fiveBridgeLife", f"{steps['lifetime-horizon'] / 1e9:,.1f}")
@@ -484,14 +565,229 @@ def build() -> dict:
     put("sixMomCov", pct(est["moments"]["coverage"], 1))
     put("sixMomRmse", f"{est['moments']['rmse']:.4f}")
     put("sixPd", g22["generator"]["known_pd"])
-    # SDD constants
-    for k, (v, _) in SDD.items():
-        put(k, v)
+    # ---- counts the other sections of the report quote, read from the reconciliation manuscript and the documents
+    ppt("twoPrinted", "reconciliation-against-reference-engines", "nPrintedN")
+    ppt("twoReproduced", "reconciliation-against-reference-engines", "nPrintedAgree")
+    ppt("twoGridCases", "reconciliation-against-reference-engines", "nGridCases")
+    im = D("C12/with-im.json")
+    ore_dim = np.array(im["ore_reconciliation"]["ore_dim"]["values"], dtype=float)
+    eng_dim = np.array(im["initial_margin"]["dim"]["values"], dtype=float)
+    put("twoImDimRatio", f"{float(np.mean(ore_dim / eng_dim)):.2f}", ("data/derived/C12/with-im.json", "ore_reconciliation.ore_dim over initial_margin.dim, mean over the dates"))
+    c07_ids = [(D(f"C07/{p.name}") or {}).get("scenario_id") for p in sorted((figkit.DERIVED / "C07").glob("*.json")) if p.name != "models-banco-andino.json"]
+    put("fiveScenarios", sum(1 for x in c07_ids if x), ("data/derived/C07/*.json", "documents with a scenario_id"))
+    src = (figkit.ROOT / "data-pipeline" / "pipeline" / "stages" / "split.py").read_text(encoding="utf-8")
+    m = re.search(r"holdout: float = ([0-9.]+), calibration: float = ([0-9.]+),\s+repeats: int = (\d+)", src)
+    put("threeHoldout", m.group(1), ("data-pipeline/pipeline/stages/split.py", "stratified_split holdout"))
+    put("threeCalibration", m.group(2), ("data-pipeline/pipeline/stages/split.py", "stratified_split calibration"))
+    put("threeRepeats", m.group(3), ("data-pipeline/pipeline/stages/split.py", "stratified_split repeats"))
+    put("oneSeNull", f"{100 * (0.05 * 0.95 / int(tests[0]['n_rep'])) ** 0.5:.2f}")
+    put("oneHalfWidth", f"{196 * (0.05 * 0.95 / int(tests[0]['n_rep'])) ** 0.5:.1f}")
+    put("oneSePower", f"{100 * (0.05 * 0.95 / int(lk[('disc.auc_vs_initial', 1)]['n'])) ** 0.5:.2f}")
+    # ---- BS-5: the worked example of the non-linearity (PD 2 %, rho 0.12, three scenarios), computed from its parameters
+    from scipy.stats import norm
+
+    z = np.array([1.0, 0.0, -2.0])
+    wts = np.array([0.25, 0.5, 0.25])
+    pd_ttc, rho_ex = 0.02, 0.12
+    pz = norm.cdf((norm.ppf(pd_ttc) - np.sqrt(rho_ex) * z) / np.sqrt(1 - rho_ex))
+    put("fiveWeighted", f"{100 * float(wts @ pz):.2f}", ("make_proposed.py", "worked example: PD 2 %, rho 0.12, z = 1, 0, -2, weights 0.25, 0.5, 0.25"))
+    put("fiveAverage", f"{100 * float(norm.cdf((norm.ppf(pd_ttc) - np.sqrt(rho_ex) * float(wts @ z)) / np.sqrt(1 - rho_ex))):.2f}",
+        ("make_proposed.py", "worked example at the weighted mean factor"))
+    put("fiveExPd", f"{100 * pd_ttc:g}")
+    put("fiveExRho", f"{rho_ex}")
+    # ---- BS-6: the coverage of the maximum-likelihood estimator over the 24 committed cells
+    cov, reps24 = [], []
+    for g in ("C10/grid-22.json", "C10/grid-40.json"):
+        for c in D(g)["cells"]:
+            e = {x["estimator"]: x for x in c["estimators"]}["maximum-likelihood"]
+            cov.append(e["coverage"])
+            reps24.append(c["n_replications"])
+    half = [1.96 * np.sqrt(0.95 * 0.05 / n) for n in reps24]
+    inside = [c for c, h in zip(cov, half) if abs(c - 0.95) <= h]
+    put("sixCells", len(cov), ("data/derived/C10/grid-22.json and grid-40.json", "cells"))
+    put("sixCovOutside", len(cov) - len(inside), ("data/derived/C10/grid-22.json and grid-40.json", "cells[].estimators.coverage against 0.95 +- 1.96 sqrt(.95 .05 / n)"))
+    put("sixCovInMin", pct(min(inside), 1), ("data/derived/C10", "coverage of the cells inside the band"))
+    put("sixCovInMax", pct(max(inside), 1), ("data/derived/C10", "coverage of the cells inside the band"))
+    put("sixBandLow", pct(0.95 - half[0], 1))
+    put("sixBandHigh", pct(0.95 + half[0], 1))
+
+    # ---- the sixteen method manuscripts: the outcome of each, read from its committed number file
+    SPEC = {
+        "One": ("size-and-power-of-validation-tests", {
+            "Tests": "nTests", "Hold": "nHold", "NotHold": "nNotHold", "Reps": "nRepsPooled", "JeffExact": "jeffExactOne",
+            "Norm": "pooledNorm", "NormLo": "pooledNormLo", "NormHi": "pooledNormHi", "Res": "detIntFiveFour", "HoldCell": "nHoldCellDef",
+            "BinRho": "binRhoOneZeroExact", "Psi": "psiHundred", "PowerTests": "nPowerTests", "Reach": "nReach", "NullReps": "nNullReps"}),
+        "Two": ("reconciliation-against-reference-engines", {
+            "PrintedAgree": "nPrintedAgree", "PrintedN": "nPrintedN", "WithinTwo": "nAgreeTwoUnits", "Beyond": "nBinBeyond",
+            "MissTested": "nMissTested", "MissTotal": "nMissTotal", "GridJeff": "nGridJeffMax", "GridCases": "nGridCases",
+            "ClosedWithin": "nClosedWithin", "ClosedCases": "nClosedCases", "Hw": "nWWAtwoUnits", "Single": "nSingleEquivalence",
+            "Netting": "nNettingEquivalence", "CsaTenMax": "nCsaTenMaxZ", "CsaTwentyMax": "nCsaTwentyMaxZ", "ImMax": "nImMaxZ",
+            "ReplFail": "nReplCsaFail", "ReplN": "nReplCsaN", "Overstate": "nOverstateLast", "SizeProd": "nSizeProdNetting",
+            "SizeProdLo": "nSizeProdNettingLo", "SizeProdHi": "nSizeProdNettingHi", "PowerProd": "nPowerProdSigmaTwo",
+            "PowerProdLo": "nPowerProdSigmaTwoLo", "PowerProdHi": "nPowerProdSigmaTwoHi", "SizeFamily": "nSizePairNetting",
+            "SizeRefine": "nSizeRefineNetting", "PowerRefine": "nPowerRefineSigmaTwo", "SizeMaxt": "nSizePairMaxtNetting",
+            "PowerMaxt": "nPowerPairMaxtSigmaTwo", "CritReps": "nCritReps"}),
+        "Three": ("leakage-safe-validation-protocol", {
+            "NoneBias": "syn.w.none.bias", "NoneCi": "syn.w.none.ci", "NoneCov": "syn.w.none.cov", "TwN": "tw.n",
+            "WoeBias": "syn.w.woe.bias", "FitBias": "syn.w.fit.bias", "FitCov": "syn.w.fit.cov", "Leaks": "h5.total",
+            "Draws": "e2.reps", "AucDev": "e3.s0.5.auc_test", "CsiDev": "e3.s1.0.csi_test", "MaxZ": "e4.maxz",
+            "OotGap": "e4.2006-07.sc.aoot_gap", "Held": "h.held", "NotHeld": "h.notheld"}),
+        "Four": ("default-definition-withdrawals-thin-grades", {
+            "CccDefault": "spLraDtwoCcc", "CccTransition": "spLraDfourCcc", "GapIndex": "spPtRatioCcc", "GapLo": "spRatioCccLo",
+            "GapHi": "spRatioCccHi", "RwBefore": "spRwDtwo", "RwAfter": "spRwDfour", "Removed": "removedBkNine",
+            "RemovedSe": "removedBkNinese", "Followed": "followedBkNine", "FollowedSe": "followedBkNinese", "Duration": "durBkNine",
+            "DurationSe": "durBkNinese", "Th": "testthkNinefive", "ThLo": "testthkNinefivelo", "ThHi": "testthkNinefivehi",
+            "Mr": "testmrkNinefive", "MrLo": "testmrkNinefivelo", "MrHi": "testmrkNinefivehi", "MrNineteen": "testmrkNineteenfive",
+            "MrNineteenLo": "testmrkNineteenfivelo", "MrNineteenHi": "testmrkNineteenfivehi", "Wald": "waldAaaFifty"}),
+        "Five": ("provisions-reconciliation-identities", {
+            "AboveFullK": "eoneAboveFullK", "AboveFullN": "eoneAboveFullN", "AboveStageK": "eoneAboveStageK",
+            "AbsCommittedK": "etwoAbsCommittedK", "ConvexN": "efourConvexN", "MixedNeg": "efourMixedNeg", "MixedN": "efourMixedN",
+            "AdhocMed": "efourAdhocMed", "BaseMean": "efiveBaseMean", "BaseLo": "efiveBaseLo", "BaseHi": "efiveBaseHi",
+            "Seeds": "efiveSeeds", "HypTotal": "hypTotal", "HypRefuted": "hypRefuted", "RoundMillion": "etwoRoundMillionPct"}),
+        "Six": ("engines-and-test-catalogues", {
+            "Tests": "testsTotal", "Absent": "ecbAbsent", "Sections": "ecbSections", "EcbMax": "ecbAllMax", "EcbInputs": "ecbInputs",
+            "Disagree": "disagreeFive", "Cells": "cCells", "McReps": "mcReps", "McScen": "mcScen", "RegenRel": "regenRel",
+            "QlMax": "irrQlMax", "Legs": "irrLegs", "MlBelow": "gridMlBelow", "MlCells": "gridMlCells", "MlFail": "gridMlFail",
+            "Mutants": "ablMutants", "Any": "ablAny", "Real": "ablReal", "Only": "ablOnly", "Pypi": "pypiFound", "Dist": "distScanned"}),
+        "Seven": ("uf-as-its-own-currency-in-irrbb", {
+            "ValDate": "valDate", "RatioLng": "rmRatioLng", "RatioSht": "rmRatioSht", "RatioOff": "rmRatioOff", "RatioLo": "rmLoLng",
+            "RatioHi": "rmHiOff", "EveLng": "mainEveShortLng", "EveLngCi": "mainEveShortLngCi", "EveSht": "mainEveShortSht",
+            "EveShtCi": "mainEveShortShtCi", "EveOff": "mainEveShortOff", "EveOffCi": "mainEveShortOffCi",
+            "ShareLo": "mainChargeShareLo", "ShareHi": "mainChargeShareHi", "FloorRaise": "floorsRaise", "FloorTotal": "floorsTotalNii",
+            "SweepLo": "sweepMajLo", "SweepHi": "sweepMajHi", "SweepFirst": "sweepFirstDiff", "HFour": "hFourLo"}),
+        "Eight": ("behavioural-assumption-test-at-a-limit-breach", {
+            "StatedAlt": "statedAltEngine", "StatedNull": "statedNullEngine", "Fisher": "statedAltFisher", "Mw": "statedAltMw",
+            "Welch": "statedAltWelch", "FitNull": "fitNullEngine", "FitAuc": "fitAucCEngine", "FitAucLo": "fitAucLoCEngine",
+            "FitAucHi": "fitAucHiCEngine", "TolNull": "fitNullTol", "TolAuc": "fitAucCTol", "TolTwo": "fitAddCTol", "TolFour": "fitAddDTol",
+            "BreakTwo": "fitAddCShiftB", "BreakFour": "fitAddDShiftB", "BreakNull": "fitNullShiftB", "MisTol": "fitMisCTol",
+            "MisTolLo": "fitMisCTolLo", "MisTolHi": "fitMisCTolHi", "MisBreak": "fitMisCShiftB", "WTop": "wTopAuc", "WReal": "wRealTopAuc",
+            "Held": "hypothesesHeld", "Refuted": "hypothesesRefuted"}),
+        "Nine": ("dependence-band-with-every-aggregate", {
+            "Lower": "bdLower", "Worst": "bdWorst", "Headline": "bdHeadline", "WidthSe": "bdWidthOverSe", "Gauss": "bdGauss",
+            "GaussSe": "bdGaussSe", "Width": "bdAblFullWidth", "Interior": "bdCovInterior", "InteriorStress": "bdCovInteriorStress",
+            "GaussWithin": "bdGaussWithin"}),
+        "Ten": ("measured-corrections-of-validation-tests", {
+            "BinomEqual": "CovSinBinB", "BinomEqualSe": "CovSeBinB", "BetaBin": "CovSinBBB", "BetaBinMax": "CovBBMaxExact",
+            "PowGap": "ExPowGapMax", "FixedFive": "ShRateFixedFiveCZ", "Perm": "ShRatePermCZ", "PermPower": "ShRatePermCT",
+            "FixedPower": "ShRateFixedFiveCT", "CutTwenty": "SiRateCutTwentySmallZ", "CutTen": "SiRateCutTenSmallZ",
+            "HypTotal": "HypTotal", "HypRefuted": "HypRefuted", "HypPartial": "HypPartial", "CutTenLarge": "SiRateCutTenLargeZ",
+            "PowTenGapTwo": "SiRateCutTenSmallB", "PowTwentyGapTwo": "SiRateCutTwentySmallB", "FixedFiveSe": "ShSeFixedFiveCZ",
+            "PermSe": "ShSePermCZ", "CutTwentySe": "SiSeCutTwentySmallZ", "CutTenSe": "SiSeCutTenSmallZ", "PermPowerSe": "ShSePermCT",
+            "FixedPowerSe": "ShSeFixedFiveCT"}),
+        "Eleven": ("reverse-liquidity-stress-with-a-refusal-rule", {
+            "Inst": "kInst", "ScanFalse": "kGFalse", "ScanErr": "kGErrPc", "Adv": "mAdv", "Ext": "mExt", "SvbModel": "svbModel",
+            "SvbRatio": "svbRatio", "SvbMult": "mSvb", "JointDev": "jointDevAdv", "LowSlow": "lowSlowM"}),
+        "Twelve": ("instability-of-operational-risk-capital", {
+            "Per": "nPer", "Cells": "nCells", "IqrMin": "spIqrMin", "MinLo": "spMinLo", "MinHi": "spMinHi", "IqrMax": "spIqrMax",
+            "MaxLo": "spMaxLo", "MaxHi": "spMaxHi", "Red": "redTotal", "InfLo": "infLo", "InfHi": "infHi", "FinLo": "finLo",
+            "FinHi": "finHi", "ThErr": "thSdMaxErr", "YrsMin": "yrsMin", "YrsMax": "yrsMax"}),
+        "Fourteen": ("anchored-pd-under-informative-withdrawals", {
+            "TruthB": "truthB", "Reps": "reps", "CovMin": "h1.min", "PoolIndustry": "cov.pool.i9.industry",
+            "PoolIndustrySe": "se.pool.i9.industry", "WidthAnchored": "w.fy.i9.anchored", "WidthFollowed": "w.fy.i9.followed",
+            "WidthManskiLo": "wr.fy.i9", "WidthManskiHi": "wr.x10.i9", "CccK": "real.sp.CCC-C.k", "ShareB": "stab.i9.cdobs.B.share",
+            "ShareCcc": "stab.i9.cdobs.CCC-C.share"}),
+        "Fifteen": ("e-process-sequential-monitors", {
+            "KupTrail": "nNullSizeKupTrail", "ENull": "nNullSizeE", "ENullLo": "nNullSizeELo", "ENullHi": "nNullSizeEHi",
+            "FourMed": "nSeedsFourMed", "ThreeMed": "nSeedsThreeMed", "ThreeMedLo": "nSeedsThreeMedLo", "ThreeMedHi": "nSeedsThreeMedHi",
+            "ThreeCost": "nSeedsThreeCost", "ThreeCostSe": "nSeedsThreeCostSe", "UpThreeMed": "nSeedsUpThreeMed",
+            "UpThreeCost": "nSeedsUpThreeCost", "UpThreeCostSe": "nSeedsUpThreeCostSe", "RhoAvg": "nRhoZeroThreeAvg",
+            "VasTrue": "nPdcZeroThreeVasTrueEvery", "MatchedSize": "nPdcMatchedSize", "ChiMatched": "nPdcOneZeroFiveChiMatched",
+            "PdAvg": "nPdOneZeroFiveAvg", "ChiSim": "nPdcOneZeroFiveChiSim"}),
+        "Sixteen": ("adaptive-conformal-recalibration-of-var", {
+            "DevUnw": "tenHitDevUnw", "DevAci": "tenHitDevAci", "WorstFz": "tenWorstFz", "PassAci": "tenPassAci", "Runs": "tenRuns",
+            "PassUnw": "tenPassUnw", "DispAci": "dispBOneOneAciPass", "DispUnw": "dispBOneOneUnwPass", "WrapCal": "dispCWrapCal",
+            "UnwExact": "dispCUnwExact", "HoneGain": "dispCHoneGainCal", "Cells": "hypCells", "ScaleRatio": "thCCmaxOne",
+            "RollOver": "cmpRollTenFzOver"}),
+    }
+    missing = []
+    for num, (slug, mp) in SPEC.items():
+        for name, key in mp.items():
+            try:
+                ppt(f"pp{num}{name}", slug, key)
+            except KeyError:
+                missing.append((slug, key))
+    assert not missing, missing
+    # the e-process paper writes its macros with a leading n
+    # ---- the scale-and-level complement: its results file
+    pla = results_json("scale-and-level-complement-to-the-pla-test")
+    src_pla = "manuscripts/scale-and-level-complement-to-the-pla-test/experiments/results.json"
+    mn = pla["main"]
+    put("ppThirteenUnion", pct(mn["stale-volatility"]["union"]["rate"], 1), (src_pla, "main.stale-volatility.union.rate"))
+    put("ppThirteenUnionLo", pct(mn["stale-volatility"]["union"]["lo"], 1), (src_pla, "main.stale-volatility.union.lo"))
+    put("ppThirteenUnionHi", pct(mn["stale-volatility"]["union"]["hi"], 1), (src_pla, "main.stale-volatility.union.hi"))
+    put("ppThirteenHeld", pct(mn["none"]["union"]["rate"], 1), (src_pla, "main.none.union.rate"))
+    put("ppThirteenHeldLo", pct(mn["none"]["union"]["lo"], 1), (src_pla, "main.none.union.lo"))
+    put("ppThirteenHeldHi", pct(mn["none"]["union"]["hi"], 1), (src_pla, "main.none.union.hi"))
+    put("ppThirteenZone", pct(mn["stale-volatility"]["pla"]["rate"], 1), (src_pla, "main.stale-volatility.pla.rate"))
+    put("ppThirteenWrong", pct(mn["wrong-correlation"]["roll20"]["rate"], 1), (src_pla, "main.wrong-correlation.roll20.rate"))
+    put("ppThirteenMisalign", pct(mn["time-misalignment"]["roll20"]["rate"], 1), (src_pla, "main.time-misalignment.roll20.rate"))
+    put("ppThirteenMisalignAbs", pct(mn["time-misalignment"]["abs_spearman"]["rate"], 1), (src_pla, "main.time-misalignment.abs_spearman.rate"))
+    put("ppThirteenMissingWald", pct(mn["missing-basis"]["wald_hc3"]["rate"], 1), (src_pla, "main.missing-basis.wald_hc3.rate"))
+    put("ppThirteenMissingKs", pct(mn["missing-basis"]["ks_alone"]["rate"], 1), (src_pla, "main.missing-basis.ks_alone.rate"))
+    put("ppThirteenPersist", pct(pla["altnull"]["phi0995"]["union"]["rate"], 1), (src_pla, "altnull.phi0995.union.rate"))
+    put("ppThirteenDisp", pct(pla["altnull"]["sd050"]["union"]["rate"], 1), (src_pla, "altnull.sd050.union.rate"))
+    put("ppThirteenNoise", pct(pla["altnull"]["res030"]["union"]["rate"], 1), (src_pla, "altnull.res030.union.rate"))
+    put("ppThirteenNull", f"{pla['n_null']:,}", (src_pla, "n_null"))
+    # ---- BS-10: the rank of the conformal set computed on the float product and on the exact decimal
+    import math
+    from decimal import Decimal, ROUND_CEILING
+
+    pairs = []
+    for a in range(1, 100):
+        al, ald = a / 100, Decimal(a) / Decimal(100)
+        for n in range(1, 3000):
+            rf = math.ceil((n + 1) * (1 - al))
+            rx = int((Decimal(n + 1) * (1 - ald)).to_integral_value(rounding=ROUND_CEILING))
+            if rf != rx:
+                pairs.append((a, n, rf, rx))
+    first = pairs[0]
+    put("tenRankPairs", f"{len(pairs):,}", ("make_proposed.py", "exhaustive count over the levels 0.01 to 0.99 and the sizes 1 to 2,999"))
+    put("tenRankFirstN", first[1])
+    put("tenRankFirstAlpha", f"{first[0] / 100:.2f}")
+    put("tenRankFloat", first[2])
+    put("tenRankExact", first[3])
+    byn = min(pairs, key=lambda x: (x[1], x[0]))
+    put("tenRankSmallN", byn[1])
+    put("tenRankSmallAlpha", f"{byn[0] / 100:.2f}")
+    # ---- BS-12: the benchmark of the aggregation engines
+    bench = [tt for tt in figkit.doc("C17/xi-0-96.json")["tests"] if tt["test_id"] == "oprisk.benchmark_reproduction"][0]["h0"]
+    mq = re.search(r"quantile of (\d+) to (\d+) by Panjer", bench)
+    put("twelveBenchQLow", f"{int(mq.group(1)):,}", ("data/derived/C17/xi-0-96.json", "tests oprisk.benchmark_reproduction h0"))
+    put("twelveBenchQHigh", f"{int(mq.group(2)):,}", ("data/derived/C17/xi-0-96.json", "tests oprisk.benchmark_reproduction h0"))
+    mm = re.search(r"E\[Z\] = ([0-9.]+)", bench)
+    put("twelveBenchMean", mm.group(1), ("data/derived/C17/xi-0-96.json", "tests oprisk.benchmark_reproduction h0"))
+    # ---- the titles of the sixteen manuscripts
+    NUMW = ["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen",
+            "Fifteen", "Sixteen"]
+    for nm in NUMW:
+        slug = SPEC[nm][0] if nm in SPEC else {"Thirteen": "scale-and-level-complement-to-the-pla-test"}[nm]
+        put(f"paperTitle{nm}", paper_title(slug), (f"manuscripts/{slug}/main.tex", "title"))
+    # ---- the sources of the macros, for the reader who wants to check one
+    A["sources"] = dict(SOURCES)
     A["N"] = N
     return A
 
 
 # --------------------------------------------------------------------------------------------------------------- write
+def paper_title(slug: str) -> str:
+    """The title of a method manuscript, read from its main.tex with the braces balanced."""
+    txt = (MS / slug / "main.tex").read_text(encoding="utf-8")
+    i = txt.index("\\title{") + len("\\title{")
+    depth, j = 1, i
+    while depth:
+        depth += {"{": 1, "}": -1}.get(txt[j], 0)
+        j += 1
+    return " ".join(txt[i:j - 1].split())
+
+
+def write_sources(N: dict) -> None:
+    lines = ["macro,source,key"]
+    for k in sorted(N):
+        s, key = SOURCES.get(k, ("data/derived", "computed by make_proposed.py"))
+        lines.append(f"px{k[0].upper() + k[1:]},\"{s}\",\"{key}\"")
+    (OUT / "proposed-numbers-sources.csv").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+
+
 def write_numbers(N: dict) -> None:
     lines = ["% Generated by tables/make_proposed.py from data/derived; do not edit.", ""]
     for k, v in sorted(N.items()):
@@ -512,7 +808,7 @@ def write_tables(A: dict) -> None:
          f"{int(N['twoSingleDates']) - int(N['twoSingleOut'])} of {N['twoSingleDates']}"],
         ["Reconciliation with ORE", "C12", "CSA with 10 days, dates within two combined standard errors",
          f"{int(N['twoCsaTenDates']) - int(N['twoCsaTenOut'])} of {N['twoCsaTenDates']}"],
-        ["Informative withdrawals", "C04", "relative error of the B probability of default, withdrawals removed, k = 9 (%)",
+        ["Informative withdrawals", "C04", "relative error of the B probability of default, withdrawals removed, informativeness 9 (%)",
          N["fourRemovedB"]],
         ["Thin grades", "C04", "coverage of the Wald interval for the first grade at 50 obligors (%)", N["fourWaldAaa"]],
         ["UF as its own currency", "C15", "indexation charge over the change in net interest income, short-UF variant (%)",
@@ -522,11 +818,27 @@ def write_tables(A: dict) -> None:
         ["Reverse liquidity stress", "C16", "fast-run base", N["elevenFast"]],
         ["Operational-risk instability", "C17", "interquartile range over the truth, splice rung, range over the cells",
          f"{N['twelveIqrMin']} to {N['twelveIqrMax']}"],
-    ], caption="Headline quantities of some of the contributions of this section, none of the four proposed methods among them, read from the "
-               "committed documents of the case named in the second column, each as a count or a point value without an interval; the intervals are in the tables of the "
-               "sections of the contributions, and the four proposed methods report theirs in the tables on the complement to the attribution "
+    ], caption="Headline quantities of twelve of the sixteen methods, read from the stored documents of the case named in the second "
+               "column, each as a count or a point value without an interval; the Monte Carlo errors are printed beside each value in the "
+               "text of the method, and the four methods of Sections~\\ref{sec:bs13} to~\\ref{sec:bs16} report theirs in the tables on the complement to the attribution "
                "test, the anchored probability of default, the sequential monitors and the conformal recalibration.",
         label="tab:proposed-summary", align="lllr")
+
+    # --- the sixteen methods and their manuscripts
+    SLUGS = ["size-and-power-of-validation-tests", "reconciliation-against-reference-engines", "leakage-safe-validation-protocol",
+             "default-definition-withdrawals-thin-grades", "provisions-reconciliation-identities", "engines-and-test-catalogues",
+             "uf-as-its-own-currency-in-irrbb", "behavioural-assumption-test-at-a-limit-breach", "dependence-band-with-every-aggregate",
+             "measured-corrections-of-validation-tests", "reverse-liquidity-stress-with-a-refusal-rule",
+             "instability-of-operational-risk-capital", "scale-and-level-complement-to-the-pla-test",
+             "anchored-pd-under-informative-withdrawals", "e-process-sequential-monitors", "adaptive-conformal-recalibration-of-var"]
+    CASES = ["C22", "C12", "C01, C03", "C04", "C06, C07", "C10, C14", "C15", "C14", "C18", "C20, C21", "C16", "C17", "C13", "C04", "C22, C11, C03", "C11"]
+    rows = []
+    for i, (slug, case) in enumerate(zip(SLUGS, CASES), start=1):
+        rows.append([f"\\ref{{sec:bs{i}}}", case, "\\raggedright\\arraybackslash " + paper_title(slug)])
+    figkit.table(T / "proposed-papers.tex", ["Section", "Case", "Manuscript of the method"], rows,
+                 caption="The sixteen methods of this section, the case that carries each, and the title of the manuscript that reports the method "
+                         "on its own; each subsection ends with what that manuscript found.", label="tab:proposed-papers",
+                 align="llp{0.78\\textwidth}")
 
     # --- reconciliation with ORE
     ore_rows = []
@@ -579,7 +891,7 @@ def write_tables(A: dict) -> None:
             if all(c == "--" for c in cells):
                 continue
             rows.append([dl[dsg], f"{k:.0f}"] + cells)
-    figkit.table(T / "proposed-anchored.tex", ["Design", "Informativeness $k$", "Industry", "Unfollowed", "Followed", "Anchored"], rows,
+    figkit.table(T / "proposed-anchored.tex", ["Design", "Informativeness $\\iota$", "Industry", "Unfollowed", "Followed", "Anchored"], rows,
                  caption="Coverage in percent, with a 95\\% Monte Carlo half-width, of the true one-year probability of default of the B grade by the "
                          "interval of each treatment of rating withdrawals over 200 repetitions of the rating-path generator; a dash marks a "
                          "design and informativeness that the evaluation did not run.", label="tab:proposed-anchored", align="llrrrr")
@@ -663,6 +975,7 @@ def fit_width(path: pathlib.Path) -> None:
 def main() -> None:
     A = build()
     write_numbers(A["N"])
+    write_sources(A["N"])
     write_tables(A)
     for p in OUT.glob("proposed-*.tex"):
         if p.name != "proposed-numbers.tex":

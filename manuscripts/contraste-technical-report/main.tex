@@ -19,6 +19,9 @@
 
 % The numbers of the abstract and of the framing sections (tables/make_results.py, from data/derived).
 \input{tables/results-numbers}
+% The numbers of the section on the product's own methods (tables/make_proposed.py), loaded here because the abstract and three
+% framing sections quote them.
+\input{tables/proposed-numbers}
 
 \title{Contraste: validating bank risk models on twenty-one public and synthetic cases, with the size of the validation tests measured under the null and their power on planted defects}
 \author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
@@ -31,14 +34,14 @@
 \headerblock
 
 \begin{abstract}
-Supervisors keep finding deficiencies in the evidence behind the internal models that set bank capital and provisions: thresholds are missing and the error rates of the validation tests are not measured.
-Contraste is an open workbench that builds the main families of bank risk models, from credit scoring to market, counterparty, liquidity and operational risk, and runs on each the tests that a validator would run, on public data and on generators of known truth.
-This report states the methods, contracts and protocol, and gives results for \rsCasesResult{} cases.
+Supervisors find deficiencies in the evidence behind the internal models that set bank capital and provisions: thresholds are missing and the error rates of validation tests are not measured.
+Contraste is an open workbench that builds bank risk models, from credit scoring to operational risk, and runs on each the tests a validator would run, on public data and generators of known truth.
+The report gives results for \rsCasesResult{} cases.
 The validation raised \rsFindTotal{} findings, \rsFindSOne{} critical and \rsFindSTwo{} significant; every case ends at opinion level 3 or 4 of 4.
-Ranking is not calibration: the scorecard of the small-business case keeps an AUC of \rsCThreeAuc{} (95\,\% interval \rsCThreeAucLo{} to \rsCThreeAucHi{}) while the observed five-year default probability is \rsCThreeObs{}\,\% against \rsCThreePred{}\,\% predicted.
-The tests have error rates that the regulation does not state: of \rsOneTests{} tests, each simulated in \rsCTwentyTwoNullPerTest{} null repetitions, \rsCTwentyTwoWithin{} hold their size at 5 and 1\,\%.
-Of four proposed methods, a complement to the profit-and-loss attribution test flags a stale-volatility model in \rsThirteenPower{}\,\% (\rsThirteenCiLo{} to \rsThirteenCiHi{}\,\%) of \rsThirteenN{} replications where the regulatory test flags it in \rsThirteenPla{}\,\%, and
-an adaptive conformal recalibration of the value at risk meets its criterion; the anchored default probability fails its coverage and stability clauses, and the sequential monitors lose power at day 250.
+Ranking is not calibration: the small-business scorecard keeps an AUC of \rsCThreeAuc{} (95\,\% interval \rsCThreeAucLo{} to \rsCThreeAucHi{}) while the observed five-year default probability is \rsCThreeObs{}\,\% against \rsCThreePred{}\,\% predicted.
+The regulation does not state the error rates of the tests: of \rsOneTests{}, \rsCTwentyTwoWithin{} hold their size at 5 and 1\,\% in cells of \rsCTwentyTwoNullPerTest{} repetitions and \pxPpOneHold{} when pooled to \pxPpOneReps{}.
+Of four proposed methods, a complement to the attribution test flags a stale-volatility model in \rsThirteenPower{}\,\% (\rsThirteenCiLo{} to \rsThirteenCiHi{}\,\%) of \rsThirteenN{} replications where the regulatory test flags it in \rsThirteenPla{}\,\%, but its size does not transfer to other desks;
+conformal recalibration of the value at risk moves hit rates towards the target, yet the back-tests accept wrapped runs too easily; the anchored default probability fails its coverage and stability clauses; the sequential monitors lose power at day 250 and miss their delay clause at three times the nominal rate.
 The results do not describe any real institution.
 \end{abstract}
 
