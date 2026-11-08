@@ -3,9 +3,9 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
-## [1.00.000], 2026-10-27
+## [1.00.000], 2026-11-08
 
-The first stable release (U16): every case re-baked on riskvalidation 1.0.1, the patch of 1.0.0, the first stable engine (its public API stated under semantic versioning, the size and power of every registered p-value test measured, a packaged policy file for every battery); C22 measures the size and power of every p-value test; every producer states its depends_on; the Spanish texts carry their accents and the Spanish number forms; shell 0.19.3 (every chart operable: zoom, pan, brush, keyboard, readout, data table; a filling card flows on a phone) and template 0.11.000; the generated convergence verdict; the full capture review and its three fix rounds, the last of which names every id a reader sees.
+The first stable release (U16): every case baked on riskvalidation 1.1.0, the first stable engine line (its public API stated under semantic versioning, the size and power of every registered p-value test measured, a packaged policy file for every battery); C22 measures the size and power of every p-value test; every producer states its depends_on; the Spanish texts carry their accents and the Spanish number forms; the sixteen proposed methods each with its own manuscript and the technical report, written to the content bar, reviewed by a reader other than the writer, confirmed and deposited on Zenodo with their DOIs on page 1; every statement of a method's outcome in the SDD, the case pages, the app and the notebooks aligned with the final manuscripts; the notebooks at the notebook bar in both languages; shell 0.23.2 and template 0.15.000 with the ADR-0082 showcase (the guided story); the generated convergence verdict; the full capture review and its fix rounds, the last of which names every id a reader sees.
 
 - U16-I: Contraste moves onto `riskvalidation` 1.0.0 from PyPI (the pin surfaces were moved by `tools/contraste/repin_engine.py`). The C16 depositor
   adapter follows `engine-liquidity-api` 2.0.0 (BL-082): `p_enter_stress` and `p_exit_stress` are built on `DepositorConfig`, the `c16GeneratorSegment`
@@ -615,6 +615,146 @@ The first stable release (U16): every case re-baked on riskvalidation 1.0.1, the
 - Kept as Contraste's own: katex stays at 0.16.47 (the SDD records that 0.19.0 was not adopted), the shell stays at 0.19.5, the example-bound
   tests of the base guards stay out of `tests/` (the product has no example), and the planted-defect suite is not a CI step (it holds the
   product's own plants, which need the pipeline; it runs locally, ADR-0074).
+- C04: a proposed method, the PD by grade under informative rating withdrawals with the anchored
+  tipping point, from riskvalidation 1.1.0 `transitions.withdrawals` (`data-pipeline/pipeline/cases/c04_bounds.py`). The withdrawals
+  family's rungs gain `bounds`: over 200 repetitions per design and per k (0, 1, 3, 9), on draws of their own, the coverage of the true
+  one-year PD by grade of the removed, kept and followed treatments, of the anchored interval and of the identified band, in four
+  designs (first-year cohort, five cohorts pooled, a second source that counts 70 % of the defaults, ten times the cohort); the family's
+  `bounds_verdict` applies the plan's criteria fixed before the run. The agency documents gain `withdrawal_bounds`: the default page as
+  the anchor of the transition page's withdrawals, per grade, per annual cohort and pooled, with the stability of the anchored k and the
+  tipping k of the master-scale boundary (null for Moody's, whose transition page has no default category). Result: the anchored
+  interval covers the true PD of B in 97.5 % to 100 % of the repetitions in every design and k, and more than every existing treatment
+  at k 9; the existing treatments fall under 50 % only where the bias outgrows the noise, and the followed oracle never does; the
+  anchored k of the real cohorts is not stable by the plan's 80 % for B and CCC to C at S&P and for BBB and B at Fitch, so that clause is
+  refuted (findings F-WITHDRAW-BOUNDS and F-WITHDRAW-ANCHOR). The withdrawals family's Validation group gains the Anchored bounds view
+  (coverage along k, first-year and pooled cohorts, the criteria table); the case page states the result, its tables generated from the
+  documents (`c04_page.py`). Contracts: c04-family 1.1.0, c04-agency 2.0.0 (the pooled anchor row has no label, a cohort's row requires
+  one), api 29.0.0.
+- C11: a proposed method, adaptive conformal recalibration of the VaR against the ladder, from
+  riskvalidation 1.1.0 `market.conformal` (Gibbs and Candes 2021; `data-pipeline/pipeline/cases/c11/conformal.py`). HS-250, GARCH-t and
+  FHS are wrapped at both tail levels: the working level moves each day by gamma 0.005 times the target minus the hit, within 0.1 % to
+  25 %, fixed before the run; the unwrapped run is the ladder's own model. Each window document gains `conformal` (the method, a row per
+  model and level with the unwrapped and wrapped exceedances, Kupiec, independence, conditional coverage, ES test, FZ0 and Z2, the working
+  level's path, and the hypothesis by cell). Result: the plan's hypothesis holds in 6 of 6 cells, 9 stress-window passes gained in all,
+  the worst change of the average FZ0 in a stress window 3.4 %, no wrapped model failing independence in 2007 to 2009. The workbench
+  gains the conformal views (wrapped against unwrapped per window, the working level, the verdict); the case page states the result, its
+  table generated from the documents (`c11/page.py`). Contracts: c11-outputs 3.0.0 (the required, nullable `outputs.conformal`) and the api with it.
+- C11: the R10 quantile network trained on the FZ0 loss is now a fitted rung of the ladder, not a declared
+  challenger. One hidden layer with softplus outputs (so the ES is at most the VaR), Adam on the mean FZ0 of the standardised returns, three seeded starts,
+  trained on each forecast day's estimation window only (`data-pipeline/pipeline/cases/c11/quantile_net.py`). Its hidden units and weight decay are fixed on
+  1995 to 2003 like the other hyperparameters (`network-selection.json`); torch 2.14.1 is pinned in `data-pipeline/requirements.txt` for the loss gradient.
+  Its VaR and ES pass through the same three eligibility gates, the FZ0 champion rule, Diebold-Mariano and the model confidence set as R1 to R9; the case page
+  states the result per window, whether the network wins or not. The models and window documents gain the `nn-fz` rows and its `nn_*` hyperparameter rows;
+  no contract changes (the schema already admits a fitted R10). The eligible count and the model confidence set of each window now range over 18 models.
+- C18 stress ladder: a one-lag VAR conditional forecast of the net charge-off rates and growth-at-risk quantile
+  regressions of the four-quarter real GDP growth, computed by `riskvalidation.stress.scenario_models`, fitted on data that ends before each episode
+  and back-cast through 2008 to 2009 and 2020 to 2025 beside the refitted OLS satellites, with their coefficient-sign checks declared before the fit; the
+  models document gains two model records (`c18-var-conditional-forecast`, `c18-growth-at-risk`) whose details hold the measured run, the verdict
+  and the acceptance criterion, whether the rungs improve on the OLS satellites or not; no existing number moves.
+- C18 views and page: the Stress group gains a VAR forecast tab and a Growth-at-risk tab in both languages, and the case page states the two rungs, their
+  substitution of the term spread for the financial conditions index, and the finding that the VAR conditional forecast given both macro paths is the OLS
+  satellite itself.
+- C06 gains a fourth rung of its lifetime PD ladder, L3 PC-Hazard: a neural discrete-time survival
+  model (Kvamme and Borgan 2019) with a piecewise-constant hazard per three-month interval of loan age, trained on the loans as known at
+  each reporting date (a seeded hold-out fifth for early stopping), full batch, on the interval counts of defaults and exposure.
+  `pipeline/cases/c06/neural.py`; `torch` 2.14.1 (already pinned in `requirements-tabpfn.txt`, licence in `licences.json`) is now needed
+  by the C06 bake, so the integrator moves its pin into `requirements.txt` and the SDD technology table.
+- The evaluation of PC-Hazard is committed in the models documents of the six dates (`details.evaluation` and `details.decile_calibration` of
+  the L3-pch and L2-cox records): calibration at 12, 24 and 36 months per predicted-risk decile against Kaplan-Meier and against the
+  Aalen-Johansen cumulative incidence (prepayment as the competing exit), the c-index and the integrated Brier score beside Cox, and the
+  verdict on the hypothesis written before the run, reported whatever the result (`docs/cases/C06.md`).
+- `c06-models` 1.0.0 to 1.1.0 (minor): `fit.ladder[*].kind` gains `piecewise-constant-hazard-network`; the `api` contract follows
+  (27.1.0). The `rung_comparison` and the `tests` of every C06 variant gain the L3-pch rows; no existing number moves.
+- The C06 workbench has a PC-Hazard tab in Validation (gap against Aalen-Johansen by decile, PC-Hazard beside Cox, the verdict at the
+  date) and the names module a row for the rung, in English and Spanish.
+- C08: the LGD ladder gains two machine-learning rungs beside the six, L7 random forest and L8 neural
+  network (scikit-learn 1.9.1, BSD-3-Clause; Bellotti, Brigo, Gambetti and Vrins 2021), trained on the same training span and tested
+  on the same six cohorts, with their calibration by bucket, tests and settings in the documents and one impact entry
+  (`ml_rmse_gain`) per cohort. Hypothesis stated before the run: the better of the two beats every earlier rung in at least two
+  thirds of the cohorts. Measured on 181,583 test defaults: it does in 2 of 6 cohorts (2003-06 and 2014-19, by at most 0.04 RMSE
+  points), so the hypothesis is refuted and reported as such; the case page carries the table and the verdict, generated from the
+  documents. `c08-models` 2.1.0 (two rung kinds added), `api` 27.1.0; no existing number changed.
+- C01 gains reject inference on a sample with a known rejected population: on the 1,000 German Credit applicants a legacy
+  acceptance policy is simulated four ways (inputs only, then a weak, moderate and strong private signal of the underwriter), the outcomes of the
+  rejected are hidden, and seven rungs (the oracle, accepted only, augmentation, hard cut-off, parcelling with and without a prudence factor, fuzzy
+  augmentation) are fitted on what a lender would have and scored on an accept-all population; the level bias of the accepted-only model and each
+  rung's reduction of it come with 95 % bootstrap intervals over 100 repetitions, and the three hypotheses written before the run are reported with
+  their verdicts, held or not. It sits in the German twin's Ladder as a card, in the page of C01 and in its write-up, in both languages.
+- Contract: `c01-variant` 3.0.0 (the required, nullable `outputs.reject_inference`, null on every variant but the German twin; no number of the
+  ladder moved), `api` 28.0.0, the generated types and the version lock regenerated.
+- Shell 0.19.12 adopted (from 0.19.6): plot captions wrap inside their card, the instrument carries data-instrument outside Focus, whole scrollable documents are measured, and the gate re-reads a JSON document whose body read was interrupted.
+- C04, the S&P and Fitch Validation groups: a new Anchored k view draws the anchored odds ratio of withdrawal before default cohort by cohort, with its band and the pooled k, and tabulates every grade's pooled k, its band, its stability against the share fixed before the run and whether it stays above 1.
+- Template 0.14.001 to 0.14.005 adopted (from 0.14.000): the numbered local workflow (00 prerequisites, 01 init, 02 sandboxed generation with explicit validated promotion, 03 dev) in PowerShell and Bash, declared for Contraste in `scripts/local/workflow.json` (environments under `$CAOS_VENVS_ROOT/contraste`, the full `run.py all` bake, C19 planned and the dormant API as the only admitted readiness outcomes); the structured deploy-place guard; the receipt-bound generation admission; the CI budget and SDD guard plants; tracked shell scripts executable.
+- The contract generator runs on patched minimatch 11.0.1 behind the template's version- and hash-guarded compatibility bridge (Redocly pinned at 1.34.22 by an npm override); the generated types are unchanged.
+- Repository requirements RP-007 to RP-025 (the local workflow) join RP-001 to RP-006, with their tests; three of the template's regression tests are adapted to a product built from it (the template is told by its `.template-source` marker, the readiness inventory is the catalog's, the frontend overlay is declared only where the product's copy step reads the storage root).
+- Shell 0.19.6 adopted: the footer licence is marked translate=no (known shell defect 47).
+- Template 0.13.000 and 0.14.000 adopted: the SDD method ladder with each method classified, four proposed methods with their hypotheses, the manuscripts guard, and the internal-names guard (no internal method classification or claim id in a notebook, the README or the app; notebook sections Comparison and Evidence, 26 notebook pairs renamed by what they hold).
+- Base: adopt product template 0.15.000 (from 0.14.005): the guards `scripts/check_manuscript_depth.py`, `scripts/check_notebook_depth.py` and `scripts/notebook_depth.json` are new, and `check_sdd.py`, `check_notebooks.py`, `check_manuscripts.py`, `check_template_residue.py`, `run_notebooks.py` and `notebook_bar.json` are taken verbatim; `check_readiness.py` takes the declared-provider hook by merge and keeps Contraste's case-module-free readiness. Their tests come with them (`tests/test_check_notebooks.py`, `test_custom_readiness_provider.py`, `test_guards.py`, `test_notebook_environment.py`, `test_novel_contribution_manuscripts.py`, `test_spec_guards.py`, `tests/adversarial/test_check_notebook_depth.py`, `test_manuscript_depth*.py`, `test_manuscript_examples.py`, `test_manuscript_review_regressions.py`, `tests/fixtures/manuscript-depth/`).
+- CI: the two depth guards are steps of `.github/workflows/ci.yml`; `.gitattributes` keeps the frozen manuscript fixtures byte for byte.
+- Shell: `@fasl-work/caos-app-shell` 0.23.0 (from 0.19.12), pinned exactly in `frontend/package.json` and the lock, the pin test and the SDD technology table; `frontend/scripts/gate.mjs` is the 0.15.000 runner (`--require-showcase` and the showcase route list, ADR-0082).
+- Open until their units land: `## Visualization catalog` and the story route (the SDD guard and the gate's showcase routes), the notebook depth and coverage findings, the manuscript depth findings, the manuscript DOIs in `product.json`.
+- C12: the SA-CCR net collateral C of a margined netting set now includes the NICA (CRE52.10, CRE52.17, CRE52.23), `data-pipeline/pipeline/cases/c12/variant.py`: the with-im variant passes C = variation margin + NICA, so its multiplier falls from 1.0 to 0.578, its EAD from 144,104 to 83,254 USD and its BA-CVA capital from 18,564 to 10,725 USD; the variants without an initial margin are unchanged in every value. Test: `tests/c12/test_c12_saccr_nica.py`.
+- Claims alignment, the statements a bake writes: the producers state what the final manuscripts and the committed data found. C22's
+  sequential block gains `outputs.sequential.replication` (c22-variant 4.0.0, api 35.0.0): 20 independent seeds of 2,000 streams at the
+  hit-rate factors 3 and 4, each seed derived from the case seed, the per-seed medians, the share of seeds below day 250, the pooled median
+  with its bootstrap interval, the pooled traffic-light median and the pooled power cost. H2 (delay) and H3 (power cost) are judged on the
+  pooled replication as the e-process manuscript judges them; the single run of one seed stays in the document as the single-run reading and
+  the text says the pooled reading decides. The document no longer says H2 holds. The Sequential view draws the replication table.
+- C22 size wording: a count of tests on the 4,000-repetition cells says "pass the size screen" ("pasan el filtro de tamaño"), never "hold their
+  size", which the size-and-power manuscript reserves for its definition; F-TRANSITION-SIZE states the order test's rate and Wilson interval at
+  4,000 and at 20,000 repetitions against the level, from the document's own numbers.
+- C13: the verdict reading names the statistic each number belongs to: the union of the three statistics and the rolling-mean statistic alone
+  (the plan's rule), each with its flag rate and its held-out false-alarm rate, read from the document.
+- C06: the staging policy source no longer claims the reporting dates are a year apart (the file has no cure dates). C04: the Spanish clauses
+  of the withdrawal finding read "se verifica" in step with the English, words the governance text rule accepts.
+- C16 Variants bars: the LiST annex medians (calendar days) are drawn at their converted relevant days beside the variants' survival days, and
+  the unit is labelled. C17 and C03 case pages regenerated from the committed documents. SDD BS-1: 256 simulations, 651,000 repetitions, 537
+  rates and 148 generators, read from the committed C22 documents. The C03 sequential test compares the rebuild after the writer's own rounding.
+- Claims alignment, part 2 (the reconciliation against reference engines, provisions reconciliation identities, engines and test catalogues, UF as its own
+  currency, dependence band, and reverse liquidity stress manuscripts): the six matching items of the design document's list of components beyond common practice
+  carry an Outcome paragraph with what the final manuscript found (held, refuted or narrowed, with the number that decides it and when each criterion was
+  written), and the four items the technical report fix found stale are corrected (the engines item states five of the 17 ECB statistics as implemented, the
+  test-corrections item states the situation-testing cut as selected on one of four designs with its cost in power, the operational-risk instability item counts 156
+  red stability rows over ten rungs where it counted 92 over six, and the behavioural-assumption item states that the change field records the maturity and the two
+  stated requests and not the other two fitted parameters the test also flags). The counts of printed numbers read 438 and 313 (413 and 296 without Tasche's
+  Tables 8 and 9). The acceptance rule against ORE is stated as lenient (size 12.5 percent between two runs of one model, power 75.0 percent against a volatility 2
+  percent too high). The case pages C06, C07, C12, C14, C15, C16, C17 and C18, the Methodology pages (counterparty credit risk, provisions, liquidity, aggregation
+  and stress) and the notebooks of topics 03, 04, 06, 08, 09, 10, 11, 12 and 13 state the same, in both languages.
+- Claims alignment, part 1 (the size-and-power, leakage-safe protocol, default-definition, behavioural-assumption, measured-corrections, operational-risk
+  instability, scale-and-level, anchored-PD, e-process and adaptive-conformal manuscripts): every outcome statement of the SDD (the Beyond the state of
+  the art items and the proposed-method rows of the Method ladder, with the dates of criteria written after their bake), the case pages (C04, C11, C13,
+  C14, C22), the Methodology pages (sequential monitors, anchored PD, scale-and-level complement, adaptive conformal recalibration, validation tests),
+  the C22 workbench text and the notebooks of topics 02, 03, 07, 09, 11, 13 and 14 now states what the final manuscript found. Counts of tests that hold
+  their size name their measure (12 of 21 on 200,000 repetitions by the definition, 18 by the definition and 19 by the screen on the committed
+  4,000-repetition cells); the e-process delay and power-cost hypotheses are stated as failing at three times the nominal hit rate over 20 seeds
+  (the one-seed reading of the delay as held is withdrawn); the anchored-PD prediction is stated as refuted (stability, and no better than Manski's band);
+  the scale-and-level size is stated as not transferring to other desks; the conformal pass counts are stated with their inflation. The C16 ladder marks the
+  LiST median survival periods, which the ECB annex gives in calendar days, at their relevant day through the document's calendar and labels both units.
+- App: the findings views of C13, C20 and C21 no longer repeat the variant note above their cards (the rail already states the variant): C13 keeps its synthetic label, C20 the SGCD dataset card sentence and C21 the no-legal-claim label inside the findings card, so the drawn views cover at least 60 % of the viewport at 1280 x 800 (shell gate G6, ADR-0082 rule 2). The shared findings card takes an optional `head` for a notice a view must keep.
+- C04: the anchored k view draws the pooled k of every grade, with its band, on the grade axis when the chosen grade has no cohort k above 0 (AAA), instead of a text-only card, so the chart is the stage there.
+- App sub-tabs: no row holds more than six peers (shell gate G3, ADR-0071 rule 5): in C04 the Markov tests moved from Validation to Model, and in C18 the Losses view moved from Stress to Capital; every view stays reachable.
+- Methodology: the tabs of the models and tests groups hold six peers each: the migration matrices open the loss group and the PD under informative withdrawals joins it, and the sequential monitors join the market group.
+- Methodology: the topics that missed the documentation floor (ADR-0017 section 2.1) carry their kind and a measured figure read from the numbers of their own table: PC-Hazard (C-index against the Cox rung), PD under informative withdrawals (coverage of the true PD by treatment), sequential monitors (size against its bound), adaptive conformal recalibration of the VaR (probability of a hit by phase), the complement to the PLA test (desk-years flagged by variant) and reject inference (bias by strength of the private signal). Sequential monitors gain the grade monitor equation of riskvalidation 1.1.0 and reject inference the legacy policy of its pipeline module (`legacy_acceptance`).
+- Experiments, Findings and appetite: the governance register of 732 findings is filtered by severity and by the question family of the finding's case (chips with the count each choice shows) and read eight rows a page with the shell's deck window and deck position ("1 to 8 of 732"); a filter states how many rows it matches and how many it hides, an empty filter says so, and the severity bars, the ageing chart and the appetite keep drawing the whole register. The 70,231 px table in a 520 px box is gone.
+- Experiments, Reports: a validation report is read one section at a time, with a select of the twelve sections, previous and next buttons and the position ("3 of 12"); the 13,994 px report is gone.
+- Benchmark: the page is split into sub-tabs by its own sections (Reading and limits, Scoring and PD, Credit losses, Capital, market and balance sheet, ML and the validator, Robustness and provenance); every section is in exactly one tab, with the case comparisons grouped by the same question families as the Experiments case tabs (`pages/experiments/families.ts`, moved out of `Experiments.tsx` unchanged).
+- Shell: `@fasl-work/caos-app-shell` moves from 0.23.0 to 0.23.1, pinned exactly (it closes shell known defect 55: the gate's document
+  traversal grants each scrollport its own sample budget). The pin test in `frontend/src/workbench/workbench.test.tsx` follows. The full
+  product gate on the built site reports 3889 measured states and zero failures, the C04 Benchmark tab included.
+- Docs: the manuscript-depth fixture README no longer links to a `templates/manuscripts` folder this product does not carry
+  (`scripts/check_doc_paths.py` passes).
+- Shell: `@fasl-work/caos-app-shell` moves from 0.23.1 to 0.23.2, pinned exactly (it closes shell known defect 57: a story panel taller
+  than the layout no longer shrinks the step row). The story's product rule that kept the header and the stepper from shrinking is
+  deleted, so `scripts/check_web_baseline.py` passes with no restyled shell class.
+- A guided story at /story/inventory, /story/backtest, /story/crisis, /story/recalibrate and /story/decide (ADR-0082): five steps on the shell's story frame, each headline a finding with its number read from the committed artifacts, one stage and one docked panel per step, three anchored callouts per stage, the scene and the panel one linked selection, one day cursor and one model kept from step to step. The Introduction links to it and its exit returns to the App.
+- Six views, each an SVG the product owns: the flow of the bank (exposures, the thirteen model families with their findings by severity, what they set), the model family opened by the three elements of SR 11-7, the Basel traffic light of every model over the window, the VaR and ES through the crisis with the range of the ladder as the band, the adaptive conformal recalibration against the raw VaR coupled to the light, and the decision on one axis with the Wilson interval of each exception rate, the gates, the confidence set and the champion.
+- Every number is read from the governance documents and the C11 windows through the product's loaders; the exceptions in the trailing 250 days are tallied from the exceedance days and tested against the document's own traffic light for every model and window. The realised loss is drawn only where its licence class lets the document commit it, and a window of fewer than 250 days says the Basel light is not evaluated. No artifact and no contract changes.
+- The SDD carries its visualization catalog (V1 to V6, with the placement of each view and what the views do not claim); the feature docs/design/features/story states 13 requirements and their adversarial checks. A story smoke, `npm run story:check`, drives the built site: the steps, the numbers, the linked selection both ways, the shared day, play paused by input, the window selector, reduced motion, the exit and the phone geometry.
+- The static build writes the five story steps as deep links, and the shell gate's route list names them (base defect BD-1 of the template 0.15.000 adoption).
+- Story and C11 views, after the viz review of the guided story (F1 to F24): the recalibrate step and the App's conformal views present the pipeline's verdict as the bake's reading by the pass criterion fixed before the run, and say next to it, in both languages and with a link to the adaptive conformal manuscript, that the back-tests accept recalibrated runs too easily (the recalibrated Kupiec p-value, Basel zone and "passes" are marked as upper bounds, the headline states the count expected, the subline no longer implies a fix). A breach count takes its colour from one rule on every step (green at or below the expected count, amber above, red above twice it): the recalibrated 11 against 5.04 is red. A model the confidence set never ranked (no ES) is "not ranked", never "out", and the set is read against the models it ranked ("13 of 15 with an ES").
+- Story: the inventory headline counts inventory entries and the findings still carried (not closed by validation); the exit lands on the App with the step's window and model (`variant` and `model` in the query, read by the Workbench and the C11 instrument); a window id in a verdict sentence is named in words (the regex held two backspace characters where a word boundary was meant); "zona roja", "1 entry"; the Spanish sublines fit one line so the story keeps the 80% floor; the working tail level is drawn under the VaR with its target and floor; the amber or red stretch starts at the first complete Basel window; eyebrows fit; no arrow on a peak.
+- Story drawings: eased changes of model and window inside a step (the shell's staged transition, instant under reduced motion), counts that count up, a flow that moves at a speed set by the entries of each link, a drag-to-zoom and zoom buttons on the three dated views, a hidden data table per drawing for a screen reader, a one-line key on a phone, a readout of the day, the value and the unit at the cursor.
+- Governance bake (code only, the documents are re-baked at the release): a C11 window document whose own gate finding quotes a model count other than its ladder's refuses the bake, so the register's "17 of 17" beside an 18-model ladder cannot be written again.
 
 ## [0.15.000], 2026-10-21
 
