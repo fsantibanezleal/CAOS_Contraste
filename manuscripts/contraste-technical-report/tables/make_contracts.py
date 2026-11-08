@@ -400,7 +400,7 @@ def subsection(row: dict[str, str]) -> str:
     lines.append("")
     if schema:
         if props:
-            lines += ["{\\small", "\\begin{longtable}{p{0.19\\textwidth}p{0.13\\textwidth}p{0.11\\textwidth}p{0.16\\textwidth}p{0.30\\textwidth}}",
+            lines += ["{\\small", "\\begin{longtable}{p{0.19\\textwidth}p{0.13\\textwidth}p{0.11\\textwidth}p{0.16\\textwidth}p{0.27\\textwidth}}",
                       f"\\caption{{The top-level fields of the contract \\texttt{{{figkit.tex_escape(cid)}}}: the name, the JSON "
                       f"type, the unit, the range or the values and the description, as the schema file holds them.}}"
                       f"\\label{{tab:contract-{cid}}}\\\\",
@@ -420,6 +420,69 @@ def subsection(row: dict[str, str]) -> str:
     return "\n".join(lines)
 
 
+BS = chr(92)
+TT_OPEN = BS + "texttt{"
+BREAK = BS + "allowbreak{}"
+HEADINGS = (BS + "subsection", BS + "subsubsection", BS + "label")
+
+
+def _breaks(body: str) -> str:
+    """Break points after the separators of an identifier: the escaped underscore, the slash, the dot, the colon pair, the hyphen."""
+    body = body.replace(BS + "_", BS + "_" + BREAK)
+    for sep in ("/", ".", "::", "-"):
+        body = body.replace(sep, sep + BREAK)
+    return body
+
+
+def breakable_tt(line: str) -> str:
+    """Let every texttt group of a line break at its separators, so a test node id or a schema path never runs past its column
+    (they ran up to 595 pt into the margin); heading and label lines are left as they are (bookmarks and anchors)."""
+    if line.lstrip().startswith(HEADINGS):
+        return line
+    out, i = [], 0
+    while True:
+        j = line.find(TT_OPEN, i)
+        if j < 0:
+            out.append(line[i:])
+            return "".join(out)
+        start = j + len(TT_OPEN)
+        out.append(line[i:start])
+        k, depth = start, 1
+        while k < len(line) and depth:
+            if line[k] == BS:
+                k += 2
+                continue
+            depth += {"{": 1, "}": -1}.get(line[k], 0)
+            k += 1
+        out.append(_breaks(line[start:k - 1]) + "}")
+        i = k
+
+
+LONG_TOKEN = 12  # a schema type name such as c06AccountCurve already overhangs a narrow column
+
+
+def _token_breaks(token: str) -> str:
+    """A long plain identifier (a schema id, a path, a camelCase name) may break after its separators and before an inner capital;
+    a token with a command or a brace (a reference, a citation, a texttt group) is left as it is, except the escaped underscore."""
+    if len(token) < LONG_TOKEN or "{" in token or "}" in token or token.replace(BS + "_", "").count(BS):
+        return token
+    out = []
+    for i, ch in enumerate(token):
+        if ch.isupper() and i > 0 and (token[i - 1].islower() or token[i - 1].isdigit()):
+            out.append(BREAK)
+        out.append(ch)
+        if ch in "/." or (ch == "_" and i > 0 and token[i - 1] == BS) or (ch == "-" and 0 < i < len(token) - 1):
+            out.append(BREAK)
+    return "".join(out)
+
+
+def breakable_line(line: str) -> str:
+    """Break points inside texttt groups, then inside long plain identifiers; heading and label lines are left as they are."""
+    if line.lstrip().startswith(HEADINGS):
+        return line
+    return " ".join(_token_breaks(t) for t in breakable_tt(line).split(" "))
+
+
 def main() -> None:
     rows = catalog_rows()
     by_group: dict[str, list[dict[str, str]]] = {}
@@ -437,6 +500,7 @@ def main() -> None:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     lines = "\n".join(out).split("\n")
     text = "\n".join(line if line.startswith("\\label") else scrub(line) for line in lines)
+    text = "\n".join(breakable_line(line) for line in text.split("\n"))
     OUT.write_text(text, encoding="utf-8", newline="\n")
     print(f"{len(rows)} contracts -> {OUT.relative_to(ROOT)}")
 

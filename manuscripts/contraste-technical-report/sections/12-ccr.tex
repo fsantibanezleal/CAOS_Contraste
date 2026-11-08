@@ -394,7 +394,10 @@ where $V$ is the netting-set value, $C$ the haircut value of the net collateral 
 unmargined set and $RC=\max\{V-C,\ TH+MTA-NICA,\ 0\}$ for a margined set, with $TH$ the threshold, $MTA$ the minimum transfer amount and $NICA$ the net independent collateral amount, the collateral of the counterparty less the unsegregated collateral posted by the bank. The multiplier is 1 when $V-C\ge0$ and is below 1 when the netting set is out of the money
 or over-collateralised, which credits the surplus. The supervisory duration of a trade running from $S$ to $E$ years and the maturity factors are
 \begin{equation}
-SD=\frac{e^{-0.05S}-e^{-0.05E}}{0.05},\qquad MF^{\mathrm{unmargined}}=\sqrt{\min\{\max\{M,\tfrac{10}{250}\},1\}},\qquad MF^{\mathrm{margined}}=\frac{3}{2}\sqrt{\frac{\mathrm{MPoR}}{250}},
+\begin{gathered}
+SD=\frac{e^{-0.05S}-e^{-0.05E}}{0.05},\\
+MF^{\mathrm{unmargined}}=\sqrt{\min\{\max\{M,\tfrac{10}{250}\},1\}},\qquad MF^{\mathrm{margined}}=\frac{3}{2}\sqrt{\frac{\mathrm{MPoR}}{250}},
+\end{gathered}
 \label{eq:ccr-sd}
 \end{equation}
 with $M$ the residual maturity in years, floored at 10 business days (CRE52.48), and MPoR in business days. For an interest rate hedging set (a currency) the trades are allocated to maturity buckets by end date, B1 below one year, B2 from one to five years and B3 above five, and the effective notional of a trade is its supervisory delta times its adjusted notional ($N\cdot SD$) times the maturity factor;
