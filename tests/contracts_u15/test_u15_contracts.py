@@ -580,7 +580,8 @@ def test_the_appetite_recomputes_from_the_inventory_and_the_register() -> None:
     over = [r for r in rows if r["overdue"]]
     distinct = lambda rs: len({(r["entry_key"], r["id"]) for r in rs})   # noqa: E731
     assert m["open-high-severity"]["numerator"] == distinct(high) == 5 and m["open-high-severity"]["register_rows"] == len(high) == 9
-    assert m["overdue-remediation"]["numerator"] == distinct(over) == 3 and m["overdue-remediation"]["register_rows"] == len(over) == 7
+    # the fixtures follow the release date (the governance as-of is the newest CHANGELOG heading, 2026-11-08 at 1.00.000)
+    assert m["overdue-remediation"]["numerator"] == distinct(over) == 1 and m["overdue-remediation"]["register_rows"] == len(over) == 2
     assert m["open-high-severity"]["denominator"] == m["overdue-remediation"]["denominator"] == distinct(rows) == 42
     assert all(m[k]["register_rows"] is None for k in m if k not in ("open-high-severity", "overdue-remediation"))
     assert m["entries-under-exception"]["numerator"] == sum(1 for e in inv["entries"] if e["lifecycle"]["exception"])
