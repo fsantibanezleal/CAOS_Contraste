@@ -16,6 +16,7 @@ import { FlowView, flowGeometry, type MarketInfo } from '../story/FlowView';
 import { CrisisPanel, DecisionPanel, InventoryPanel, LightPanel, RecalibrationPanel, Unavailable, WINDOW_IDS, WindowPicker } from '../story/Panels';
 import { RecalibrationView, recalibrationGeometry } from '../story/RecalibrationView';
 import { TrafficLightView, lightGeometry } from '../story/TrafficLightView';
+import { bandOf, storyStageFloor } from '../story/band';
 import { fullRange, int, pct, useEasedCount, type Range, type Size } from '../story/chart';
 import { exitTarget } from '../story/exit';
 import {
@@ -29,14 +30,18 @@ import './story.css';
 
 type Bi = { en: string; es: string };
 const bi = (en: string, es: string): Bi => ({ en, es });
-const BAND = (width: number) => (width < 760 ? 130 : 86);
 const clamp01 = (v: number, lo = 0.04, hi = 0.96) => Math.max(lo, Math.min(hi, v));
 const stateOfZone = (z: Zone): SceneCalloutDef['state'] => (z === 'red' ? 'alarm' : z === 'amber' ? 'warning' : 'normal');
 
-/** One stage: it measures its box, hands the drawing the part below the callout band and the callouts their anchors in the box. */
-function StageBox({ build }: { build: (draw: Size, at: (px: number, py: number) => { x: number; y: number }) => { callouts: SceneCalloutDef[]; drawing: ReactNode } }) {
+/**
+ * One stage: it measures its box, hands the drawing the part below the callout band and the callouts their anchors in the box.
+ * The band is the one the cards measure (`SceneCallouts` `onLayout`, shell 0.24.0), never a band computed from the nominal card
+ * sizes; the nominal band holds only the first frame. `onBand` hands it to the story, which sets the phone stage floor from it.
+ */
+function StageBox({ build, onBand }: { build: (draw: Size, at: (px: number, py: number) => { x: number; y: number }) => { callouts: SceneCalloutDef[]; drawing: ReactNode }; onBand?: (band: number) => void }) {
   const [ref, size] = useStageSize();
-  const band = BAND(size.width || 1000);
+  const [measured, setMeasured] = useState(0);
+  const band = bandOf(measured, size.width || 1000);
   const draw: Size = { width: size.width, height: Math.max(0, size.height - band) };
   const ready = draw.width > 120 && draw.height > 160;
   const box = ready ? draw : { width: 900, height: 480 };
@@ -45,7 +50,7 @@ function StageBox({ build }: { build: (draw: Size, at: (px: number, py: number) 
   const built = build(box, at);
   return (
     <div ref={ref} className="story-stage-box" style={{ ['--story-band' as string]: `${band}px` }}>
-      <SceneCallouts items={built.callouts} placement="header" className="story-callouts" />
+      <SceneCallouts items={built.callouts} placement="header" className="story-callouts" onLayout={({ bandHeight }) => { const whole = Math.ceil(bandHeight); setMeasured(whole); onBand?.(whole); }} />
       <div className="story-drawing">{ready ? built.drawing : null}</div>
     </div>
   );
@@ -68,6 +73,8 @@ export function Story() {
   const windowId = WINDOW_IDS.includes(query.get('window') ?? '') ? query.get('window')! : DEFAULT_WINDOW;
   const [modelId, setModelId] = useState(query.get('model') ?? DEFAULT_MODEL);
   const [familyId, setFamilyId] = useState('family:market');
+  // the active step's measured callout band, which sets the phone stage floor (storyStageFloor)
+  const [stageBand, setStageBand] = useState(0);
   const gov = useGovernanceDocs();
   const win = useWindowDocs(windowId);
   const w = useMemo(() => (win.state === 'ready' ? windowModel(win.data) : null), [win]);
@@ -144,6 +151,7 @@ export function Story() {
     if (bad || !flow || !fin) return <div className="story-state-box">{bad}</div>;
     return (
       <StageBox
+        onBand={setStageBand}
         build={(draw, at) => {
           const { boxes } = flowGeometry(draw, flow);
           const boxOf = (id: string) => boxes.find((b) => b.id === id)!;
@@ -187,6 +195,7 @@ export function Story() {
     if (bad || !w || !chosen) return <div className="story-state-box">{bad}</div>;
     return (
       <StageBox
+        onBand={setStageBand}
         build={(draw, at) => {
           const g = lightGeometry(draw, w, shown);
           const src = bi('Window document', 'Documento de ventana');
@@ -220,6 +229,7 @@ export function Story() {
     if (bad || !w || !chosen) return <div className="story-state-box">{bad}</div>;
     return (
       <StageBox
+        onBand={setStageBand}
         build={(draw, at) => {
           const g = crisisGeometry(draw, w, chosen.id, shown);
           const last = chosen.exceedances.at(-1) ?? 0;
@@ -253,6 +263,7 @@ export function Story() {
     }
     return (
       <StageBox
+        onBand={setStageBand}
         build={(draw, at) => {
           const g = recalibrationGeometry(draw, w, rawOfRec, rec, shown);
           const src = bi('Window document', 'Documento de ventana');
@@ -290,6 +301,7 @@ export function Story() {
     if (bad || !w || !chosen || !dec) return <div className="story-state-box">{bad}</div>;
     return (
       <StageBox
+        onBand={setStageBand}
         build={(draw, at) => {
           const g = decisionGeometry(draw, dec, 0.01);
           const src = bi('Window document', 'Documento de ventana');
@@ -350,6 +362,6 @@ export function Story() {
     stage: stages[id],
     panel: panels[id],
   }));
-  return <StoryFrame className="contraste-story" steps={steps} activeId={active} mobileStageMinHeight={620} autoAdvanceMs={7000} onStepChange={(next) => navigate(`/story/${next}?${params.toString()}`)} onExit={() => navigate(exitTarget(safeFrom, windowId, chosen?.id ?? modelId))} />;
+  return <StoryFrame className="contraste-story" steps={steps} activeId={active} mobileStageMinHeight={storyStageFloor(stageBand)} autoAdvanceMs={7000} onStepChange={(next) => navigate(`/story/${next}?${params.toString()}`)} onExit={() => navigate(exitTarget(safeFrom, windowId, chosen?.id ?? modelId))} />;
 }
 

@@ -7,8 +7,8 @@
 // (names.test.ts) checks that the committed file equals what this script collects, so a re-bake that renames a model fails until
 // the file is rewritten.
 //
-//   node scripts/gen-names.mjs           write src/workbench/names/models.gen.json
-//   node scripts/gen-names.mjs --check   exit 1 when the committed file differs from the documents
+//   node scripts/gen-names.product.mjs           write src/workbench/names/models.gen.json
+//   node scripts/gen-names.product.mjs --check   exit 1 when the committed file differs from the documents
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -105,7 +105,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   if (process.argv.includes('--check')) {
     const now = existsSync(OUT) ? readFileSync(OUT, 'utf8') : '';
     if (now !== body) {
-      console.error('models.gen.json differs from the committed documents: run node scripts/gen-names.mjs');
+      console.error('models.gen.json differs from the committed documents: run node scripts/gen-names.product.mjs');
       process.exit(1);
     }
     console.log('models.gen.json matches the committed documents');

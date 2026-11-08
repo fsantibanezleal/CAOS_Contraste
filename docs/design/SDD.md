@@ -510,7 +510,7 @@ the ones the dossiers and `docs/frameworks/` record.
 | tests | pytest | 9.1.1 | the pipeline, contract, guard and adversarial tests | none recorded |
 | lint | ruff | 0.15.18 | lint of data-pipeline, tests, scripts and app | none recorded (0.17.0 is current and was not adopted) |
 | contracts | jsonschema | 4.26.0 | validates every document against its schema file | none recorded |
-| shell | @fasl-work/caos-app-shell | 0.23.2 | the shared app shell, pinned exactly (ADR-0078); since 0.19.0 it draws every chart with Tier A and the C07 and C18 waterfalls, bridge and grouped bars; 0.19.1 lets a filling card flow on a phone (data-caos-flow) and names Spanish dates; 0.19.2 corrects the gate's sticky-header reading (G5); 0.19.3 writes its own labels in Spanish (D16-21); 0.19.4 wraps the rail's lane badge and judges a drawing by its visible part (G6); 0.19.5 gives a case whole notes at 1280 px (`noteFit`, C04); 0.19.6 marks the footer licence translate=no; 0.19.7 to 0.19.12 fix the shell and its gate (plot captions wrap in their card, the instrument marked outside Focus, document framing, whole scrollable documents measured, an interrupted JSON read re-fetched), no product change; 0.20.0 to 0.23.0 add the ADR-0082 showcase primitives (the story frame, linked selection, shared cursor), the 60% App drawing floor and 80% Focus floor of the gate, immersive routes, `railWidth`, compact tab density and `StoryFrame.mobileStageMinHeight` | a hand-rolled shell, forbidden by ADR-0078 |
+| shell | @fasl-work/caos-app-shell | 0.25.0 | the shared app shell, pinned exactly (ADR-0078); since 0.19.0 it draws every chart with Tier A and the C07 and C18 waterfalls, bridge and grouped bars; 0.19.1 lets a filling card flow on a phone (data-caos-flow) and names Spanish dates; 0.19.2 corrects the gate's sticky-header reading (G5); 0.19.3 writes its own labels in Spanish (D16-21); 0.19.4 wraps the rail's lane badge and judges a drawing by its visible part (G6); 0.19.5 gives a case whole notes at 1280 px (`noteFit`, C04); 0.19.6 marks the footer licence translate=no; 0.19.7 to 0.19.12 fix the shell and its gate (plot captions wrap in their card, the instrument marked outside Focus, document framing, whole scrollable documents measured, an interrupted JSON read re-fetched), no product change; 0.20.0 to 0.23.0 add the ADR-0082 showcase primitives (the story frame, linked selection, shared cursor), the 60% App drawing floor and 80% Focus floor of the gate, immersive routes, `railWidth`, compact tab density and `StoryFrame.mobileStageMinHeight`; 0.23.1 and 0.23.2 measure a long document through what the reader can scroll to and keep the story's step row whole; 0.24.0 writes a callout's state, measures the callouts at every size, theme and language (G21) and measures the header band the cards take (`onLayout`, `--caos-callout-band`), which the story reads; 0.25.0 adds `VariantBar` `layout: 'select'` and a chart readout that ignores the pointer events a scroll re-dispatches | a hand-rolled shell, forbidden by ADR-0078 |
 | web | react | 19.3.0 | the UI | none: the shell requires it |
 | web | react-dom | 19.3.0 | the UI renderer | none: the shell requires it |
 | web | react-router | 8.4.0 | the six routes | none: the shell requires it |
@@ -1213,6 +1213,35 @@ site.
 | Licence contamination | `scripts/check_licences.py` fails on AGPL, GPL or BSL in the default install |
 | A committed file carries rows a licence forbids | `scripts/check_data_classes.py` fails the build |
 | The site looks right and is not (a blank chart, a dead control, a broken deep link) | the measured gate (`npm run gate`) fails before a deploy |
+
+## Template 0.15.006 and shell 0.25.0 adoption
+
+Contraste moved from template 0.15.000 and shell 0.23.2 to template 0.15.006 and shell 0.25.0 before release 1.00.000, with
+`tools/git/template_adopt.py` of CAOS_MANAGE. What it changed here:
+
+- The shell is pinned exactly at 0.25.0 (ADR-0078). The story reserved a fixed header band (86 px, 130 px on a phone) sized for the
+  0.23 callout cards; 0.24.0's cards write their state and are taller. The stage now pads its drawing by the band the cards
+  measure (`SceneCallouts` `onLayout`) and the phone stage floor follows that band (`frontend/src/story/band.ts`, requirement
+  CT-973); the fixed band holds only the first frame. The variants stay chips (`VariantBar` `layout: 'select'`, 0.25.0, is for a long
+  or long-named list): the full gate shows none cut.
+- The story's routes are declared once, in `product.json` (`showcase.story_routes`, the five steps); the gate runner
+  and the static build read the declaration. `frontend/scripts/check_story_mode.mjs` is the template's and checks only what every
+  story owes (the frame with the step numbered, a stepper that links every declared step, playback paused by reader input, the exit to
+  the App); what Contraste's story shows (its five views, the artifacts' numbers, the linked selection, the shared day, the window
+  selector, the exit state, the phone geometry) moved to `frontend/scripts/check_story_contraste.mjs` (`npm run story:check`).
+- The base scripts and their tests are the template's: `gate.mjs`, `materialize-routes.mjs`, `copy-data.mjs` (the optional product hook
+  `copy-data.product.mjs` is not used: Contraste copies only the declared files), `declared.mjs`, `check_readiness.py`, `workflow.py`,
+  `check_internal_names.py`, `check_notebooks.py`, `check_sdd.py`, `check_doc_paths.py`, `scripts/run_notebooks.py` (unchanged) and the
+  base tests under `frontend/src` and `tests/`. The product keeps its readiness engine (`compute` and `to_bytes` of
+  `data-pipeline/pipeline/core/readiness.py`) and its own feature requirements; the template's base feature rows (CT-039 to CT-042,
+  WB-020, ND-004 and ND-005 as reworded) describe guards whose plants are among the product's adversarial tests and are not
+  carried as product rows, as the base rows of the earlier releases are not.
+- Taken from the template's review list: `docs/design/features/method-tiers/` (the method-tier rules MT-001 to MT-012 with the plants
+  that Contraste's tests already hold; MT-004, whose gate is a test of the template's own tree, is left out) and
+  `docs/design/features/notebooks/content-depth.md` (the notebook depth rules ND-001 to ND-008, gated by
+  `tests/adversarial/test_check_notebook_depth.py`). Not taken: the template's `workbench` feature folder, which states the
+  example's own workbench (the example's rows and its parity tests); Contraste states its workbench in `docs/design/features/web/`
+  and in one folder per case.
 
 ## ADR fit
 

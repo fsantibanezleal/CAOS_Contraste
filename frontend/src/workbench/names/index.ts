@@ -470,7 +470,7 @@ function contrastBi(label: string, lang: Lang): string {
 }
 
 /** A measured rate of a `rate:<test>@<config>` key: the test, then its configuration (C22's scenario from its documents, collected by
- * scripts/gen-names.mjs; C04's from the key's tail). */
+ * scripts/gen-names.product.mjs; C04's from the key's tail). */
 export function rateName(key: string, ctx: Pick<NameContext, 'caseId'>): BiText | null {
   const [test, tail = ''] = key.split('@');
   const t = testName(test);

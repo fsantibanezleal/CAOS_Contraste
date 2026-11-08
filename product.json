@@ -937,6 +937,15 @@
     "riskvalidation.validation.transitions.rating_momentum",
     "riskvalidation.validation.transitions.rating_time_homogeneity"
   ],
+  "showcase": {
+    "story_routes": [
+      "/story/inventory",
+      "/story/backtest",
+      "/story/crisis",
+      "/story/recalibrate",
+      "/story/decide"
+    ]
+  },
   "manuscripts": [
     {
       "kind": "technical-report",

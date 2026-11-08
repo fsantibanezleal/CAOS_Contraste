@@ -268,16 +268,17 @@ describe('adversarial: the linked selection and the routes', () => {
   });
 
   it('adversarial: a route list that drops a story step, or a static build that does not write it, is found', () => {
-    const gate = readFileSync(new URL('../../scripts/gate.mjs', import.meta.url), 'utf8');
-    const materialize = readFileSync(new URL('../../scripts/materialize-routes.mjs', import.meta.url), 'utf8');
+    // the story's routes are declared once, in product.json, and the gate runner and the static build read them (the base plants of those scripts are in tests/adversarial)
+    const product = JSON.parse(readFileSync(new URL('../../../product.json', import.meta.url), 'utf8')) as { showcase?: { story_routes?: string[] } };
     const app = readFileSync(new URL('../App.tsx', import.meta.url), 'utf8');
-    const missing = (source: string) => STEP_IDS.filter((id) => !source.includes(`/story/${id}`));
-    expect(missing(gate)).toEqual([]);
-    expect(missing(materialize)).toEqual([]);
+    const declared = product.showcase?.story_routes ?? [];
+    const missing = (routes: string[]) => STEP_IDS.filter((id) => !routes.includes(`/story/${id}`));
+    expect(declared).toEqual(STEP_IDS.map((id) => `/story/${id}`));
+    expect(missing(declared)).toEqual([]);
+    expect(missing(declared.filter((route) => route !== '/story/crisis'))).toEqual(['crisis']);
+    expect(missing(declared.map((route) => (route === '/story/decide' ? '/story/other' : route)))).toEqual(['decide']);
     expect(app).toContain('path="/story/:step"');
     expect(app).toContain("immersiveRoutes: ['/story']");
-    expect(missing(gate.replace('/story/crisis', '/story/other'))).toEqual(['crisis']);
-    expect(missing(materialize.replace("'/story/decide'", "'/story/other'"))).toEqual(['decide']);
     expect(STEP_IDS).toHaveLength(5);
   });
 

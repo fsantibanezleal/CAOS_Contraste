@@ -24,8 +24,8 @@ import { C04FindingsView, findingsDrawing, findingsEvidence } from './c04/C04Com
 import { makeSel } from './c04/selection';
 import { KIND_TEXT, rungLabel } from './c03/selection';
 import { modelName, segmentName } from './names';
-// @ts-expect-error the generator is plain JavaScript (frontend/scripts/gen-names.mjs)
-import { VIEW_KIND_TEXT } from '../../scripts/gen-names.mjs';
+// @ts-expect-error the generator is plain JavaScript (frontend/scripts/gen-names.product.mjs)
+import { VIEW_KIND_TEXT } from '../../scripts/gen-names.product.mjs';
 import { CUE_BAND, NOTE_KEEP, SCROLL_BOXES, bodyRoom, rowHidden, rowsBelow, sizerOf, toPx } from './layout';
 // @ts-expect-error the probe is plain JavaScript, run by node with Playwright (src/workbench/layout-probe.mjs)
 import { BOXES, TARGETS, bandOpacity, cueCount, judge, unreadable } from './layout-probe.mjs';
