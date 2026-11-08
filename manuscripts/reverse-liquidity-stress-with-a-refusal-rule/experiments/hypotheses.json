@@ -1,0 +1,26 @@
+{
+  "set_by": "the author of the manuscript, written into this file before the first run of run_corpus.py, run_reverse_c16.py and run_theory.py",
+  "date": "2026-11-07",
+  "note": "The reproduction items R1 to R5 restate values committed in data/derived/C16 on 2026-10-19 to 2026-10-31 (git history of reverse-stress.json); the criteria of the design document for the proposed method name those same values and were written into it on 2026-10-28, after the bake, so they are a reproduction and cannot fail on the committed documents. The predictions H1 to H12 were written before any corpus, theory or sensitivity run of this study.",
+  "reproduction": {
+    "R1": "the engine, called on the ladder stored in data/derived/C16/list-adverse.json, returns the multiplier 2.118175 at the target of 30 days",
+    "R2": "the same call on list-extreme.json returns 1.383141",
+    "R3": "the same call on fast-run.json is refused, the horizon of 5 days being below the target of 30 days, and returns no number",
+    "R4": "the fast-run base calibrated on the Table A.1 rows dated before 2023 models 0.17083 of the deposit base at the 2-day horizon of the labelled run, against 0.85 observed",
+    "R5": "the survival period at each solved multiplier is the target and the survival period just below it is longer (round-trip error 0 days)"
+  },
+  "predictions": {
+    "H1": "Classification: on every instance of the seeded corpus the engine solver and the independent oracle agree on the outcome (solved, or refused for the same one of three reasons): 0 disagreements.",
+    "H2": "Threshold: on every solved instance the engine multiplier exceeds the oracle's root by at most 1.0e-6 plus 1e-9 and is not below it, and SP(m*) <= T < SP(m* - 1e-6) holds on 100% of them.",
+    "H3": "Exact round trip: with a constant counterbalancing capacity and no inflows, SP(m*) equals T on at least 99% of the solved instances; with a monetisation schedule (a capacity that grows) SP(m*) is below T on at least 5% of them.",
+    "H4": "Grid: scanning the fixed multiplier grid of the case design and taking the first multiplier that reaches the target overshoots the threshold by more than 10% on at least 30% of the solved instances.",
+    "H5": "Root on the survival period: Brent's method on SP(m) - T, with 'survives the horizon' counted as H + 1, returns a multiplier more than 1.0e-6 above the threshold on at least 10% of the solved instances.",
+    "H6": "Hyperbolic rule: the multiplier SP(1) / T lies within 10% of the threshold on at least 80% of the solved instances with a constant capacity, no inflows and a finite base survival period.",
+    "H7": "Sensitivity: the implicit-function derivative of the threshold with respect to the capacity agrees with the finite difference of repeated solves within 1% on the two LiST bases of C16.",
+    "H8": "Convention band: the multiplier of the LiST Adverse base moves by less than 25% of 2.118175 across the haircut band and the two monetisation bands of the case design.",
+    "H9": "Mapping: placing the uninsured balance with other legal entities, whose rate is 1 on day 1, makes the Adverse base fall to a survival period at or below 30 days at a multiplier of 1, so that the solver refuses (the base already reaches the target).",
+    "H10": "Labelled run: the base calibrated before 2023 reaches the amber bar of the case design (0.5 of the observed outflow) at the 2-day horizon of the labelled run of 85%.",
+    "H11": "Labelled run: the multiplier that makes the calibrated base reproduce 85% in 2 days is at least twice the multiplier that brings the survival period of that base to 2 days.",
+    "H12": "Calibration rule: replacing the maximum implied daily rate of the calibration rows by their median or their mean does not raise the modelled 2-day outflow above the amber bar."
+  }
+}

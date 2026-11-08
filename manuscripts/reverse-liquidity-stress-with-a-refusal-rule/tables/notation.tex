@@ -1,0 +1,28 @@
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\caption{Notation of the reverse stress: every symbol of the problem formulation, the method and the theory with its meaning and unit, the money unit being that of the balance sheet it is applied to (thousands of US dollars for case C16).}
+\label{tab:notation}
+\begin{tabular}{lp{9.2cm}l}
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+$S$, $H$ & number of deposit segments, horizon in days & 1, days \\
+$A_j$ & opening balance of segment $j$ & money \\
+$q_{j,d}$ & base daily run-off rate of segment $j$ on day $d$, in $[0,1]$ & per day \\
+$m$ & run-off multiplier applied to every rate & 1 \\
+$m_{\max}$ & cap: $1/\max\{q_{j,d}<1\}$ & 1 \\
+$F_j(t;m)$ & cumulative outflow share of segment $j$ by day $t$ at multiplier $m$ & share \\
+$X_t(m)$ & cumulative segment outflow $\sum_j A_j F_j(t;m)$ & money \\
+$C_t$ & effective capacity: counterbalancing capacity plus cumulative inflows less cumulative flows outside the segments & money \\
+$\mathrm{NLP}_t(m)$ & net liquidity position $C_t-X_t(m)$ & money \\
+$\mathrm{SP}(m)$ & survival period: first day with negative position, $\infty$ if none & days \\
+$T$ & target survival period & days \\
+$w_T(m)$ & window function $\min_{t\le T}\mathrm{NLP}_t(m)$ & money \\
+$m_0$, $m^\ast$ & root of $w_T$ and its six-decimal upward rounding & 1 \\
+$\delta$ & rounding step, $10^{-6}$ & 1 \\
+$\kappa$ & capacity over opening balance, one segment & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}

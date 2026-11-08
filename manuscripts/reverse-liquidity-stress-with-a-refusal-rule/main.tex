@@ -9,13 +9,13 @@
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
 \input{../_shared/preamble}
-\makeatletter
-\def\input@path{{sections/}}
-\makeatother
+\setlength{\emergencystretch}{3em}
+% One macro per number quoted in the prose, written by make_tables.py from the stored results.
+\input{tables/numbers}
 
 \title{Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run}
-\author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
-\small CAOS open-research programme, Santiago, Chile\\
+\author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\
+\small CAOS open-research programme, Santiago, Chile\
 \small \texttt{fsantibanez@gmail.com}}
 \date{\docdate}
 
@@ -24,68 +24,30 @@
 \headerblock
 
 \begin{abstract}
-% ABSTRACT
+Validating a bank's liquidity stress model needs the inverse of the forward scenario: the run-off speed at which a stated survival period is reached.
+We define the reverse liquidity stress as the smallest multiplier on the daily run-off rates, capped so that no rate exceeds one, at which the survival period is at most a target.
+It is solved as the root of a continuous window function, rounded up to six decimals with a check of the neighbouring decimal, and a target that no multiplier brackets is refused with its reason and no number.
+We prove the monotonicity of the position, the characterisation of the threshold, the soundness and completeness of the refusal rule, a closed form for one segment, an exact round trip with a sufficient condition, and a sensitivity formula.
+On \kInst{} instances of a seeded corpus the engine agrees with an independent oracle on every outcome and returns a threshold on every solved instance; a scan of the case grid answers \kGFalse{}\,\% of the refused instances and overshoots by a median of \kGErrPc{}\,\%.
+On the bank of case C16, with real aggregates and synthetic behaviour, the multiplier for 30 days is \mAdv{} (LiST Adverse) and \mExt{} (LiST Extreme), and the 2023 fast-run base is refused.
+Calibrated on rows before 2023, that base models \svbModel{} of deposits in the two days of the March 2023 run against 0.85 observed, a ratio of \svbRatio{}, and the multiplier that reproduces the run is \mSvb{} times the calibrated rate.
+The Adverse multiplier moves by \jointDevAdv{}\,\% over the joint band of case conventions and is refused under a slow monetisation schedule.
+Nine of twelve predictions held.
+The bank's deposit behaviour is synthetic: no result concerns what it did.
 \end{abstract}
 
-\section{Introduction}
-\label{sec:introduction}
-
-% TEXT
-
-\section{Related work}
-\label{sec:related-work}
-
-% TEXT
-
-\section{Problem formulation}
-\label{sec:problem}
-
-% TEXT
-
-\section{Proposed method}
-\label{sec:proposed-method}
-
-% TEXT
-
-\section{Theory}
-\label{sec:theory}
-
-% TEXT
-
-\section{Experimental design}
-\label{sec:experimental-design}
-
-% TEXT
-
-\section{Results}
-\label{sec:results}
-
-% TEXT
-
-\section{Ablation}
-\label{sec:ablation}
-
-% TEXT
-
-\section{Discussion}
-\label{sec:discussion}
-
-% TEXT
-
-\section{Limitations}
-\label{sec:limitations}
-
-% TEXT
-
-\section{Reproducibility}
-\label{sec:reproducibility}
-
-% TEXT
-
-\section{Conclusions}
-\label{sec:conclusions}
-
-% TEXT
+\input{sections/s01-introduction}
+\input{sections/s02-related-work}
+\input{sections/s03-problem}
+\input{sections/s04-proposed-method}
+\input{sections/s05-theory}
+\input{sections/s06-experimental-design}
+\input{sections/s07-results}
+\input{sections/s08-ablation}
+\input{sections/s09-discussion}
+\input{sections/s10-limitations}
+\input{sections/s11-reproducibility}
+\input{sections/s12-conclusions}
 
 \bibliographystyle{plainnat}
 \bibliography{references}

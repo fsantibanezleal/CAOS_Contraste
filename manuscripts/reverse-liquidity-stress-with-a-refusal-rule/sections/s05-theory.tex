@@ -1,0 +1,91 @@
+\section{Theory}
+\label{sec:theory}
+
+The propositions below hold for the model of \cref{sec:problem}: independent segments, rates in $[0,1]$, an effective capacity $C_t$ that does not depend on $m$, and integer days. Each proposition is checked numerically in \cref{sec:results}; the checks test the statements and do not replace the proofs.
+
+\subsection{Monotonicity and the threshold}
+
+\begin{proposition}[Monotone position]
+\label{prop:monotone}
+For every day $t$ the cumulative outflow $X_t(m)$ is continuous and non-decreasing in $m$, so $\mathrm{NLP}_t(m)$ is continuous and non-increasing, and so is the window function $w_T$ of \cref{eq:window}.
+\end{proposition}
+\begin{proof}
+Each factor $1-\min(m q_{j,s},1)$ is continuous, takes values in $[0,1]$ and is non-increasing in $m$. A finite product of non-negative, non-increasing, continuous functions is non-increasing and continuous, so $F_j(t;m)=1-\prod_{s\le t}(1-\min(mq_{j,s},1))$ is non-decreasing and continuous, and so is $X_t(m)=\sum_jA_jF_j(t;m)$ with $A_j\ge 0$. With $C_t$ constant in $m$, $\mathrm{NLP}_t(m)=C_t-X_t(m)$ is non-increasing and continuous, and a minimum of finitely many such functions is too.
+\end{proof}
+
+\begin{proposition}[The threshold]
+\label{prop:threshold}
+Let $U_T=\{m\in[1,m_{\max}]:w_T(m)<0\}$, the multipliers at which the survival period is at most $T$ (\cref{eq:equivalence}). Then $U_T$ is closed upwards and open in $[1,m_{\max}]$. If $w_T(1)\ge 0$ and $U_T\ne\emptyset$, then $m_0=\inf U_T$ satisfies $w_T(m_0)=0$, $m_0\notin U_T$, and the rounding of \cref{eq:rounding} lies in $U_T$ with $0\le m^\ast_T-m_0<\delta$ when $m_0<m_{\max}$ is not within $\delta$ of the cap. Moreover $m_0$ is non-increasing in $T$ and non-decreasing in the capacity: if $C'_t\ge C_t$ for all $t$, then $m_0'\ge m_0$.
+\end{proposition}
+\begin{proof}
+$U_T$ is the preimage of $(-\infty,0)$ under a continuous non-increasing function, hence open and closed upwards. Its infimum $m_0$ satisfies $w_T(m_0)\ge 0$ because $m_0\notin U_T$ ($U_T$ is open and $m_0$ is its left end, or $m_0=1$ with $w_T(1)\ge 0$), and $w_T(m_0)\le 0$ by continuity from the right. Hence $w_T(m_0)=0$. Every multiple of $\delta$ above $m_0$ lies in $U_T$ only if $w_T$ is strictly negative there, which holds when $w_T$ is strictly decreasing at $m_0$; the smallest such multiple is $\delta\lceil m_0/\delta\rceil$, which is at most $m_0+\delta$. For the dependence on $T$: $w_{T'}\le w_T$ pointwise for $T'>T$, since a minimum over more days is smaller, so $U_T\subseteq U_{T'}$ and $m_0(T')\le m_0(T)$. For the capacity: $C'\ge C$ gives $w'\ge w$, so $U'\subseteq U$ and $m_0'\ge m_0$.
+\end{proof}
+
+The open end of $U_T$ is why the method rounds up. A root rounded to the nearest decimal falls below $m_0$ in about half of the cases and then fails the threshold property of \cref{eq:threshold}, a prediction the ablation tests.
+
+\subsection{The refusal rule is sound and complete}
+
+\begin{proposition}[Refusal]
+\label{prop:refusal}
+The solver of \cref{alg:reverse} returns a multiplier if and only if $T<H$, $\mathrm{SP}(1)>T$ and $w_T(\bar m)<0$. In every other case \cref{eq:reverse} has no informative solution: for $T\ge H$ a survival period at most $T$ is not distinguished from surviving the ladder; for $\mathrm{SP}(1)\le T$ the minimum is attained at $m=1$ and the distance is zero; and for $w_T(\bar m)\ge 0$ the set $U_T$ is empty.
+\end{proposition}
+\begin{proof}
+If the three conditions hold, $w_T(1)\ge 0>w_T(\bar m)$ by \cref{eq:equivalence} applied at $m=1$ and the third condition, so by \cref{prop:monotone} the root is bracketed and by \cref{prop:threshold} it is the infimum of $U_T\ne\emptyset$. Conversely, $T\ge H$ makes every finite survival period at most $T$, so the event $\mathrm{SP}\le T$ is determined by whether the bank survives the horizon and carries no information on distance. $\mathrm{SP}(1)\le T$ gives $1\in U_T$, so the smallest admissible multiplier is 1. If $w_T(\bar m)\ge 0$, then $w_T(m)\ge w_T(\bar m)\ge 0$ for all $m\le\bar m$ by monotonicity, so $U_T=\emptyset$.
+\end{proof}
+
+The three conditions are not exclusive, and the order of the tests decides which reason is reported when more than one holds; a target at or beyond the horizon is reported as such even when the base also reaches it.
+
+\subsection{One segment: closed form, exact round trip and a hyperbolic rule}
+
+Take one segment with a constant rate $q$, opening $A$ and a constant capacity $C_t=\kappa A$ with $\kappa<1$, no inflow, and write $a=-\ln(1-\kappa)$, $b=-\ln(1-q)$.
+
+\begin{proposition}[Closed form]
+\label{prop:closed}
+For $T<H$ and $\mathrm{SP}(1)>T$, the threshold is
+\begin{equation}
+m_0=\frac{1-(1-\kappa)^{1/T}}{q},
+\label{eq:closed}
+\end{equation}
+and the target is unreachable if and only if $\kappa\ge 1$.
+\end{proposition}
+\begin{proof}
+The position $\mathrm{NLP}_t(m)=\kappa A-A\bigl(1-(1-mq)^t\bigr)$ is decreasing in $t$, so $w_T(m)=\mathrm{NLP}_T(m)$, which vanishes at $(1-mq)^T=1-\kappa$, that is, at \cref{eq:closed}. This is below $1/q=m_{\max}$ because $1-(1-\kappa)^{1/T}<1$. At the cap every day-1 outflow is $A$, so $w_T(m_{\max})=(\kappa-1)A<0$ if and only if $\kappa<1$.
+\end{proof}
+
+\begin{proposition}[Exact round trip]
+\label{prop:roundtrip}
+Let the capacity be constant, with no inflow, so that $\mathrm{NLP}_t(m)$ is non-increasing in $t$. Let $Q_T=\sum_jA_j\sum_{s\le T}q_{j,s}$ and let $O_T(m)$ be the outflow of day $T$. If $\delta\,Q_T\le O_T(m^\ast_T)$ then $\mathrm{SP}(m^\ast_T)=T$.
+\end{proposition}
+\begin{proof}
+Each factor of $F_j$ has derivative at most $q_{j,s}$ in $m$ and the other factors are at most 1, so $\partial F_j(T;m)/\partial m\le\sum_{s\le T}q_{j,s}$ almost everywhere and $X_T$ is Lipschitz with constant $Q_T$. With $\mathrm{NLP}_T(m_0)=0$ and $m^\ast_T-m_0<\delta$, $\mathrm{NLP}_T(m^\ast_T)\ge-Q_T\delta$. Then $\mathrm{NLP}_{T-1}(m^\ast_T)=\mathrm{NLP}_T(m^\ast_T)+O_T(m^\ast_T)\ge0$ under the condition, and because the position is non-increasing in $t$ every earlier day is non-negative, so the first negative day is $T$.
+\end{proof}
+For a capacity that grows over time the position need not be monotone in $t$ and the minimum of $w_T$ may be attained on a day $t_0<T$; then $\mathrm{SP}(m^\ast_T)\le t_0<T$ and the round trip has a positive gap $T-\mathrm{SP}(m^\ast_T)$, while the threshold property of \cref{eq:threshold} still holds. A monetisation schedule that releases half of the capacity on day 1 is such a case, and the committed 2023 base shows it (\cref{sec:results}).
+
+\begin{proposition}[Hyperbolic rule]
+\label{prop:hyperbolic}
+With $\mathrm{SP}(1)=\lfloor a/b\rfloor+1$ finite, $\tilde m=\mathrm{SP}(1)/T$ and $a<2T$,
+\begin{equation}
+1-q\ \le\ \frac{\tilde m}{m_0}\ \le\ \frac{1+b/a}{1-a/(2T)}.
+\label{eq:hyperbolic}
+\end{equation}
+\end{proposition}
+\begin{proof}
+From $1-e^{-x}\le x$ and $1-e^{-x}\ge x-x^2/2$ with $x=a/T$ and \cref{eq:closed}, $m_0\in\bigl[\tfrac{a}{qT}(1-\tfrac{a}{2T}),\tfrac{a}{qT}\bigr]$. The survival period of the unscaled run is the first $t$ with $A(1-(1-q)^t)>\kappa A$, that is $t>a/b$, so $\tilde m\in(\tfrac{a}{bT},\tfrac{a}{bT}+\tfrac1T]$. Dividing, $\tilde m/m_0\ge q/b\ge1-q$ because $b\le q/(1-q)$, and $\tilde m/m_0\le(q/b)(1+b/a)/(1-a/(2T))\le(1+b/a)/(1-a/(2T))$ because $q\le b$.
+\end{proof}
+The rule is a quick check of a solved multiplier when the run is dominated by one segment and the target is long; it carries no guarantee for several segments with different rates, a case the corpus tests.
+
+\subsection{Sensitivity to the capacity}
+
+\begin{proposition}[Sensitivity]
+\label{prop:sensitivity}
+Let the minimum of $\mathrm{NLP}_t(m_0)$ over $t\le T$ be attained at a single day $t_0$, with $m_0$ in the region where no rate is capped on days $s\le t_0$. A level shift $\varepsilon$ of the effective capacity moves the threshold at the rate
+\begin{equation}
+\frac{\mathrm d m_0}{\mathrm d\varepsilon}=\frac{1}{X'_{t_0}(m_0)},\qquad X'_{t}(m)=\sum_jA_j\prod_{s\le t}\bigl(1-mq_{j,s}\bigr)\sum_{s\le t}\frac{q_{j,s}}{1-mq_{j,s}},
+\label{eq:sensitivity}
+\end{equation}
+with the contribution of a segment that has a capped day set to zero, and the elasticity with respect to the capacity is $C_{t_0}/\bigl(m_0X'_{t_0}(m_0)\bigr)$.
+\end{proposition}
+\begin{proof}
+Near $m_0$ the window function equals $C_{t_0}+\varepsilon-X_{t_0}(m)$ because $t_0$ is the unique minimiser and the other days stay strictly above it. The implicit function theorem applied to $C_{t_0}+\varepsilon=X_{t_0}(m)$ gives $\mathrm dm_0/\mathrm d\varepsilon=1/X'_{t_0}(m_0)$, and differentiating $F_j$ term by term gives \cref{eq:sensitivity}. The elasticity is the derivative times $C_{t_0}/m_0$.
+\end{proof}
+The formula says where the threshold is fragile: it moves most for a given change in capacity when the outflow responds weakly to the multiplier, that is, when most of the deposit base is already at a rate of 1 or capped. The conditions matter. With two minimisers of the window function the threshold has a kink in $\varepsilon$, and with a capped day on the critical path the derivative changes at the multiplier where the cap begins to bind.

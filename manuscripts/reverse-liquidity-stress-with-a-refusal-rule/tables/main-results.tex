@@ -1,0 +1,32 @@
+\begin{table*}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\caption{Main results. Panel A: the proposed solver and four comparators scored against the independent oracle on 20,000 instances of the seeded corpus; rates in per cent with 95\% Wilson intervals, median absolute relative error of the multiplier on solved instances, mean forward evaluations per solved instance and median time per call. Panel B: the same solver on the three committed bases of case C16 at a target of 30 days, with the survival period reached at the multiplier and just below it.}
+\label{tab:main-results}
+\begin{tabular}{p{2.8cm}p{2.3cm}p{2.3cm}p{2.3cm}p{1.5cm}p{1.6cm}p{1.1cm}}
+\toprule
+\multicolumn{7}{l}{\textit{Panel A: corpus of synthetic banks}} \\
+Method & answers where refused (\%) & no answer where solved (\%) & threshold property (\%) & median $|$rel. error$|$ & evaluations & ms per call \\
+\midrule
+proposed solver & 0.0 (0.0 to 0.0) & 0.0 (0.0 to 0.0) & 100.0 (100.0 to 100.0) & 8.9e-08 & 15.7 & 0.29 \\
+scan of the case grid & 93.5 (93.0 to 93.9) & 3.1 (2.7 to 3.4) & 0.0 (0.0 to 0.0) & 2.2e-01 & 9.7 & 1.88 \\
+scan of a fine grid & 93.7 (93.3 to 94.1) & 1.4 (1.2 to 1.7) & 0.0 (0.0 to 0.0) & 1.3e-02 & 171.6 & 35.14 \\
+Brent on the survival period & 13.5 (12.9 to 14.2) & 0.0 (0.0 to 0.0) & 15.7 (14.9 to 16.4) & 6.3e-02 & 15.0 & 0.30 \\
+bisection without refusal & 100.0 (100.0 to 100.0) & 0.0 (0.0 to 0.0) & 99.0 (98.7 to 99.2) & 9.2e-08 & 61.4 & 2.97 \\
+\bottomrule
+\end{tabular}
+
+\medskip
+
+\begin{tabular}{p{3.0cm}p{3.0cm}p{1.4cm}p{2.3cm}p{1.8cm}p{2.3cm}}
+\toprule
+\multicolumn{6}{l}{\textit{Panel B: committed bases of case C16, target of 30 days}} \\
+Base & base SP (days) & cap & multiplier $m^\ast$ & SP at $m^\ast$ & SP at $m^\ast-10^{-6}$ \\
+\midrule
+LiST Adverse & 62 & 145.2 & 2.118175 & 30 & 31 \\
+LiST Extreme & 41 & 93.9 & 1.383141 & 30 & 31 \\
+2023 fast run & survives (5-day horizon) & 18.4 & refused, no number & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table*}
