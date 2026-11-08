@@ -34,14 +34,13 @@
 \headerblock
 
 \begin{abstract}
-Supervisors find deficiencies in the evidence behind the internal models that set bank capital and provisions: thresholds are missing and the error rates of validation tests are not measured.
+Supervisors find deficiencies in the evidence behind internal models of bank capital and provisions: thresholds are missing and validation tests have unmeasured error rates.
 Contraste is an open workbench that builds bank risk models, from credit scoring to operational risk, and runs on each the tests a validator would run, on public data and generators of known truth.
-The report gives results for \rsCasesResult{} cases.
-The validation raised \rsFindTotal{} findings, \rsFindSOne{} critical and \rsFindSTwo{} significant; every case ends at opinion level 3 or 4 of 4.
+The validation of \rsCasesResult{} cases raised \rsFindTotal{} findings, \rsFindSOne{} critical and \rsFindSTwo{} significant; every case ends at opinion level 3 or 4 of 4.
 Ranking is not calibration: the small-business scorecard keeps an AUC of \rsCThreeAuc{} (95\,\% interval \rsCThreeAucLo{} to \rsCThreeAucHi{}) while the observed five-year default probability is \rsCThreeObs{}\,\% against \rsCThreePred{}\,\% predicted.
-The regulation does not state the error rates of the tests: of \rsOneTests{}, \rsCTwentyTwoWithin{} hold their size at 5 and 1\,\% in cells of \rsCTwentyTwoNullPerTest{} repetitions and \pxPpOneHold{} when pooled to \pxPpOneReps{}.
-Of four proposed methods, a complement to the attribution test flags a stale-volatility model in \rsThirteenPower{}\,\% (\rsThirteenCiLo{} to \rsThirteenCiHi{}\,\%) of \rsThirteenN{} replications where the regulatory test flags it in \rsThirteenPla{}\,\%, but its size does not transfer to other desks;
-conformal recalibration of the value at risk moves hit rates towards the target, yet the back-tests accept wrapped runs too easily; the anchored default probability fails its coverage and stability clauses; the sequential monitors lose power at day 250 and miss their delay clause at three times the nominal rate.
+The regulation does not state the error rates of the tests: of \rsOneTests{}, \rsCTwentyTwoWithin{} pass the size screen at 5 and 1\,\% in cells of \rsCTwentyTwoNullPerTest{} repetitions, \pxPpOneHoldCell{} hold their size there and \pxPpOneHold{} when pooled to \pxPpOneReps{}.
+Of the four methods it proposes (its other twelve contributions are measurements, protocols and reconciliations), a complement to the attribution test flags a stale-volatility model in \rsThirteenPower{}\,\% (\rsThirteenCiLo{} to \rsThirteenCiHi{}\,\%) of \pxThirteenN{} replications where the regulatory test flags it in \rsThirteenPla{}\,\%, but its size does not transfer to other desks;
+conformal recalibration moves hit rates towards the target, yet back-tests accept wrapped runs too easily; the anchored default probability fails its coverage and stability clauses; the sequential monitors lose power and miss their delay clause at three times the nominal rate.
 The results do not describe any real institution.
 \end{abstract}
 

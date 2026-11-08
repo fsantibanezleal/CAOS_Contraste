@@ -198,15 +198,26 @@ def build() -> dict:
     A = load()
     N: dict[str, str] = {}
 
+    current: list = [None]
+
+    def use(file, key):
+        """The source of the macros put until the next call: the file(s) they are read from and what is read there."""
+        current[0] = (file, key)
+
     def put(k, v, src=None):
+        s = src or current[0]
+        if s is None or not s[0] or s[0] == "data/derived":
+            raise ValueError(f"macro {k} names no source file")
         N[k] = str(v)
-        SOURCES[k] = src or ("data/derived", "computed by make_proposed.py from the committed documents")
+        SOURCES[k] = s
 
     def ppt(k, slug, key):
         """A number copied from the number file of a method manuscript, with its source."""
         put(k, pv(slug, key), (pfile(slug, key), key))
 
     # ---- BS-1
+    C22 = "data/derived/C22/{null,miscalibration,clustering,drift,discrimination-decay,leakage,broken-monotonicity,concentration}.json"
+    use(C22, "simulations[] (n_rep, rates, exact) and size_bounds; the null family decides the size counts, leakage.json the leakage rates")
     rows = A["c22_rows"]
     put("oneSims", len(rows))
     put("oneReps", f"{sum(s['n_rep'] for s in rows):,}")
@@ -250,6 +261,8 @@ def build() -> dict:
     put("oneLeakCsiTwo", pct(lk[("stability.csi", 2)]["rate"], 1))
     put("oneLeakCsiFour", pct(lk[("stability.csi", 4)]["rate"], 1))
     # ---- BS-2
+    use("data/derived/C12/{single-swap,netting-set,csa-mpor-10d,csa-mpor-20d,with-im}.json",
+        "ore_reconciliation.agreement, eepe_agreement, cva_agreement (differences over combined standard errors)")
     for v, key in [("single-swap", "Single"), ("netting-set", "Netting"), ("csa-mpor-10d", "CsaTen"), ("csa-mpor-20d", "CsaTwenty"),
                    ("with-im", "Im")]:
         r = A["ore"][v]
@@ -264,6 +277,7 @@ def build() -> dict:
     m = re.search(r"(\d+) samples", A["ore"]["single-swap"]["platform"])
     put("twoOreSamples", f"{int(m.group(1)):,}", ("data/derived/C12/single-swap.json", "outputs.ore_reconciliation.platform"))
     # ---- BS-4
+    use("data/derived/C04/withdrawals.json", "rungs (the rung whose value is 9.0, grade B: pd_removed, pd_kept, pd_followed mean and n; rung 0 for the zero case)")
     wd = A["wd"]
     r9 = [r for r in wd["rungs"] if r["value"] == 9.0][0]
     ib = 5  # grade B
@@ -275,7 +289,7 @@ def build() -> dict:
     r0 = wd["rungs"][0]
     put("fourRemovedZero", f"{100 * (r0['pd_removed']['mean'][ib] - truth) / truth:+.0f}")
     for k, nm in [("pd_removed", "Removed"), ("pd_kept", "Kept"), ("pd_followed", "Followed")]:
-        put(f"four{nm}Se", f"{100 * r9[k]['bias_mcse'][ib] / truth:.1f}", ("data/derived/C04/withdrawals.json", f"rungs[9].{k}.bias_mcse"))
+        put(f"four{nm}Se", f"{100 * r9[k]['bias_mcse'][ib] / truth:.1f}", ("data/derived/C04/withdrawals.json", f"rungs[value == 9.0].{k}.bias_mcse"))
     put("fourRemovedZeroSe", f"{100 * r0['pd_removed']['bias_mcse'][ib] / truth:.1f}", ("data/derived/C04/withdrawals.json", "rungs[0].pd_removed.bias_mcse"))
     put("fourReps", r9["pd_removed"]["n"][ib] if isinstance(r9["pd_removed"]["n"], list) else r9["pd_removed"]["n"])
     sims = {s["key"]: s for s in wd["simulations"]}
@@ -288,17 +302,20 @@ def build() -> dict:
     put("oneRegTransLong", f"{100 * sp_imp['lra_d4_ccc_c']['value']:.2f}", ("data/derived/C04/sp.json", "impact.lra_d4_ccc_c"))
     put("fourRwBefore", f"{100 * sp_imp['rw_d2']['value']:.1f}", ("data/derived/C04/sp.json", "impact.rw_d2"))
     put("fourRwAfter", f"{100 * sp_imp['rw_d4']['value']:.1f}", ("data/derived/C04/sp.json", "impact.rw_d4"))
+    use("data/derived/C04/thin.json", "rungs[0].coverage (wald, jeffreys) and value")
     thin = A["thin"]["rungs"][0]
     put("fourThinN", thin["value"])
     put("fourWaldAaa", pct(thin["coverage"]["wald"][0], 2))
     put("fourJeffAaa", pct(thin["coverage"]["jeffreys"][0], 1))
     # ---- BS-7
+    use("data/derived/C15/short-uf.json", "indexation_charge, nii.delta_nii, floors.distances")
     su = A["short_uf"]
     put("sevenCharge", f"{su['indexation_charge']['charge']:,.1f}")
     put("sevenShare", pct(su["indexation_charge"]["charge"] / su["nii"]["delta_nii"], 1))
     put("sevenFloorBp", f"{min(d['distance_bp'] for d in su['floors']['distances'] if d['leg'] != 'CLP'):.2f}")
     put("sevenChargeUnit", su["indexation_charge"].get("unit", "currency units"))
     # ---- BS-9
+    use("data/derived/C18/baseline.json", "aggregation.band (capital_clp_m and mc_se_clp_m by method and nu)")
     band = A["band"]
     sums = {(r["method"], r["nu"]): r["capital_clp_m"] for r in band}
     put("nineSum", f"{sums[('simple-sum', None)]:,.0f}")
@@ -326,6 +343,7 @@ def build() -> dict:
     put("eightDatesEvaluated", sum(1 for x in lights if x != "not_evaluated"), ("data/derived/C14/vd-*.json", "irrbb.behavioural_change_at_breach light"))
     put("eightDates", len(lights), ("data/derived/C14/vd-*.json", "irrbb.behavioural_change_at_breach light"))
     # ---- BS-11
+    use("data/derived/C16/reverse-stress.json", "bases[] (solved, base_survival, max_multiplier) and target.days")
     for b in A["rev"]["bases"]:
         s = b["solved"]
         key = {"list-adverse": "Adverse", "list-extreme": "Extreme", "fast-run": "Fast"}[b["base_id"]]
@@ -335,6 +353,7 @@ def build() -> dict:
     put("elevenSvb", f"{A['fast_run']['scoring']['denominators'][0]['modelled_share']:.4f}", ("data/derived/C16/fast-run.json", "outputs.scoring.denominators[0].modelled_share"))
     put("elevenCapAdverse", f"{[b for b in A['rev']['bases'] if b['base_id'] == 'list-adverse'][0]['max_multiplier']:.1f}")
     # ---- BS-12
+    use("data/derived/C17/{xi-0-6,xi-0-8,xi-0-96,xi-1-1}.json", "cells[] (capital.lda_splice.iqr_over_truth, replications.n_replications)")
     cells = []
     for tag, doc in A["c17"].items():
         for c in doc["cells"]:
@@ -362,10 +381,12 @@ def build() -> dict:
     put("twelveTruncShare", pct(c096["lda_lognormal_truncated"]["share_underestimating"], 0), ("data/derived/C17/xi-0-96.json", "cells[0].capital.lda_lognormal_truncated.share_underestimating"))
     put("twelveHistoriesPerCell", A["c17"]["xi-0-96"]["cells"][0]["replications"]["n_replications"])
     # ---- BS-13
+    use("data/derived/C13/{none,missing-basis,stale-volatility,wrong-correlation,omitted-factor,time-misalignment}.json",
+        "pla_complement (n_replications, flags, calibration, lag_ladder, against_ks, hypothesis), detection, pla.thresholds, generator")
     c13 = A["c13"]
     stale = c13["stale-volatility"]["pla_complement"]
     h = stale["hypothesis"]
-    put("thirteenN", stale["n_replications"])
+    put("thirteenN", f"{stale['n_replications']:,}")
     put("thirteenNull", f"{stale['calibration']['n_null']:,}")
     put("thirteenWindow", stale["window_days"])
     put("thirteenPower", wilson_str(h["measured_power"]))
@@ -415,6 +436,7 @@ def build() -> dict:
     put("thirteenNullBlock", f"{stale['calibration']['n_per_block']:,}")
     put("thirteenSeedBase", c13["stale-volatility"]["generator"]["seed_base"])
     # ---- BS-14
+    use("data/derived/C04/withdrawals.json", "bounds_verdict.rows (coverage by design, informativeness and treatment), design.years, rungs[0].withdrawal_rate")
     bv = wd["bounds_verdict"]
     put("fourteenExitRate", pct(wd["rungs"][0]["withdrawal_rate"], 0))
     put("fourteenYears", wd["design"]["years"])
@@ -438,6 +460,7 @@ def build() -> dict:
     put("fourteenUnfollowedTen", pct(cov[("first_year_x10", 9.0, "unfollowed")]["value"]))
     put("fourteenCoverTarget", pct(bv["rows"][0]["threshold"], 0))
     put("fourteenExistingTarget", pct([r for r in bv["rows"] if r["id"] == "existing-coverage"][0]["threshold"], 0))
+    use("data/derived/C04/sp.json", "withdrawal_bounds.grades[] (pooled k and band, stability) and stability_share")
     grades = {g["grade"]: g for g in A["sp"]["withdrawal_bounds"]["grades"]}
     ccc = grades["CCC-C"]
     put("fourteenCccK", f"{ccc['pooled']['k']:.1f}")
@@ -447,8 +470,10 @@ def build() -> dict:
     put("fourteenStability", pct(A["sp"]["withdrawal_bounds"]["stability_share"], 0))
     put("fourteenBK", f"{grades['B']['pooled']['k']:.1f}")
     put("fourteenBShare", pct(grades["B"]["stability"]["share_cohorts_containing_pooled_k"], 0))
-    put("fourteenBTruth", pct(truth, 2))
+    put("fourteenBTruth", pct(truth, 2), ("data/derived/C04/withdrawals.json", "rungs[0].pd_removed.truth[B]"))
     # ---- BS-15
+    OF = "data/derived/C22/other-families.json"
+    use(OF, "sequential.hits.scenarios, sequential.pd_grades.scenarios, sequential.method and hypotheses[].values")
     seq = A["seq"]
     sc = {s["id"]: s for s in seq["hits"]["scenarios"]}
     put("fifteenThreshold", f"{seq['method']['threshold']:.0f}")
@@ -470,6 +495,23 @@ def build() -> dict:
     put("fifteenCostThree", pct_half_up(vals["x3_power_cost"]))
     put("fifteenCostFour", pct_half_up(vals["x4_power_cost"]))
     put("fifteenBound", pct(vals["bound"]))
+    # the pooled replication of the case document (20 seeds of 2,000 streams) decides the delay and power clauses
+    rpl = seq["replication"]
+    fac = {f["id"]: f for f in rpl["factors"]}
+    f3, f4 = fac["rate-x3"], fac["rate-x4"]
+    kf = "sequential.replication.factors"
+    put("fifteenPoolSeeds", rpl["seeds"], (OF, "sequential.replication.seeds"))
+    put("fifteenPoolReps", f"{rpl['reps']:,}", (OF, "sequential.replication.reps"))
+    put("fifteenPoolThreeMed", f"{f3['pooled_median']:.0f}", (OF, f"{kf}[rate-x3].pooled_median"))
+    put("fifteenPoolThreeLo", f"{f3['pooled_median_ci'][0]:.0f}", (OF, f"{kf}[rate-x3].pooled_median_ci[0]"))
+    put("fifteenPoolThreeHi", f"{f3['pooled_median_ci'][1]:.0f}", (OF, f"{kf}[rate-x3].pooled_median_ci[1]"))
+    put("fifteenPoolFourMed", f"{f4['pooled_median']:.0f}", (OF, f"{kf}[rate-x4].pooled_median"))
+    put("fifteenPoolLight", f"{f3['pooled_traffic_light_median']:.0f}", (OF, f"{kf}[rate-x3].pooled_traffic_light_median"))
+    put("fifteenPoolCostThree", pct_half_up(f3["pooled_power_cost"]), (OF, f"{kf}[rate-x3].pooled_power_cost"))
+    put("fifteenPoolCostThreeSe", pct_half_up(f3["pooled_power_cost_se"]), (OF, f"{kf}[rate-x3].pooled_power_cost_se"))
+    put("fifteenPoolCostFour", pct_half_up(f4["pooled_power_cost"]), (OF, f"{kf}[rate-x4].pooled_power_cost"))
+    put("fifteenPoolCostFourSe", pct_half_up(f4["pooled_power_cost_se"]), (OF, f"{kf}[rate-x4].pooled_power_cost_se"))
+    assert not hyp["H2"]["holds"] and not hyp["H3"]["holds"], "the text states both clauses as failed at three times"
     put("fifteenHeld", "H1 and H2 held" if hyp["H1"]["holds"] and hyp["H2"]["holds"] else "see table")
     pdg = {s["id"]: s for s in seq["pd_grades"]["scenarios"]}
     put("fifteenPdNullProduct", pct(pdg["pd-x1"]["e_product"]["ever"]))
@@ -482,6 +524,8 @@ def build() -> dict:
     put("fifteenPdYears", seq["pd_grades"]["years"])
     c11e = c11_eprocess(A)
     A["c11e"] = c11e
+    use("data/derived/C11/{equity-2007-09,fx-2008,equity-2020,rates-2022,calm-2004-06,mixed-2023}.json",
+        "models[].by_level[].exceedance_days, read through var_hit_eprocess of riskvalidation 1.1.0 and the traffic light rule")
     byw = {r["window"]: r for r in c11e}
     put("fifteenCeSevenFlag", byw["equity-2007-09"]["eproc"])
     put("fifteenCeSevenLight", byw["equity-2007-09"]["light"])
@@ -491,6 +535,7 @@ def build() -> dict:
     put("fifteenCeFxLight", byw["fx-2008"]["light"])
     put("fifteenCeFxDay", f"{med(byw['fx-2008']['e_days']):.0f}")
     put("fifteenCeFxLightDay", f"{med(byw['fx-2008']['l_days']):.0f}")
+    use("data/derived/C03/{fy2006-07,fy2008-10,fy2011-14,fy2015-17,fy2018-20}.json", "sequential.average.rejection_month and max_log_e")
     c03rej = []
     for tag, d in A["c03"].items():
         sq = d["sequential"]
@@ -498,6 +543,7 @@ def build() -> dict:
     put("fifteenCzeroRejected", sum(1 for _, m, _ in c03rej if m is not None))
     put("fifteenCzeroCohorts", len(c03rej))
     # ---- BS-16
+    use("data/derived/C11/equity-2007-09.json", "conformal (method, hypothesis, rows[hs-250, 0.01])")
     cf = A["c11"]["equity-2007-09"]["conformal"]
     hy = cf["hypothesis"]
     put("sixteenGamma", f"{cf['method']['gamma']}")
@@ -522,10 +568,12 @@ def build() -> dict:
     put("sixteenHsClipped", r_hs["n_clipped"])
     put("sixteenHsKupUn", f"{r_hs['unwrapped']['kupiec_p']:.1e}")
     put("sixteenHsKupWr", f"{r_hs['wrapped']['kupiec_p']:.3f}")
+    use("data/derived/C11/equity-2020.json", "conformal.rows[hs-250, 0.01]")
     rows20 = [r for r in A["c11"]["equity-2020"]["conformal"]["rows"] if r["model_id"] == "hs-250" and abs(r["alpha"] - 0.01) < 1e-12][0]
     put("sixteenTwentyHsFz", pct(rows20["fz0_change"], 1))
     put("sixteenTwentyHsPassWr", yn(rows20["wrapped"]["passes_coverage"]))
     # ---- BS-5 and BS-6 (read here from the committed provisions and portfolio documents)
+    use("data/derived/C06/rd-2008-12.json", "reconciliation (tolerance, allowance residuals) and non_linearity")
     c06 = D("C06/rd-2008-12.json")
     nl = c06["non_linearity"]
     put("fiveTolerance", "10^{-%d}" % round(-np.log10(c06["reconciliation"]["tolerance"])))
@@ -536,6 +584,7 @@ def build() -> dict:
     put("fiveEclMean", f"{nl['ecl_at_mean_path'] / 1e6:,.1f}")
     put("fiveIndex", f"{100 * nl['index']:.2f}")
     put("fiveRho", f"{nl['parameters']['rho']}")
+    use("data/derived/C07/base.json", "regimes[] (total_provision, coverage_rate) and gap_bridge.steps")
     c07 = D("C07/base.json")
     reg = {r["regime"]: r for r in c07["regimes"]}
     put("fiveCmf", f"{reg['cmf-b1']['total_provision'] / 1e9:,.1f}")
@@ -550,9 +599,11 @@ def build() -> dict:
     put("fiveBridgeForward", f"{steps['forward-looking'] / 1e9:,.1f}")
     put("fiveBridgeDisc", f"{steps['discounting'] / 1e9:,.1f}")
     put("fiveBridgeOverlay", f"{steps['ifrs9-overlays'] / 1e9:,.1f}")
+    use("data/derived/C04/sp.json", "definition_gap.d4_over_d2")
     gap = [x for x in A["sp"]["definition_gap"]["d4_over_d2"] if x is not None]
     put("fourGapMin", pct(min(gap), 0))
     put("fourGapMax", pct(max(gap), 0))
+    use("data/derived/C10/grid-22.json", "cells[0] (known_rho, series_length_years, n_replications, estimators) and generator.known_pd")
     g22 = D("C10/grid-22.json")
     c0 = g22["cells"][0]
     est = {e["estimator"]: e for e in c0["estimators"]}
@@ -580,9 +631,11 @@ def build() -> dict:
     put("threeHoldout", m.group(1), ("data-pipeline/pipeline/stages/split.py", "stratified_split holdout"))
     put("threeCalibration", m.group(2), ("data-pipeline/pipeline/stages/split.py", "stratified_split calibration"))
     put("threeRepeats", m.group(3), ("data-pipeline/pipeline/stages/split.py", "stratified_split repeats"))
+    use(C22, "simulations[0].n_rep and leakage n: the binomial standard error sqrt(.05 .95 / n)")
     put("oneSeNull", f"{100 * (0.05 * 0.95 / int(tests[0]['n_rep'])) ** 0.5:.2f}")
     put("oneHalfWidth", f"{196 * (0.05 * 0.95 / int(tests[0]['n_rep'])) ** 0.5:.1f}")
     put("oneSePower", f"{100 * (0.05 * 0.95 / int(lk[('disc.auc_vs_initial', 1)]['n'])) ** 0.5:.2f}")
+    use("make_proposed.py", "worked example computed from the parameters stated in the text")
     # ---- BS-5: the worked example of the non-linearity (PD 2 %, rho 0.12, three scenarios), computed from its parameters
     from scipy.stats import norm
 
@@ -595,7 +648,18 @@ def build() -> dict:
         ("make_proposed.py", "worked example at the weighted mean factor"))
     put("fiveExPd", f"{100 * pd_ttc:g}")
     put("fiveExRho", f"{rho_ex}")
+    # the capital of eq:bs4-irb (LGD = 1, confidence 0.999) as a function of the default probability: where it peaks
+    grid = np.arange(1, 10000) / 10000.0
+    peaks = {}
+    for r_ in (0.03, 0.24):
+        kk = norm.cdf((norm.ppf(grid) + np.sqrt(r_) * norm.ppf(0.999)) / np.sqrt(1 - r_)) - grid
+        peaks[r_] = float(grid[int(np.argmax(kk))])
+    put("fourIrbPeakLow", f"{peaks[0.24]:.2f}", ("make_proposed.py", "argmax over PD in (0, 1), step 0.0001, of K(PD) of eq:bs4-irb with LGD = 1 and R = 0.24"))
+    put("fourIrbPeakHigh", f"{peaks[0.03]:.2f}", ("make_proposed.py", "argmax over PD in (0, 1), step 0.0001, of K(PD) of eq:bs4-irb with LGD = 1 and R = 0.03"))
+    put("fourIrbRhoLow", "0.03", ("make_proposed.py", "the lower asset correlation of the range stated in the text"))
+    put("fourIrbRhoHigh", "0.24", ("make_proposed.py", "the upper asset correlation of the range stated in the text"))
     # ---- BS-6: the coverage of the maximum-likelihood estimator over the 24 committed cells
+    use("data/derived/C10/{grid-22,grid-40}.json", "cells[].n_replications: the binomial band 0.95 +- 1.96 sqrt(.95 .05 / n)")
     cov, reps24 = [], []
     for g in ("C10/grid-22.json", "C10/grid-40.json"):
         for c in D(g)["cells"]:
@@ -707,6 +771,7 @@ def build() -> dict:
             except KeyError:
                 missing.append((slug, key))
     assert not missing, missing
+    put("ppTwelvePer", f"{int(pv('instability-of-operational-risk-capital', 'nPer')):,}", (pfile("instability-of-operational-risk-capital", "nPer"), "nPer"))
     # the e-process paper writes its macros with a leading n
     # ---- the scale-and-level complement: its results file
     pla = results_json("scale-and-level-complement-to-the-pla-test")
@@ -818,7 +883,7 @@ def write_tables(A: dict) -> None:
         ["Reverse liquidity stress", "C16", "fast-run base", N["elevenFast"]],
         ["Operational-risk instability", "C17", "interquartile range over the truth, splice rung, range over the cells",
          f"{N['twelveIqrMin']} to {N['twelveIqrMax']}"],
-    ], caption="Headline quantities of twelve of the sixteen methods, read from the stored documents of the case named in the second "
+    ], caption="Headline quantities of twelve of the sixteen contributions, read from the stored documents of the case named in the second "
                "column, each as a count or a point value without an interval; the Monte Carlo errors are printed beside each value in the "
                "text of the method, and the four methods of Sections~\\ref{sec:bs13} to~\\ref{sec:bs16} report theirs in the tables on the complement to the attribution "
                "test, the anchored probability of default, the sequential monitors and the conformal recalibration.",
@@ -836,7 +901,7 @@ def write_tables(A: dict) -> None:
     for i, (slug, case) in enumerate(zip(SLUGS, CASES), start=1):
         rows.append([f"\\ref{{sec:bs{i}}}", case, "\\raggedright\\arraybackslash " + paper_title(slug)])
     figkit.table(T / "proposed-papers.tex", ["Section", "Case", "Manuscript of the method"], rows,
-                 caption="The sixteen methods of this section, the case that carries each, and the title of the manuscript that reports the method "
+                 caption="The sixteen contributions, the case that carries each, and the title of the manuscript that reports it "
                          "on its own; each subsection ends with what that manuscript found.", label="tab:proposed-papers",
                  align="llp{0.78\\textwidth}")
 
@@ -921,9 +986,9 @@ def write_tables(A: dict) -> None:
                      pct(s["kupiec_cumulative"]["ever"]), md(s["kupiec_cumulative"]["median_day"]), pct(s["traffic_light"]["ever"]),
                      md(s["traffic_light"]["median_day"])])
     figkit.table(T / "proposed-sequential.tex", ["Scenario", "E-process ever", "day", "Kupiec trailing ever", "Kupiec cumulative ever", "day", "Light ever", "day"],
-                 rows, caption="Share of 2,000 simulated 1,000-day series in which each reading of the 99\\% VaR back-test rejects at some day "
+                 rows, caption="Share of 2,000 simulated 1,000-day series, on one seed (the seed of the case), in which each reading of the 99\\% VaR back-test rejects at some day "
                                "(in percent) and the median first day of rejection (a dash when fewer than half reject), for the e-process, "
-                               "the Kupiec test on the trailing 250 days and on all days so far, and the traffic light.",
+                               "the Kupiec test on the trailing 250 days and on all days so far, and the traffic light; the pooled replication over " + str(seq["replication"]["seeds"]) + " seeds that decides the delay and power clauses is given in the text.",
                  label="tab:proposed-sequential", align="lrrrrrrr", wide=True)
     rows = []
     for s in seq["pd_grades"]["scenarios"]:

@@ -29,7 +29,7 @@ assumption changed at a limit breach, the dependence band shown with every aggre
 rate each removes, the reverse liquidity stress with a refusal rule, and the measured instability of the operational-risk capital.
 Four are methods that Contraste proposes: a scale-and-level complement to the attribution test of the fundamental review of the
 trading book, an anchored tipping-point default probability under informative rating exits, e-process sequential monitors for
-calibration and back-tests, and adaptive conformal recalibration of the value at risk. Each of the sixteen is stated with the theory
+calibration and back-tests, and adaptive conformal recalibration of the value at risk. Each of the sixteen contributions is stated with the theory
 it rests on, its equations, its assumptions, its parameters, its cost, its implementation in the engine release 1.1.0 of
 \texttt{riskvalidation} or in the pipeline of the product, what it is compared against and the criterion by which it is accepted
 or refuted; the criterion of each proposed method was fixed before its evaluation, and each is reported whatever its result.
@@ -78,7 +78,7 @@ The first expression is the one tabulated for the rejection rate by \citet{alm:m
 \citet{ratings:brown2001} recommend for small samples and for rates near zero, where a size of 0.1\,\% sits \citep{credit-capital:wilson1927}.
 Every one of the \pxOneRates{} rates of the measurement carries both.
 
-A test holds its size when its rate does not exceed the nominal level by more than the Monte Carlo error allows. Under the null at its
+A test passes the size screen of the case when its rate does not exceed the nominal level by more than the Monte Carlo error allows; the manuscript on the measurement says that a test holds its size only when its evidence, which also reads the Wilson interval, shows no excess at either level. Under the null at its
 boundary the true rejection rate of an exact test with a continuous statistic is the level $\alpha$, and that of a conservative or discrete
 test is at most $\alpha$, so the judgement is one-sided:
 \begin{equation}
@@ -103,8 +103,8 @@ broken monotonicity and concentration) total \pxOneReps{} seeded repetitions. Th
 \pxfn{data-pipeline/pipeline/cases/c22_validator.py}.
 
 The comparison is against the exact probabilities where they exist and against the published size and power studies that the engine reruns, and
-the acceptance criterion is that every rate is reported with its standard error and that a test is declared to hold its size only inside
-equation~\eqref{eq:bs1-size-bound}. Of the \pxOneTests{} tests with a p-value, \pxOneHoldFive{} lie within the bound at 5\,\% on the null generator and \pxOneWithinBoth{} at both 5 and 1\,\%.
+the acceptance criterion is that every rate is reported with its standard error and that a test is declared to pass the size screen only inside
+equation~\eqref{eq:bs1-size-bound}. Of the \pxOneTests{} tests with a p-value, \pxOneHoldFive{} lie within the bound at 5\,\% on the null generator and \pxOneWithinBoth{} at both 5 and 1\,\%, which is the count that passes the size screen of the case.
 At 5\,\% \pxOneOverName{} rejects a correct model in \pxOneOverRate{}\,\% of the repetitions; at 1\,\% the Jeffreys test exceeds its level exactly
 (\pxOneJeffExactOne{}\,\%); and the concentration test never rejects under its null (\pxOneHhiRate{}\,\%), so it holds its size and has no power on
 that generator, while the migration z-tests reject \pxOneMigRate{}\,\%. Power is measured on planted defects of severity 1
@@ -116,9 +116,9 @@ matrix against a reference and downward momentum) have a size and no power in th
 The manuscript ``\pxPaperTitleOne{}'' reports the measurement on its own. Its predictions were written after the stored measurement on which
 most of them are decided, so they check the record and are not forecasts made before the data, and no registration backs them; three are refuted: that
 every test holds its size, that the judgement of a single cell is stable, and that every power curve reaches 80\,\%. The \pxOneHoldFive{} and
-\pxOneWithinBoth{} above count the cells of \pxPpOneNullReps{} repetitions of case C22, which resolve \pxPpOneRes{} point. Pooled over blocks to
+\pxOneWithinBoth{} above, which pass the size screen, count the cells of \pxPpOneNullReps{} repetitions of case C22, which resolve \pxPpOneRes{} point. Pooled over blocks to
 \pxPpOneReps{} null repetitions, \pxPpOneHold{} of the \pxPpOneTests{} tests hold their size and \pxPpOneNotHold{} do not, against \pxPpOneHoldCell{}
-that hold in the cells, so the count depends on the cell size. The largest excesses are the Jeffreys test, with an exact size of \pxPpOneJeffExact{}\,\%
+that hold in the cells by the definition of that manuscript, which also reads the Wilson interval beside the one-sided bound of equation~\eqref{eq:bs1-size-bound}, so the count depends on the cell size. The largest excesses are the Jeffreys test, with an exact size of \pxPpOneJeffExact{}\,\%
 at the 1\,\% level, and the normal test over five years, which rejects \pxPpOneNorm{}\,\% of correct models at 5\,\% (Wilson interval \pxPpOneNormLo{}
 to \pxPpOneNormHi{}\,\%). Tests that assume independent defaults reject a correct default probability in \pxPpOneBinRho{}\,\% of samples at an
 asset correlation of 10\,\%, and the 0.10 rule of the stability index alarms in \pxPpOnePsi{}\,\% of unchanged samples of 100. Of \pxPpOnePowerTests{}
@@ -287,7 +287,7 @@ K=\mathrm{LGD}\cdot\Phi\!\left(\frac{\Phi^{-1}(\mathrm{PD})+\sqrt{R}\,\Phi^{-1}(
 \label{eq:bs4-irb}
 \end{equation}
 with $R$ the asset correlation and $\Phi$ the standard normal distribution function, so that a definition that moves the default probability moves the
-capital through a function that increases in the default probability below a level near one (it tends to zero as the probability tends to one), with the maturity adjustment of the standard left out.
+capital through a function that increases in the default probability up to a peak between \pxFourIrbPeakLow{} and \pxFourIrbPeakHigh{} (the peak falls as the asset correlation rises from \pxFourIrbRhoLow{} to \pxFourIrbRhoHigh{}) and then falls to zero as the probability tends to one, with the maturity adjustment of the standard left out.
 
 The second choice is measured on rating paths of known truth. A rating that exits the cohort is removed from the denominator by the industry treatment,
 kept in the denominator without following it by the second, and followed to its end state, as the European guidelines ask, by the third
@@ -681,8 +681,8 @@ c\sim \mathrm{BetaBin}\big(m,\,k,\,n_{\mathrm{cal}}+1-k\big),\qquad
 \end{equation}
 where the second expression is the normal approximation to the rate at which the binomial test, which ignores the randomness of the calibration quantile, rejects exchangeable data. At equal
 calibration and test windows the binomial test rejects \pxPpTenBinomEqual{} (standard error \pxPpTenBinomEqualSe{}) of exchangeable replications against \pxPpTenBetaBin{} for the Beta-Binomial test,
-whose exact size never exceeds \pxPpTenBetaBinMax{}; the Beta-Binomial test keeps the binomial p-value beside its own. The second correction is the light of the shift-resilience test. A fixed drop of the area under the curve declares a shift whatever the sample size; the corrected light reads the
-drop against a permutation reference built from the development rows, with
+whose exact size never exceeds \pxPpTenBetaBinMax{}; the Beta-Binomial test keeps the binomial p-value beside its own (Algorithm~\ref{alg:bs10}). The second correction is the light of the shift-resilience test. A fixed drop of the area under the curve declares a shift whatever the sample size; the corrected light reads the
+drop against a permutation reference built from the development rows (Algorithm~\ref{alg:vt-shift} of Section~\ref{sec:validation-tests}, which draws the pseudo-evaluation sets without replacement and refits the resemblance score on each), with
 \begin{equation}
 p=\frac{1+\#\{b:\ T^{(b)}\ge T_{\mathrm{obs}}\}}{1+B},\qquad B=199,
 \label{eq:bs10-permutation}
@@ -691,6 +691,17 @@ where $T$ is the drop statistic and $T^{(b)}$ its value on the $b$-th permutatio
 with no shift against \pxPpTenPerm{} (\pxPpTenPermSe{}) for the permutation reference, which pays in power: it detects a shift of two standard deviations in \pxPpTenPermPower{} (\pxPpTenPermPowerSe{}) against \pxPpTenFixedPower{} (\pxPpTenFixedPowerSe{}). The third is the amber cut of
 the situation test of fairness, which a size-and-power rule selects at 0.20 on one of four design and size pairs: with 400 applicants the cut 0.10 fires on \pxPpTenCutTen{} (\pxPpTenCutTenSe{}) of null replications against
 \pxPpTenCutTwenty{} (\pxPpTenCutTwentySe{}) for 0.20.
+
+\begin{algorithm}[htbp]
+\caption{The Beta-Binomial p-value of the coverage of a split conformal predictor.}
+\label{alg:bs10}
+\begin{algorithmic}[1]
+\Require calibration size $n_{\mathrm{cal}}$, level $\alpha$, test size $m$, observed covered count $c_{\mathrm{obs}}$
+\State $k\gets\lceil (n_{\mathrm{cal}}+1)(1-\alpha)\rceil$ on the exact decimal value of $\alpha$; \textbf{if} $k>n_{\mathrm{cal}}$ \textbf{return} \emph{not evaluated} (coverage 1 by construction)
+\State $P(c)\gets \mathrm{BetaBin}(c;\,m,\,k,\,n_{\mathrm{cal}}+1-k)$ for $c=0,\dots,m$
+\State \Return $p=\sum_{c':\,P(c')\le P(c_{\mathrm{obs}})}P(c')$ of \cref{eq:vt-conformal}, beside the binomial p-value
+\end{algorithmic}
+\end{algorithm}
 
 The assumptions are exchangeability of the calibration and test points, a calibration that is fixed given the test (the split conformal setting) and, for the permutation reference, that the
 development rows are exchangeable under the null. The parameters are $B=199$ draws and the cut 0.20, which the size-and-power rule selects on one of four designs and which is not a convention. The cost of the
@@ -759,7 +770,7 @@ before the design document named them on 21 October 2026, and its predictions H1
 Adverse multiplier over the band of case conventions (H8) and the amber bar of the labelled run (H10) failed. On \pxPpElevenInst{} seeded instances the engine agrees with an independent oracle on every outcome and returns a
 threshold on every solved one, and a case-grid scan answers \pxPpElevenScanFalse{}\,\% of the refused instances and overshoots by a median of \pxPpElevenScanErr{}\,\%. The multiplier for 30 days is \pxPpElevenAdv{} on the
 Adverse base and \pxPpElevenExt{} on the Extreme base, and the 2023 fast-run base is refused. Calibrated on rows before 2023, that base models \pxPpElevenSvbModel{} of the deposits in the two days of the March 2023 run
-against 0.85 observed (ratio \pxPpElevenSvbRatio{}), and the multiplier that reproduces the run is \pxPpElevenSvbMult{} times the calibrated rate. The Adverse multiplier moves by \pxPpElevenJointDev{}\,\% over the joint band of
+against the 0.85 of the deposit base that the review reports for the two days, one realised and one expected (ratio \pxPpElevenSvbRatio{}), and the multiplier that reproduces the run is \pxPpElevenSvbMult{} times the calibrated rate. The Adverse multiplier moves by \pxPpElevenJointDev{}\,\% over the joint band of
 case conventions: under the slow monetisation schedule it is refused at the central haircut and falls to \pxPpElevenLowSlow{} at the low haircut. The bank's deposit behaviour is synthetic.
 
 % proposed method 12: Measurement: The instability of the operational-risk capital, measured on independent histories of known truth
@@ -790,7 +801,7 @@ $O(G\log G)$ for a grid of $G$ loss steps with the transform. The implementation
 
 On the stored grid of \pxTwelveCells{} cells, \pxTwelveHistories{} histories in all, the interquartile range of the splice rung is \pxTwelveIqrMin{} to \pxTwelveIqrMax{} times the truth, all \pxTwelveRedRows{} rows of the stability test (\pxTwelveRungs{} rungs in each cell) are
 red against the stated internal limits, \pxTwelveInfLow{} to \pxTwelveInfHigh{}\,\% of the histories of the variant with tail index 0.96 conclude an infinite mean that does not exist, and \pxTwelveFiniteLow{} to \pxTwelveFiniteHigh{}\,\% of
-those of the variant with tail index 1.1 conclude a finite one. The comparison is the rungs with one another and with the standardised approach, whose instability and insensitivity to risk are argued by \citet{ccr:peters2016}; the acceptance criterion
+those of the variant with tail index 1.1 conclude a finite one. The comparison is the rungs with one another and with the standardised approach, whose instability and insensitivity to risk are argued by \citet{oprisk:peters2016}; the acceptance criterion
 is that every rung is reported with its dispersion and its share of underestimates. Figure~\ref{fig:proposed-oprisk} shows the splice rung across the cells.
 
 Three properties of the estimation ladder explain the figures. The plain lognormal rung is stable and wrong: it underestimates the capital in every history of the first cell of the tail index 0.96, with an interquartile range that is a fraction of a per cent of the truth.
@@ -953,9 +964,7 @@ A third monitor tests clustering with first-order Markov alternatives $\mathbb P
 
 The assumptions are that the hits are independent Bernoulli($\alpha$) under the null, that the defaults of a grade are binomial given the past (the monitors do not model the asset correlation inside a grade, which is the reason correlation-corrected tests exist, and a correlated portfolio would be over-rejected by this null), and that the weights are fixed before any outcome, which keeps the process an e-process. The parameters are the threshold $1/a=\pxFifteenThreshold{}$ for $a=\pxFifteenAlpha{}\,\%$; for the hits the multipliers $\mathcal M=\{0.25,0.5,1.5,2,3,4,6,10\}$ with equal weights, for the clustering monitor $\{3,6,12,25,50\}$, and for the grades a 16-point logarithmic grid in $[1/4,4]$ with Jeffreys-type weights \citep{proposed:jeffreys1946}; they were fixed before any run. The cost is $O(T\,|\mathcal M|)$ for a series of $T$ steps in log space. The implementation is the module \texttt{riskvalidation.validation.sequential} of engine release 1.1.0 (\texttt{var\_hit\_eprocess}, \texttt{var\_hit\_clustering\_eprocess}, \texttt{pd\_grade\_eprocess}, \texttt{eprocess\_battery}), driven by the pipeline modules \pxfn{cases/c22_sequential.py} and \pxfn{cases/c03/sequential.py}; on case C11 the same functions are applied here to the stored exceedance days of every model.
 
-The comparison is with the Kupiec test on the trailing 250 days and on all days so far, both read every day, with the traffic light, and with the chi-square test across grades. The acceptance criteria, fixed before the run, are a size of at most $5\,\%$ plus three standard errors ($\pxFifteenBound\,\%$) where the repeated Kupiec rule exceeds it, a median detection day below the 250-day window and below the traffic light's at a hit rate three and four times too high, and a power cost under 10 points against one Kupiec reading at day 250; the method is refuted if the delay is not lower than the traffic light's. On series of \pxFifteenHorizon{} days read every day, the e-process rejects a correct model at some day in \pxFifteenENull{}\,\% of \pxFifteenReps{} series where Kupiec on the trailing window rejects in \pxFifteenKupTrail{}\,\% and on the growing window in \pxFifteenKupCum{}\,\%, and the traffic light leaves the green zone in \pxFifteenLightNull{}\,\%; the size criterion holds. At a hit rate three times too high the median detection day is \pxFifteenXThreeDay{} on the seed of the case and at four times \pxFifteenXFourDay{}, against \pxFifteenLightDay{} for the traffic light, whose first possible day is 250; on
-that seed the delay criterion holds, but the manuscript on the monitors pools independent seeds and finds the median at three times too high at \pxPpFifteenThreeMed{} days (\pxPpFifteenThreeMedLo{} to \pxPpFifteenThreeMedHi{}), not below the window,
-so the delay criterion fails at three times and holds at four. The power criterion fails at the hit rate three times too high: one Kupiec reading has \pxFifteenCostThree{} points more power at day 250 than the e-process (\pxFifteenCostFour{} points at four times), so the hypothesis does not hold as stated, and the monitors are not retuned. For the defaults of five grades over \pxFifteenPdYears{} years, a relative error of 10\,\% in every probability is detected by the product combination in \pxFifteenPdTenProduct{}\,\% of the histories and by the average in \pxFifteenPdTenAverage{}\,\%, against a size of \pxFifteenPdNullChi{}\,\% for the chi-square test read every year, and at 5\,\% the average detects \pxFifteenPdFiveAverage{}\,\% against \pxFifteenPdFiveChi{}\,\% for the chi-square test at year 10: the cost of the guarantee is large for a small miscalibration.
+The comparison is with the Kupiec test on the trailing 250 days and on all days so far, both read every day, with the traffic light, and with the chi-square test across grades. The acceptance criteria, fixed before the run, are a size of at most $5\,\%$ plus three standard errors ($\pxFifteenBound\,\%$) where the repeated Kupiec rule exceeds it, a median detection day below the 250-day window and below the traffic light's at a hit rate three and four times too high, and a power cost under 10 points against one Kupiec reading at day 250; the method is refuted if the delay is not lower than the traffic light's. On series of \pxFifteenHorizon{} days read every day, the e-process rejects a correct model at some day in \pxFifteenENull{}\,\% of \pxFifteenReps{} series where Kupiec on the trailing window rejects in \pxFifteenKupTrail{}\,\% and on the growing window in \pxFifteenKupCum{}\,\%, and the traffic light leaves the green zone in \pxFifteenLightNull{}\,\%; the size criterion holds. At a hit rate three times too high the median detection day is \pxFifteenXThreeDay{} on the seed of the case and at four times \pxFifteenXFourDay{}, against \pxFifteenLightDay{} for the traffic light, whose first possible day is 250. That is one seed; case C22 decides the delay and power criteria on its pooled replication of \pxFifteenPoolSeeds{} seeds of \pxFifteenPoolReps{} streams. There the median at three times is \pxFifteenPoolThreeMed{} days (95\,\% interval \pxFifteenPoolThreeLo{} to \pxFifteenPoolThreeHi{}) against \pxFifteenPoolLight{} for the traffic light, not below the window, so the delay criterion fails at three times and holds at four (\pxFifteenPoolFourMed{} days). The manuscript on the monitors, which pools independent seeds of its own, reaches the same conclusion with a median of \pxPpFifteenThreeMed{} days (\pxPpFifteenThreeMedLo{} to \pxPpFifteenThreeMedHi{}) at three times. The power criterion fails at the hit rate three times too high: on the pooled replication one Kupiec reading has \pxFifteenPoolCostThree{} points more power at day 250 than the e-process (standard error \pxFifteenPoolCostThreeSe{}) and \pxFifteenPoolCostFour{} points at four times (standard error \pxFifteenPoolCostFourSe{}), against the 10 points the criterion allows, and the manuscript on the monitors finds \pxPpFifteenThreeCost{} points (standard error \pxPpFifteenThreeCostSe{}) at three times, so the hypothesis does not hold as stated, and the monitors are not retuned. For the defaults of five grades over \pxFifteenPdYears{} years, a relative error of 10\,\% in every probability is detected by the product combination in \pxFifteenPdTenProduct{}\,\% of the histories and by the average in \pxFifteenPdTenAverage{}\,\%, against a size of \pxFifteenPdNullChi{}\,\% for the chi-square test read every year, and at 5\,\% the average detects \pxFifteenPdFiveAverage{}\,\% against \pxFifteenPdFiveChi{}\,\% for the chi-square test at year 10: the cost of the guarantee is large for a small miscalibration.
 On the real windows of C11, the e-process flags \pxFifteenCeSevenFlag{} of \pxFifteenCeSevenModels{} models on the 2007 to 2009 window (the traffic light \pxFifteenCeSevenLight{}) with a median day of \pxFifteenCeSevenDay{}, and \pxFifteenCeFxFlag{} against \pxFifteenCeFxLight{} on the 2008 foreign-exchange window; the comparison favours the monitor structurally, because the traffic light cannot speak before day 250.
 
 The manuscript ``\pxPaperTitleFifteen{}'' proves validity and a power bound at a fixed horizon and runs ten other rules on simulated streams, six market-risk windows and five loan cohorts. Its hypotheses
@@ -1021,8 +1030,8 @@ Student-$t$ model). The expected shortfall stays understated, and the delta-norm
 \subsection{Results}
 \label{sec:results-proposed}
 
-Table~\ref{tab:proposed-summary} gives a headline quantity for twelve of the sixteen methods, read from the stored document of the case that carries each. It shows one number per row and no uncertainty, and the sections above give each with its Monte Carlo error; the other four report their intervals in Tables~\ref{tab:proposed-pla}, \ref{tab:proposed-anchored}, \ref{tab:proposed-sequential} and \ref{tab:proposed-conformal}; what follows from it is the order of magnitude of what the measurements find. The validation tests of the null family hold their size in the cells of case C22
-on \rsCTwentyTwoWithinFive{} of \pxOneTests{} tests at the 5\,\% level and on \pxOneWithinBoth{} at both 5 and 1\,\% (\pxPpOneHold{} when the repetitions are pooled), the exposure engine agrees with the reference engine at every date for the uncollateralised profiles and not for the collateralised ones, informative exits understate the default probability of the B grade by about a third, the
+Table~\ref{tab:proposed-summary} gives a headline quantity for twelve of the sixteen contributions, read from the stored document of the case that carries each. It shows one number per row and no uncertainty, and the sections above give each with its Monte Carlo error; the other four report their intervals in Tables~\ref{tab:proposed-pla}, \ref{tab:proposed-anchored}, \ref{tab:proposed-sequential} and \ref{tab:proposed-conformal}; what follows from it is the order of magnitude of what the measurements find. The validation tests of the null family pass the size screen in the cells of case C22
+on \rsCTwentyTwoWithinFive{} of \pxOneTests{} tests at the 5\,\% level and on \pxOneWithinBoth{} at both 5 and 1\,\% (\pxPpOneHoldCell{} hold their size there by the definition of the manuscript on the measurement, and \pxPpOneHold{} when the repetitions are pooled), the exposure engine agrees with the reference engine at every date for the uncollateralised profiles and not for the collateralised ones, informative exits understate the default probability of the B grade by about a third, the
 indexation charge is more than half of the change in net interest income of the short-indexed variant, the worst case of the dependence band is a quarter above the simple sum, the reverse liquidity stress is solved or refused by rule, and the
 interquartile range of the operational-risk capital is a multiple of the truth.
 
