@@ -1,0 +1,55 @@
+\section{Introduction}
+\label{sec:introduction}
+
+A bank validates a value-at-risk (VaR) model by counting the days on which the loss exceeded the forecast, and a rating system by comparing the
+defaults of each grade with the probability of default (PD) the grade was assigned. The tests that carry these comparisons were designed to be read
+once, on a window fixed in advance: the proportion-of-failures test of \citet{kupiec1995} on a year of daily forecasts, the three-zone traffic light of the Basel
+Committee \citep{bcbs1996,bcbs2019} on the last 250 days, the binomial and chi-square tests of the validation studies of the Committee \citep{bcbs2005,tasche2008}
+on the defaults of a cohort. A risk function does not read them once. It reads them every day or every quarter, on a growing or a sliding window, and
+acts on the first reading that crosses a threshold. A test that has a size of 5\,\% when read once has a larger size when read repeatedly on the same
+data, because each reading is another chance to reject a correct model \citep{armitage1969}. On the generator of known truth used in this study, a correct 99\,\% VaR
+model is rejected at some day of 1,000 by the Kupiec test on the last 250 days in \nNullSizeKupTrail\,\% of the series, by the same test on all days so far in
+\nNullSizeKupCum\,\%, and the traffic light leaves its green zone in \nNullSizeLight\,\% (\cref{tab:main-results}). The nominal 5\,\% describes one reading,
+not the practice.
+
+The remedy that the literature on sequential analysis offers is to change the test, not the practice. Group-sequential boundaries \citep{pocock1977,obrien1979,lan1983}
+spend a fixed size over a number of looks fixed in advance. Sequential probability ratio tests \citep{wald1945} and confidence sequences \citep{darling1967,howard2021} remove the
+fixed number: they keep their guarantee at every time. The unifying object is the e-process, a non-negative process whose expectation under the null does not
+exceed one at any stopping time, and which therefore has a size of at most $a$ when the null is rejected the first time it reaches $1/a$, however often it
+is read and whenever the analyst stops \citep{shafer2011,shafer2021,ramdas2023,grunwald2024,vovk2021}. \citet{wang2022} built e-processes for the back-testing of VaR and expected shortfall
+with a betting rule that learns the size of the departure from the data.
+
+Two gaps remain for a validation function. The first is the calibration of probabilities of default by rating grade: the tests in use are read at the end of a
+cohort's life. E-values for the calibration of forecasts exist \citep{arnold2023}, and so do e-values for the comparison of two probability forecasts \citep{henzi2022}, but we found no e-process for the defaults of each rating grade against its predicted PD, with a multiplicative miscalibration as the alternative and batteries of grades, among the works cited here. The second is the combination of several monitors of one portfolio into one anytime-valid decision, where
+the combination rule decides whether the guarantee survives \citep{vovk2021,ramdas2023}. We address both and measure what the guarantee costs.
+
+The proposed method is a set of four monitors, each a mixture of likelihood-ratio e-processes over a grid of alternatives fixed before any outcome is seen: a monitor of the
+VaR exceedance rate, a monitor of hits that follow hits, a monitor of the defaults of each rating grade against its predicted PD, and a battery that combines monitors by
+averaging, which is valid whatever the dependence between them, or by product, which is valid when they are independent given the past. Each monitor rejects the first
+time its process reaches 20, which is an anytime-valid size of 5\,\%. The monitors are the module \texttt{riskvalidation.validation.sequential} of the
+open engine \texttt{riskvalidation} release 1.1.0 and serve three cases of the validation suite: the sizes and powers of validation tests on planted defects, market-risk
+back-testing across four crises, and small-business credit by vintage.
+
+The contributions are four.
+\begin{enumerate}
+\item The monitors of the VaR exceedance rate, of hit clustering and of the defaults of each grade, with the combination rules of a battery, specified in full, with their
+parameters, their algorithm and their cost (\cref{sec:proposed-method}).
+\item A theory of what the monitors guarantee and what they cost: validity at any stopping time, validity of the clustering and PD factors, the failure of the
+product combination under dependence, a bound on the growth rate of any e-process and the first-order delay it implies, a bound on the power of any monitor at a fixed horizon, and the
+loss of validity of the PD monitor when the default probability of a year is random (\cref{sec:theory}).
+\item An experiment in which the monitors are run against ten other rules on the same streams: the Kupiec test on a growing and on a sliding window, the traffic light,
+Christoffersen's independence test, a Sidak-corrected Kupiec test, a Kupiec test and a CUSUM chart whose thresholds are calibrated by simulation to the same size, the published
+e-backtest, and two e-processes of the textbook kind (\cref{sec:experimental-design,sec:results}).
+\item The measured outcome of the hypotheses stated before the experiments. The size holds, and the delay and the power cost hold at a hit rate four times too high and above. The delay and the power-cost hypotheses fail at three times the nominal rate: the delay is \nSeedsThreeMed\ days against the window of 250 (\cref{tab:x3-seeds}) and the power cost is \nSeedsThreeCost\ points against the 10 allowed. The PD monitor loses its size once defaults share a systematic factor, and at the size it measured (\nPdcMatchedSize\,\%) it detects a miscalibration of the PD in fewer histories than a chi-square rule of that size does (\nPdOneZeroFiveAvg\,\% against \nPdcOneZeroFiveChiMatched\,\% for a PD $5\,\%$ too low), where the engine's Vasicek-corrected binomial test with the right correlation keeps its size
+(\cref{tab:hypotheses,tab:pd-correlation,tab:pd-comparators,tab:pd-equal-size}).
+\end{enumerate}
+
+The main result is a trade. Read every day over 1,000 days, the rate e-process rejects a correct model in \nNullSizeE\,\% of \nReps\ series (95\,\% interval \nNullSizeELo\ to \nNullSizeEHi\,\%)
+where the repeated Kupiec test and the traffic light reject in \nNullSizeKupCum\ to \nNullSizeKupTrail\,\%, and it detects a hit rate four times too high at a median of
+\nMedFourE\ days, inside the 250-day window that the traffic light needs before it can speak at all. The price is power at a fixed horizon: by day 250 it detects a hit rate
+three times too high in \nByThreeE\,\% of the series against \nShotThree\,\% for one Kupiec reading. A one-sided monitor of the direction a supervisor penalises cuts that cost to \nCostThreeEUp\ points in the same run
+(\cref{sec:ablation}); that variant was chosen after the two-sided results were known and needs a prospective confirmation (\cref{sec:discussion-negative}).
+
+\Cref{sec:related-work} places the work among the published methods, \cref{sec:problem} states the problem, \cref{sec:proposed-method} the monitors and \cref{sec:theory} their theory.
+\Cref{sec:experimental-design} sets the hypotheses and the protocol, \cref{sec:results,sec:ablation} give the measurements, and \cref{sec:discussion,sec:limitations}
+read them and bound them. \Cref{sec:reproducibility} lists the commands that regenerate every number.

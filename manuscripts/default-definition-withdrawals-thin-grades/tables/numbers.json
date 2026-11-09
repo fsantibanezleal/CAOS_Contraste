@@ -1,0 +1,3166 @@
+{
+ "spLraDtwoCcc": {
+  "value": "26.64",
+  "source": "experiments/definitions.json agencies.sp.point.d2.lra[6]"
+ },
+ "spLraDtwoB": {
+  "value": "2.96",
+  "source": "experiments/definitions.json agencies.sp.point.d2.lra[5]"
+ },
+ "spRwDtwo": {
+  "value": "58.0",
+  "source": "experiments/definitions.json agencies.sp.point.d2.rw"
+ },
+ "spLraDthreeCcc": {
+  "value": "27.58",
+  "source": "experiments/definitions.json agencies.sp.point.d3.lra[6]"
+ },
+ "spLraDthreeB": {
+  "value": "3.04",
+  "source": "experiments/definitions.json agencies.sp.point.d3.lra[5]"
+ },
+ "spRwDthree": {
+  "value": "58.3",
+  "source": "experiments/definitions.json agencies.sp.point.d3.rw"
+ },
+ "spLraDfourCcc": {
+  "value": "8.61",
+  "source": "experiments/definitions.json agencies.sp.point.d4.lra[6]"
+ },
+ "spLraDfourB": {
+  "value": "1.33",
+  "source": "experiments/definitions.json agencies.sp.point.d4.lra[5]"
+ },
+ "spRwDfour": {
+  "value": "47.5",
+  "source": "experiments/definitions.json agencies.sp.point.d4.rw"
+ },
+ "spLraKeepCcc": {
+  "value": "5.88",
+  "source": "experiments/definitions.json agencies.sp.point.keep.lra[6]"
+ },
+ "spLraKeepB": {
+  "value": "1.16",
+  "source": "experiments/definitions.json agencies.sp.point.keep.lra[5]"
+ },
+ "spRwKeep": {
+  "value": "45.2",
+  "source": "experiments/definitions.json agencies.sp.point.keep.rw"
+ },
+ "fiLraDtwoCcc": {
+  "value": "18.69",
+  "source": "experiments/definitions.json agencies.fitch.point.d2.lra[6]"
+ },
+ "fiLraDtwoB": {
+  "value": "1.92",
+  "source": "experiments/definitions.json agencies.fitch.point.d2.lra[5]"
+ },
+ "fiRwDtwo": {
+  "value": "46.9",
+  "source": "experiments/definitions.json agencies.fitch.point.d2.rw"
+ },
+ "fiLraDfourCcc": {
+  "value": "3.65",
+  "source": "experiments/definitions.json agencies.fitch.point.d4.lra[6]"
+ },
+ "fiLraDfourB": {
+  "value": "0.49",
+  "source": "experiments/definitions.json agencies.fitch.point.d4.lra[5]"
+ },
+ "fiRwDfour": {
+  "value": "31.1",
+  "source": "experiments/definitions.json agencies.fitch.point.d4.rw"
+ },
+ "fiLraKeepCcc": {
+  "value": "2.88",
+  "source": "experiments/definitions.json agencies.fitch.point.keep.lra[6]"
+ },
+ "fiLraKeepB": {
+  "value": "0.44",
+  "source": "experiments/definitions.json agencies.fitch.point.keep.lra[5]"
+ },
+ "fiRwKeep": {
+  "value": "30.3",
+  "source": "experiments/definitions.json agencies.fitch.point.keep.rw"
+ },
+ "moLraDtwoCcc": {
+  "value": "11.15",
+  "source": "experiments/definitions.json agencies.moodys.point.d2.lra[6]"
+ },
+ "moRwDtwo": {
+  "value": "61.1",
+  "source": "experiments/definitions.json agencies.moodys.point.d2.rw"
+ },
+ "spRatioCcc": {
+  "value": "0.322",
+  "source": "experiments/definitions.json agencies.sp.bootstrap.ratio_d4_over_d2[6].median"
+ },
+ "spPtRatioCcc": {
+  "value": "0.323",
+  "source": "experiments/definitions.json agencies.sp.point d4.lra[6] over d2.lra[6] (Equation gap-index on the averages)"
+ },
+ "spPtRatioB": {
+  "value": "0.450",
+  "source": "agencies.sp.point d4.lra[5] over d2.lra[5]"
+ },
+ "spRatioCccLo": {
+  "value": "0.259",
+  "source": "... ratio_d4_over_d2[6].lo"
+ },
+ "spRatioCccHi": {
+  "value": "0.391",
+  "source": "... ratio_d4_over_d2[6].hi"
+ },
+ "spRatioB": {
+  "value": "0.451",
+  "source": "... ratio_d4_over_d2[5].median"
+ },
+ "spRatioBLo": {
+  "value": "0.370",
+  "source": "... ratio_d4_over_d2[5].lo"
+ },
+ "spRatioBHi": {
+  "value": "0.526",
+  "source": "... ratio_d4_over_d2[5].hi"
+ },
+ "spRwGap": {
+  "value": "10.5",
+  "source": "experiments/definitions.json agencies.sp.point d2.rw minus d4.rw"
+ },
+ "spRwGapLo": {
+  "value": "8.3",
+  "source": "agencies.sp.bootstrap.rw_d2_minus_d4.lo"
+ },
+ "spRwGapHi": {
+  "value": "13.1",
+  "source": "agencies.sp.bootstrap.rw_d2_minus_d4.hi"
+ },
+ "spRwGapShare": {
+  "value": "100.0",
+  "source": "agencies.sp.bootstrap.share_rw_d2_above_d4"
+ },
+ "fiRatioCcc": {
+  "value": "0.198",
+  "source": "experiments/definitions.json agencies.fitch.bootstrap.ratio_d4_over_d2[6].median"
+ },
+ "fiPtRatioCcc": {
+  "value": "0.195",
+  "source": "experiments/definitions.json agencies.fitch.point d4.lra[6] over d2.lra[6] (Equation gap-index on the averages)"
+ },
+ "fiPtRatioB": {
+  "value": "0.256",
+  "source": "agencies.fitch.point d4.lra[5] over d2.lra[5]"
+ },
+ "fiRatioCccLo": {
+  "value": "0.133",
+  "source": "... ratio_d4_over_d2[6].lo"
+ },
+ "fiRatioCccHi": {
+  "value": "0.269",
+  "source": "... ratio_d4_over_d2[6].hi"
+ },
+ "fiRatioB": {
+  "value": "0.258",
+  "source": "... ratio_d4_over_d2[5].median"
+ },
+ "fiRatioBLo": {
+  "value": "0.124",
+  "source": "... ratio_d4_over_d2[5].lo"
+ },
+ "fiRatioBHi": {
+  "value": "0.407",
+  "source": "... ratio_d4_over_d2[5].hi"
+ },
+ "fiRwGap": {
+  "value": "15.8",
+  "source": "experiments/definitions.json agencies.fitch.point d2.rw minus d4.rw"
+ },
+ "fiRwGapLo": {
+  "value": "8.8",
+  "source": "agencies.fitch.bootstrap.rw_d2_minus_d4.lo"
+ },
+ "fiRwGapHi": {
+  "value": "26.6",
+  "source": "agencies.fitch.bootstrap.rw_d2_minus_d4.hi"
+ },
+ "fiRwGapShare": {
+  "value": "100.0",
+  "source": "agencies.fitch.bootstrap.share_rw_d2_above_d4"
+ },
+ "bootSeedRatio": {
+  "value": "0.004",
+  "source": "experiments/definitions.json bootstrap.second_seed.max_abs_diff_of_limits.ratio_ccc, largest over S&P and Fitch"
+ },
+ "bootSeedRw": {
+  "value": "0.7",
+  "source": "experiments/definitions.json bootstrap.second_seed.max_abs_diff_of_limits.rw_gap (points), largest over S&P and Fitch"
+ },
+ "bootB": {
+  "value": "2{,}000",
+  "source": "experiments/definitions.json bootstrap_resamples"
+ },
+ "spYearsBelowB": {
+  "value": "26",
+  "source": "agencies.sp.years_d4_below_d2[5].d4_below_d2"
+ },
+ "spYearsB": {
+  "value": "26",
+  "source": "agencies.sp.years_d4_below_d2[5].years"
+ },
+ "spYearsBelowCcc": {
+  "value": "26",
+  "source": "agencies.sp.years_d4_below_d2[6].d4_below_d2"
+ },
+ "spYearsCcc": {
+  "value": "26",
+  "source": "agencies.sp.years_d4_below_d2[6].years"
+ },
+ "fiYearsBelowCcc": {
+  "value": "22",
+  "source": "agencies.fitch.years_d4_below_d2[6].d4_below_d2"
+ },
+ "fiYearsCcc": {
+  "value": "24",
+  "source": "agencies.fitch.years_d4_below_d2[6].years"
+ },
+ "spPooledDefDtwoCcc": {
+  "value": "1{,}489",
+  "source": "experiments/definitions.json agencies.sp.pooled_counts.d2.defaults[6]"
+ },
+ "spPooledNDtwoCcc": {
+  "value": "5{,}428",
+  "source": "agencies.sp.pooled_counts.d2.n[6]"
+ },
+ "spPooledRateDtwoCcc": {
+  "value": "27.43",
+  "source": "defaults/n of agencies.sp.pooled_counts.d2"
+ },
+ "spJeffLoDtwoCcc": {
+  "value": "26.26",
+  "source": "agencies.sp.jeffreys.d2.lower[6]"
+ },
+ "spJeffHiDtwoCcc": {
+  "value": "28.63",
+  "source": "agencies.sp.jeffreys.d2.upper[6]"
+ },
+ "spPooledDefDfourCcc": {
+  "value": "301",
+  "source": "experiments/definitions.json agencies.sp.pooled_counts.d4.defaults[6]"
+ },
+ "spPooledNDfourCcc": {
+  "value": "3{,}731",
+  "source": "agencies.sp.pooled_counts.d4.n[6]"
+ },
+ "spPooledRateDfourCcc": {
+  "value": "8.07",
+  "source": "defaults/n of agencies.sp.pooled_counts.d4"
+ },
+ "spJeffLoDfourCcc": {
+  "value": "7.23",
+  "source": "agencies.sp.jeffreys.d4.lower[6]"
+ },
+ "spJeffHiDfourCcc": {
+  "value": "8.97",
+  "source": "agencies.sp.jeffreys.d4.upper[6]"
+ },
+ "spGapYears": {
+  "value": "18",
+  "source": "data/derived/C04/sp.json outputs.cohorts[].tab2_gap > 0"
+ },
+ "moGapYears": {
+  "value": "7",
+  "source": "data/derived/C04/moodys.json outputs.cohorts[].tab2_gap > 0"
+ },
+ "fiGapYears": {
+  "value": "9",
+  "source": "data/derived/C04/fitch.json outputs.cohorts[].tab2_gap > 0"
+ },
+ "spPeakYearCccDtwo": {
+  "value": "2009",
+  "source": "data/derived/C04/sp.json outputs.pd.d2[:, 6] argmax"
+ },
+ "spPeakRateCccDtwo": {
+  "value": "50.9",
+  "source": "data/derived/C04/sp.json outputs.pd.d2[:, 6] max"
+ },
+ "spPeakYearCccDfour": {
+  "value": "2009",
+  "source": "data/derived/C04/sp.json outputs.pd.d4[:, 6] argmax"
+ },
+ "spPeakRateCccDfour": {
+  "value": "23.9",
+  "source": "data/derived/C04/sp.json outputs.pd.d4[:, 6] max"
+ },
+ "spRatioCccInverse": {
+  "value": "3.1",
+  "source": "experiments/definitions.json agencies.sp.point d2.lra[6] over d4.lra[6]"
+ },
+ "agencyRatio": {
+  "value": "2.4",
+  "source": "experiments/definitions.json default-page LRA of CCC to C, S&P over Moody's"
+ },
+ "spWdShareAll": {
+  "value": "7.9",
+  "source": "data/derived/C04/sp.json outputs.cohorts[].withdrawn summed over size summed"
+ },
+ "spWdShareB": {
+  "value": "12.3",
+  "source": "same, grade B"
+ },
+ "spWdShareCcc": {
+  "value": "28.5",
+  "source": "same, grade CCC to C"
+ },
+ "spWdShareAaa": {
+  "value": "2.8",
+  "source": "same, grade AAA"
+ },
+ "fiPopYears": {
+  "value": "15",
+  "source": "experiments/definitions.json fitch_populated_years.kept_years, number"
+ },
+ "fiPopDropped": {
+  "value": "2006 to 2014",
+  "source": "experiments/definitions.json fitch_populated_years.dropped_years, first and last"
+ },
+ "fiPopSeed": {
+  "value": "20261106",
+  "source": "experiments/definitions.json fitch_populated_years.seed"
+ },
+ "fiPopDroppedN": {
+  "value": "9",
+  "source": "fitch_populated_years.dropped_years, number"
+ },
+ "fiPopLraDtwoCcc": {
+  "value": "20.22",
+  "source": "fitch_populated_years.point.d2.lra[6]"
+ },
+ "fiPopLraDfourCcc": {
+  "value": "5.84",
+  "source": "fitch_populated_years.point.d4.lra[6]"
+ },
+ "fiPopPtRatioCcc": {
+  "value": "0.289",
+  "source": "fitch_populated_years.point d4.lra[6] over d2.lra[6]"
+ },
+ "fiPopRatioCccLo": {
+  "value": "0.240",
+  "source": "fitch_populated_years.ratio_d4_over_d2[6].lo"
+ },
+ "fiPopRatioCccHi": {
+  "value": "0.362",
+  "source": "fitch_populated_years.ratio_d4_over_d2[6].hi"
+ },
+ "fiPopRwDtwo": {
+  "value": "43.8",
+  "source": "fitch_populated_years.point.d2.rw"
+ },
+ "fiPopRwDfour": {
+  "value": "35.2",
+  "source": "fitch_populated_years.point.d4.rw"
+ },
+ "fiPopRwGap": {
+  "value": "8.6",
+  "source": "fitch_populated_years.rw_gap_point"
+ },
+ "fiPopRwGapLo": {
+  "value": "5.2",
+  "source": "fitch_populated_years.rw_d2_minus_d4.lo"
+ },
+ "fiPopRwGapHi": {
+  "value": "12.0",
+  "source": "fitch_populated_years.rw_d2_minus_d4.hi"
+ },
+ "spAaNonzeroYears": {
+  "value": "1",
+  "source": "data/derived/C04/sp.json outputs.pd.d2[:, 1] > 0, count of years"
+ },
+ "spCohorts": {
+  "value": "26",
+  "source": "experiments/definitions.json agencies.sp.cohorts"
+ },
+ "spMeanCohort": {
+  "value": "7111",
+  "source": "data/derived/C04/sp.json outputs.cohorts[].size summed, mean"
+ },
+ "moCohorts": {
+  "value": "26",
+  "source": "experiments/definitions.json agencies.moodys.cohorts"
+ },
+ "moMeanCohort": {
+  "value": "3758",
+  "source": "data/derived/C04/moodys.json outputs.cohorts[].size summed, mean"
+ },
+ "fiCohorts": {
+  "value": "24",
+  "source": "experiments/definitions.json agencies.fitch.cohorts"
+ },
+ "fiMeanCohort": {
+  "value": "2857",
+  "source": "data/derived/C04/fitch.json outputs.cohorts[].size summed, mean"
+ },
+ "repsNew": {
+  "value": "1{,}000",
+  "source": "experiments/withdrawals.json rungs[0].reps"
+ },
+ "minWd": {
+  "value": "5",
+  "source": "experiments/withdrawals.json seconds / 60"
+ },
+ "minTheory": {
+  "value": "1",
+  "source": "experiments/theory.json seconds / 60 (at least one)"
+ },
+ "minExtra": {
+  "value": "5",
+  "source": "experiments/extra.json seconds / 60"
+ },
+ "repsCommitted": {
+  "value": "200",
+  "source": "data/derived/C04/withdrawals.json design.reps"
+ },
+ "repsTests": {
+  "value": "1{,}000",
+  "source": "experiments/withdrawals.json tests[0].n_rep"
+ },
+ "truthB": {
+  "value": "1.17",
+  "source": "experiments/withdrawals.json truth_pd[5]"
+ },
+ "truthCcc": {
+  "value": "8.06",
+  "source": "experiments/withdrawals.json truth_pd[6]"
+ },
+ "rwTruth": {
+  "value": "46.8",
+  "source": "experiments/withdrawals.json rw_truth"
+ },
+ "reproMax": {
+  "value": "5\\times10^{-11}",
+  "source": "experiments/withdrawals.json reproduction[].max_abs_diff_of_means"
+ },
+ "removedBkZero": {
+  "value": "2.6",
+  "source": "experiments/withdrawals.json rungs[k=0].removed.rel_bias[5]"
+ },
+ "removedBkZerose": {
+  "value": "0.4",
+  "source": "rungs[k=0].removed.rel_bias_mcse[5]"
+ },
+ "removedCcckZero": {
+  "value": "2.6",
+  "source": "experiments/withdrawals.json rungs[k=0].removed.rel_bias[6]"
+ },
+ "removedCcckZerose": {
+  "value": "0.3",
+  "source": "rungs[k=0].removed.rel_bias_mcse[6]"
+ },
+ "removedYoneBbbkZero": {
+  "value": "2.0",
+  "source": "rungs[k=0].removed_y1.rel_bias[3]"
+ },
+ "removedYoneBbbkZerose": {
+  "value": "2.8",
+  "source": "rungs[k=0].removed_y1.rel_bias_mcse[3]"
+ },
+ "removedYoneBbkZero": {
+  "value": "2.8",
+  "source": "rungs[k=0].removed_y1.rel_bias[4]"
+ },
+ "removedYoneBbkZerose": {
+  "value": "1.7",
+  "source": "rungs[k=0].removed_y1.rel_bias_mcse[4]"
+ },
+ "removedYoneBkZero": {
+  "value": "1.0",
+  "source": "rungs[k=0].removed_y1.rel_bias[5]"
+ },
+ "removedYoneBkZerose": {
+  "value": "0.8",
+  "source": "rungs[k=0].removed_y1.rel_bias_mcse[5]"
+ },
+ "removedYoneCcckZero": {
+  "value": "1.5",
+  "source": "rungs[k=0].removed_y1.rel_bias[6]"
+ },
+ "removedYoneCcckZerose": {
+  "value": "0.8",
+  "source": "rungs[k=0].removed_y1.rel_bias_mcse[6]"
+ },
+ "rwremovedkZero": {
+  "value": "0.38",
+  "source": "rungs[k=0].rw.removed.error"
+ },
+ "rwremovedkZerose": {
+  "value": "0.06",
+  "source": "rungs[k=0].rw.removed.error_mcse"
+ },
+ "rwAbsremovedkZero": {
+  "value": "0.38",
+  "source": "absolute value of rungs[k=0].rw.removed.error"
+ },
+ "keptBkZero": {
+  "value": "-3.4",
+  "source": "experiments/withdrawals.json rungs[k=0].kept.rel_bias[5]"
+ },
+ "keptBkZerose": {
+  "value": "0.4",
+  "source": "rungs[k=0].kept.rel_bias_mcse[5]"
+ },
+ "keptCcckZero": {
+  "value": "-3.1",
+  "source": "experiments/withdrawals.json rungs[k=0].kept.rel_bias[6]"
+ },
+ "keptCcckZerose": {
+  "value": "0.3",
+  "source": "rungs[k=0].kept.rel_bias_mcse[6]"
+ },
+ "keptYoneBbbkZero": {
+  "value": "-4.0",
+  "source": "rungs[k=0].kept_y1.rel_bias[3]"
+ },
+ "keptYoneBbbkZerose": {
+  "value": "2.6",
+  "source": "rungs[k=0].kept_y1.rel_bias_mcse[3]"
+ },
+ "keptYoneBbkZero": {
+  "value": "-3.2",
+  "source": "rungs[k=0].kept_y1.rel_bias[4]"
+ },
+ "keptYoneBbkZerose": {
+  "value": "1.6",
+  "source": "rungs[k=0].kept_y1.rel_bias_mcse[4]"
+ },
+ "keptYoneBkZero": {
+  "value": "-4.9",
+  "source": "rungs[k=0].kept_y1.rel_bias[5]"
+ },
+ "keptYoneBkZerose": {
+  "value": "0.8",
+  "source": "rungs[k=0].kept_y1.rel_bias_mcse[5]"
+ },
+ "keptYoneCcckZero": {
+  "value": "-4.2",
+  "source": "rungs[k=0].kept_y1.rel_bias[6]"
+ },
+ "keptYoneCcckZerose": {
+  "value": "0.8",
+  "source": "rungs[k=0].kept_y1.rel_bias_mcse[6]"
+ },
+ "rwkeptkZero": {
+  "value": "-0.60",
+  "source": "rungs[k=0].rw.kept.error"
+ },
+ "rwkeptkZerose": {
+  "value": "0.06",
+  "source": "rungs[k=0].rw.kept.error_mcse"
+ },
+ "rwAbskeptkZero": {
+  "value": "0.60",
+  "source": "absolute value of rungs[k=0].rw.kept.error"
+ },
+ "followedBkZero": {
+  "value": "-0.2",
+  "source": "experiments/withdrawals.json rungs[k=0].followed.rel_bias[5]"
+ },
+ "followedBkZerose": {
+  "value": "0.4",
+  "source": "rungs[k=0].followed.rel_bias_mcse[5]"
+ },
+ "followedCcckZero": {
+  "value": "-0.3",
+  "source": "experiments/withdrawals.json rungs[k=0].followed.rel_bias[6]"
+ },
+ "followedCcckZerose": {
+  "value": "0.3",
+  "source": "rungs[k=0].followed.rel_bias_mcse[6]"
+ },
+ "followedYoneBbbkZero": {
+  "value": "-0.4",
+  "source": "rungs[k=0].followed_y1.rel_bias[3]"
+ },
+ "followedYoneBbbkZerose": {
+  "value": "2.7",
+  "source": "rungs[k=0].followed_y1.rel_bias_mcse[3]"
+ },
+ "followedYoneBbkZero": {
+  "value": "0.3",
+  "source": "rungs[k=0].followed_y1.rel_bias[4]"
+ },
+ "followedYoneBbkZerose": {
+  "value": "1.6",
+  "source": "rungs[k=0].followed_y1.rel_bias_mcse[4]"
+ },
+ "followedYoneBkZero": {
+  "value": "-1.8",
+  "source": "rungs[k=0].followed_y1.rel_bias[5]"
+ },
+ "followedYoneBkZerose": {
+  "value": "0.8",
+  "source": "rungs[k=0].followed_y1.rel_bias_mcse[5]"
+ },
+ "followedYoneCcckZero": {
+  "value": "-1.6",
+  "source": "rungs[k=0].followed_y1.rel_bias[6]"
+ },
+ "followedYoneCcckZerose": {
+  "value": "0.8",
+  "source": "rungs[k=0].followed_y1.rel_bias_mcse[6]"
+ },
+ "rwfollowedkZero": {
+  "value": "-0.09",
+  "source": "rungs[k=0].rw.followed.error"
+ },
+ "rwfollowedkZerose": {
+  "value": "0.06",
+  "source": "rungs[k=0].rw.followed.error_mcse"
+ },
+ "rwAbsfollowedkZero": {
+  "value": "0.09",
+  "source": "absolute value of rungs[k=0].rw.followed.error"
+ },
+ "latentBkZero": {
+  "value": "-0.2",
+  "source": "experiments/withdrawals.json rungs[k=0].latent.rel_bias[5]"
+ },
+ "latentBkZerose": {
+  "value": "0.4",
+  "source": "rungs[k=0].latent.rel_bias_mcse[5]"
+ },
+ "latentCcckZero": {
+  "value": "-0.3",
+  "source": "experiments/withdrawals.json rungs[k=0].latent.rel_bias[6]"
+ },
+ "latentCcckZerose": {
+  "value": "0.3",
+  "source": "rungs[k=0].latent.rel_bias_mcse[6]"
+ },
+ "latentYoneBbbkZero": {
+  "value": "-0.4",
+  "source": "rungs[k=0].latent_y1.rel_bias[3]"
+ },
+ "latentYoneBbbkZerose": {
+  "value": "2.7",
+  "source": "rungs[k=0].latent_y1.rel_bias_mcse[3]"
+ },
+ "latentYoneBbkZero": {
+  "value": "0.3",
+  "source": "rungs[k=0].latent_y1.rel_bias[4]"
+ },
+ "latentYoneBbkZerose": {
+  "value": "1.6",
+  "source": "rungs[k=0].latent_y1.rel_bias_mcse[4]"
+ },
+ "latentYoneBkZero": {
+  "value": "-1.8",
+  "source": "rungs[k=0].latent_y1.rel_bias[5]"
+ },
+ "latentYoneBkZerose": {
+  "value": "0.8",
+  "source": "rungs[k=0].latent_y1.rel_bias_mcse[5]"
+ },
+ "latentYoneCcckZero": {
+  "value": "-1.6",
+  "source": "rungs[k=0].latent_y1.rel_bias[6]"
+ },
+ "latentYoneCcckZerose": {
+  "value": "0.8",
+  "source": "rungs[k=0].latent_y1.rel_bias_mcse[6]"
+ },
+ "rwlatentkZero": {
+  "value": "-0.08",
+  "source": "rungs[k=0].rw.latent.error"
+ },
+ "rwlatentkZerose": {
+  "value": "0.06",
+  "source": "rungs[k=0].rw.latent.error_mcse"
+ },
+ "rwAbslatentkZero": {
+  "value": "0.08",
+  "source": "absolute value of rungs[k=0].rw.latent.error"
+ },
+ "removedBkOne": {
+  "value": "-2.7",
+  "source": "experiments/withdrawals.json rungs[k=1].removed.rel_bias[5]"
+ },
+ "removedBkOnese": {
+  "value": "0.4",
+  "source": "rungs[k=1].removed.rel_bias_mcse[5]"
+ },
+ "removedCcckOne": {
+  "value": "-1.7",
+  "source": "experiments/withdrawals.json rungs[k=1].removed.rel_bias[6]"
+ },
+ "removedCcckOnese": {
+  "value": "0.3",
+  "source": "rungs[k=1].removed.rel_bias_mcse[6]"
+ },
+ "removedYoneBbbkOne": {
+  "value": "0.5",
+  "source": "rungs[k=1].removed_y1.rel_bias[3]"
+ },
+ "removedYoneBbbkOnese": {
+  "value": "2.7",
+  "source": "rungs[k=1].removed_y1.rel_bias_mcse[3]"
+ },
+ "removedYoneBbkOne": {
+  "value": "0.1",
+  "source": "rungs[k=1].removed_y1.rel_bias[4]"
+ },
+ "removedYoneBbkOnese": {
+  "value": "1.7",
+  "source": "rungs[k=1].removed_y1.rel_bias_mcse[4]"
+ },
+ "removedYoneBkOne": {
+  "value": "-1.6",
+  "source": "rungs[k=1].removed_y1.rel_bias[5]"
+ },
+ "removedYoneBkOnese": {
+  "value": "0.8",
+  "source": "rungs[k=1].removed_y1.rel_bias_mcse[5]"
+ },
+ "removedYoneCcckOne": {
+  "value": "0.2",
+  "source": "rungs[k=1].removed_y1.rel_bias[6]"
+ },
+ "removedYoneCcckOnese": {
+  "value": "0.8",
+  "source": "rungs[k=1].removed_y1.rel_bias_mcse[6]"
+ },
+ "rwremovedkOne": {
+  "value": "-0.42",
+  "source": "rungs[k=1].rw.removed.error"
+ },
+ "rwremovedkOnese": {
+  "value": "0.06",
+  "source": "rungs[k=1].rw.removed.error_mcse"
+ },
+ "rwAbsremovedkOne": {
+  "value": "0.42",
+  "source": "absolute value of rungs[k=1].rw.removed.error"
+ },
+ "keptBkOne": {
+  "value": "-8.5",
+  "source": "experiments/withdrawals.json rungs[k=1].kept.rel_bias[5]"
+ },
+ "keptBkOnese": {
+  "value": "0.4",
+  "source": "rungs[k=1].kept.rel_bias_mcse[5]"
+ },
+ "keptCcckOne": {
+  "value": "-7.5",
+  "source": "experiments/withdrawals.json rungs[k=1].kept.rel_bias[6]"
+ },
+ "keptCcckOnese": {
+  "value": "0.3",
+  "source": "rungs[k=1].kept.rel_bias_mcse[6]"
+ },
+ "keptYoneBbbkOne": {
+  "value": "-5.4",
+  "source": "rungs[k=1].kept_y1.rel_bias[3]"
+ },
+ "keptYoneBbbkOnese": {
+  "value": "2.5",
+  "source": "rungs[k=1].kept_y1.rel_bias_mcse[3]"
+ },
+ "keptYoneBbkOne": {
+  "value": "-5.7",
+  "source": "rungs[k=1].kept_y1.rel_bias[4]"
+ },
+ "keptYoneBbkOnese": {
+  "value": "1.6",
+  "source": "rungs[k=1].kept_y1.rel_bias_mcse[4]"
+ },
+ "keptYoneBkOne": {
+  "value": "-7.4",
+  "source": "rungs[k=1].kept_y1.rel_bias[5]"
+ },
+ "keptYoneBkOnese": {
+  "value": "0.8",
+  "source": "rungs[k=1].kept_y1.rel_bias_mcse[5]"
+ },
+ "keptYoneCcckOne": {
+  "value": "-5.9",
+  "source": "rungs[k=1].kept_y1.rel_bias[6]"
+ },
+ "keptYoneCcckOnese": {
+  "value": "0.8",
+  "source": "rungs[k=1].kept_y1.rel_bias_mcse[6]"
+ },
+ "rwkeptkOne": {
+  "value": "-1.40",
+  "source": "rungs[k=1].rw.kept.error"
+ },
+ "rwkeptkOnese": {
+  "value": "0.06",
+  "source": "rungs[k=1].rw.kept.error_mcse"
+ },
+ "rwAbskeptkOne": {
+  "value": "1.40",
+  "source": "absolute value of rungs[k=1].rw.kept.error"
+ },
+ "followedBkOne": {
+  "value": "-2.3",
+  "source": "experiments/withdrawals.json rungs[k=1].followed.rel_bias[5]"
+ },
+ "followedBkOnese": {
+  "value": "0.4",
+  "source": "rungs[k=1].followed.rel_bias_mcse[5]"
+ },
+ "followedCcckOne": {
+  "value": "-2.1",
+  "source": "experiments/withdrawals.json rungs[k=1].followed.rel_bias[6]"
+ },
+ "followedCcckOnese": {
+  "value": "0.3",
+  "source": "rungs[k=1].followed.rel_bias_mcse[6]"
+ },
+ "followedYoneBbbkOne": {
+  "value": "1.0",
+  "source": "rungs[k=1].followed_y1.rel_bias[3]"
+ },
+ "followedYoneBbbkOnese": {
+  "value": "2.5",
+  "source": "rungs[k=1].followed_y1.rel_bias_mcse[3]"
+ },
+ "followedYoneBbkOne": {
+  "value": "0.3",
+  "source": "rungs[k=1].followed_y1.rel_bias[4]"
+ },
+ "followedYoneBbkOnese": {
+  "value": "1.6",
+  "source": "rungs[k=1].followed_y1.rel_bias_mcse[4]"
+ },
+ "followedYoneBkOne": {
+  "value": "-1.1",
+  "source": "rungs[k=1].followed_y1.rel_bias[5]"
+ },
+ "followedYoneBkOnese": {
+  "value": "0.8",
+  "source": "rungs[k=1].followed_y1.rel_bias_mcse[5]"
+ },
+ "followedYoneCcckOne": {
+  "value": "-0.5",
+  "source": "rungs[k=1].followed_y1.rel_bias[6]"
+ },
+ "followedYoneCcckOnese": {
+  "value": "0.8",
+  "source": "rungs[k=1].followed_y1.rel_bias_mcse[6]"
+ },
+ "rwfollowedkOne": {
+  "value": "-0.37",
+  "source": "rungs[k=1].rw.followed.error"
+ },
+ "rwfollowedkOnese": {
+  "value": "0.06",
+  "source": "rungs[k=1].rw.followed.error_mcse"
+ },
+ "rwAbsfollowedkOne": {
+  "value": "0.37",
+  "source": "absolute value of rungs[k=1].rw.followed.error"
+ },
+ "latentBkOne": {
+  "value": "-0.2",
+  "source": "experiments/withdrawals.json rungs[k=1].latent.rel_bias[5]"
+ },
+ "latentBkOnese": {
+  "value": "0.4",
+  "source": "rungs[k=1].latent.rel_bias_mcse[5]"
+ },
+ "latentCcckOne": {
+  "value": "0.3",
+  "source": "experiments/withdrawals.json rungs[k=1].latent.rel_bias[6]"
+ },
+ "latentCcckOnese": {
+  "value": "0.3",
+  "source": "rungs[k=1].latent.rel_bias_mcse[6]"
+ },
+ "latentYoneBbbkOne": {
+  "value": "1.0",
+  "source": "rungs[k=1].latent_y1.rel_bias[3]"
+ },
+ "latentYoneBbbkOnese": {
+  "value": "2.5",
+  "source": "rungs[k=1].latent_y1.rel_bias_mcse[3]"
+ },
+ "latentYoneBbkOne": {
+  "value": "0.3",
+  "source": "rungs[k=1].latent_y1.rel_bias[4]"
+ },
+ "latentYoneBbkOnese": {
+  "value": "1.6",
+  "source": "rungs[k=1].latent_y1.rel_bias_mcse[4]"
+ },
+ "latentYoneBkOne": {
+  "value": "-1.1",
+  "source": "rungs[k=1].latent_y1.rel_bias[5]"
+ },
+ "latentYoneBkOnese": {
+  "value": "0.8",
+  "source": "rungs[k=1].latent_y1.rel_bias_mcse[5]"
+ },
+ "latentYoneCcckOne": {
+  "value": "-0.5",
+  "source": "rungs[k=1].latent_y1.rel_bias[6]"
+ },
+ "latentYoneCcckOnese": {
+  "value": "0.8",
+  "source": "rungs[k=1].latent_y1.rel_bias_mcse[6]"
+ },
+ "rwlatentkOne": {
+  "value": "0.02",
+  "source": "rungs[k=1].rw.latent.error"
+ },
+ "rwlatentkOnese": {
+  "value": "0.06",
+  "source": "rungs[k=1].rw.latent.error_mcse"
+ },
+ "rwAbslatentkOne": {
+  "value": "0.02",
+  "source": "absolute value of rungs[k=1].rw.latent.error"
+ },
+ "removedBkTwo": {
+  "value": "-7.9",
+  "source": "experiments/withdrawals.json rungs[k=2].removed.rel_bias[5]"
+ },
+ "removedBkTwose": {
+  "value": "0.4",
+  "source": "rungs[k=2].removed.rel_bias_mcse[5]"
+ },
+ "removedCcckTwo": {
+  "value": "-6.4",
+  "source": "experiments/withdrawals.json rungs[k=2].removed.rel_bias[6]"
+ },
+ "removedCcckTwose": {
+  "value": "0.3",
+  "source": "rungs[k=2].removed.rel_bias_mcse[6]"
+ },
+ "removedYoneBbbkTwo": {
+  "value": "-5.1",
+  "source": "rungs[k=2].removed_y1.rel_bias[3]"
+ },
+ "removedYoneBbbkTwose": {
+  "value": "2.6",
+  "source": "rungs[k=2].removed_y1.rel_bias_mcse[3]"
+ },
+ "removedYoneBbkTwo": {
+  "value": "-4.5",
+  "source": "rungs[k=2].removed_y1.rel_bias[4]"
+ },
+ "removedYoneBbkTwose": {
+  "value": "1.7",
+  "source": "rungs[k=2].removed_y1.rel_bias_mcse[4]"
+ },
+ "removedYoneBkTwo": {
+  "value": "-4.4",
+  "source": "rungs[k=2].removed_y1.rel_bias[5]"
+ },
+ "removedYoneBkTwose": {
+  "value": "0.8",
+  "source": "rungs[k=2].removed_y1.rel_bias_mcse[5]"
+ },
+ "removedYoneCcckTwo": {
+  "value": "-0.6",
+  "source": "rungs[k=2].removed_y1.rel_bias[6]"
+ },
+ "removedYoneCcckTwose": {
+  "value": "0.7",
+  "source": "rungs[k=2].removed_y1.rel_bias_mcse[6]"
+ },
+ "rwremovedkTwo": {
+  "value": "-1.32",
+  "source": "rungs[k=2].rw.removed.error"
+ },
+ "rwremovedkTwose": {
+  "value": "0.06",
+  "source": "rungs[k=2].rw.removed.error_mcse"
+ },
+ "rwAbsremovedkTwo": {
+  "value": "1.32",
+  "source": "absolute value of rungs[k=2].rw.removed.error"
+ },
+ "keptBkTwo": {
+  "value": "-13.4",
+  "source": "experiments/withdrawals.json rungs[k=2].kept.rel_bias[5]"
+ },
+ "keptBkTwose": {
+  "value": "0.3",
+  "source": "rungs[k=2].kept.rel_bias_mcse[5]"
+ },
+ "keptCcckTwo": {
+  "value": "-12.3",
+  "source": "experiments/withdrawals.json rungs[k=2].kept.rel_bias[6]"
+ },
+ "keptCcckTwose": {
+  "value": "0.3",
+  "source": "rungs[k=2].kept.rel_bias_mcse[6]"
+ },
+ "keptYoneBbbkTwo": {
+  "value": "-10.6",
+  "source": "rungs[k=2].kept_y1.rel_bias[3]"
+ },
+ "keptYoneBbbkTwose": {
+  "value": "2.4",
+  "source": "rungs[k=2].kept_y1.rel_bias_mcse[3]"
+ },
+ "keptYoneBbkTwo": {
+  "value": "-10.1",
+  "source": "rungs[k=2].kept_y1.rel_bias[4]"
+ },
+ "keptYoneBbkTwose": {
+  "value": "1.6",
+  "source": "rungs[k=2].kept_y1.rel_bias_mcse[4]"
+ },
+ "keptYoneBkTwo": {
+  "value": "-10.0",
+  "source": "rungs[k=2].kept_y1.rel_bias[5]"
+ },
+ "keptYoneBkTwose": {
+  "value": "0.7",
+  "source": "rungs[k=2].kept_y1.rel_bias_mcse[5]"
+ },
+ "keptYoneCcckTwo": {
+  "value": "-7.0",
+  "source": "rungs[k=2].kept_y1.rel_bias[6]"
+ },
+ "keptYoneCcckTwose": {
+  "value": "0.7",
+  "source": "rungs[k=2].kept_y1.rel_bias_mcse[6]"
+ },
+ "rwkeptkTwo": {
+  "value": "-2.29",
+  "source": "rungs[k=2].rw.kept.error"
+ },
+ "rwkeptkTwose": {
+  "value": "0.06",
+  "source": "rungs[k=2].rw.kept.error_mcse"
+ },
+ "rwAbskeptkTwo": {
+  "value": "2.29",
+  "source": "absolute value of rungs[k=2].rw.kept.error"
+ },
+ "followedBkTwo": {
+  "value": "-4.5",
+  "source": "experiments/withdrawals.json rungs[k=2].followed.rel_bias[5]"
+ },
+ "followedBkTwose": {
+  "value": "0.4",
+  "source": "rungs[k=2].followed.rel_bias_mcse[5]"
+ },
+ "followedCcckTwo": {
+  "value": "-4.5",
+  "source": "experiments/withdrawals.json rungs[k=2].followed.rel_bias[6]"
+ },
+ "followedCcckTwose": {
+  "value": "0.3",
+  "source": "rungs[k=2].followed.rel_bias_mcse[6]"
+ },
+ "followedYoneBbbkTwo": {
+  "value": "-0.8",
+  "source": "rungs[k=2].followed_y1.rel_bias[3]"
+ },
+ "followedYoneBbbkTwose": {
+  "value": "2.6",
+  "source": "rungs[k=2].followed_y1.rel_bias_mcse[3]"
+ },
+ "followedYoneBbkTwo": {
+  "value": "-0.9",
+  "source": "rungs[k=2].followed_y1.rel_bias[4]"
+ },
+ "followedYoneBbkTwose": {
+  "value": "1.7",
+  "source": "rungs[k=2].followed_y1.rel_bias_mcse[4]"
+ },
+ "followedYoneBkTwo": {
+  "value": "-0.9",
+  "source": "rungs[k=2].followed_y1.rel_bias[5]"
+ },
+ "followedYoneBkTwose": {
+  "value": "0.8",
+  "source": "rungs[k=2].followed_y1.rel_bias_mcse[5]"
+ },
+ "followedYoneCcckTwo": {
+  "value": "1.4",
+  "source": "rungs[k=2].followed_y1.rel_bias[6]"
+ },
+ "followedYoneCcckTwose": {
+  "value": "0.7",
+  "source": "rungs[k=2].followed_y1.rel_bias_mcse[6]"
+ },
+ "rwfollowedkTwo": {
+  "value": "-0.83",
+  "source": "rungs[k=2].rw.followed.error"
+ },
+ "rwfollowedkTwose": {
+  "value": "0.06",
+  "source": "rungs[k=2].rw.followed.error_mcse"
+ },
+ "rwAbsfollowedkTwo": {
+  "value": "0.83",
+  "source": "absolute value of rungs[k=2].rw.followed.error"
+ },
+ "latentBkTwo": {
+  "value": "-0.4",
+  "source": "experiments/withdrawals.json rungs[k=2].latent.rel_bias[5]"
+ },
+ "latentBkTwose": {
+  "value": "0.4",
+  "source": "rungs[k=2].latent.rel_bias_mcse[5]"
+ },
+ "latentCcckTwo": {
+  "value": "0.2",
+  "source": "experiments/withdrawals.json rungs[k=2].latent.rel_bias[6]"
+ },
+ "latentCcckTwose": {
+  "value": "0.3",
+  "source": "rungs[k=2].latent.rel_bias_mcse[6]"
+ },
+ "latentYoneBbbkTwo": {
+  "value": "-0.8",
+  "source": "rungs[k=2].latent_y1.rel_bias[3]"
+ },
+ "latentYoneBbbkTwose": {
+  "value": "2.6",
+  "source": "rungs[k=2].latent_y1.rel_bias_mcse[3]"
+ },
+ "latentYoneBbkTwo": {
+  "value": "-0.9",
+  "source": "rungs[k=2].latent_y1.rel_bias[4]"
+ },
+ "latentYoneBbkTwose": {
+  "value": "1.7",
+  "source": "rungs[k=2].latent_y1.rel_bias_mcse[4]"
+ },
+ "latentYoneBkTwo": {
+  "value": "-0.9",
+  "source": "rungs[k=2].latent_y1.rel_bias[5]"
+ },
+ "latentYoneBkTwose": {
+  "value": "0.8",
+  "source": "rungs[k=2].latent_y1.rel_bias_mcse[5]"
+ },
+ "latentYoneCcckTwo": {
+  "value": "1.4",
+  "source": "rungs[k=2].latent_y1.rel_bias[6]"
+ },
+ "latentYoneCcckTwose": {
+  "value": "0.7",
+  "source": "rungs[k=2].latent_y1.rel_bias_mcse[6]"
+ },
+ "rwlatentkTwo": {
+  "value": "-0.12",
+  "source": "rungs[k=2].rw.latent.error"
+ },
+ "rwlatentkTwose": {
+  "value": "0.06",
+  "source": "rungs[k=2].rw.latent.error_mcse"
+ },
+ "rwAbslatentkTwo": {
+  "value": "0.12",
+  "source": "absolute value of rungs[k=2].rw.latent.error"
+ },
+ "removedBkThree": {
+  "value": "-12.0",
+  "source": "experiments/withdrawals.json rungs[k=3].removed.rel_bias[5]"
+ },
+ "removedBkThreese": {
+  "value": "0.4",
+  "source": "rungs[k=3].removed.rel_bias_mcse[5]"
+ },
+ "removedCcckThree": {
+  "value": "-11.2",
+  "source": "experiments/withdrawals.json rungs[k=3].removed.rel_bias[6]"
+ },
+ "removedCcckThreese": {
+  "value": "0.3",
+  "source": "rungs[k=3].removed.rel_bias_mcse[6]"
+ },
+ "removedYoneBbbkThree": {
+  "value": "-6.6",
+  "source": "rungs[k=3].removed_y1.rel_bias[3]"
+ },
+ "removedYoneBbbkThreese": {
+  "value": "2.7",
+  "source": "rungs[k=3].removed_y1.rel_bias_mcse[3]"
+ },
+ "removedYoneBbkThree": {
+  "value": "-8.0",
+  "source": "rungs[k=3].removed_y1.rel_bias[4]"
+ },
+ "removedYoneBbkThreese": {
+  "value": "1.6",
+  "source": "rungs[k=3].removed_y1.rel_bias_mcse[4]"
+ },
+ "removedYoneBkThree": {
+  "value": "-6.6",
+  "source": "rungs[k=3].removed_y1.rel_bias[5]"
+ },
+ "removedYoneBkThreese": {
+  "value": "0.7",
+  "source": "rungs[k=3].removed_y1.rel_bias_mcse[5]"
+ },
+ "removedYoneCcckThree": {
+  "value": "-4.7",
+  "source": "rungs[k=3].removed_y1.rel_bias[6]"
+ },
+ "removedYoneCcckThreese": {
+  "value": "0.8",
+  "source": "rungs[k=3].removed_y1.rel_bias_mcse[6]"
+ },
+ "rwremovedkThree": {
+  "value": "-2.12",
+  "source": "rungs[k=3].rw.removed.error"
+ },
+ "rwremovedkThreese": {
+  "value": "0.06",
+  "source": "rungs[k=3].rw.removed.error_mcse"
+ },
+ "rwAbsremovedkThree": {
+  "value": "2.12",
+  "source": "absolute value of rungs[k=3].rw.removed.error"
+ },
+ "keptBkThree": {
+  "value": "-17.3",
+  "source": "experiments/withdrawals.json rungs[k=3].kept.rel_bias[5]"
+ },
+ "keptBkThreese": {
+  "value": "0.3",
+  "source": "rungs[k=3].kept.rel_bias_mcse[5]"
+ },
+ "keptCcckThree": {
+  "value": "-17.1",
+  "source": "experiments/withdrawals.json rungs[k=3].kept.rel_bias[6]"
+ },
+ "keptCcckThreese": {
+  "value": "0.3",
+  "source": "rungs[k=3].kept.rel_bias_mcse[6]"
+ },
+ "keptYoneBbbkThree": {
+  "value": "-12.1",
+  "source": "rungs[k=3].kept_y1.rel_bias[3]"
+ },
+ "keptYoneBbbkThreese": {
+  "value": "2.5",
+  "source": "rungs[k=3].kept_y1.rel_bias_mcse[3]"
+ },
+ "keptYoneBbkThree": {
+  "value": "-13.4",
+  "source": "rungs[k=3].kept_y1.rel_bias[4]"
+ },
+ "keptYoneBbkThreese": {
+  "value": "1.6",
+  "source": "rungs[k=3].kept_y1.rel_bias_mcse[4]"
+ },
+ "keptYoneBkThree": {
+  "value": "-12.2",
+  "source": "rungs[k=3].kept_y1.rel_bias[5]"
+ },
+ "keptYoneBkThreese": {
+  "value": "0.7",
+  "source": "rungs[k=3].kept_y1.rel_bias_mcse[5]"
+ },
+ "keptYoneCcckThree": {
+  "value": "-11.1",
+  "source": "rungs[k=3].kept_y1.rel_bias[6]"
+ },
+ "keptYoneCcckThreese": {
+  "value": "0.7",
+  "source": "rungs[k=3].kept_y1.rel_bias_mcse[6]"
+ },
+ "rwkeptkThree": {
+  "value": "-3.07",
+  "source": "rungs[k=3].rw.kept.error"
+ },
+ "rwkeptkThreese": {
+  "value": "0.06",
+  "source": "rungs[k=3].rw.kept.error_mcse"
+ },
+ "rwAbskeptkThree": {
+  "value": "3.07",
+  "source": "absolute value of rungs[k=3].rw.kept.error"
+ },
+ "followedBkThree": {
+  "value": "-6.1",
+  "source": "experiments/withdrawals.json rungs[k=3].followed.rel_bias[5]"
+ },
+ "followedBkThreese": {
+  "value": "0.4",
+  "source": "rungs[k=3].followed.rel_bias_mcse[5]"
+ },
+ "followedCcckThree": {
+  "value": "-7.0",
+  "source": "experiments/withdrawals.json rungs[k=3].followed.rel_bias[6]"
+ },
+ "followedCcckThreese": {
+  "value": "0.3",
+  "source": "rungs[k=3].followed.rel_bias_mcse[6]"
+ },
+ "followedYoneBbbkThree": {
+  "value": "-1.2",
+  "source": "rungs[k=3].followed_y1.rel_bias[3]"
+ },
+ "followedYoneBbbkThreese": {
+  "value": "2.7",
+  "source": "rungs[k=3].followed_y1.rel_bias_mcse[3]"
+ },
+ "followedYoneBbkThree": {
+  "value": "-2.5",
+  "source": "rungs[k=3].followed_y1.rel_bias[4]"
+ },
+ "followedYoneBbkThreese": {
+  "value": "1.6",
+  "source": "rungs[k=3].followed_y1.rel_bias_mcse[4]"
+ },
+ "followedYoneBkThree": {
+  "value": "-0.4",
+  "source": "rungs[k=3].followed_y1.rel_bias[5]"
+ },
+ "followedYoneBkThreese": {
+  "value": "0.8",
+  "source": "rungs[k=3].followed_y1.rel_bias_mcse[5]"
+ },
+ "followedYoneCcckThree": {
+  "value": "-0.6",
+  "source": "rungs[k=3].followed_y1.rel_bias[6]"
+ },
+ "followedYoneCcckThreese": {
+  "value": "0.8",
+  "source": "rungs[k=3].followed_y1.rel_bias_mcse[6]"
+ },
+ "rwfollowedkThree": {
+  "value": "-1.15",
+  "source": "rungs[k=3].rw.followed.error"
+ },
+ "rwfollowedkThreese": {
+  "value": "0.06",
+  "source": "rungs[k=3].rw.followed.error_mcse"
+ },
+ "rwAbsfollowedkThree": {
+  "value": "1.15",
+  "source": "absolute value of rungs[k=3].rw.followed.error"
+ },
+ "latentBkThree": {
+  "value": "-0.3",
+  "source": "experiments/withdrawals.json rungs[k=3].latent.rel_bias[5]"
+ },
+ "latentBkThreese": {
+  "value": "0.3",
+  "source": "rungs[k=3].latent.rel_bias_mcse[5]"
+ },
+ "latentCcckThree": {
+  "value": "-0.3",
+  "source": "experiments/withdrawals.json rungs[k=3].latent.rel_bias[6]"
+ },
+ "latentCcckThreese": {
+  "value": "0.3",
+  "source": "rungs[k=3].latent.rel_bias_mcse[6]"
+ },
+ "latentYoneBbbkThree": {
+  "value": "-1.2",
+  "source": "rungs[k=3].latent_y1.rel_bias[3]"
+ },
+ "latentYoneBbbkThreese": {
+  "value": "2.7",
+  "source": "rungs[k=3].latent_y1.rel_bias_mcse[3]"
+ },
+ "latentYoneBbkThree": {
+  "value": "-2.5",
+  "source": "rungs[k=3].latent_y1.rel_bias[4]"
+ },
+ "latentYoneBbkThreese": {
+  "value": "1.6",
+  "source": "rungs[k=3].latent_y1.rel_bias_mcse[4]"
+ },
+ "latentYoneBkThree": {
+  "value": "-0.4",
+  "source": "rungs[k=3].latent_y1.rel_bias[5]"
+ },
+ "latentYoneBkThreese": {
+  "value": "0.8",
+  "source": "rungs[k=3].latent_y1.rel_bias_mcse[5]"
+ },
+ "latentYoneCcckThree": {
+  "value": "-0.6",
+  "source": "rungs[k=3].latent_y1.rel_bias[6]"
+ },
+ "latentYoneCcckThreese": {
+  "value": "0.8",
+  "source": "rungs[k=3].latent_y1.rel_bias_mcse[6]"
+ },
+ "rwlatentkThree": {
+  "value": "-0.11",
+  "source": "rungs[k=3].rw.latent.error"
+ },
+ "rwlatentkThreese": {
+  "value": "0.06",
+  "source": "rungs[k=3].rw.latent.error_mcse"
+ },
+ "rwAbslatentkThree": {
+  "value": "0.11",
+  "source": "absolute value of rungs[k=3].rw.latent.error"
+ },
+ "removedBkFive": {
+  "value": "-20.4",
+  "source": "experiments/withdrawals.json rungs[k=5].removed.rel_bias[5]"
+ },
+ "removedBkFivese": {
+  "value": "0.4",
+  "source": "rungs[k=5].removed.rel_bias_mcse[5]"
+ },
+ "removedCcckFive": {
+  "value": "-19.3",
+  "source": "experiments/withdrawals.json rungs[k=5].removed.rel_bias[6]"
+ },
+ "removedCcckFivese": {
+  "value": "0.3",
+  "source": "rungs[k=5].removed.rel_bias_mcse[6]"
+ },
+ "removedYoneBbbkFive": {
+  "value": "-13.8",
+  "source": "rungs[k=5].removed_y1.rel_bias[3]"
+ },
+ "removedYoneBbbkFivese": {
+  "value": "2.5",
+  "source": "rungs[k=5].removed_y1.rel_bias_mcse[3]"
+ },
+ "removedYoneBbkFive": {
+  "value": "-12.0",
+  "source": "rungs[k=5].removed_y1.rel_bias[4]"
+ },
+ "removedYoneBbkFivese": {
+  "value": "1.6",
+  "source": "rungs[k=5].removed_y1.rel_bias_mcse[4]"
+ },
+ "removedYoneBkFive": {
+  "value": "-11.1",
+  "source": "rungs[k=5].removed_y1.rel_bias[5]"
+ },
+ "removedYoneBkFivese": {
+  "value": "0.8",
+  "source": "rungs[k=5].removed_y1.rel_bias_mcse[5]"
+ },
+ "removedYoneCcckFive": {
+  "value": "-8.4",
+  "source": "rungs[k=5].removed_y1.rel_bias[6]"
+ },
+ "removedYoneCcckFivese": {
+  "value": "0.7",
+  "source": "rungs[k=5].removed_y1.rel_bias_mcse[6]"
+ },
+ "rwremovedkFive": {
+  "value": "-3.55",
+  "source": "rungs[k=5].rw.removed.error"
+ },
+ "rwremovedkFivese": {
+  "value": "0.06",
+  "source": "rungs[k=5].rw.removed.error_mcse"
+ },
+ "rwAbsremovedkFive": {
+  "value": "3.55",
+  "source": "absolute value of rungs[k=5].rw.removed.error"
+ },
+ "keptBkFive": {
+  "value": "-25.2",
+  "source": "experiments/withdrawals.json rungs[k=5].kept.rel_bias[5]"
+ },
+ "keptBkFivese": {
+  "value": "0.3",
+  "source": "rungs[k=5].kept.rel_bias_mcse[5]"
+ },
+ "keptCcckFive": {
+  "value": "-25.1",
+  "source": "experiments/withdrawals.json rungs[k=5].kept.rel_bias[6]"
+ },
+ "keptCcckFivese": {
+  "value": "0.3",
+  "source": "rungs[k=5].kept.rel_bias_mcse[6]"
+ },
+ "keptYoneBbbkFive": {
+  "value": "-18.8",
+  "source": "rungs[k=5].kept_y1.rel_bias[3]"
+ },
+ "keptYoneBbbkFivese": {
+  "value": "2.4",
+  "source": "rungs[k=5].kept_y1.rel_bias_mcse[3]"
+ },
+ "keptYoneBbkFive": {
+  "value": "-17.2",
+  "source": "rungs[k=5].kept_y1.rel_bias[4]"
+ },
+ "keptYoneBbkFivese": {
+  "value": "1.5",
+  "source": "rungs[k=5].kept_y1.rel_bias_mcse[4]"
+ },
+ "keptYoneBkFive": {
+  "value": "-16.5",
+  "source": "rungs[k=5].kept_y1.rel_bias[5]"
+ },
+ "keptYoneBkFivese": {
+  "value": "0.7",
+  "source": "rungs[k=5].kept_y1.rel_bias_mcse[5]"
+ },
+ "keptYoneCcckFive": {
+  "value": "-15.2",
+  "source": "rungs[k=5].kept_y1.rel_bias[6]"
+ },
+ "keptYoneCcckFivese": {
+  "value": "0.7",
+  "source": "rungs[k=5].kept_y1.rel_bias_mcse[6]"
+ },
+ "rwkeptkFive": {
+  "value": "-4.49",
+  "source": "rungs[k=5].rw.kept.error"
+ },
+ "rwkeptkFivese": {
+  "value": "0.06",
+  "source": "rungs[k=5].rw.kept.error_mcse"
+ },
+ "rwAbskeptkFive": {
+  "value": "4.49",
+  "source": "absolute value of rungs[k=5].rw.kept.error"
+ },
+ "followedBkFive": {
+  "value": "-9.2",
+  "source": "experiments/withdrawals.json rungs[k=5].followed.rel_bias[5]"
+ },
+ "followedBkFivese": {
+  "value": "0.4",
+  "source": "rungs[k=5].followed.rel_bias_mcse[5]"
+ },
+ "followedCcckFive": {
+  "value": "-10.9",
+  "source": "experiments/withdrawals.json rungs[k=5].followed.rel_bias[6]"
+ },
+ "followedCcckFivese": {
+  "value": "0.3",
+  "source": "rungs[k=5].followed.rel_bias_mcse[6]"
+ },
+ "followedYoneBbbkFive": {
+  "value": "-3.1",
+  "source": "rungs[k=5].followed_y1.rel_bias[3]"
+ },
+ "followedYoneBbbkFivese": {
+  "value": "2.6",
+  "source": "rungs[k=5].followed_y1.rel_bias_mcse[3]"
+ },
+ "followedYoneBbkFive": {
+  "value": "-0.2",
+  "source": "rungs[k=5].followed_y1.rel_bias[4]"
+ },
+ "followedYoneBbkFivese": {
+  "value": "1.7",
+  "source": "rungs[k=5].followed_y1.rel_bias_mcse[4]"
+ },
+ "followedYoneBkFive": {
+  "value": "1.1",
+  "source": "rungs[k=5].followed_y1.rel_bias[5]"
+ },
+ "followedYoneBkFivese": {
+  "value": "0.8",
+  "source": "rungs[k=5].followed_y1.rel_bias_mcse[5]"
+ },
+ "followedYoneCcckFive": {
+  "value": "0.6",
+  "source": "rungs[k=5].followed_y1.rel_bias[6]"
+ },
+ "followedYoneCcckFivese": {
+  "value": "0.7",
+  "source": "rungs[k=5].followed_y1.rel_bias_mcse[6]"
+ },
+ "rwfollowedkFive": {
+  "value": "-1.64",
+  "source": "rungs[k=5].rw.followed.error"
+ },
+ "rwfollowedkFivese": {
+  "value": "0.06",
+  "source": "rungs[k=5].rw.followed.error_mcse"
+ },
+ "rwAbsfollowedkFive": {
+  "value": "1.64",
+  "source": "absolute value of rungs[k=5].rw.followed.error"
+ },
+ "latentBkFive": {
+  "value": "0.6",
+  "source": "experiments/withdrawals.json rungs[k=5].latent.rel_bias[5]"
+ },
+ "latentBkFivese": {
+  "value": "0.4",
+  "source": "rungs[k=5].latent.rel_bias_mcse[5]"
+ },
+ "latentCcckFive": {
+  "value": "-0.0",
+  "source": "experiments/withdrawals.json rungs[k=5].latent.rel_bias[6]"
+ },
+ "latentCcckFivese": {
+  "value": "0.3",
+  "source": "rungs[k=5].latent.rel_bias_mcse[6]"
+ },
+ "latentYoneBbbkFive": {
+  "value": "-3.1",
+  "source": "rungs[k=5].latent_y1.rel_bias[3]"
+ },
+ "latentYoneBbbkFivese": {
+  "value": "2.6",
+  "source": "rungs[k=5].latent_y1.rel_bias_mcse[3]"
+ },
+ "latentYoneBbkFive": {
+  "value": "-0.2",
+  "source": "rungs[k=5].latent_y1.rel_bias[4]"
+ },
+ "latentYoneBbkFivese": {
+  "value": "1.7",
+  "source": "rungs[k=5].latent_y1.rel_bias_mcse[4]"
+ },
+ "latentYoneBkFive": {
+  "value": "1.1",
+  "source": "rungs[k=5].latent_y1.rel_bias[5]"
+ },
+ "latentYoneBkFivese": {
+  "value": "0.8",
+  "source": "rungs[k=5].latent_y1.rel_bias_mcse[5]"
+ },
+ "latentYoneCcckFive": {
+  "value": "0.6",
+  "source": "rungs[k=5].latent_y1.rel_bias[6]"
+ },
+ "latentYoneCcckFivese": {
+  "value": "0.7",
+  "source": "rungs[k=5].latent_y1.rel_bias_mcse[6]"
+ },
+ "rwlatentkFive": {
+  "value": "0.04",
+  "source": "rungs[k=5].rw.latent.error"
+ },
+ "rwlatentkFivese": {
+  "value": "0.06",
+  "source": "rungs[k=5].rw.latent.error_mcse"
+ },
+ "rwAbslatentkFive": {
+  "value": "0.04",
+  "source": "absolute value of rungs[k=5].rw.latent.error"
+ },
+ "removedBkNine": {
+  "value": "-35.1",
+  "source": "experiments/withdrawals.json rungs[k=9].removed.rel_bias[5]"
+ },
+ "removedBkNinese": {
+  "value": "0.3",
+  "source": "rungs[k=9].removed.rel_bias_mcse[5]"
+ },
+ "removedCcckNine": {
+  "value": "-34.3",
+  "source": "experiments/withdrawals.json rungs[k=9].removed.rel_bias[6]"
+ },
+ "removedCcckNinese": {
+  "value": "0.3",
+  "source": "rungs[k=9].removed.rel_bias_mcse[6]"
+ },
+ "removedYoneBbbkNine": {
+  "value": "-18.9",
+  "source": "rungs[k=9].removed_y1.rel_bias[3]"
+ },
+ "removedYoneBbbkNinese": {
+  "value": "2.5",
+  "source": "rungs[k=9].removed_y1.rel_bias_mcse[3]"
+ },
+ "removedYoneBbkNine": {
+  "value": "-21.9",
+  "source": "rungs[k=9].removed_y1.rel_bias[4]"
+ },
+ "removedYoneBbkNinese": {
+  "value": "1.5",
+  "source": "rungs[k=9].removed_y1.rel_bias_mcse[4]"
+ },
+ "removedYoneBkNine": {
+  "value": "-20.9",
+  "source": "rungs[k=9].removed_y1.rel_bias[5]"
+ },
+ "removedYoneBkNinese": {
+  "value": "0.7",
+  "source": "rungs[k=9].removed_y1.rel_bias_mcse[5]"
+ },
+ "removedYoneCcckNine": {
+  "value": "-18.1",
+  "source": "rungs[k=9].removed_y1.rel_bias[6]"
+ },
+ "removedYoneCcckNinese": {
+  "value": "0.7",
+  "source": "rungs[k=9].removed_y1.rel_bias_mcse[6]"
+ },
+ "rwremovedkNine": {
+  "value": "-6.54",
+  "source": "rungs[k=9].rw.removed.error"
+ },
+ "rwremovedkNinese": {
+  "value": "0.06",
+  "source": "rungs[k=9].rw.removed.error_mcse"
+ },
+ "rwAbsremovedkNine": {
+  "value": "6.54",
+  "source": "absolute value of rungs[k=9].rw.removed.error"
+ },
+ "keptBkNine": {
+  "value": "-39.2",
+  "source": "experiments/withdrawals.json rungs[k=9].kept.rel_bias[5]"
+ },
+ "keptBkNinese": {
+  "value": "0.3",
+  "source": "rungs[k=9].kept.rel_bias_mcse[5]"
+ },
+ "keptCcckNine": {
+  "value": "-39.7",
+  "source": "experiments/withdrawals.json rungs[k=9].kept.rel_bias[6]"
+ },
+ "keptCcckNinese": {
+  "value": "0.3",
+  "source": "rungs[k=9].kept.rel_bias_mcse[6]"
+ },
+ "keptYoneBbbkNine": {
+  "value": "-23.7",
+  "source": "rungs[k=9].kept_y1.rel_bias[3]"
+ },
+ "keptYoneBbbkNinese": {
+  "value": "2.3",
+  "source": "rungs[k=9].kept_y1.rel_bias_mcse[3]"
+ },
+ "keptYoneBbkNine": {
+  "value": "-26.6",
+  "source": "rungs[k=9].kept_y1.rel_bias[4]"
+ },
+ "keptYoneBbkNinese": {
+  "value": "1.4",
+  "source": "rungs[k=9].kept_y1.rel_bias_mcse[4]"
+ },
+ "keptYoneBkNine": {
+  "value": "-25.9",
+  "source": "rungs[k=9].kept_y1.rel_bias[5]"
+ },
+ "keptYoneBkNinese": {
+  "value": "0.7",
+  "source": "rungs[k=9].kept_y1.rel_bias_mcse[5]"
+ },
+ "keptYoneCcckNine": {
+  "value": "-25.2",
+  "source": "rungs[k=9].kept_y1.rel_bias[6]"
+ },
+ "keptYoneCcckNinese": {
+  "value": "0.7",
+  "source": "rungs[k=9].kept_y1.rel_bias_mcse[6]"
+ },
+ "rwkeptkNine": {
+  "value": "-7.43",
+  "source": "rungs[k=9].rw.kept.error"
+ },
+ "rwkeptkNinese": {
+  "value": "0.06",
+  "source": "rungs[k=9].rw.kept.error_mcse"
+ },
+ "rwAbskeptkNine": {
+  "value": "7.43",
+  "source": "absolute value of rungs[k=9].rw.kept.error"
+ },
+ "followedBkNine": {
+  "value": "-15.6",
+  "source": "experiments/withdrawals.json rungs[k=9].followed.rel_bias[5]"
+ },
+ "followedBkNinese": {
+  "value": "0.3",
+  "source": "rungs[k=9].followed.rel_bias_mcse[5]"
+ },
+ "followedCcckNine": {
+  "value": "-19.0",
+  "source": "experiments/withdrawals.json rungs[k=9].followed.rel_bias[6]"
+ },
+ "followedCcckNinese": {
+  "value": "0.3",
+  "source": "rungs[k=9].followed.rel_bias_mcse[6]"
+ },
+ "followedYoneBbbkNine": {
+  "value": "-1.1",
+  "source": "rungs[k=9].followed_y1.rel_bias[3]"
+ },
+ "followedYoneBbbkNinese": {
+  "value": "2.6",
+  "source": "rungs[k=9].followed_y1.rel_bias_mcse[3]"
+ },
+ "followedYoneBbkNine": {
+  "value": "0.1",
+  "source": "rungs[k=9].followed_y1.rel_bias[4]"
+ },
+ "followedYoneBbkNinese": {
+  "value": "1.7",
+  "source": "rungs[k=9].followed_y1.rel_bias_mcse[4]"
+ },
+ "followedYoneBkNine": {
+  "value": "1.4",
+  "source": "rungs[k=9].followed_y1.rel_bias[5]"
+ },
+ "followedYoneBkNinese": {
+  "value": "0.8",
+  "source": "rungs[k=9].followed_y1.rel_bias_mcse[5]"
+ },
+ "followedYoneCcckNine": {
+  "value": "-0.9",
+  "source": "rungs[k=9].followed_y1.rel_bias[6]"
+ },
+ "followedYoneCcckNinese": {
+  "value": "0.8",
+  "source": "rungs[k=9].followed_y1.rel_bias_mcse[6]"
+ },
+ "rwfollowedkNine": {
+  "value": "-2.94",
+  "source": "rungs[k=9].rw.followed.error"
+ },
+ "rwfollowedkNinese": {
+  "value": "0.06",
+  "source": "rungs[k=9].rw.followed.error_mcse"
+ },
+ "rwAbsfollowedkNine": {
+  "value": "2.94",
+  "source": "absolute value of rungs[k=9].rw.followed.error"
+ },
+ "latentBkNine": {
+  "value": "0.3",
+  "source": "experiments/withdrawals.json rungs[k=9].latent.rel_bias[5]"
+ },
+ "latentBkNinese": {
+  "value": "0.4",
+  "source": "rungs[k=9].latent.rel_bias_mcse[5]"
+ },
+ "latentCcckNine": {
+  "value": "-0.5",
+  "source": "experiments/withdrawals.json rungs[k=9].latent.rel_bias[6]"
+ },
+ "latentCcckNinese": {
+  "value": "0.3",
+  "source": "rungs[k=9].latent.rel_bias_mcse[6]"
+ },
+ "latentYoneBbbkNine": {
+  "value": "-1.1",
+  "source": "rungs[k=9].latent_y1.rel_bias[3]"
+ },
+ "latentYoneBbbkNinese": {
+  "value": "2.6",
+  "source": "rungs[k=9].latent_y1.rel_bias_mcse[3]"
+ },
+ "latentYoneBbkNine": {
+  "value": "0.1",
+  "source": "rungs[k=9].latent_y1.rel_bias[4]"
+ },
+ "latentYoneBbkNinese": {
+  "value": "1.7",
+  "source": "rungs[k=9].latent_y1.rel_bias_mcse[4]"
+ },
+ "latentYoneBkNine": {
+  "value": "1.4",
+  "source": "rungs[k=9].latent_y1.rel_bias[5]"
+ },
+ "latentYoneBkNinese": {
+  "value": "0.8",
+  "source": "rungs[k=9].latent_y1.rel_bias_mcse[5]"
+ },
+ "latentYoneCcckNine": {
+  "value": "-0.9",
+  "source": "rungs[k=9].latent_y1.rel_bias[6]"
+ },
+ "latentYoneCcckNinese": {
+  "value": "0.8",
+  "source": "rungs[k=9].latent_y1.rel_bias_mcse[6]"
+ },
+ "rwlatentkNine": {
+  "value": "-0.11",
+  "source": "rungs[k=9].rw.latent.error"
+ },
+ "rwlatentkNinese": {
+  "value": "0.06",
+  "source": "rungs[k=9].rw.latent.error_mcse"
+ },
+ "rwAbslatentkNine": {
+  "value": "0.11",
+  "source": "absolute value of rungs[k=9].rw.latent.error"
+ },
+ "removedBkNineteen": {
+  "value": "-60.3",
+  "source": "experiments/withdrawals.json rungs[k=19].removed.rel_bias[5]"
+ },
+ "removedBkNineteense": {
+  "value": "0.3",
+  "source": "rungs[k=19].removed.rel_bias_mcse[5]"
+ },
+ "removedCcckNineteen": {
+  "value": "-58.9",
+  "source": "experiments/withdrawals.json rungs[k=19].removed.rel_bias[6]"
+ },
+ "removedCcckNineteense": {
+  "value": "0.2",
+  "source": "rungs[k=19].removed.rel_bias_mcse[6]"
+ },
+ "removedYoneBbbkNineteen": {
+  "value": "-38.2",
+  "source": "rungs[k=19].removed_y1.rel_bias[3]"
+ },
+ "removedYoneBbbkNineteense": {
+  "value": "2.1",
+  "source": "rungs[k=19].removed_y1.rel_bias_mcse[3]"
+ },
+ "removedYoneBbkNineteen": {
+  "value": "-38.2",
+  "source": "rungs[k=19].removed_y1.rel_bias[4]"
+ },
+ "removedYoneBbkNineteense": {
+  "value": "1.4",
+  "source": "rungs[k=19].removed_y1.rel_bias_mcse[4]"
+ },
+ "removedYoneBkNineteen": {
+  "value": "-39.4",
+  "source": "rungs[k=19].removed_y1.rel_bias[5]"
+ },
+ "removedYoneBkNineteense": {
+  "value": "0.6",
+  "source": "rungs[k=19].removed_y1.rel_bias_mcse[5]"
+ },
+ "removedYoneCcckNineteen": {
+  "value": "-34.0",
+  "source": "rungs[k=19].removed_y1.rel_bias[6]"
+ },
+ "removedYoneCcckNineteense": {
+  "value": "0.7",
+  "source": "rungs[k=19].removed_y1.rel_bias_mcse[6]"
+ },
+ "rwremovedkNineteen": {
+  "value": "-12.24",
+  "source": "rungs[k=19].rw.removed.error"
+ },
+ "rwremovedkNineteense": {
+  "value": "0.06",
+  "source": "rungs[k=19].rw.removed.error_mcse"
+ },
+ "rwAbsremovedkNineteen": {
+  "value": "12.24",
+  "source": "absolute value of rungs[k=19].rw.removed.error"
+ },
+ "keptBkNineteen": {
+  "value": "-62.9",
+  "source": "experiments/withdrawals.json rungs[k=19].kept.rel_bias[5]"
+ },
+ "keptBkNineteense": {
+  "value": "0.2",
+  "source": "rungs[k=19].kept.rel_bias_mcse[5]"
+ },
+ "keptCcckNineteen": {
+  "value": "-62.9",
+  "source": "experiments/withdrawals.json rungs[k=19].kept.rel_bias[6]"
+ },
+ "keptCcckNineteense": {
+  "value": "0.2",
+  "source": "rungs[k=19].kept.rel_bias_mcse[6]"
+ },
+ "keptYoneBbbkNineteen": {
+  "value": "-41.8",
+  "source": "rungs[k=19].kept_y1.rel_bias[3]"
+ },
+ "keptYoneBbbkNineteense": {
+  "value": "2.0",
+  "source": "rungs[k=19].kept_y1.rel_bias_mcse[3]"
+ },
+ "keptYoneBbkNineteen": {
+  "value": "-42.0",
+  "source": "rungs[k=19].kept_y1.rel_bias[4]"
+ },
+ "keptYoneBbkNineteense": {
+  "value": "1.3",
+  "source": "rungs[k=19].kept_y1.rel_bias_mcse[4]"
+ },
+ "keptYoneBkNineteen": {
+  "value": "-43.6",
+  "source": "rungs[k=19].kept_y1.rel_bias[5]"
+ },
+ "keptYoneBkNineteense": {
+  "value": "0.6",
+  "source": "rungs[k=19].kept_y1.rel_bias_mcse[5]"
+ },
+ "keptYoneCcckNineteen": {
+  "value": "-41.2",
+  "source": "rungs[k=19].kept_y1.rel_bias[6]"
+ },
+ "keptYoneCcckNineteense": {
+  "value": "0.6",
+  "source": "rungs[k=19].kept_y1.rel_bias_mcse[6]"
+ },
+ "rwkeptkNineteen": {
+  "value": "-12.98",
+  "source": "rungs[k=19].rw.kept.error"
+ },
+ "rwkeptkNineteense": {
+  "value": "0.06",
+  "source": "rungs[k=19].rw.kept.error_mcse"
+ },
+ "rwAbskeptkNineteen": {
+  "value": "12.98",
+  "source": "absolute value of rungs[k=19].rw.kept.error"
+ },
+ "followedBkNineteen": {
+  "value": "-28.6",
+  "source": "experiments/withdrawals.json rungs[k=19].followed.rel_bias[5]"
+ },
+ "followedBkNineteense": {
+  "value": "0.3",
+  "source": "rungs[k=19].followed.rel_bias_mcse[5]"
+ },
+ "followedCcckNineteen": {
+  "value": "-33.0",
+  "source": "experiments/withdrawals.json rungs[k=19].followed.rel_bias[6]"
+ },
+ "followedCcckNineteense": {
+  "value": "0.3",
+  "source": "rungs[k=19].followed.rel_bias_mcse[6]"
+ },
+ "followedYoneBbbkNineteen": {
+  "value": "1.9",
+  "source": "rungs[k=19].followed_y1.rel_bias[3]"
+ },
+ "followedYoneBbbkNineteense": {
+  "value": "2.6",
+  "source": "rungs[k=19].followed_y1.rel_bias_mcse[3]"
+ },
+ "followedYoneBbkNineteen": {
+  "value": "-0.6",
+  "source": "rungs[k=19].followed_y1.rel_bias[4]"
+ },
+ "followedYoneBbkNineteense": {
+  "value": "1.7",
+  "source": "rungs[k=19].followed_y1.rel_bias_mcse[4]"
+ },
+ "followedYoneBkNineteen": {
+  "value": "0.1",
+  "source": "rungs[k=19].followed_y1.rel_bias[5]"
+ },
+ "followedYoneBkNineteense": {
+  "value": "0.8",
+  "source": "rungs[k=19].followed_y1.rel_bias_mcse[5]"
+ },
+ "followedYoneCcckNineteen": {
+  "value": "-1.5",
+  "source": "rungs[k=19].followed_y1.rel_bias[6]"
+ },
+ "followedYoneCcckNineteense": {
+  "value": "0.8",
+  "source": "rungs[k=19].followed_y1.rel_bias_mcse[6]"
+ },
+ "rwfollowedkNineteen": {
+  "value": "-5.35",
+  "source": "rungs[k=19].rw.followed.error"
+ },
+ "rwfollowedkNineteense": {
+  "value": "0.06",
+  "source": "rungs[k=19].rw.followed.error_mcse"
+ },
+ "rwAbsfollowedkNineteen": {
+  "value": "5.35",
+  "source": "absolute value of rungs[k=19].rw.followed.error"
+ },
+ "latentBkNineteen": {
+  "value": "0.2",
+  "source": "experiments/withdrawals.json rungs[k=19].latent.rel_bias[5]"
+ },
+ "latentBkNineteense": {
+  "value": "0.4",
+  "source": "rungs[k=19].latent.rel_bias_mcse[5]"
+ },
+ "latentCcckNineteen": {
+  "value": "-0.1",
+  "source": "experiments/withdrawals.json rungs[k=19].latent.rel_bias[6]"
+ },
+ "latentCcckNineteense": {
+  "value": "0.3",
+  "source": "rungs[k=19].latent.rel_bias_mcse[6]"
+ },
+ "latentYoneBbbkNineteen": {
+  "value": "1.9",
+  "source": "rungs[k=19].latent_y1.rel_bias[3]"
+ },
+ "latentYoneBbbkNineteense": {
+  "value": "2.6",
+  "source": "rungs[k=19].latent_y1.rel_bias_mcse[3]"
+ },
+ "latentYoneBbkNineteen": {
+  "value": "-0.6",
+  "source": "rungs[k=19].latent_y1.rel_bias[4]"
+ },
+ "latentYoneBbkNineteense": {
+  "value": "1.7",
+  "source": "rungs[k=19].latent_y1.rel_bias_mcse[4]"
+ },
+ "latentYoneBkNineteen": {
+  "value": "0.1",
+  "source": "rungs[k=19].latent_y1.rel_bias[5]"
+ },
+ "latentYoneBkNineteense": {
+  "value": "0.8",
+  "source": "rungs[k=19].latent_y1.rel_bias_mcse[5]"
+ },
+ "latentYoneCcckNineteen": {
+  "value": "-1.5",
+  "source": "rungs[k=19].latent_y1.rel_bias[6]"
+ },
+ "latentYoneCcckNineteense": {
+  "value": "0.8",
+  "source": "rungs[k=19].latent_y1.rel_bias_mcse[6]"
+ },
+ "rwlatentkNineteen": {
+  "value": "0.01",
+  "source": "rungs[k=19].rw.latent.error"
+ },
+ "rwlatentkNineteense": {
+  "value": "0.06",
+  "source": "rungs[k=19].rw.latent.error_mcse"
+ },
+ "rwAbslatentkNineteen": {
+  "value": "0.01",
+  "source": "absolute value of rungs[k=19].rw.latent.error"
+ },
+ "latentRwMaxZ": {
+  "value": "2.2",
+  "source": "experiments/withdrawals.json rungs[].rw.latent.error / error_mcse, largest absolute value"
+ },
+ "committedremovedkNine": {
+  "value": "-34",
+  "source": "data/derived/C04/withdrawals.json rungs[value=9].pd_removed.bias[5]/truth[5]"
+ },
+ "committedremovedkZero": {
+  "value": "2",
+  "source": "data/derived/C04/withdrawals.json rungs[value=0].pd_removed.bias[5]/truth[5]"
+ },
+ "committedkeptkNine": {
+  "value": "-38",
+  "source": "data/derived/C04/withdrawals.json rungs[value=9].pd_kept.bias[5]/truth[5]"
+ },
+ "committedkeptkZero": {
+  "value": "-4",
+  "source": "data/derived/C04/withdrawals.json rungs[value=0].pd_kept.bias[5]/truth[5]"
+ },
+ "committedfollowedkNine": {
+  "value": "-15",
+  "source": "data/derived/C04/withdrawals.json rungs[value=9].pd_followed.bias[5]/truth[5]"
+ },
+ "committedfollowedkZero": {
+  "value": "-0",
+  "source": "data/derived/C04/withdrawals.json rungs[value=0].pd_followed.bias[5]/truth[5]"
+ },
+ "committedremovedkZeroPrec": {
+  "value": "2.4",
+  "source": "data/derived/C04/withdrawals.json rungs[0].pd_removed.bias[5]/truth[5]"
+ },
+ "seRemovedPaired": {
+  "value": "3.0",
+  "source": "experiments/withdrawals.json rungs[k=9].paired_contrast_vs_latent.removed.se_paired[5] (x1e5)"
+ },
+ "seRemovedUnpaired": {
+  "value": "5.6",
+  "source": "... se_unpaired[5] (x1e5)"
+ },
+ "seRatio": {
+  "value": "1.88",
+  "source": "se_unpaired[5]/se_paired[5]"
+ },
+ "seRatioPct": {
+  "value": "47",
+  "source": "1 - se_paired/se_unpaired"
+ },
+ "testthkZerofive": {
+  "value": "2.8",
+  "source": "experiments/withdrawals.json tests[rating.time_homogeneity@k0].rates[p<0.05].rate"
+ },
+ "testthkZerofivelo": {
+  "value": "1.9",
+  "source": "tests[rating.time_homogeneity@k0].rates[p<0.05].wilson_low"
+ },
+ "testthkZerofivehi": {
+  "value": "4.0",
+  "source": "tests[rating.time_homogeneity@k0].rates[p<0.05].wilson_high"
+ },
+ "testthkZeroone": {
+  "value": "0.4",
+  "source": "experiments/withdrawals.json tests[rating.time_homogeneity@k0].rates[p<0.01].rate"
+ },
+ "testthkZeroonelo": {
+  "value": "0.2",
+  "source": "tests[rating.time_homogeneity@k0].rates[p<0.01].wilson_low"
+ },
+ "testthkZeroonehi": {
+  "value": "1.0",
+  "source": "tests[rating.time_homogeneity@k0].rates[p<0.01].wilson_high"
+ },
+ "testmrkZerofive": {
+  "value": "0.2",
+  "source": "experiments/withdrawals.json tests[rating.matrix_reference@k0].rates[p<0.05].rate"
+ },
+ "testmrkZerofivelo": {
+  "value": "0.1",
+  "source": "tests[rating.matrix_reference@k0].rates[p<0.05].wilson_low"
+ },
+ "testmrkZerofivehi": {
+  "value": "0.7",
+  "source": "tests[rating.matrix_reference@k0].rates[p<0.05].wilson_high"
+ },
+ "testmrkZeroone": {
+  "value": "0.0",
+  "source": "experiments/withdrawals.json tests[rating.matrix_reference@k0].rates[p<0.01].rate"
+ },
+ "testmrkZeroonelo": {
+  "value": "0.0",
+  "source": "tests[rating.matrix_reference@k0].rates[p<0.01].wilson_low"
+ },
+ "testmrkZeroonehi": {
+  "value": "0.4",
+  "source": "tests[rating.matrix_reference@k0].rates[p<0.01].wilson_high"
+ },
+ "testthkNinefive": {
+  "value": "5.8",
+  "source": "experiments/withdrawals.json tests[rating.time_homogeneity@k9].rates[p<0.05].rate"
+ },
+ "testthkNinefivelo": {
+  "value": "4.5",
+  "source": "tests[rating.time_homogeneity@k9].rates[p<0.05].wilson_low"
+ },
+ "testthkNinefivehi": {
+  "value": "7.4",
+  "source": "tests[rating.time_homogeneity@k9].rates[p<0.05].wilson_high"
+ },
+ "testthkNineone": {
+  "value": "1.0",
+  "source": "experiments/withdrawals.json tests[rating.time_homogeneity@k9].rates[p<0.01].rate"
+ },
+ "testthkNineonelo": {
+  "value": "0.5",
+  "source": "tests[rating.time_homogeneity@k9].rates[p<0.01].wilson_low"
+ },
+ "testthkNineonehi": {
+  "value": "1.8",
+  "source": "tests[rating.time_homogeneity@k9].rates[p<0.01].wilson_high"
+ },
+ "testmrkNinefive": {
+  "value": "1.4",
+  "source": "experiments/withdrawals.json tests[rating.matrix_reference@k9].rates[p<0.05].rate"
+ },
+ "testmrkNinefivelo": {
+  "value": "0.8",
+  "source": "tests[rating.matrix_reference@k9].rates[p<0.05].wilson_low"
+ },
+ "testmrkNinefivehi": {
+  "value": "2.3",
+  "source": "tests[rating.matrix_reference@k9].rates[p<0.05].wilson_high"
+ },
+ "testmrkNineone": {
+  "value": "0.0",
+  "source": "experiments/withdrawals.json tests[rating.matrix_reference@k9].rates[p<0.01].rate"
+ },
+ "testmrkNineonelo": {
+  "value": "0.0",
+  "source": "tests[rating.matrix_reference@k9].rates[p<0.01].wilson_low"
+ },
+ "testmrkNineonehi": {
+  "value": "0.4",
+  "source": "tests[rating.matrix_reference@k9].rates[p<0.01].wilson_high"
+ },
+ "testthkNineteenfive": {
+  "value": "8.8",
+  "source": "experiments/withdrawals.json tests[rating.time_homogeneity@k19].rates[p<0.05].rate"
+ },
+ "testthkNineteenfivelo": {
+  "value": "7.2",
+  "source": "tests[rating.time_homogeneity@k19].rates[p<0.05].wilson_low"
+ },
+ "testthkNineteenfivehi": {
+  "value": "10.7",
+  "source": "tests[rating.time_homogeneity@k19].rates[p<0.05].wilson_high"
+ },
+ "testthkNineteenone": {
+  "value": "2.1",
+  "source": "experiments/withdrawals.json tests[rating.time_homogeneity@k19].rates[p<0.01].rate"
+ },
+ "testthkNineteenonelo": {
+  "value": "1.4",
+  "source": "tests[rating.time_homogeneity@k19].rates[p<0.01].wilson_low"
+ },
+ "testthkNineteenonehi": {
+  "value": "3.2",
+  "source": "tests[rating.time_homogeneity@k19].rates[p<0.01].wilson_high"
+ },
+ "testmrkNineteenfive": {
+  "value": "16.3",
+  "source": "experiments/withdrawals.json tests[rating.matrix_reference@k19].rates[p<0.05].rate"
+ },
+ "testmrkNineteenfivelo": {
+  "value": "14.1",
+  "source": "tests[rating.matrix_reference@k19].rates[p<0.05].wilson_low"
+ },
+ "testmrkNineteenfivehi": {
+  "value": "18.7",
+  "source": "tests[rating.matrix_reference@k19].rates[p<0.05].wilson_high"
+ },
+ "testmrkNineteenone": {
+  "value": "4.3",
+  "source": "experiments/withdrawals.json tests[rating.matrix_reference@k19].rates[p<0.01].rate"
+ },
+ "testmrkNineteenonelo": {
+  "value": "3.2",
+  "source": "tests[rating.matrix_reference@k19].rates[p<0.01].wilson_low"
+ },
+ "testmrkNineteenonehi": {
+  "value": "5.7",
+  "source": "tests[rating.matrix_reference@k19].rates[p<0.01].wilson_high"
+ },
+ "zeroAaaRemoved": {
+  "value": "99",
+  "source": "rungs[k=9].removed.share_zero[0]"
+ },
+ "zeroAaaDuration": {
+  "value": "0",
+  "source": "experiments/extra.json duration[k=9].duration.share_zero[0]"
+ },
+ "zCccRemkTwo": {
+  "value": "3.02",
+  "source": "z of CCC to C removal at k = 2: (rungs[k].removed_y1.rel_bias[6] minus first-order) / rel_bias_mcse[6]"
+ },
+ "zCccRemkFive": {
+  "value": "3.31",
+  "source": "z of CCC to C removal at k = 5: (rungs[k].removed_y1.rel_bias[6] minus first-order) / rel_bias_mcse[6]"
+ },
+ "zCccRemkNine": {
+  "value": "2.84",
+  "source": "z of CCC to C removal at k = 9: (rungs[k].removed_y1.rel_bias[6] minus first-order) / rel_bias_mcse[6]"
+ },
+ "zCccRemkNineteen": {
+  "value": "6.32",
+  "source": "z of CCC to C removal at k = 19: (rungs[k].removed_y1.rel_bias[6] minus first-order) / rel_bias_mcse[6]"
+ },
+ "zBKeptkNineteen": {
+  "value": "-3.07",
+  "source": "z of B keeping at k = 19, same construction"
+ },
+ "zCccKeptkTwo": {
+  "value": "2.21",
+  "source": "z of CCC to C keeping at k = 2, same construction"
+ },
+ "conjMaxZRestricted": {
+  "value": "2.49",
+  "source": "largest |z| over BBB, BB and B, removal and keeping, k up to 9"
+ },
+ "conjNRestricted": {
+  "value": "36",
+  "source": "number of those comparisons"
+ },
+ "lambdaCcc": {
+  "value": "0.084",
+  "source": "experiments/thin.json pd_1y[6]: lambda = -log(1 - p) of CCC to C"
+ },
+ "lambdaB": {
+  "value": "0.0118",
+  "source": "experiments/thin.json pd_1y[5]: lambda of B"
+ },
+ "zTwoStateremovedB": {
+  "value": "0.5",
+  "source": "|two-state closed form (theory.json chains.B, k = 9, pooled, removed) minus rungs[k=9].removed.rel_bias[5]| over its MCSE"
+ },
+ "zTwoStatefollowedB": {
+  "value": "5.2",
+  "source": "|two-state closed form (theory.json chains.B, k = 9, pooled, followed) minus rungs[k=9].followed.rel_bias[5]| over its MCSE"
+ },
+ "zTwoStateremovedCcc": {
+  "value": "9.2",
+  "source": "|two-state closed form (theory.json chains.CCC-C, k = 9, pooled, removed) minus rungs[k=9].removed.rel_bias[6]| over its MCSE"
+ },
+ "zTwoStatefollowedCcc": {
+  "value": "10.7",
+  "source": "|two-state closed form (theory.json chains.CCC-C, k = 9, pooled, followed) minus rungs[k=9].followed.rel_bias[6]| over its MCSE"
+ },
+ "exactMaxZCcc": {
+  "value": "1.76",
+  "source": "largest |z| of the exact closed form (theory.json chains.CCC-C, first cohort) against the multi-state first-cohort measurement, removal and keeping, over the k of theory.json"
+ },
+ "exactNZCcc": {
+  "value": "10",
+  "source": "number of those comparisons for CCC-C"
+ },
+ "exactMaxZB": {
+  "value": "3.18",
+  "source": "largest |z| of the exact closed form (theory.json chains.B, first cohort) against the multi-state first-cohort measurement, removal and keeping, over the k of theory.json"
+ },
+ "exactNZB": {
+  "value": "10",
+  "source": "number of those comparisons for B"
+ },
+ "durBkZero": {
+  "value": "-0.4",
+  "source": "experiments/extra.json duration[k=0].duration.rel_bias[5]"
+ },
+ "durBkZerose": {
+  "value": "0.3",
+  "source": "duration[k=0].duration.rel_bias_mcse[5]"
+ },
+ "durCcckZero": {
+  "value": "-0.3",
+  "source": "experiments/extra.json duration[k=0].duration.rel_bias[6]"
+ },
+ "durCcckZerose": {
+  "value": "0.3",
+  "source": "duration[k=0].duration.rel_bias_mcse[6]"
+ },
+ "durBkOne": {
+  "value": "-5.0",
+  "source": "experiments/extra.json duration[k=1].duration.rel_bias[5]"
+ },
+ "durBkOnese": {
+  "value": "0.3",
+  "source": "duration[k=1].duration.rel_bias_mcse[5]"
+ },
+ "durCcckOne": {
+  "value": "-4.9",
+  "source": "experiments/extra.json duration[k=1].duration.rel_bias[6]"
+ },
+ "durCcckOnese": {
+  "value": "0.3",
+  "source": "duration[k=1].duration.rel_bias_mcse[6]"
+ },
+ "durBkTwo": {
+  "value": "-10.3",
+  "source": "experiments/extra.json duration[k=2].duration.rel_bias[5]"
+ },
+ "durBkTwose": {
+  "value": "0.3",
+  "source": "duration[k=2].duration.rel_bias_mcse[5]"
+ },
+ "durCcckTwo": {
+  "value": "-9.6",
+  "source": "experiments/extra.json duration[k=2].duration.rel_bias[6]"
+ },
+ "durCcckTwose": {
+  "value": "0.3",
+  "source": "duration[k=2].duration.rel_bias_mcse[6]"
+ },
+ "durBkThree": {
+  "value": "-14.8",
+  "source": "experiments/extra.json duration[k=3].duration.rel_bias[5]"
+ },
+ "durBkThreese": {
+  "value": "0.3",
+  "source": "duration[k=3].duration.rel_bias_mcse[5]"
+ },
+ "durCcckThree": {
+  "value": "-14.0",
+  "source": "experiments/extra.json duration[k=3].duration.rel_bias[6]"
+ },
+ "durCcckThreese": {
+  "value": "0.3",
+  "source": "duration[k=3].duration.rel_bias_mcse[6]"
+ },
+ "durBkFive": {
+  "value": "-22.7",
+  "source": "experiments/extra.json duration[k=5].duration.rel_bias[5]"
+ },
+ "durBkFivese": {
+  "value": "0.3",
+  "source": "duration[k=5].duration.rel_bias_mcse[5]"
+ },
+ "durCcckFive": {
+  "value": "-22.1",
+  "source": "experiments/extra.json duration[k=5].duration.rel_bias[6]"
+ },
+ "durCcckFivese": {
+  "value": "0.3",
+  "source": "duration[k=5].duration.rel_bias_mcse[6]"
+ },
+ "durBkNine": {
+  "value": "-37.2",
+  "source": "experiments/extra.json duration[k=9].duration.rel_bias[5]"
+ },
+ "durBkNinese": {
+  "value": "0.3",
+  "source": "duration[k=9].duration.rel_bias_mcse[5]"
+ },
+ "durCcckNine": {
+  "value": "-36.8",
+  "source": "experiments/extra.json duration[k=9].duration.rel_bias[6]"
+ },
+ "durCcckNinese": {
+  "value": "0.2",
+  "source": "duration[k=9].duration.rel_bias_mcse[6]"
+ },
+ "durBkNineteen": {
+  "value": "-61.5",
+  "source": "experiments/extra.json duration[k=19].duration.rel_bias[5]"
+ },
+ "durBkNineteense": {
+  "value": "0.2",
+  "source": "duration[k=19].duration.rel_bias_mcse[5]"
+ },
+ "durCcckNineteen": {
+  "value": "-60.8",
+  "source": "experiments/extra.json duration[k=19].duration.rel_bias[6]"
+ },
+ "durCcckNineteense": {
+  "value": "0.2",
+  "source": "duration[k=19].duration.rel_bias_mcse[6]"
+ },
+ "testordkZerofive": {
+  "value": "6.0",
+  "source": "experiments/extra.json tests[rating.markov_order@k0].rates[p<0.05].rate"
+ },
+ "testordkZerofivelo": {
+  "value": "4.7",
+  "source": "tests[rating.markov_order@k0].rates[p<0.05].wilson_low"
+ },
+ "testordkZerofivehi": {
+  "value": "7.6",
+  "source": "tests[rating.markov_order@k0].rates[p<0.05].wilson_high"
+ },
+ "testmomkZerofive": {
+  "value": "4.2",
+  "source": "experiments/extra.json tests[rating.momentum@k0].rates[p<0.05].rate"
+ },
+ "testmomkZerofivelo": {
+  "value": "3.1",
+  "source": "tests[rating.momentum@k0].rates[p<0.05].wilson_low"
+ },
+ "testmomkZerofivehi": {
+  "value": "5.6",
+  "source": "tests[rating.momentum@k0].rates[p<0.05].wilson_high"
+ },
+ "testztkZerofive": {
+  "value": "0.0",
+  "source": "experiments/extra.json tests[rating.migration_ztests@k0].rates[p<0.05].rate"
+ },
+ "testztkZerofivelo": {
+  "value": "0.0",
+  "source": "tests[rating.migration_ztests@k0].rates[p<0.05].wilson_low"
+ },
+ "testztkZerofivehi": {
+  "value": "0.4",
+  "source": "tests[rating.migration_ztests@k0].rates[p<0.05].wilson_high"
+ },
+ "testordkNinefive": {
+  "value": "8.3",
+  "source": "experiments/extra.json tests[rating.markov_order@k9].rates[p<0.05].rate"
+ },
+ "testordkNinefivelo": {
+  "value": "6.7",
+  "source": "tests[rating.markov_order@k9].rates[p<0.05].wilson_low"
+ },
+ "testordkNinefivehi": {
+  "value": "10.2",
+  "source": "tests[rating.markov_order@k9].rates[p<0.05].wilson_high"
+ },
+ "testmomkNinefive": {
+  "value": "4.2",
+  "source": "experiments/extra.json tests[rating.momentum@k9].rates[p<0.05].rate"
+ },
+ "testmomkNinefivelo": {
+  "value": "3.1",
+  "source": "tests[rating.momentum@k9].rates[p<0.05].wilson_low"
+ },
+ "testmomkNinefivehi": {
+  "value": "5.6",
+  "source": "tests[rating.momentum@k9].rates[p<0.05].wilson_high"
+ },
+ "testztkNinefive": {
+  "value": "0.0",
+  "source": "experiments/extra.json tests[rating.migration_ztests@k9].rates[p<0.05].rate"
+ },
+ "testztkNinefivelo": {
+  "value": "0.0",
+  "source": "tests[rating.migration_ztests@k9].rates[p<0.05].wilson_low"
+ },
+ "testztkNinefivehi": {
+  "value": "0.4",
+  "source": "tests[rating.migration_ztests@k9].rates[p<0.05].wilson_high"
+ },
+ "testordkNineteenfive": {
+  "value": "6.6",
+  "source": "experiments/extra.json tests[rating.markov_order@k19].rates[p<0.05].rate"
+ },
+ "testordkNineteenfivelo": {
+  "value": "5.2",
+  "source": "tests[rating.markov_order@k19].rates[p<0.05].wilson_low"
+ },
+ "testordkNineteenfivehi": {
+  "value": "8.3",
+  "source": "tests[rating.markov_order@k19].rates[p<0.05].wilson_high"
+ },
+ "testmomkNineteenfive": {
+  "value": "4.1",
+  "source": "experiments/extra.json tests[rating.momentum@k19].rates[p<0.05].rate"
+ },
+ "testmomkNineteenfivelo": {
+  "value": "3.0",
+  "source": "tests[rating.momentum@k19].rates[p<0.05].wilson_low"
+ },
+ "testmomkNineteenfivehi": {
+  "value": "5.5",
+  "source": "tests[rating.momentum@k19].rates[p<0.05].wilson_high"
+ },
+ "testztkNineteenfive": {
+  "value": "0.1",
+  "source": "experiments/extra.json tests[rating.migration_ztests@k19].rates[p<0.05].rate"
+ },
+ "testztkNineteenfivelo": {
+  "value": "0.0",
+  "source": "tests[rating.migration_ztests@k19].rates[p<0.05].wilson_low"
+ },
+ "testztkNineteenfivehi": {
+  "value": "0.6",
+  "source": "tests[rating.migration_ztests@k19].rates[p<0.05].wilson_high"
+ },
+ "thMaxZ": {
+  "value": "1.69",
+  "source": "experiments/theory.json max |z| over all chains, rows, scopes and arms"
+ },
+ "thNcmp": {
+  "value": "80",
+  "source": "experiments/theory.json number of comparisons"
+ },
+ "thNcmpDistinct": {
+  "value": "70",
+  "source": "experiments/theory.json comparisons after merging the pairs with equal simulated mean, standard error and closed form"
+ },
+ "thNcmpFirst": {
+  "value": "30",
+  "source": "same, first-cohort scope"
+ },
+ "thNcmpPooled": {
+  "value": "40",
+  "source": "same, pooled scope"
+ },
+ "thMaxZFirst": {
+  "value": "1.69",
+  "source": "largest |z| over the first-cohort comparisons"
+ },
+ "thMaxZPooled": {
+  "value": "1.59",
+  "source": "largest |z| over the pooled comparisons"
+ },
+ "thRepsB": {
+  "value": "40",
+  "source": "experiments/theory.json chains.B.rows[0].reps"
+ },
+ "thObligB": {
+  "value": "100{,}000",
+  "source": "experiments/theory.json chains.B.rows[0].obligors"
+ },
+ "thObligC": {
+  "value": "50{,}000",
+  "source": "experiments/theory.json chains.CCC-C.rows[0].obligors"
+ },
+ "thLambdaB": {
+  "value": "0.01180",
+  "source": "experiments/theory.json chains.B.lambda"
+ },
+ "thBremovedPoolkZero": {
+  "value": "3.0",
+  "source": "experiments/theory.json chains.B.rows[k=0].simulated.pooled.removed.rel_bias_closed_form"
+ },
+ "thBkeptPoolkZero": {
+  "value": "-2.9",
+  "source": "experiments/theory.json chains.B.rows[k=0].simulated.pooled.kept.rel_bias_closed_form"
+ },
+ "thBfollowedPoolkZero": {
+  "value": "-0.0",
+  "source": "experiments/theory.json chains.B.rows[k=0].simulated.pooled.followed.rel_bias_closed_form"
+ },
+ "thBremovedYonekZero": {
+  "value": "3.0",
+  "source": "experiments/theory.json chains.B.rows[k=0].simulated.first_year.removed.rel_bias_closed_form"
+ },
+ "thBkeptYonekZero": {
+  "value": "-2.9",
+  "source": "experiments/theory.json chains.B.rows[k=0].simulated.first_year.kept.rel_bias_closed_form"
+ },
+ "thBfollowedYonekZero": {
+  "value": "-0.0",
+  "source": "experiments/theory.json chains.B.rows[k=0].simulated.first_year.followed.rel_bias_closed_form"
+ },
+ "thBremovedPoolkOne": {
+  "value": "-2.2",
+  "source": "experiments/theory.json chains.B.rows[k=1].simulated.pooled.removed.rel_bias_closed_form"
+ },
+ "thBkeptPoolkOne": {
+  "value": "-7.9",
+  "source": "experiments/theory.json chains.B.rows[k=1].simulated.pooled.kept.rel_bias_closed_form"
+ },
+ "thBfollowedPoolkOne": {
+  "value": "-2.2",
+  "source": "experiments/theory.json chains.B.rows[k=1].simulated.pooled.followed.rel_bias_closed_form"
+ },
+ "thBremovedYonekOne": {
+  "value": "0.1",
+  "source": "experiments/theory.json chains.B.rows[k=1].simulated.first_year.removed.rel_bias_closed_form"
+ },
+ "thBkeptYonekOne": {
+  "value": "-5.8",
+  "source": "experiments/theory.json chains.B.rows[k=1].simulated.first_year.kept.rel_bias_closed_form"
+ },
+ "thBfollowedYonekOne": {
+  "value": "-0.0",
+  "source": "experiments/theory.json chains.B.rows[k=1].simulated.first_year.followed.rel_bias_closed_form"
+ },
+ "thBremovedPoolkThree": {
+  "value": "-11.8",
+  "source": "experiments/theory.json chains.B.rows[k=3].simulated.pooled.removed.rel_bias_closed_form"
+ },
+ "thBkeptPoolkThree": {
+  "value": "-17.1",
+  "source": "experiments/theory.json chains.B.rows[k=3].simulated.pooled.kept.rel_bias_closed_form"
+ },
+ "thBfollowedPoolkThree": {
+  "value": "-6.5",
+  "source": "experiments/theory.json chains.B.rows[k=3].simulated.pooled.followed.rel_bias_closed_form"
+ },
+ "thBremovedYonekThree": {
+  "value": "-5.4",
+  "source": "experiments/theory.json chains.B.rows[k=3].simulated.first_year.removed.rel_bias_closed_form"
+ },
+ "thBkeptYonekThree": {
+  "value": "-11.1",
+  "source": "experiments/theory.json chains.B.rows[k=3].simulated.first_year.kept.rel_bias_closed_form"
+ },
+ "thBfollowedYonekThree": {
+  "value": "-0.0",
+  "source": "experiments/theory.json chains.B.rows[k=3].simulated.first_year.followed.rel_bias_closed_form"
+ },
+ "thBremovedPoolkNine": {
+  "value": "-35.0",
+  "source": "experiments/theory.json chains.B.rows[k=9].simulated.pooled.removed.rel_bias_closed_form"
+ },
+ "thBkeptPoolkNine": {
+  "value": "-39.0",
+  "source": "experiments/theory.json chains.B.rows[k=9].simulated.pooled.kept.rel_bias_closed_form"
+ },
+ "thBfollowedPoolkNine": {
+  "value": "-17.4",
+  "source": "experiments/theory.json chains.B.rows[k=9].simulated.pooled.followed.rel_bias_closed_form"
+ },
+ "thBremovedYonekNine": {
+  "value": "-19.7",
+  "source": "experiments/theory.json chains.B.rows[k=9].simulated.first_year.removed.rel_bias_closed_form"
+ },
+ "thBkeptYonekNine": {
+  "value": "-24.8",
+  "source": "experiments/theory.json chains.B.rows[k=9].simulated.first_year.kept.rel_bias_closed_form"
+ },
+ "thBfollowedYonekNine": {
+  "value": "-0.0",
+  "source": "experiments/theory.json chains.B.rows[k=9].simulated.first_year.followed.rel_bias_closed_form"
+ },
+ "thBremovedPoolkNineteen": {
+  "value": "-60.0",
+  "source": "experiments/theory.json chains.B.rows[k=19].simulated.pooled.removed.rel_bias_closed_form"
+ },
+ "thBkeptPoolkNineteen": {
+  "value": "-62.6",
+  "source": "experiments/theory.json chains.B.rows[k=19].simulated.pooled.kept.rel_bias_closed_form"
+ },
+ "thBfollowedPoolkNineteen": {
+  "value": "-30.9",
+  "source": "experiments/theory.json chains.B.rows[k=19].simulated.pooled.followed.rel_bias_closed_form"
+ },
+ "thBremovedYonekNineteen": {
+  "value": "-37.5",
+  "source": "experiments/theory.json chains.B.rows[k=19].simulated.first_year.removed.rel_bias_closed_form"
+ },
+ "thBkeptYonekNineteen": {
+  "value": "-41.7",
+  "source": "experiments/theory.json chains.B.rows[k=19].simulated.first_year.kept.rel_bias_closed_form"
+ },
+ "thBfollowedYonekNineteen": {
+  "value": "-0.0",
+  "source": "experiments/theory.json chains.B.rows[k=19].simulated.first_year.followed.rel_bias_closed_form"
+ },
+ "thCccremovedPoolkZero": {
+  "value": "2.8",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=0].simulated.pooled.removed.rel_bias_closed_form"
+ },
+ "thCcckeptPoolkZero": {
+  "value": "-2.9",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=0].simulated.pooled.kept.rel_bias_closed_form"
+ },
+ "thCccfollowedPoolkZero": {
+  "value": "0.0",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=0].simulated.pooled.followed.rel_bias_closed_form"
+ },
+ "thCccremovedYonekZero": {
+  "value": "2.8",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=0].simulated.first_year.removed.rel_bias_closed_form"
+ },
+ "thCcckeptYonekZero": {
+  "value": "-2.9",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=0].simulated.first_year.kept.rel_bias_closed_form"
+ },
+ "thCccfollowedYonekZero": {
+  "value": "0.0",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=0].simulated.first_year.followed.rel_bias_closed_form"
+ },
+ "thCccremovedPoolkOne": {
+  "value": "-1.8",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=1].simulated.pooled.removed.rel_bias_closed_form"
+ },
+ "thCcckeptPoolkOne": {
+  "value": "-7.6",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=1].simulated.pooled.kept.rel_bias_closed_form"
+ },
+ "thCccfollowedPoolkOne": {
+  "value": "-2.0",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=1].simulated.pooled.followed.rel_bias_closed_form"
+ },
+ "thCccremovedYonekOne": {
+  "value": "0.4",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=1].simulated.first_year.removed.rel_bias_closed_form"
+ },
+ "thCcckeptYonekOne": {
+  "value": "-5.7",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=1].simulated.first_year.kept.rel_bias_closed_form"
+ },
+ "thCccfollowedYonekOne": {
+  "value": "0.0",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=1].simulated.first_year.followed.rel_bias_closed_form"
+ },
+ "thCccremovedPoolkThree": {
+  "value": "-10.3",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=3].simulated.pooled.removed.rel_bias_closed_form"
+ },
+ "thCcckeptPoolkThree": {
+  "value": "-16.4",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=3].simulated.pooled.kept.rel_bias_closed_form"
+ },
+ "thCccfollowedPoolkThree": {
+  "value": "-5.9",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=3].simulated.pooled.followed.rel_bias_closed_form"
+ },
+ "thCccremovedYonekThree": {
+  "value": "-4.4",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=3].simulated.first_year.removed.rel_bias_closed_form"
+ },
+ "thCcckeptYonekThree": {
+  "value": "-10.9",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=3].simulated.first_year.kept.rel_bias_closed_form"
+ },
+ "thCccfollowedYonekThree": {
+  "value": "0.0",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=3].simulated.first_year.followed.rel_bias_closed_form"
+ },
+ "thCccremovedPoolkNine": {
+  "value": "-31.8",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=9].simulated.pooled.removed.rel_bias_closed_form"
+ },
+ "thCcckeptPoolkNine": {
+  "value": "-37.6",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=9].simulated.pooled.kept.rel_bias_closed_form"
+ },
+ "thCccfollowedPoolkNine": {
+  "value": "-15.9",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=9].simulated.pooled.followed.rel_bias_closed_form"
+ },
+ "thCccremovedYonekNine": {
+  "value": "-17.1",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=9].simulated.first_year.removed.rel_bias_closed_form"
+ },
+ "thCcckeptYonekNine": {
+  "value": "-24.5",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=9].simulated.first_year.kept.rel_bias_closed_form"
+ },
+ "thCccfollowedYonekNine": {
+  "value": "0.0",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=9].simulated.first_year.followed.rel_bias_closed_form"
+ },
+ "thCccremovedPoolkNineteen": {
+  "value": "-56.1",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=19].simulated.pooled.removed.rel_bias_closed_form"
+ },
+ "thCcckeptPoolkNineteen": {
+  "value": "-60.8",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=19].simulated.pooled.kept.rel_bias_closed_form"
+ },
+ "thCccfollowedPoolkNineteen": {
+  "value": "-28.4",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=19].simulated.pooled.followed.rel_bias_closed_form"
+ },
+ "thCccremovedYonekNineteen": {
+  "value": "-33.6",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=19].simulated.first_year.removed.rel_bias_closed_form"
+ },
+ "thCcckeptYonekNineteen": {
+  "value": "-41.3",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=19].simulated.first_year.kept.rel_bias_closed_form"
+ },
+ "thCccfollowedYonekNineteen": {
+  "value": "0.0",
+  "source": "experiments/theory.json chains.CCC-C.rows[k=19].simulated.first_year.followed.rel_bias_closed_form"
+ },
+ "foRemkZero": {
+  "value": "3.1",
+  "source": "first-order closed form e^w (1 - e^-theta)/theta - 1 with w = 0.06, theta = w (1 + k), k = 0"
+ },
+ "foKeptkZero": {
+  "value": "-2.9",
+  "source": "first-order closed form (1 - e^-theta)/theta - 1, k = 0"
+ },
+ "foFolkZero": {
+  "value": "0.0",
+  "source": "first-order closed form (1 - e^-kw)/(kw) - 1 for a later cohort, k = 0"
+ },
+ "foRemkOne": {
+  "value": "0.1",
+  "source": "first-order closed form e^w (1 - e^-theta)/theta - 1 with w = 0.06, theta = w (1 + k), k = 1"
+ },
+ "foKeptkOne": {
+  "value": "-5.8",
+  "source": "first-order closed form (1 - e^-theta)/theta - 1, k = 1"
+ },
+ "foFolkOne": {
+  "value": "-2.9",
+  "source": "first-order closed form (1 - e^-kw)/(kw) - 1 for a later cohort, k = 1"
+ },
+ "foRemkTwo": {
+  "value": "-2.8",
+  "source": "first-order closed form e^w (1 - e^-theta)/theta - 1 with w = 0.06, theta = w (1 + k), k = 2"
+ },
+ "foKeptkTwo": {
+  "value": "-8.5",
+  "source": "first-order closed form (1 - e^-theta)/theta - 1, k = 2"
+ },
+ "foFolkTwo": {
+  "value": "-5.8",
+  "source": "first-order closed form (1 - e^-kw)/(kw) - 1 for a later cohort, k = 2"
+ },
+ "foRemkThree": {
+  "value": "-5.6",
+  "source": "first-order closed form e^w (1 - e^-theta)/theta - 1 with w = 0.06, theta = w (1 + k), k = 3"
+ },
+ "foKeptkThree": {
+  "value": "-11.1",
+  "source": "first-order closed form (1 - e^-theta)/theta - 1, k = 3"
+ },
+ "foFolkThree": {
+  "value": "-8.5",
+  "source": "first-order closed form (1 - e^-kw)/(kw) - 1 for a later cohort, k = 3"
+ },
+ "foRemkFive": {
+  "value": "-10.8",
+  "source": "first-order closed form e^w (1 - e^-theta)/theta - 1 with w = 0.06, theta = w (1 + k), k = 5"
+ },
+ "foKeptkFive": {
+  "value": "-16.0",
+  "source": "first-order closed form (1 - e^-theta)/theta - 1, k = 5"
+ },
+ "foFolkFive": {
+  "value": "-13.6",
+  "source": "first-order closed form (1 - e^-kw)/(kw) - 1 for a later cohort, k = 5"
+ },
+ "foRemkNine": {
+  "value": "-20.2",
+  "source": "first-order closed form e^w (1 - e^-theta)/theta - 1 with w = 0.06, theta = w (1 + k), k = 9"
+ },
+ "foKeptkNine": {
+  "value": "-24.8",
+  "source": "first-order closed form (1 - e^-theta)/theta - 1, k = 9"
+ },
+ "foFolkNine": {
+  "value": "-22.7",
+  "source": "first-order closed form (1 - e^-kw)/(kw) - 1 for a later cohort, k = 9"
+ },
+ "foRemkNineteen": {
+  "value": "-38.2",
+  "source": "first-order closed form e^w (1 - e^-theta)/theta - 1 with w = 0.06, theta = w (1 + k), k = 19"
+ },
+ "foKeptkNineteen": {
+  "value": "-41.8",
+  "source": "first-order closed form (1 - e^-theta)/theta - 1, k = 19"
+ },
+ "foFolkNineteen": {
+  "value": "-40.3",
+  "source": "first-order closed form (1 - e^-kw)/(kw) - 1 for a later cohort, k = 19"
+ },
+ "genSizes": {
+  "value": "75, 822, 1{,}814, 1{,}756, 1{,}054, 1{,}391, 201",
+  "source": "experiments/withdrawals.json obligors (cohort sizes of the generator, AAA to CCC to C)"
+ },
+ "wRate": {
+  "value": "6",
+  "source": "experiments/theory.json withdrawal_rate (percent)"
+ },
+ "limKeptKone": {
+  "value": "100",
+  "source": "Proposition 1: the relative bias tends to -100 percent as k grows (experiments/theory.json limits_first_year)"
+ },
+ "waldAaaFifty": {
+  "value": "0.33",
+  "source": "data/derived/C04/thin.json rungs[value=50].coverage.wald[0]"
+ },
+ "waldAaaFiftyFour": {
+  "value": "0.3278",
+  "source": "data/derived/C04/thin.json rungs[value=50].coverage.wald[0]"
+ },
+ "acAaaFifty": {
+  "value": "100.00",
+  "source": "rungs[value=50].coverage.agresti_coull[0]"
+ },
+ "jeffAaaFifty": {
+  "value": "99.67",
+  "source": "rungs[value=50].coverage.jeffreys[0]"
+ },
+ "waldAaFifty": {
+  "value": "0.2",
+  "source": "data/derived/C04/thin.json rungs[value=50].coverage.wald[1]"
+ },
+ "jeffAaaThou": {
+  "value": "93.6",
+  "source": "rungs[value=1000].coverage.jeffreys[0]"
+ },
+ "jeffBbThou": {
+  "value": "94.4",
+  "source": "rungs[value=1000].coverage.jeffreys[4]"
+ },
+ "waldAaaGen": {
+  "value": "0.5",
+  "source": "experiments/thin.json coverage_at_generator_sizes.wald[0]"
+ },
+ "waldAaGen": {
+  "value": "4.0",
+  "source": "coverage_at_generator_sizes.wald[1]"
+ },
+ "waldAGen": {
+  "value": "41",
+  "source": "coverage_at_generator_sizes.wald[2]"
+ },
+ "waldBbbFifty": {
+  "value": "4.0",
+  "source": "rungs[value=50].coverage.wald[3]"
+ },
+ "waldBFifty": {
+  "value": "44.5",
+  "source": "rungs[value=50].coverage.wald[5]"
+ },
+ "waldCccFifty": {
+  "value": "91.4",
+  "source": "rungs[value=50].coverage.wald[6]"
+ },
+ "jeffMinFifty": {
+  "value": "96.0",
+  "source": "min of rungs[value=50].coverage.jeffreys"
+ },
+ "acMinFifty": {
+  "value": "95.5",
+  "source": "min of rungs[value=50].coverage.agresti_coull"
+ },
+ "waldAaaThou": {
+  "value": "6.4",
+  "source": "rungs[value=1000].coverage.wald[0]"
+ },
+ "waldAaTwoHundred": {
+  "value": "0.98",
+  "source": "rungs[value=200].coverage.wald[1]"
+ },
+ "pAaa": {
+  "value": "0.0066",
+  "source": "experiments/thin.json pd_1y[0]"
+ },
+ "pB": {
+  "value": "1.173",
+  "source": "experiments/thin.json pd_1y[5]"
+ },
+ "pCcc": {
+  "value": "8.06",
+  "source": "experiments/thin.json pd_1y[6]"
+ },
+ "cfAaaFifty": {
+  "value": "0.3278",
+  "source": "experiments/thin.json closed_forms[n=50].closed_form_wald[0]"
+ },
+ "cfAaaFiftyDiff": {
+  "value": "4.3\\times10^{-12}",
+  "source": "difference closed form minus enumerated, n=50, AAA"
+ },
+ "cfJeffMaxDiff": {
+  "value": "7.0\\times10^{-15}",
+  "source": "max |(1-p)^n - enumerated Jeffreys coverage| over n <= 200 and the three lowest grades"
+ },
+ "lenWaldAaaFifty": {
+  "value": "1.9",
+  "source": "data/derived/C04/thin.json rungs[value=50].length.wald[0] (x1e4: basis points)"
+ },
+ "lenJeffAaaFifty": {
+  "value": "489",
+  "source": "rungs[value=50].length.jeffreys[0] (x1e4: basis points)"
+ },
+ "lenAcAaaFifty": {
+  "value": "853",
+  "source": "rungs[value=50].length.agresti_coull[0] (x1e4: basis points)"
+ },
+ "pAaaBp": {
+  "value": "0.66",
+  "source": "experiments/thin.json pd_1y[0] (x1e4: basis points)"
+ },
+ "pAaBp": {
+  "value": "0.49",
+  "source": "experiments/thin.json pd_1y[1] (x1e4: basis points)"
+ },
+ "jeffThouAaa": {
+  "value": "93.6",
+  "source": "data/derived/C04/thin.json rungs[value=1000].coverage.jeffreys[0]"
+ },
+ "jeffThouAa": {
+  "value": "95.2",
+  "source": "data/derived/C04/thin.json rungs[value=1000].coverage.jeffreys[1]"
+ },
+ "jeffThouA": {
+  "value": "96.6",
+  "source": "data/derived/C04/thin.json rungs[value=1000].coverage.jeffreys[2]"
+ },
+ "jeffThouBbb": {
+  "value": "95.0",
+  "source": "data/derived/C04/thin.json rungs[value=1000].coverage.jeffreys[3]"
+ },
+ "jeffThouBb": {
+  "value": "94.4",
+  "source": "data/derived/C04/thin.json rungs[value=1000].coverage.jeffreys[4]"
+ },
+ "jeffThouB": {
+  "value": "94.6",
+  "source": "data/derived/C04/thin.json rungs[value=1000].coverage.jeffreys[5]"
+ },
+ "jeffThouCcc": {
+  "value": "94.5",
+  "source": "data/derived/C04/thin.json rungs[value=1000].coverage.jeffreys[6]"
+ },
+ "overlapAaaAaThou": {
+  "value": "1.00",
+  "source": "data/derived/C04/thin.json rungs[value=1000].overlap_jeffreys[0]"
+ },
+ "overlapBCccTwo": {
+  "value": "0.21",
+  "source": "rungs[value=200].overlap_jeffreys[5]"
+ },
+ "waldFirstBb": {
+  "value": "2{,}000",
+  "source": "experiments/thin.json first_grid_n_reaching[0.90].wald[4]"
+ },
+ "waldFirstCcc": {
+  "value": "50",
+  "source": "first_grid_n_reaching[0.90].wald[6]"
+ },
+ "waldFirstAaa": {
+  "value": "none within the grid",
+  "source": "first_grid_n_reaching[0.90].wald[0]"
+ },
+ "waldAaaFiftyK": {
+  "value": "83.7",
+  "source": "experiments/thin.json coverage_grid.wald[n=50000][0]"
+ },
+ "gridMax": {
+  "value": "50{,}000",
+  "source": "experiments/thin.json grid[-1]"
+ },
+ "repsNeeded": {
+  "value": "30{,}400",
+  "source": "(1 - c)/(c * 0.1^2) with c = Wald coverage of AAA at n = 50 (relative standard error 10 percent)"
+ }
+}

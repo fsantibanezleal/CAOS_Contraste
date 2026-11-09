@@ -737,8 +737,8 @@ def bounds_finding(out: dict[str, Any]) -> dict[str, Any]:
           f"Con k 9 los tratamientos de industria, sin seguimiento y con seguimiento cubren "
           + "; ".join(f"{', '.join(x[1] for x in ex[d])} ({BOUNDS_DESIGN_WORDS[d][1]})" for d in designs)
           + f"; cada uno cubre menos del 50 % en: industria {ind[1]}; sin seguimiento {unf[1]}; con seguimiento (el oráculo: necesita el estado final de los retirados, que ninguna página de transiciones tiene) {fol[1]}. "
-          f"La cláusula del plan de que los tres tratamientos existentes cubren menos del 50 % se cumple en {allthree[1]}. "
-          f"El intervalo anclado cubre más que todos los tratamientos existentes con k 9 en {better} de 3 diseños: la refutación del plan {'se cumple' if refuted else 'no se cumple'}")
+          f"La cláusula del plan de que los tres tratamientos existentes cubren menos del 50 % se verifica en {allthree[1]}. "
+          f"El intervalo anclado cubre más que todos los tratamientos existentes con k 9 en {better} de 3 diseños: la refutación del plan {'se verifica' if refuted else 'no se verifica'}")
     return {"id": "F-WITHDRAW-BOUNDS", "severity": "S3", "status": "open",
             "evidence": ["design:bounds_verdict.rows", "design:rungs.bounds"], "title": _t(en, es)}
 

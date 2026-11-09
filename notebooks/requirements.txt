@@ -29,3 +29,6 @@ statsmodels==0.15.0
 # network (notebook 07 of topic 07, M-30); the pin of data-pipeline/requirements.txt, CPU wheel:
 # pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1
 torch==2.14.1
+# QuantLib: the independent closed forms the engine's Hull-White bond options and swaptions are priced against, called live by
+# notebook 07 of topic 08 (the version of the reconciliation manuscript, 1.44)
+QuantLib==1.44

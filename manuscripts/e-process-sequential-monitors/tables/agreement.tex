@@ -1,0 +1,25 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{Agreement of this study with the committed document of the product (seed 42, 2,000 streams per scenario, same generator and engine release): the share of streams ever rejected and the median first-rejection day of three rules in four scenarios, the difference being the Monte Carlo error of two independent runs of 2,000 streams (about one point at the middle of the range).}
+\label{tab:agreement}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llrrrrr}
+\toprule
+Scenario & Rule & This run, ever, \% & Committed run, ever, \% & Difference, points & This run, median day & Committed run, median day \\
+\midrule
+\relax null & \relax Rate e-process & 2.4 & 1.8 & +0.6 & -- & -- \\
+\relax null & \relax Kupiec, last 250 days & 65.7 & 66.5 & -0.8 & 718 & 704 \\
+\relax null & \relax Traffic light & 58.8 & 58.7 & +0.1 & 812 & 840 \\
+\relax rate x3 & \relax Rate e-process & 97.5 & 98.0 & -0.6 & 259 & 244 \\
+\relax rate x3 & \relax Kupiec, last 250 days & 99.7 & 99.8 & -0.1 & 250 & 250 \\
+\relax rate x3 & \relax Traffic light & 100.0 & 100.0 & +0.0 & 250 & 250 \\
+\relax rate x4 & \relax Rate e-process & 100.0 & 100.0 & +0.0 & 130 & 129 \\
+\relax rate x4 & \relax Kupiec, last 250 days & 100.0 & 100.0 & +0.0 & 250 & 250 \\
+\relax rate x4 & \relax Traffic light & 100.0 & 100.0 & +0.0 & 250 & 250 \\
+\relax cluster 0.4 & \relax Rate e-process & 18.6 & 18.2 & +0.4 & -- & -- \\
+\relax cluster 0.4 & \relax Kupiec, last 250 days & 94.9 & 95.0 & -0.2 & 357 & 365 \\
+\relax cluster 0.4 & \relax Traffic light & 68.3 & 66.8 & +1.5 & 622 & 670 \\
+\bottomrule
+\end{tabular}}
+\end{table*}

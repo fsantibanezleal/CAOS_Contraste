@@ -11,13 +11,14 @@
     "build": "tsc --noEmit && vite build && node scripts/materialize-routes.mjs",
     "preview": "node scripts/serve.mjs",
     "test": "node --test scripts/codegen-compatibility.test.mjs && vitest run",
-    "gate": "node scripts/gate.mjs",
+    "story:check": "node scripts/check_story_contraste.mjs",
+    "gate": "node scripts/check_story_mode.mjs && node scripts/gate.mjs",
     "capture": "node scripts/capture.mjs",
     "gen:contracts": "node scripts/gen-contract-types.mjs",
     "check:contracts": "node scripts/gen-contract-types.mjs --check"
   },
   "dependencies": {
-    "@fasl-work/caos-app-shell": "0.19.12",
+    "@fasl-work/caos-app-shell": "0.25.0",
     "katex": "^0.16.47",
     "lucide-react": "^1.52.0",
     "react": "^19.3.0",

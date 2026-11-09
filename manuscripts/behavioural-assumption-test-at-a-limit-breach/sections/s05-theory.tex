@@ -1,0 +1,113 @@
+\section{Theory}
+\label{sec:theory}
+
+The propositions below state what the test does on each kind of parameter, in closed form where that is possible, with the conditions under which each holds. Every closed form is checked against simulation in Section~\ref{sec:results} (Table~\ref{tab:theory-checks}); a proposition that is only a restatement of the definition is marked as such.
+
+\subsection{Representation and separation on a stated parameter}
+\label{sec:theory-basic}
+
+\begin{proposition}[Representation]
+\label{prop:exact}
+Let $k=|\{t\ge 2:\Delta_t\ne 0\}|$ be the number of changes of a history. (i) For every injective map $g:\R\to\R$, the statistic of the history $(g(\theta_t),b_t)$ equals that of $(\theta_t,b_t)$. (ii) $0\le c\le\min(m,k)$. (iii) $c$ is nondecreasing in the set $B$ of breach dates and in the set of change dates.
+\end{proposition}
+\begin{proof}
+For an injective $g$, $g(\theta_t)\ne g(\theta_{t-1})$ if and only if $\theta_t\ne\theta_{t-1}$, so every term of Equation~\eqref{eq:count} is unchanged. Each term is an indicator that is one only at a date that is both a breach date and a change date, so $c$ counts the elements of the intersection of a set of $m$ dates and a set of $k$ dates, which is at most the smaller of the two, and enlarging either set can only add elements to the intersection.
+\end{proof}
+Part (i) means that the unit of the parameter is irrelevant: a core maturity in years, in months or on a logarithmic scale gives the same light. It also means that the test cannot tell a change of one basis point from a change of one decade, which is the property that Section~\ref{sec:results} shows to be the source of its weakness on a re-estimated parameter.
+
+\begin{proposition}[Separation on a stated parameter]
+\label{prop:separation}
+Let $D=\{t\ge 2:\Delta_t\ne 0\}$ be the dates at which the stated parameter was changed. Then $c=|D\cap B|$, and the light is red if and only if at least one change was made at a breach date.
+\end{proposition}
+\begin{proof}
+By Equation~\eqref{eq:count}, $c=\sum_{t\in B}\indic\{t\in D\}=|D\cap B|$, and the light is red if and only if $c\ge 1$.
+\end{proof}
+Proposition~\ref{prop:separation} says that on a stated parameter the test has no false negative for the event that a change was made at a breach date, and no false flag for the event that no change was made at a breach date. It separates the coincidence perfectly. What it cannot separate is the reason: a change that was made for another reason at a date that happens to be a breach date is flagged, and the next subsection measures how often that is. The detection of a planted change at a breach date is therefore one with probability one, and the first prediction of Section~\ref{sec:experimental-design} about it is a check of the implementation as much as of the theory.
+
+\subsection{False flags when the changes are unrelated to the breaches}
+\label{sec:theory-false}
+
+\begin{proposition}[False-flag probability]
+\label{prop:false-flag}
+Let the breach dates $B$ have $m$ elements. (a) If, given $B$, the dates at which a stated parameter is changed are independent with probability $\lambda$ each, then
+\begin{equation}
+\Prob(\text{red}\mid B)=1-(1-\lambda)^{m},\qquad \Prob(\text{red})=\E\bigl[1-(1-\lambda)^{m}\bigr].
+\label{eq:false-flag}
+\end{equation}
+(b) If, given $B$, the $k$ change dates are uniformly distributed over the $\binom nk$ subsets of the $n=T-1$ dates, then
+\begin{equation}
+\Prob(\text{red}\mid B)=1-\binom{n-k}{m}\Big/\binom nm .
+\label{eq:hypergeometric}
+\end{equation}
+(c) The rate $1-(1-\lambda)^m$ is at most $\alpha$ if and only if $m\le\ln(1-\alpha)/\ln(1-\lambda)$.
+\end{proposition}
+\begin{proof}
+(a) The test is green if and only if none of the $m$ breach dates is a change date, which has probability $(1-\lambda)^m$ by independence; taking the expectation over $m$ gives the second form. (b) The test is green if and only if the $k$ change dates fall among the $n-m$ dates that are not breach dates, which happens for $\binom{n-m}{k}$ of the $\binom nk$ subsets, and $\binom{n-m}{k}/\binom nk=\binom{n-k}{m}/\binom nm$ by cancelling the factorials. (c) is the inequality $(1-\lambda)^m\ge 1-\alpha$ solved for $m$.
+\end{proof}
+Equation~\eqref{eq:false-flag} is the rate that a validator should expect from the test on a stated parameter whose changes have nothing to do with the breaches. For $\lambda=0.05$ and a size of $\alpha=0.05$, part (c) allows at most one breach date, since $1-0.95^2=0.0975$; the test cannot be held at the conventional size on a bank that breaches its limit at more than one date and changes a stated parameter in one quarter out of twenty. The rate rises with the number of breach dates, with the rate of unrelated changes and with the persistence of the breach, so a bank with a long breach and a busy governance calendar is flagged more often, and the red light is least informative where the validator most needs it. Section~\ref{sec:results} compares Equation~\eqref{eq:false-flag} with the false-flag rate of the engine on \statedCells{} cells of simulated histories.
+
+\subsection{Degeneracy on a re-estimated parameter}
+\label{sec:theory-degeneracy}
+
+\begin{proposition}[Degeneracy]
+\label{prop:degeneracy}
+Let the history of a re-estimated parameter have a distribution under which $\Prob(\theta_t=\theta_{t-1})=0$ for every $t$. Then $c=m$ almost surely, for every breach set $B$ and for every override that adds to $\theta_t$ an amount whose law does not put mass on the event $\{\theta_t'=\theta_{t-1}'\}$. The light is red with probability one when $m\ge 1$, in the null arm and in the alternative arm alike, and the area under the ROC curve of $c$ between the two arms is $\tfrac12$. If the distribution has atoms, then $c=m-\sum_{t\in B}\indic\{\theta_t=\theta_{t-1}\}$.
+\end{proposition}
+\begin{proof}
+Under the assumption, $\indic\{\theta_t\ne\theta_{t-1}\}=1$ almost surely for every $t$, so $c=\sum_{t\in B}1=m$ by Equation~\eqref{eq:count}, in both arms. The statistic then has the same distribution in the two arms, given $B$, and the area under the ROC curve of two identical distributions, with ties counted as one half, is one half. With atoms the sum of the indicators over the breach dates is the number of ties.
+\end{proof}
+The proposition is a statement about the estimators in use and not about the bank. A replicating portfolio fitted on a moving window is a continuous function of the data except where the solution sits at a corner of the simplex, and there it can repeat exactly: the weighted average maturity of the stored fits stays at the cap of the tranche grid for five consecutive quarters. The count is then $m$ minus the ties at the breach dates, and the ties are what remains of the test's discrimination, which is why the measured area of Section~\ref{sec:results} is above one half by a small amount and not equal to it. Applied to the stored history of case C14, the proposition says that the red rows at 2022-Q2 and 2022-Q4 would have been obtained for any series of fitted values that differ from one date to the next, given that the limit was breached at the three dates, whatever the bank did with its assumptions, which is the reading that the product states and that Section~\ref{sec:results} documents.
+
+\subsection{Association tests are permutation tests of the count}
+\label{sec:theory-association}
+
+\begin{proposition}[Permutation distribution]
+\label{prop:association}
+Let the $m$ breach dates be placed uniformly at random among the $n$ dates, independently of the $k$ change dates. Then $c$ has the hypergeometric distribution
+\begin{equation}
+\Prob(c=j)=\binom kj\binom{n-k}{m-j}\Big/\binom nm ,\qquad j=0,\dots,\min(k,m),
+\label{eq:permutation}
+\end{equation}
+and the one-sided Fisher exact p-value of the two-by-two table of change against breach equals the permutation p-value $\Prob(c\ge c_{\mathrm{obs}})$. The proposed test is the permutation test with the critical value fixed at one.
+\end{proposition}
+\begin{proof}
+The margins of the table are $k$, $n-k$, $m$ and $n-m$, and a uniformly random placement of the breach dates gives each table with the observed margins its hypergeometric probability; Fisher's exact test is the test based on this distribution \citep{fisher1935}, and the cell of changes at breach dates is $c$. The proposed rule rejects when $c\ge 1$, so its size is $\Prob(c\ge 1)$, which is Equation~\eqref{eq:hypergeometric}.
+\end{proof}
+Two consequences follow. First, the proposed rule and the Fisher test use the same statistic and differ in the critical value, which the proposed rule fixes at one whatever $n$, $k$ and $m$ are and which the Fisher test chooses to hold a size. Second, the Fisher test has little power at the lengths of history of a validation: for a single change, $k=1$, Equation~\eqref{eq:permutation} gives $\Prob(c\ge 1)=m/n$, so that with $n=11$ dates and at least one breach date the smallest attainable p-value is at least $1/11\approx 0.09$, above $0.05$, and the test cannot flag a history with one change whatever happened. The enumeration of Section~\ref{sec:results} confirms the equality of the two p-values on \fisherPermN{} random histories to within \fisherPermMax{}.
+
+\subsection{Tolerance, power and finite-sample validity}
+\label{sec:theory-tolerance}
+
+\begin{proposition}[Tolerance family]
+\label{prop:tolerance}
+For $\delta\ge 0$ let $c_\delta$ be as in Equation~\eqref{eq:tolerance}. Then $c_\delta$ is nonincreasing in $\delta$, $c_\delta\ge 1$ if and only if $S>\delta$, and the false-flag rate and the detection rate of the rule $S>\delta$ are nonincreasing in $\delta$ and trace the ROC curve of $S$. If $\Prob(\Delta_t=0)=0$ and $m\ge 1$, both rates equal one at $\delta=0$.
+\end{proposition}
+\begin{proof}
+The indicator $\indic\{|\Delta_t|>\delta\}$ is nonincreasing in $\delta$, and the maximum over $B$ exceeds $\delta$ if and only if some term does. The probabilities of a decreasing family of events decrease, and a plot of the detection rate against the false-flag rate as $\delta$ varies is the ROC curve of $S$ by definition. At $\delta=0$ the rule flags whenever some change at a breach date is nonzero, which is almost sure under the stated condition.
+\end{proof}
+
+\begin{proposition}[Gaussian changes]
+\label{prop:gaussian}
+Let the changes at the $m$ breach dates be independent $N(0,\sigma^2)$ in the null arm, and in the alternative arm let one of them have mean $\mu$. Put $q=1-(1-\alpha)^{1/m}$ and $\delta_{m,\alpha}=\sigma\,\Phi^{-1}(1-q/2)$. Then the rule $S>\delta_{m,\alpha}$ has false-flag rate exactly $\alpha$ and detection rate
+\begin{equation}
+1-(1-q)^{m-1}\Bigl[\Phi\bigl(\tfrac{\delta_{m,\alpha}-\mu}{\sigma}\bigr)-\Phi\bigl(\tfrac{-\delta_{m,\alpha}-\mu}{\sigma}\bigr)\Bigr].
+\label{eq:gaussian-power}
+\end{equation}
+\end{proposition}
+\begin{proof}
+Each null change exceeds $\delta_{m,\alpha}$ in absolute value with probability $q$, so the null rule flags with probability $1-(1-q)^m=\alpha$. In the alternative arm, $m-1$ changes are null and one is $N(\mu,\sigma^2)$, which is inside $[-\delta,\delta]$ with probability $\Phi((\delta-\mu)/\sigma)-\Phi((-\delta-\mu)/\sigma)$; the rule does not flag only if all $m$ are inside.
+\end{proof}
+For $m=3$ the tolerance is \gaussDeltaThree{} standard deviations of a change, and a shift of two standard deviations is detected with probability \gaussPowThree{}; for $m=1$ and $m=6$ the corresponding figures are \gaussPowOne{} and \gaussPowSix{}. A tolerance rule detects an override only when it is several times larger than the natural changes, and the more breach dates there are the larger it has to be, because the maximum over more null changes is larger.
+
+\begin{proposition}[Finite-sample validity of the calibration]
+\label{prop:conformal}
+Let $S_1,\dots,S_N,S_{N+1}$ be exchangeable null scores, let $k=\lceil (N+1)(1-\alpha)\rceil\le N$ and let $\delta_\alpha=S_{(k)}$ be the $k$-th smallest of the first $N$. Then
+\begin{equation}
+\Prob(S_{N+1}>\delta_\alpha)\le\frac{N+1-k}{N+1}\le\alpha .
+\label{eq:conformal}
+\end{equation}
+\end{proposition}
+\begin{proof}
+If $S_{N+1}>S_{(k)}$ then $S_{N+1}$ is strictly larger than at least $k$ of the $N$ other scores, so among the $N+1$ exchangeable scores it has at most $N-k$ scores strictly above it. For exchangeable scores, the probability that a given one has at most $N-k$ strictly above it is at most $(N+1-k)/(N+1)$, because ranking the $N+1$ scores with ties broken at random gives each position the same probability and the event requires one of the $N+1-k$ top positions; the last inequality is the definition of $k$. This is the argument of the split conformal prediction of \citet{lei2018}.
+\end{proof}
+The bound is on the average over the draw of the calibration sample. For a given sample the realised false-flag rate varies around $\alpha$, and the simulation of Section~\ref{sec:results} measures that variation. The proposition needs the exchangeability of the calibration histories and the tested one, that is, the same length, the same estimator and the same breach process, and it fails when the breach prevalence of the bank differs from that of the calibration population; Section~\ref{sec:results} reports by how much.

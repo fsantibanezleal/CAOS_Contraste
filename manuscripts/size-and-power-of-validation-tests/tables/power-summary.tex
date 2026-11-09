@@ -1,0 +1,29 @@
+\begin{table*}[htbp]
+\centering
+\footnotesize
+\caption{Measured power at 5\%, in percent, of the 17 tests with a power curve at the six severities 0 to 5 of the ladder of the defect planted for each (2,000 repetitions per severity), and the setting of the ladder at which the interpolated curve first reaches 80\% with the interval given by the Wilson limits of the points.}
+\label{tab:power-summary}
+\fitwidth{\begin{tabular}{llrrrrrrl}
+\toprule
+Test & Defect and ladder (severity 0 to 5) & 0 & 1 & 2 & 3 & 4 & 5 & Setting at 80\% power [95\%] \\
+\midrule
+Binomial & true PD / PD applied (1 to 3) & 3.8 & 22.8 & 76.0 & 99.6 & 100.0 & 100.0 & 1.29 [1.27, 1.31] \\
+Jeffreys & true PD / PD applied (1 to 3) & 4.7 & 24.7 & 79.8 & 99.9 & 100.0 & 100.0 & 1.25 [1.25, 1.27] \\
+Vasicek-corrected binomial & true PD / PD applied (1 to 3) & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 79.0 & not reached \\
+Chi-square over grades & true PD / PD applied (1 to 3) & 5.3 & 16.0 & 66.1 & 99.5 & 100.0 & 100.0 & 1.35 [1.34, 1.36] \\
+Default profile & true PD / PD applied (1 to 3) & 3.3 & 3.9 & 3.8 & 3.6 & 3.2 & 2.4 & not reached \\
+Hosmer--Lemeshow & true PD / PD applied (1 to 3) & 5.0 & 16.8 & 64.9 & 99.5 & 100.0 & 100.0 & 1.36 [1.35, 1.37] \\
+Spiegelhalter & true PD / PD applied (1 to 3) & 5.3 & 41.2 & 94.6 & 100.0 & 100.0 & 100.0 & 1.21 [1.21, 1.21] \\
+Normal, five years & true PD / PD applied (1 to 3) & 7.8 & 37.0 & 86.2 & 100.0 & 100.0 & 100.0 & 1.23 [1.23, 1.24] \\
+Traffic lights & true PD / PD applied (1 to 3) & 4.3 & 27.8 & 80.6 & 100.0 & 100.0 & 100.0 & 1.25 [1.24, 1.26] \\
+AUC against development (ECB) & AUC drop (0 to 0.08) & 2.9 & 11.6 & 25.4 & 46.2 & 81.5 & 99.1 & 0.0492 [0.0482, 0.0505] \\
+DeLong & AUC drop (0 to 0.08) & 4.9 & 8.1 & 18.0 & 34.2 & 71.6 & 97.8 & 0.0596 [0.0578, 0.0614] \\
+Population stability index & mean shift (standard deviations) (0 to 0.5) & 5.0 & 9.6 & 27.2 & 89.6 & 100.0 & 100.0 & 0.185 [0.182, 0.187] \\
+Characteristic stability index & leak (shift of the feature for defaulters) (0 to 2) & 4.7 & 6.0 & 7.8 & 14.6 & 33.4 & 58.1 & not reached \\
+Chi-square of homogeneity & mean shift (standard deviations) (0 to 0.5) & 4.6 & 9.3 & 26.2 & 88.5 & 100.0 & 100.0 & 0.186 [0.184, 0.189] \\
+Kolmogorov--Smirnov & mean shift (standard deviations) (0 to 0.5) & 5.5 & 14.9 & 46.5 & 97.3 & 100.0 & 100.0 & 0.166 [0.164, 0.168] \\
+Migration z-tests & planted cell / closer neighbour (1 to 4) & 0.1 & 1.3 & 7.9 & 55.5 & 99.7 & 100.0 & 2.55 [2.53, 2.58] \\
+Concentration (ECB) & share moved into the modal grade (0 to 0.5) & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & not reached \\
+\bottomrule
+\end{tabular}}
+\end{table*}

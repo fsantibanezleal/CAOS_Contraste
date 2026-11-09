@@ -1,0 +1,39 @@
+{\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{lr>{\raggedright\arraybackslash}p{9.0cm}}
+\caption{The pinned versions of the numerical, modelling and reference packages that produce the committed artifacts, as the technology matrix of the design document records them and a repository check keeps in step with the requirements files; the web packages are pinned in the lock file of the front end.}\label{tab:repro-versions}\\
+\toprule
+Package & Pinned version & Use \\
+\midrule
+\endfirsthead
+\toprule
+Package & Pinned version & Use \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+numpy & 2.4.6 & arrays, the generators and every estimator \\
+scipy & 1.18.1 & distributions and special functions \\
+pandas & 3.0.6 & tabular reading, the splits and the case frames \\
+scikit-learn & 1.9.1 & penalised logistic regression, splits, isotonic and Platt calibration \\
+statsmodels & 0.15.0 & the maximum-likelihood logistic scorecard with inference \\
+optbinning & 1.0.0 & monotone optimal binning and WoE for the scorecard \\
+interpret-core & 0.7.8 & the EBM \\
+lightgbm & 4.7.0 & the monotone gradient-boosted challenger \\
+xgboost & 3.4.1 & the second gradient-boosting engine, to show the gain is a property of the data \\
+catboost & 1.2.10 & the gradient-boosted LGD challenger of case C08 \\
+shap & 0.52.0 & reason codes and explanation stability of the boosted rung \\
+torch & 2.14.1 & CPU runtime of the C11 R10 quantile network trained on FZ0 and of the C06 PC-Hazard rung \\
+tabpfn & 9.1.0 & the TabPFN challenger of the small cases, weights under the Prior Labs License \\
+arch & 8.0.0 & the independent GARCH reference of the topic 07 notebook, the package the engine's garch rung calls \\
+mapie & 1.5.0 & the conformal reference of the topic 13 notebook \\
+fairlearn & 0.15.0 & the fairness-metric reference of the topic 13 notebook \\
+networkx & 3.7 & the layered layout of the governance dependency map \\
+riskvalidation & 1.1.0 & the validation tests, regulatory calculators and generators \\
+open-source-risk-engine & 1.8.17.0 & ORE, run natively from its Windows wheel as the reference engine of the C12 exposure reconciliation \\
+QuantLib & 1.44 & the independent check of the Hull-White closed forms in C12 \\
+pytest & 9.1.1 & the pipeline, contract, guard and negative-control tests \\
+jsonschema & 4.26.0 & validates every document against its schema file \\
+\end{longtable}
+}

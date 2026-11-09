@@ -6,11 +6,12 @@
 // the likelihood, the grid, the network, the early stopping) and from the committed out-of-time evaluation at the six reporting
 // dates (data/derived/C06/models-rd-<date>.json, model[].details.evaluation, the C-index and the integrated Brier score, read
 // whole); the ladder of the SDD (docs/design/SDD.md, the neural discrete-time survival row) names the check. Every display
-// equation carries a caption that defines its symbols. The registry mounts it as one tab of the loss group, beside provisions.
-import { Callout, Cite, DocSection } from '@fasl-work/caos-app-shell';
+// equation carries a caption that defines its symbols. The figure draws the C-index columns of the table beside it. The registry mounts it as one tab of the loss group, beside provisions.
+import { Callout, Cite, DocSection, Figure } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { GroupedBars } from '../MethodFigures';
 
 const NB = 'https://github.com/fsantibanezleal/CAOS_Contraste/blob/main/notebooks';
 const NB_PATH = '04-provisions/07-lifetime-pd-by-survival.ipynb';
@@ -53,6 +54,7 @@ function Body() {
   return (
     <DocSection
       area="method"
+      kind="learned"
       title={{ en: 'PC-Hazard: a neural discrete-time survival model for the lifetime PD', es: 'PC-Hazard: un modelo neuronal de supervivencia en tiempo discreto para la PD de vida completa' }}
       refs={['kvamme2019', 'cox1972']}
     >
@@ -86,6 +88,22 @@ function Body() {
         en={<>On the real loans the network ranks borrowers much better than Cox at every reporting date, with a C-index from 0.73 to 0.81 against 0.56 to 0.64, and its integrated Brier score is lower at four of the six dates (2010-12, 2019-12, 2020-06 and 2023-06). The hypothesis therefore holds at four of six.</>}
         es={<>Con los préstamos reales la red ordena a los deudores mucho mejor que Cox en cada fecha de reporte, con un índice C de 0,73 a 0,81 contra 0,56 a 0,64, y su puntaje de Brier integrado es menor en cuatro de las seis fechas (2010-12, 2019-12, 2020-06 y 2023-06). La hipótesis se cumple entonces en cuatro de seis.</>}
       />
+      <Figure
+        caption={t(
+          'The C-index of PC-Hazard and of the Cox rung at the six reporting dates of case C06, out of time on the SBA 7(a) loans (the first two columns of the table above): the network ranks borrowers better at every date.',
+          'El índice C de PC-Hazard y del peldaño de Cox en las seis fechas de reporte del caso C06, fuera de tiempo con los préstamos SBA 7(a) (las dos primeras columnas de la tabla de arriba): la red ordena mejor a los deudores en cada fecha.',
+        )}
+      >
+        <GroupedBars
+          groups={dates.map(([date]) => ({ en: date, es: date }))}
+          series={[
+            { id: 'pc-hazard', label: { en: 'PC-Hazard', es: 'PC-Hazard' }, token: '--color-accent', values: dates.map((r) => Number(r[1])) },
+            { id: 'cox', label: { en: 'Cox rung', es: 'Peldaño de Cox' }, token: '--color-magenta', values: dates.map((r) => Number(r[2])) },
+          ]}
+          axis={{ min: 0, max: 1, decimals: 2, title: { en: 'C-index', es: 'Índice C' } }}
+          label={{ en: 'Grouped bars of the C-index of PC-Hazard and of the Cox rung at six reporting dates', es: 'Barras agrupadas del índice C de PC-Hazard y del peldaño de Cox en seis fechas de reporte' }}
+        />
+      </Figure>
       <h3>{t('Where it fails', 'Dónde falla')}</h3>
       <Callout variant="honest" title={t('What the shape buys and what it does not', 'Qué compra la forma y qué no')}>
         <T

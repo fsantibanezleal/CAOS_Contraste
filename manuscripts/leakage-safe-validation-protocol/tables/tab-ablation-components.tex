@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Removing one component of the protocol at a time on the planted data of the main comparison (WoE scorecard): the leak that results from the removal with the largest AUC bias, its bias with the 95\% half-width, the coverage of the 95\% interval and the Brier bias. The reference row of the protocol is in the main comparison table.}
+\label{tab:ablation-components}
+\fitwidth{%
+\begin{tabular}{llrrr}
+\toprule
+Component of the protocol removed & Worst resulting leak & AUC bias & Coverage \% & Brier bias \\
+\midrule
+Statistics fitted on the training slice only & everything fitted on training and holdout & $+0.025\pm0.002$ & 66.7 & $-$0.0088 \\
+Configuration chosen inside the training slice & configuration chosen on the holdout & $+0.005\pm0.002$ & 96.0 & $-$0.0018 \\
+Calibration slice disjoint from the test slice & calibration map fitted on the holdout & $+0.016\pm0.002$ & 88.0 & $-$0.0081 \\
+Preprocessing inside the cross-validation folds & five-fold, preprocessing before the folds & $+0.054\pm0.001$ & -- & -- \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

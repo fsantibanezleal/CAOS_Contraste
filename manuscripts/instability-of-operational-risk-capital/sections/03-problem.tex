@@ -1,0 +1,95 @@
+\section{Problem formulation}
+\label{sec:problem}
+
+\subsection{The annual loss and its capital}
+\label{sec:problem-capital}
+
+A bank has one unit of measure. In a year it suffers $N$ losses $X_1,\dots,X_N$, with $N$ Poisson of rate $\lambda$ and the severities independent of each other and of $N$, and its annual loss is
+\begin{equation}
+Z=\sum_{i=1}^{N}X_i,\qquad q_\alpha=\inf\{z:\Prob(Z\le z)\ge\alpha\},\quad \alpha=0.999 .
+\label{eq:annual-loss}
+\end{equation}
+The quantity of interest is the true capital $q_\alpha$, the 99.9 percent quantile of the annual loss, in EUR. The severity is a generalised Pareto distribution above a floor $u_0$ of EUR 10,000 with tail index $\xi$ and scale $\beta$,
+$\Prob(X>x)=\bigl(1+\xi(x-u_0)/\beta\bigr)^{-1/\xi}$ for $x\ge u_0$. Its mean exists only for $\xi<1$, so at $\xi=1.1$ the severity, and therefore the annual loss, has no mean and the process has no expected shortfall.
+The truth counts every loss the process produces at or above the floor, whatever the collection threshold of the bank that records it: the threshold changes what the bank sees, never what it bears.
+
+Two properties of the severity are used later. First, a generalised Pareto distribution truncated from below is again generalised Pareto, with a scale shifted by the product of the index and the distance between the thresholds, so the family of the generator is closed under the recording rule of the bank. Second, the moment of order $m$ of the severity is finite exactly when $m\xi<1$, so at all four tail indices of the design the variance of the severity, and of the annual loss, is infinite, and the usual standard error of a sample mean of losses does not exist.
+
+\subsection{A history and an estimator}
+\label{sec:problem-history}
+
+A bank observes a history of $T$ years. It records the losses at or above its collection threshold $H\in\{u_0,2u_0\}$ and nothing below, so the data of a history are the $n$ recorded amounts $x_1,\dots,x_n\ge H$ and the $T$ annual counts.
+An estimation rung is a function $\mathcal{E}$ from a recorded history to a capital $\hat q=\mathcal{E}(\text{history})$, or to the statement that it is undefined on that history, for example because a fit did not converge or a quantity it needs does not exist.
+A history $h$ is drawn from the process with its own seed, and the same history goes through every rung. The error of one history is the ratio to the truth,
+\begin{equation}
+r_h=\frac{\hat q_h}{q_\alpha},\qquad h=1,\dots,R,
+\label{eq:ratio}
+\end{equation}
+and the object of study is the distribution of $r_h$ over histories $h$ drawn independently from the same process, for each rung, each tail index, each history length $T$ and each threshold $H$. A rung is unbiased in the sense of the measurement when the median of $r$ is one, and stable when
+the spread of $r$ is small; the spread is measured by the interquartile range of $r$, which is a multiple of the truth and therefore comparable across tail indices whose true quantiles differ by a factor of 60.
+
+\subsection{The questions}
+\label{sec:problem-questions}
+
+Three questions follow. First, how large are the spread and the bias of $r$ for each rung in each cell, and does any rung pass a stated limit? Second, since the fitted tail index decides whether a mean exists, how often does a history lead to the wrong conclusion about the mean:
+the share of histories with $\hat\xi\ge1$ when $\xi<1$, and with $\hat\xi<1$ when $\xi>1$? Third, what drives the spread, and how much history would a stability limit require? The first two are measurements; the third is answered by the theory of \cref{sec:theory} and checked against the measurements.
+
+The questions are ordered by what a validator can act on. The first sets the size of the problem on a ladder of estimators among which a bank may choose. The second isolates a decision that rests on one parameter and has consequences beyond the capital, because the existence of the mean decides whether an expected shortfall and a mean correction can be computed at all. The third turns the observed dispersion into a quantity the validator can compute for a bank, the length of history. Each is answered by a table of the Results, and the third also by hypotheses of the Experimental design.
+
+\subsection{Assumptions and where each comes from}
+\label{sec:problem-assumptions}
+
+The process is a stationary compound Poisson process of one unit of measure with independent generalised Pareto severities and no recoveries. The scale of each variant is fitted by least squares on the logarithms of the excess quantiles to the four median severity percentiles of the 2008 Loss Data Collection Exercise
+(EUR 27,632, 41,916, 82,608 and 418,400 above EUR 20,000), with the tail index held at the value of the variant, and the frequency is set to the exercise median of 0.82 losses of EUR 20,000 or more a year per billion of assets, times the EUR 50 billion of the synthetic bank
+\citep{bcbs160}. The statistics are medians of per-bank statistics, so the calibration shapes a synthetic bank and does not describe any bank. The severity belongs to the family the tail estimators assume; the case of a misspecified severity is outside the design and is stated as a limitation in \cref{sec:limitations}.
+The seeds of different histories are disjoint, so histories are independent draws.
+
+\subsection{Notation}
+\label{sec:problem-notation}
+
+\Cref{tab:notation} lists the symbols of the document; each symbol is defined at its first use.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Notation: the symbols used for the process, the histories, the estimators, the theory and the measurement, with their meaning and unit, collected so that each symbol of the equations has one definition; a symbol with a hat is an estimate from a history.}
+\label{tab:notation}
+\begin{tabularx}{\textwidth}{lXl}
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+$N,\ \lambda$ & annual count of losses and its Poisson rate & 1, a year$^{-1}$ \\
+$X,\ u_0,\ \xi,\ \beta$ & severity, floor, tail index and scale of the generalised Pareto severity above the floor & EUR, EUR, 1, EUR \\
+$Z,\ \alpha,\ q_\alpha$ & annual loss, level, true 99.9 percent quantile of $Z$ & EUR, 1, EUR \\
+$T,\ H$ & years of history and collection threshold & years, EUR \\
+$n,\ k$ & recorded losses of a history and their expected number, $k=\lambda_H T$ & 1 \\
+$\lambda_H,\ \beta_H$ & rate of recorded losses and scale of the recorded excesses over $H$ & a year$^{-1}$, EUR \\
+$\hat q_h,\ r_h$ & capital of a rung on history $h$ and its ratio to the truth & EUR, 1 \\
+$I,\ b,\ s,\ w$ & interquartile range of $r$, bias, share below one and share within a factor of two & 1 \\
+$\hat\xi,\ \hat\pi$ & fitted tail index and share of histories with $\hat\xi\ge1$ & 1 \\
+$L$ & $\ln\bigl(\lambda_H/(1-\alpha)\bigr)$, the logarithm of the extrapolation factor & 1 \\
+$\sigma$ & standard deviation of $\ln r$ & 1 \\
+$\Phi,\ z_p$ & standard normal distribution function and its quantile of order $p$ & 1 \\
+$R,\ B$ & histories per cell and bootstrap resamples & 1 \\
+$F,\ f,\ \theta$ & distribution function, density and parameters of the severity & 1, EUR$^{-1}$, 1 \\
+$\lambda_{\mathrm{obs}},\ \lambda_{\mathrm{full}}$ & recorded rate and rate rescaled to the whole severity, \cref{eq:truncation} & a year$^{-1}$ \\
+$\mathcal{L}$ & log-likelihood of the truncated severity, \cref{eq:truncation} & 1 \\
+$\mathcal{E}$ & estimation rung, a function from a recorded history to a capital & EUR \\
+$\mathcal{F},\ \Delta,\ G$ & discrete Fourier transform, step and number of points of the grid of the truth & 1, EUR, 1 \\
+$y_j,\ j^\ast$ & probability that $Z$ equals $j\Delta$ and the index of the quantile, \cref{eq:fft-truth} & 1 \\
+$\varsigma,\ \varsigma_0$ & seed of a history and base seed, \cref{eq:seeds} & 1 \\
+$v,\ c,\ m$ & variant, cell and index of the history in the seed formula & 1 \\
+$n_{\mathrm{def}},\ n_{\mathrm{fit}}$ & histories on which a rung returns a capital and histories with a fitted tail index & 1 \\
+$\hat q^{\mathrm{mc}},\ \hat q^{\mathrm{ma}},\ \hat\mu$ & mean-corrected and mean-adjusted capital and the fitted severity mean, \cref{eq:mean-corrections} & EUR \\
+$\mathrm{BIC},\ \mathrm{ILM},\ LC,\ \mathrm{ORC}$ & business indicator component, internal loss multiplier, loss component and capital of the standardised approach, \cref{eq:sma} & EUR, 1, EUR, EUR \\
+$\overline{Z}_H$ & average annual recorded loss over the years of the history & EUR \\
+$\hat p,\ z$ & share and normal quantile of the Wilson interval, \cref{eq:wilson} & 1 \\
+$\Sigma$ & asymptotic covariance of the fitted tail index and scale, \cref{eq:mle-cov} & 1 \\
+$A,\ E,\ \ell$ & $A=\lambda_H/(1-\alpha)$ so that $L=\ln A$, $E=A^{\xi}$ and $\ell=L-1/\xi$ & 1 \\
+$g_\xi,\ g_\beta,\ g_\lambda$ & sensitivities of $\ln q$ to the index, the log scale and the log rate, \cref{eq:sensitivities} & 1 \\
+$I^\ast,\ \sigma^\ast,\ T^\ast$ & stability limit on the interquartile range, the dispersion that reaches it and the history that reaches it, \cref{eq:years} & 1, 1, years \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Three conventions apply throughout. Capitals and quantiles are in EUR and ratios are dimensionless, so a ratio of one means that the estimate equals the truth, and logarithms are natural. Percentiles of ratios are written $p_{25}$, $p_{50}$ and $p_{75}$ and are computed from the histories of one cell by linear interpolation between order statistics; the statistics of a rung are always conditional on the histories on which the rung returns a capital, and the number of those histories is reported with them.
+Hats mark estimates computed from a history, and quantities without a hat are properties of the process; the symbol $k$ is the expected number of recorded losses, which governs the theory, while $n$ is the number actually recorded in one history.

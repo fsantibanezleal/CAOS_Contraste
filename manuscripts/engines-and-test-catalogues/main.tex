@@ -3,17 +3,17 @@
 % The four macros of the header standard; tools/zenodo/publish_revision.py patches them when it reserves the DOI.
 \newcommand{\doctype}{Preprint}
 \newcommand{\docversion}{v1.00.000}
-\newcommand{\docdate}{4 November 2026}
-\newcommand{\versiondoi}{10.5281/zenodo.0}
-\newcommand{\conceptdoi}{10.5281/zenodo.0}
+\newcommand{\docdate}{8 November 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.24053178}
+\newcommand{\conceptdoi}{10.5281/zenodo.24053177}
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
 \input{../_shared/preamble}
-\makeatletter
-\def\input@path{{sections/}}
-\makeatother
+\setlength{\emergencystretch}{3em}
+% One macro per number quoted in the prose, written by make_tables.py from the committed results.
+\input{tables/numbers}
 
-\title{Risk engines and validation-test catalogues for bank model validation, in one open package}
+\title{Holding an open validation engine to outside references: five ECB statistics, a credit-portfolio engine, an IRRBB engine and twelve planted defects}
 \author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
 \small CAOS open-research programme, Santiago, Chile\\
 \small \texttt{fsantibanez@gmail.com}}
@@ -24,68 +24,28 @@
 \headerblock
 
 \begin{abstract}
-% ABSTRACT
+Validators of bank risk models need tests that supervisors recognise, reference calculations to compare with, and evidence that both are correct.
+We describe an open engine with \testsTotal{} registered tests, five of the \ecbSections{} ECB statistics for validating internal credit models, a copula and CreditRisk+ portfolio engine, an interest rate risk engine for the banking book, and a protocol that holds each component to references outside it; two references share the engine's arithmetic.
+The five ECB statistics agree with an independent transcription of the instructions within \ecbAllMax{} on \ecbInputs{} random inputs each; the Jeffreys test differs from the exact binomial test in \disagreeFive{} of \cCells{} grades at the 5\,\% level.
+The portfolio engine matches four analytic anchors, an independent simulator (largest $|z|$ below one in \mcReps{} runs of \mcScen{} scenarios), an independent recursion and its committed one-million-scenario rung (relative \regenRel{}); the interest rate engine matches QuantLib (relative \irrQlMax{}, \irrLegs{} leg and shock pairs).
+Not every hypothesis held: \ecbAbsent{} of the \ecbSections{} ECB statistics are not implemented, and the maximum-likelihood interval of the asset correlation covers below nominal in \gridMlBelow{} of \gridMlCells{} simulator cells, outside the binomial band in \gridMlFail{}.
+Planting \ablMutants{} defects shows that the five verification layers are not interchangeable: \ablAny{} of \ablReal{} real defects are found, \ablOnly{} by one layer only.
+The hypotheses were not pre-registered.
+That no open toolkit offers these tests is checked only against \pypiFound{} package descriptions and \distScanned{} installed distributions.
 \end{abstract}
 
-\section{Introduction}
-\label{sec:introduction}
-
-% TEXT
-
-\section{Related work}
-\label{sec:related-work}
-
-% TEXT
-
-\section{Problem formulation}
-\label{sec:problem}
-
-% TEXT
-
-\section{Proposed method}
-\label{sec:proposed-method}
-
-% TEXT
-
-\section{Theory}
-\label{sec:theory}
-
-% TEXT
-
-\section{Experimental design}
-\label{sec:experimental-design}
-
-% TEXT
-
-\section{Results}
-\label{sec:results}
-
-% TEXT
-
-\section{Ablation}
-\label{sec:ablation}
-
-% TEXT
-
-\section{Discussion}
-\label{sec:discussion}
-
-% TEXT
-
-\section{Limitations}
-\label{sec:limitations}
-
-% TEXT
-
-\section{Reproducibility}
-\label{sec:reproducibility}
-
-% TEXT
-
-\section{Conclusions}
-\label{sec:conclusions}
-
-% TEXT
+\input{sections/s01-introduction}
+\input{sections/s02-related-work}
+\input{sections/s03-problem}
+\input{sections/s04-proposed-method}
+\input{sections/s05-theory}
+\input{sections/s06-experimental-design}
+\input{sections/s07-results}
+\input{sections/s08-ablation}
+\input{sections/s09-discussion}
+\input{sections/s10-limitations}
+\input{sections/s11-reproducibility}
+\input{sections/s12-conclusions}
 
 \bibliographystyle{plainnat}
 \bibliography{references}

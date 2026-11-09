@@ -1,0 +1,36 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{Outcome of each hypothesis of Table~\ref{tab:hypotheses} with the evidence that decides it, and of each prediction of the experiments folder. A hypothesis held when the measurement meets its claim as quoted, under the rule that the protocol fixes for its class; it is reported as not met as stated when a count or a bound of the claim fails in part, even if the failure is small.}
+\label{tab:outcomes}
+\textbf{A. The hypotheses of the design document}\par\smallskip
+\begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Hypothesis & Outcome & Evidence \\
+\midrule
+H1 & not met as stated & \relax 438 printed numbers and 313 agreeing against the 413 and 296 quoted; the quoted counts are those of the tally without Tasche's Tables 8 and 9 (413 and 296); all 125 gaps are listed, 25 with a tested explanation \\
+H2 & held & \relax 72 of 72 comparisons within $10^{-9}$ on the grid, 1200 of 1200 on the seeded draw \\
+H3 & held on the product's draws & \relax single swap and netting set pass on the product's draws (largest $\lvert z\rvert$ 0.78 and 0.72); the rule passes on 22 of 24 and 22 of 24 new seeds \\
+H4 & not met as stated & \relax held on the four cases of the product (within $10^{-6}$) and not on the extended grid: 296 of 297 within $10^{-6}$, the case beyond at $1.6\times10^{-6}$ on a price of 39.0 USD \\
+H5 & not met as stated & \relax 8 of 9 printed numbers agree to the digit; the second constant is 1.32 units from its print \\
+H6 & held & \relax largest expected-exposure gaps 9.9, 7.1 and 11.7, valuation-adjustment gaps -15.9 and -9.9, mean margin ratio 0.88; the 10-day variant fails the rule on 8 of 8 new seeds \\
+\bottomrule
+\end{tabularx}
+\par\medskip
+\textbf{B. The predictions written in the experiments folder}\par\smallskip
+\begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{4.4cm}@{}}
+\toprule
+Prediction & Outcome & Claim & When it was written \\
+\midrule
+R1 & held & \relax mean $z$ within 0.5 at every date and within 0.25 overall, uncollateralised variants & fixed before the replicates \\
+R2 & held & \relax spread of $z$ below 0.8 with the product's errors, 0.8 to 1.2 with pair-aware errors & written after the pilot that showed a spread near 0.6 for two runs of the engine; tests whether it transfers to ORE, not blind \\
+R3 & held & \relax the product's rule passes at least half of the seeds, uncollateralised variants & fixed before the replicates \\
+R4 & held & \relax the 10-day collateralised variant fails on every seed, mean largest $\lvert z\rvert$ above 5 & fixed before the replicates \\
+R5 & held & \relax CVA $z$ of that variant below $-5$ on at least 7 of 8 seeds & fixed before the replicates \\
+M1 & held & \relax maximum-T rules: size between 3 and 8 percent on both variants & written after the review and before the maximum-T run, by file times only \\
+M2 & held & \relax maximum-T rule with pair-aware errors: power against a 2 percent volatility error at least that of the bound 3.18; it holds by construction, because the estimated bound is below 3.18 on the same statistic, and is no evidence & written after the review and before the maximum-T run, by file times only \\
+M3 & held & \relax maximum-T rule with product errors: power against that error below the pair-aware one & written after the review and before the maximum-T run, by file times only \\
+\bottomrule
+\end{tabularx}
+\end{table}

@@ -1,0 +1,46 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{What the limits mean for a validator}
+\label{sec:disc-limits}
+
+A green reconciliation is a statement with a size.
+On the books studied it says that no entry is wrong by more than about forty-seven to one hundred and seventeen thousand USD, which is one millionth of the gross carrying amount, and nothing about defects that leave every sum unchanged.
+The size is a property of the tolerance and of the book, and the tolerance is a choice: because the noise of the sums is about nine orders below it, the limit could be tightened by several orders for tables kept at full precision, and has to be loosened for tables published in rounded units.
+For a unit $u$ the guarantee of Proposition~\ref{prop:rounding} needs $\tol\ge qu/(2\gross)$; a validator who receives tables in millions should reconcile with a tolerance of the order of $10^{-4}$ and state the limit that results, or ask for the unrounded tables.
+The experiment shows why the choice matters in both directions: an absolute tolerance flags clean books for a reason that has nothing to do with the books, and a tolerance blind to rounding flags nearly all books disclosed in millions.
+
+The cross identities matter more than their number suggests.
+The stage arithmetic of the disclosure cannot see a waterfall that disagrees with the tables, a stage ECL that disagrees with the closing, or an allowance moved between stages with both rows closing; the last is the defect that changes staging-dependent disclosures while leaving the total unchanged.
+A stage-level check cannot see them.
+
+\subsection{Why the blind spots are structural}
+\label{sec:disc-blind}
+
+The two defects that no identity sees, a misclassification between lines and an overlay merged into the model loss, are both in the kernel of the matrix of the identities.
+They cannot be removed by adding identities among the same entries; they need information that is not in the tables, such as the registry of approved overlays against which the overlay lines are compared, or an independent recomputation of the model ECL.
+The merge is the more consequential, because it is the practice the separate-line rule exists to prevent and because its size can be large: a quarter of the allowance in overlays overstates the model ECL by a third.
+The protocol's answer is contractual, not arithmetic: the engine offers an overlay line as the only way to add an amount that is not model ECL, the invariance sweep shows that the engine honours it, and the placement test shows that a line booked in some tables and not others is refused.
+
+\subsection{The non-linearity statement and the committed date}
+\label{sec:disc-nonlinearity}
+
+The statement that the weighted PD is at least the PD at the mean factor holds as a theorem in the convex region and fails in the concave region, so it is a statement with a region.
+In \efourDraws{} draws the unqualified statement is contradicted in \efourConcaveNeg{} concave and \efourMixedNeg{} mixed cases, about nine per cent of the sweep.
+All six committed dates lie in the convex region of the PD-level statement, so the PD-level index is positive there.
+The ECL-level index is a different quantity, to which Proposition~\ref{prop:convexity} does not apply, so a negative value on one date does not contradict it.
+Of the six dates, 2010-12 has the staging that responds most to the weights (Stage 2 gap \efourGapTen{} against at most \efourGapOther{} elsewhere), but whether that causes the negative value is not established.
+
+The error of a short scenario set is large relative to the effects discussed in practice.
+Three scenarios at one standard deviation with weights 25/50/25 understate the expected PD by a median of \efourAdhocMed{}, nearly half of the draws by more than five per cent, because they carry half the variance of the factor; the formula of Proposition~\ref{prop:bias} gives a median ratio of predicted to measured bias of \efourBiasMedian{}.
+A moment-matched set costs the same three scenarios and brings the error to the order of $10^{-5}$ in relative terms.
+That result is about the PD level with a normal factor; the allowance involves staging, discounting and loss given default, and the transfer of the conclusion to them is not tested.
+
+\subsection{Three regimes on one book}
+\label{sec:disc-regimes}
+
+The ordering of the regimes on the synthetic bank is stable across seeds: IFRS 9 below B-1 in five scenarios and above it in the combined severe scenario, and above Annex 9 in the base.
+The bridge shows where the gap comes from: in the base most of it is the measurement basis, the first step, which compares the bank's own PD, LGD and recoveries with the statutory matrices, and the model ECL then rises with the lifetime horizon, the weighting and the discounting; the discounting raises it because it lowers the stage 1 and 2 losses and raises the stage 3 loss, the exposure minus the discounted recoveries, by more.
+Proposition~\ref{prop:bridge} limits what the closure proves.
+The ratios depend on the size of the generated book, possibly because the generator's calibration to the published aggregates has minimum counts, an effect not isolated at the smallest size, so the committed ratios are not size-free and the six sizes should be read as a sensitivity, not a convergence.
+The comparison is between three texts applied to one synthetic book; it says nothing about which text is right or about any bank.

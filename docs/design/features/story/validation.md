@@ -1,0 +1,20 @@
+# Validation: SHOW-1, the guided story
+
+Adversarial checks: what was planted, and the gate that must refuse it. Each gate is named `adversarial: ...` under `frontend/src/story/`.
+
+| requirement | adversarial check | gate |
+|---|---|---|
+| CT-960 | The route list of the shell gate or of the static build is planted with one story step changed; the check that every step is listed must name it. | `frontend/src/story/story.test.tsx::adversarial: a route list that drops a story step, or a static build that does not write it, is found` |
+| CT-961 | A finding of severity S1 is added to the register; the inventory headline must change with it, so a typed headline would fail. | `frontend/src/story/story.test.tsx::adversarial: the inventory headline changes with the register it reads, so it is not typed` |
+| CT-962 | A finding is added to the register; the totals, the severities and the family of the flow must change with it. | `frontend/src/story/model.test.ts::adversarial: a finding added to the register changes the counts of its family and of the flow` |
+| CT-963 | An inventory entry of a case the flow does not place is planted; it must be reported as unmapped and no family may take it. | `frontend/src/story/model.test.ts::adversarial: an inventory entry of a case the flow does not place is reported, never dropped into a family` |
+| CT-964 | One exceedance day of a model is moved by 240 days; the tally must differ from the document's, so the comparison is not vacuous. | `frontend/src/story/model.test.ts::adversarial: one exceedance day moved changes the tally, so the comparison with the document is not vacuous` |
+| CT-965 | A window of 104 days with exceptions is drawn; the view must say not evaluated and the model must carry no light, whatever its counts. | `frontend/src/story/story.test.tsx::adversarial: a window shorter than 250 days never draws a Basel verdict, whatever its counts` |
+| CT-966 | The realised loss of a window that commits it is removed; the model must hold no loss series and keep the reason. | `frontend/src/story/model.test.ts::adversarial: a window document whose realised loss is removed yields no loss series and keeps its reason` |
+| CT-967 | One recalibrated exception day is moved in the document; its marker must move in the drawing. | `frontend/src/story/story.test.tsx::adversarial: the recalibrated exception moved in the document moves its marker in the drawing` |
+| CT-968 | The champion and the reason of the comparison block are removed; the decision must hold no champion and invent no reason. | `frontend/src/story/model.test.ts::adversarial: a comparison block with no champion and no reason yields a champion of none and invents no reason` |
+| CT-969 | A panel item is renamed so a scene object has no match; the check must name the object, and the shipped views must have none. | `frontend/src/story/story.test.tsx::adversarial: a scene object with no panel item is found, and the shipped views have none` |
+| CT-970 | A cursor of 9999, -5, NaN and Infinity from a longer window is given to a window of 64 days; it must stay inside it. | `frontend/src/story/model.test.ts::adversarial: a cursor from a longer window is clamped and never indexes past the shorter one` |
+| CT-971 | A step is given no artifact; it must say so with the reason in the unavailable state and carry no number it did not read. | `frontend/src/story/story.test.tsx::adversarial: a step that lacks its artifact says so with the reason and states no invented number` |
+| CT-972 | The route list the gate runs is planted with a story step missing; the check of the routes must name it, so the gate cannot pass without the story it measures. | `frontend/src/story/story.test.tsx::adversarial: a route list that drops a story step, or a static build that does not write it, is found` |
+| CT-973 | The stage is planted with a fixed band (a constant band function, a literal phone stage floor of 620, a bare pixel padding of the drawing); the band test must find each, and the shipped stage must have none. | `frontend/src/story/band.test.ts::adversarial: the stage reads the measured band and keeps no fixed band of its own` |

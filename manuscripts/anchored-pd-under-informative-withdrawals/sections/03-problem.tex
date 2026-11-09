@@ -1,0 +1,70 @@
+\subsection{Cohort, counts and the quantity of interest}
+
+Fix one grade and one calendar year. The cohort is the set of $N$ ratings of the grade outstanding on the first day of the year. Every rating $i$ has a latent outcome $Y_i\in\{0,1\}$, with $Y_i=1$ when the rating defaults within the year if it is followed to the year end, and an observation indicator $R_i\in\{0,1\}$, with $R_i=0$ when the rating is \wdn{} before the year end. The state of a rating that is not \wdn{} is observed, so the transition page reports three counts,
+\begin{equation}
+D=\sum_{i}\indic\{R_i=1,\,Y_i=1\},\qquad S=\sum_{i}\indic\{R_i=1,\,Y_i=0\},\qquad W=\sum_{i}\indic\{R_i=0\},
+\label{eq:counts}
+\end{equation}
+the defaults seen, the survivors seen and the \wdn{} ratings, with $N=D+S+W$. The count of \wdn{} ratings that would have defaulted is
+\begin{equation}
+X=\sum_{i}\indic\{R_i=0,\,Y_i=1\},\qquad 0\le X\le W,
+\label{eq:x}
+\end{equation}
+and it is never observed. The quantity of interest is the PD of the grade, the probability $\pi=\Prob(Y_i=1)$ that a rating of the grade defaults within a year when it is followed. The cohort contains a realised default fraction $\pi^{\ast}=(D+X)/N$, of which $\pi$ is the expectation when the ratings of the cohort are exchangeable.
+
+The odds ratio of withdrawal is the ratio of the odds of being \wdn{} among the ratings that would default to the odds among those that would not. In the cohort it is
+\begin{equation}
+k=\frac{X/D}{(W-X)/S},
+\label{eq:k}
+\end{equation}
+because the ratings that would default are the $D$ seen and the $X$ \wdn{}, and the \wdn{} fraction of them in odds form is $X/D$; those that would not are the $S$ seen and the $W-X$ \wdn{}. The odds ratio is the sensitivity parameter of the analysis. A value $k=1$ means that withdrawal is independent of the outcome, $k>1$ that a rating about to default is more likely to be \wdn{}, and $k<1$ that it is less likely. Table~\ref{tab:notation} collects the symbols used from here on.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Notation: each symbol of the formulation and the method, its meaning and its unit; counts are numbers of ratings of one grade in one annual cohort, probabilities are per year, and the odds ratios are dimensionless.}
+\label{tab:notation}
+\begin{tabularx}{\textwidth}{lXl}
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+$N$, $D$, $S$, $W$ & Ratings at the start; defaults seen, survivors seen and \wdn{} ratings at the year end & ratings \\
+$X$ & \wdn{} ratings that would have defaulted within the year & ratings \\
+$k$, $\tip$ & Odds ratio of withdrawal for ratings that default; its value at which a decision flips & ratio \\
+$\inform$ & Informativeness of the generator: extra withdrawal hazard in the year before default & ratio \\
+$\pi$, $\pi^{\ast}$ & PD of the grade; default fraction realised in the cohort, $(D+X)/N$ & per year \\
+$\pdk(k)$ & PD of the grade as a function of $k$ & per year \\
+$A$, $N_a$ & Defaults counted by the second source and the ratings it counts them over & ratings \\
+$c$ & Capture: expected share of the true defaults the second source counts & ratio \\
+$t$ & Threshold of a decision, a PD & per year \\
+$L(C)$, $U(C)$ & Lower and upper limits of the Jeffreys interval of $C$ defaults in $N$ ratings & per year \\
+$\alpha$ & One minus the confidence level, $0.05$ & none \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{The treatments in this notation}
+
+The three treatments of the introduction are three values of the same function. Removing the \wdn{} ratings and renormalising gives $D/(D+S)$; keeping them as survivors gives $D/N$; following them to the year end gives
+\begin{equation}
+\pi^{\ast}=\frac{D+X}{N},
+\label{eq:followed}
+\end{equation}
+which needs $X$. Removal equals the right value when $X=WD/(D+S)$, that is when $k=1$ in Equation~\eqref{eq:k}; keeping equals it when $X=0$, that is $k=0$; and every other value of $X$ between $0$ and $W$ is a value of $k$ between $0$ and infinity. The cohort PD is therefore not a number but a curve, and the three treatments are three points on it, at $k=1$, $k=0$ and at the value of $k$ the year-end states would reveal.
+
+A second source may count the defaults of the same grade differently. In the central repository of ESMA, the default page counts the distinct ratings that defaulted during the year, \wdn{} or not, over a cohort of its own, while the transition page counts the ratings that are in a default category at the end of the year. Let the second source count $A$ defaults over $N_a$ ratings. When its definition equals that of the transition page, $A/N_a$ estimates $(D+X)/N$, and the count carries information on $X$ that the transition page does not.
+
+\subsection{Assumptions}
+
+The method rests on four assumptions, and every result it returns lists them.
+\begin{enumerate}
+\item[\textbf{A1}] Withdrawal is the only reason that a rating leaves the cohort unobserved; a rating that is neither in default nor \wdn{} is observed at the year end.
+\item[\textbf{A2}] The odds ratio $k$ is one number for the grade and the year: the informativeness of withdrawal does not vary among the ratings of the grade.
+\item[\textbf{A3}] A \wdn{} rating that would default does so within the year of the cohort, so the latent outcome $Y_i$ and the counts of Equation~\eqref{eq:counts} refer to the same period.
+\item[\textbf{A4}] The second source defines a default as the transition page does, and counts the same ratings.
+\end{enumerate}
+Assumption A1 excludes other exits, such as a merger of the issuer that carries the rating to a new issuer. Assumption A2 is the simplest one-parameter description of informative withdrawal and is stronger than necessary for the tipping analysis, which needs no more than a single threshold crossing. Assumption A3 makes the problem one of a single period: a rating that is \wdn{} in an earlier year and would have defaulted later is not in the cohort of the later year, and the one-period model does not see it; Section~\ref{sec:results} measures what this costs when the annual cohorts are pooled. Assumption A4 is the one that the repository does not guarantee and that Section~\ref{sec:results} tests on the agencies' cohorts.
+
+\subsection{What is to be estimated and judged}
+
+Three outputs are required, and each is judged by an experiment in which the truth is known. The first is the function $\pdk(k)$ with its bounds, the identified set under no assumption on $X$. The second is the tipping odds ratio $\tip$ of a decision at a threshold $t$, the value of $k$ at which $\pdk(k)=t$. The third is an anchored interval for $\pi$ when a second source is available, judged by its coverage of the true PD, its width and the bias of its centre. For the decision use, the interval is also judged by whether it lies on the right side of a threshold. These are the measures of Section~\ref{sec:experimental-design}, stated there with their equations. The judgement is on known truth where the truth can be known, and on the agencies' cohorts where it cannot: there the outputs are reported with their assumptions and checked for their stability from one annual cohort to the next, since a quantity that is not the same in every year cannot be taken as one number for the grade.

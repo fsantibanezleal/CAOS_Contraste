@@ -1,0 +1,26 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Main comparison: each component of the engine against the independent reference run on the same input, with the repetition uncertainty (plus or minus one standard deviation) where the quantity is random; z is the difference of the two means over its standard error.}
+\label{tab:main-results}
+\begin{tabular}{p{2.8cm}p{3.2cm}p{2.7cm}p{2.9cm}p{2.3cm}}
+\toprule
+Component & Quantity & Engine & Reference & Outcome \\
+\midrule
+\relax ECB statistics & \relax five statistics, independent transcription & \relax 5 of 17 sections & \relax largest difference $4.4\times 10^{-11}$ & \relax held (quadrature accuracy) \\
+\relax ECB Jeffreys test, C01 holdout & \relax grades flagged at 5\%, all models & \relax 4 of 70 & \relax binomial 3 of 70 & \relax 1 cell differs \\
+\relax Large-portfolio law & \relax density integral against distribution function & $4.3\times 10^{-12}$ & \relax adaptive quadrature & \relax held \\
+\relax IRB capital & \relax credit-card book, retail revolving & \relax 0.039170 & \relax SciPy formula, difference 0 & \relax held \\
+\relax CreditRisk+ recursion & \relax mean, variance, probability of no loss & \relax variance gap $5.5\times 10^{-11}$ & \relax independent recursion $3.1\times 10^{-17}$ & \relax held \\
+\relax Granularity adjustment & \relax delta at xi 0.25, level 0.999 & \relax 4.8336 & \relax published 4.83 & \relax held \\
+\relax Gaussian copula, 99.9\% VaR & \relax 10 runs of 200,000 & \relax 3,193,200 $\pm$ 23,925 & \relax independent 3,187,800 $\pm$ 31,119 & \relax z +0.44 \\
+\relax Gaussian copula, 99\% ES & \relax 10 runs of 200,000 & \relax 2,576,013 $\pm$ 15,358 & \relax independent 2,572,709 $\pm$ 18,338 & \relax z +0.44 \\
+\relax Committed seeded rung & \relax 1,000,000 scenarios, eight values & \relax relative difference $2.9\times 10^{-9}$ & \relax committed file & \relax held \\
+\relax Importance sampler & \relax 20 seeds, P(L at or above 99.9\% VaR) & \relax 0.00106 $\pm$ $6.9\times 10^{-6}$ & \relax plain 0.00104 $\pm$ 0.00008 & \relax z +1.06, variance ratio 146 \\
+\relax Correlation estimator, 24 cells & \relax coverage of the 95\% interval, maximum likelihood & \relax mean 0.942, lowest 0.912 & \relax band $\pm$0.028 & \relax 1 of 24 cells outside; 16 below 0.95 \\
+\relax Correlation estimator, 24 cells & \relax coverage, moments & \relax mean 0.817 & \relax same band & \relax 24 of 24 cells outside \\
+\relax IRRBB shock shapes & \relax SRP31.92 example, flattener & \relax -1.64 bp & \relax printed $-1.6$ bp & \relax deviation 0.039 bp \\
+\relax IRRBB present values & \relax 72 leg and shock pairs, six variants & \relax relative difference $2.4\times 10^{-14}$ & \relax QuantLib & \relax held \\
+\bottomrule
+\end{tabular}
+\end{table}

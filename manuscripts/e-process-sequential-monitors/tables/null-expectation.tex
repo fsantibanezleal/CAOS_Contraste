@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Exact null expectation of each process by enumeration of all 4,096 hit sequences of 12 days at a VaR level of 0.2: the largest departure of the expectation from 1 over the 12 days is at the level of floating-point error for every valid process, and the last row shows the largest expectation of the product of two e-processes read on the same stream over ten days, which is not an e-process.}
+\label{tab:null-expectation}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{p{7.4cm}rr}
+\toprule
+Process & Largest departure of $\mathbb E[E_t]$ from 1 over $t\le 12$ & $\mathbb E[E_{12}]$ \\
+\midrule
+\relax Rate e-process, two-sided & \relax 1.2e-14 & 1.000000000000 \\
+\relax Rate e-process, upper & \relax 9.8e-15 & 1.000000000000 \\
+\relax Rate e-process, lower & \relax 2.9e-14 & 1.000000000000 \\
+\relax Clustering e-process & \relax 3.6e-15 & 1.000000000000 \\
+\relax Average of the rate and clustering e-processes & \relax 1.0e-14 & 1.000000000000 \\
+\relax E-backtest of Wang, Wang and Ziegel (2022) & \relax 4.7e-15 & 1.000000000000 \\
+\relax Uniform-prior Bayes factor & \relax 5.1e-15 & 1.000000000000 \\
+\relax Product of the rate and clustering e-processes on one stream ($T=10$, $\alpha=0.2$) & \relax 494 & -- \\
+\bottomrule
+\end{tabular}}
+\end{table}

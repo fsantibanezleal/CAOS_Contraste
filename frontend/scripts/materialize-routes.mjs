@@ -1,19 +1,28 @@
 // Postbuild (T2): write every standard route as its own page, so a static host answers a deep link with the app
 // instead of a 404 (failure classes 2 and 22). Each route gets <route>/index.html (served for /route/ and, through
-// the host's redirect, /route); 404.html is the app as well, so an unknown path shows the app's own not-found page.
+// the host's redirect, /route); 404.html is the app as well, so an unknown path reaches the router, whose catch-all opens the Introduction.
 // The build fails on a partial set.
 import { copyFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { STANDARD_ROUTES } from '@fasl-work/caos-app-shell/keys';
 
-const dist = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist');
+const frontend = join(dirname(fileURLToPath(import.meta.url)), '..');
+const dist = join(frontend, 'dist');
 const index = join(dist, 'index.html');
 if (!existsSync(index)) {
   console.error('[materialize-routes] dist/index.html is missing: run vite build first');
   process.exit(1);
 }
-const routes = STANDARD_ROUTES.map((r) => r.path).filter((p) => p !== '/');
+// The story routes are the product's (product.json "showcase": { "story_routes": [...] }, as gate.mjs and check_story_mode.mjs
+// read them); none is written here, so a product's own steps answer a deep link like the standard routes (G4).
+const product = JSON.parse(readFileSync(join(frontend, '..', 'product.json'), 'utf8'));
+const declared = product.showcase?.story_routes ?? [];
+if (!Array.isArray(declared) || declared.some((r) => typeof r !== 'string' || !/^\/story\/[a-z0-9-]+$/.test(r)) || new Set(declared).size !== declared.length) {
+  console.error(`[materialize-routes] product.json showcase.story_routes must be a list of distinct "/story/<step>" routes; it is ${JSON.stringify(declared)}`);
+  process.exit(1);
+}
+const routes = [...STANDARD_ROUTES.map((r) => r.path).filter((p) => p !== '/'), ...declared];
 for (const route of routes) {
   const dir = join(dist, route.replace(/^\//, ''));
   mkdirSync(dir, { recursive: true });

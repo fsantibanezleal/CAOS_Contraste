@@ -1,0 +1,43 @@
+{
+ "machine": {
+  "logical_cpus": 32,
+  "numpy": "2.4.6",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+  "python": "3.13.14",
+  "riskvalidation": "1.1.0",
+  "scipy": "1.18.1"
+ },
+ "studies": {
+  "duration": {
+   "elapsed_seconds": 1836.3,
+   "n_boot": 200,
+   "reps": 1000
+  },
+  "grid": {
+   "elapsed_seconds": 247.0,
+   "reps": 1000,
+   "writes": [
+    "coverage-grid.json",
+    "capture-ladder.json"
+   ]
+  },
+  "scale": {
+   "elapsed_seconds": 476.3,
+   "reps": 1000,
+   "reps_scale": 500
+  },
+  "stability": {
+   "elapsed_seconds": 686.2,
+   "reps": 1000
+  },
+  "timing": {
+   "calls": 200,
+   "elapsed_seconds": 7.6,
+   "evaluate_six_treatments_ms_median": 8.55,
+   "evaluate_six_treatments_ms_p95": 12.689,
+   "withdrawal_bounds_ms_median": 5.839,
+   "withdrawal_bounds_ms_p95": 9.948
+  }
+ }
+}

@@ -9,6 +9,7 @@ import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { Pending } from '../Pending';
 import { useCard } from '../c03/U6Shared';
 import { ConventionLine } from './MarketCommon';
+import { MANUSCRIPT_LINK, MANUSCRIPT_URL, PASSES_HEADER, TESTS_TOO_EASY, UPPER_BOUND, VERDICT_LABEL } from './caveat';
 import { P_FORMAT } from './ComparisonViews';
 import { WINDOW_TEXT, levelOf, modelLabel, outputsOf, seconds, text, type C11Alpha, type C11Outputs, type C11Sel } from './selection';
 
@@ -38,7 +39,10 @@ function ScoreRow({ sel, row, side, score, change }: { sel: C11Sel; row: Row; si
       <td className="ct-wide-only"><MaybeNumber value={score.es_test_p} reason={null} format={(v) => formatNumber(v, lang, P_FORMAT)} /></td>
       <td><MaybeNumber value={score.fz0_mean} reason={null} format={(v) => formatNumber(v, lang, { digits: 4 })} /></td>
       <td className="ct-wide-only">{side === 'wrapped' ? (change === null ? formatNumber(null, lang) : formatNumber(change, lang, { percent: true, decimals: 1 })) : ''}</td>
-      <td className="ct-text">{score.passes_coverage ? pick({ en: 'yes', es: 'sí' }, lang) : pick({ en: 'no', es: 'no' }, lang)}</td>
+      <td className="ct-text">
+        {score.passes_coverage ? pick({ en: 'yes', es: 'sí' }, lang) : pick({ en: 'no', es: 'no' }, lang)}
+        {side === 'wrapped' ? <small data-lenient=""> ({pick(UPPER_BOUND, lang)})</small> : null}
+      </td>
     </tr>
   );
 }
@@ -122,6 +126,7 @@ export function ConformalView({ sel }: { sel: C11Sel | null }) {
                 )}
               </p>
             ) : null}
+            <p className="ct-note" data-block="conformal-caveat">{pick(TESTS_TOO_EASY, lang)}</p>
             <table className="caos-table ct-wrap-head" data-table="c11-conformal">
               <thead>
                 <tr>
@@ -134,7 +139,7 @@ export function ConformalView({ sel }: { sel: C11Sel | null }) {
                   <th className="ct-wide-only">{pick({ en: 'ES test p', es: 'p de la prueba de ES' }, lang)}</th>
                   <th>{pick({ en: 'Average FZ0', es: 'FZ0 medio' }, lang)}</th>
                   <th className="ct-wide-only">{pick({ en: 'FZ0 change', es: 'Cambio de FZ0' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Passes coverage', es: 'Aprueba cobertura' }, lang)}</th>
+                  <th className="ct-text">{pick(PASSES_HEADER, lang)}</th>
                 </tr>
               </thead>
               <tbody>
@@ -179,7 +184,13 @@ export function ConformalVerdictView({ sel }: { sel: C11Sel | null }) {
           <p className="ct-note">{pick(h.statement, lang)}</p>
           <p className="ct-note">{pick({ en: 'Refuted if: ', es: 'Se refuta si: ' }, lang) + pick(h.refuted_if, lang)}</p>
           <p className="ct-note">{pick(h.pass_rule, lang)}</p>
-          <p className="ct-note" data-block="conformal-verdict"><strong>{pick(h.verdict, lang)}</strong></p>
+          <p className="ct-note" data-block="conformal-verdict">
+            {pick(VERDICT_LABEL, lang)} <strong>{pick(h.verdict, lang)}</strong>
+          </p>
+          <p className="ct-note" data-block="conformal-caveat">
+            {pick(TESTS_TOO_EASY, lang)}{' '}
+            <a href={MANUSCRIPT_URL} target="_blank" rel="noreferrer">{pick(MANUSCRIPT_LINK, lang)}</a>.
+          </p>
           <p className="ct-note">
             {pick(
               {
@@ -197,7 +208,7 @@ export function ConformalVerdictView({ sel }: { sel: C11Sel | null }) {
                 <th>{pick({ en: 'Windows passed, unwrapped', es: 'Ventanas aprobadas, sin envolver' }, lang)}</th>
                 <th>{pick({ en: 'Windows passed, wrapped', es: 'Ventanas aprobadas, envuelto' }, lang)}</th>
                 <th>{pick({ en: 'Worst FZ0 change', es: 'Peor cambio de FZ0' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Holds', es: 'Se cumple' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Holds by the criterion', es: 'Se cumple por el criterio' }, lang)}</th>
               </tr>
             </thead>
             <tbody>

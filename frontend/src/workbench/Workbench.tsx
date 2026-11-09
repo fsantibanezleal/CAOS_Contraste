@@ -21,11 +21,12 @@ import {
   type CaseDef,
   type RailSection,
 } from '@fasl-work/caos-app-shell';
-import { useEffect, useMemo, useState, type ReactElement } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { loadCase, loadIndex, useArtifact, type CaseData } from '../api/artifacts';
 import type { EbmExport, ScorecardDetails } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT, LIGHT_TONE, relight, type PolicyAlphas } from '../lib/policy';
 import { ebmLogit, scoreScorecard, sigmoid } from '../engine/scorer';
+import { seedOfQuery } from '../story/exit';
 import { caseLabel } from './caseLabels';
 import { useMeasuredLayout } from './layout';
 import { ContextView } from './ContextView';
@@ -150,8 +151,22 @@ export function Workbench() {
   const [caseId, setCaseId] = useState<string | null>(null);
   const selected = caseId ?? (index.state === 'ready' ? index.data.default_case : null);
   const [variantId, setVariantId] = useState<string | null>(null);
+  // the story's exit lands here with its window (`variant`) and model (`model`): the variant is applied once, when its case is the
+  // selected one, and the C11 instrument reads the model (ADR-0082 rule 3, the exit carries the step's state)
+  const seed = useRef<{ variant: string | null; case: string | null }>({
+    variant: typeof window === 'undefined' ? null : seedOfQuery(window.location.search).variant,
+    case: typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('case'),
+  });
   const loaded = useArtifact((s) => (selected ? loadCase(selected, variantId, s) : new Promise<CaseData>(() => undefined)), [selected, variantId], { unavailable: true });
   const data = loaded.state === 'ready' && loaded.data.manifest.case_id === selected ? loaded.data : null;
+
+  useEffect(() => {
+    const s = seed.current;
+    if (s.variant && selected && selected === s.case) {
+      seed.current = { variant: null, case: null };
+      setVariantId(s.variant);
+    }
+  }, [selected]);
 
   const [challenger, setChallenger] = useState<string | null>(null);
   const [alphas, setAlphas] = useState<PolicyAlphas>(COMMITTED);
@@ -344,6 +359,11 @@ export function Workbench() {
       source={prov}
       // C04's notes are data the reader needs whole: at 1280 px each takes the height it needs (shell 0.19.5, SHC-101; R5 c05 M1)
       noteFit={selected === 'C04'}
+      // the shell's compact tab rows (0.22.0) give the App its 60% drawing floor (G6, 0.20.0) on the findings views of C13, C20 and C21
+      tabDensity="compact"
+      // the shell's 0.20.0 rail is clamp(232px, 17vw, 320px): at 1280 px a long case or variant name is cut by 4 to 6 px (G5), so the
+      // bounded railWidth API (0.21.0) gives the rail 252 px (the 0.19 width) instead of a CSS override of a shell-reserved class
+      railWidth={252}
       focus
       cases={{
         cases,

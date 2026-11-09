@@ -180,6 +180,29 @@ def _pct(x: float, decimals: int = 1) -> dict[str, str]:
     return _t(tx.percent(v / 100, decimals, lang="en"), tx.percent(v / 100, decimals, lang="es"))
 
 
+def _against_level(low: float, high: float, level: float, lang: str) -> str:
+    """Where a Wilson interval lies against the level, in words: wholly above it, wholly below it or including it."""
+    if low > level:
+        return "lies wholly above the level" if lang == "en" else "queda por completo sobre el nivel"
+    if high < level:
+        return "lies wholly below the level" if lang == "en" else "queda por completo bajo el nivel"
+    return "includes the level" if lang == "en" else "incluye el nivel"
+
+
+def _order_reading(small: dict[str, Any], big: dict[str, Any], lang: str) -> str:
+    """The Markov-order test as the cells measure it, with the interval against the level: it passes the size screen near its bound in 4,000
+    repetitions while that cell's interval lies above the level; the run of 20,000 repetitions is the larger cell of the same test."""
+    p = lambda x: _pct(x, 2)[lang]  # noqa: E731
+    ivl = lambda r: f"{p(r['wilson_low'])} to {p(r['wilson_high'])}" if lang == "en" else f"{p(r['wilson_low'])} a {p(r['wilson_high'])}"  # noqa: E731
+    if lang == "en":
+        return (f"the order test passes it near its bound: in 4,000 repetitions it rejects {p(small['rate'])} at 5%, an interval of {ivl(small)} that "
+                f"{_against_level(small['wilson_low'], small['wilson_high'], 0.05, lang)}, and over 20,000 repetitions it rejects {p(big['rate'])} at 5%, "
+                f"an interval of {ivl(big)} that {_against_level(big['wilson_low'], big['wilson_high'], 0.05, lang)}")
+    return (f"la prueba de orden lo pasa cerca de su cota: en 4.000 repeticiones rechaza {p(small['rate'])} al 5%, un intervalo de {ivl(small)} que "
+            f"{_against_level(small['wilson_low'], small['wilson_high'], 0.05, lang)}, y en 20.000 repeticiones rechaza {p(big['rate'])} al 5%, "
+            f"un intervalo de {ivl(big)} que {_against_level(big['wilson_low'], big['wilson_high'], 0.05, lang)}")
+
+
 def psi_rule_title(rule_rate: float, bench_rate: float, bench_within: bool) -> dict[str, str]:
     """The F-PSI-RULE title from its numbers (U16-R4 c26 B1: it said the chi-square benchmark "controls the error" while its rate at 5%
     exceeds its bound): the false-alarm rate of the 0.10 rule of thumb and the benchmark's rate at 5% against its bound."""
@@ -299,8 +322,9 @@ def _exact_traffic(n: list[int], fore: Any, true: Any, ties: str = "lower") -> d
 
 
 def _holds(row: dict[str, Any], sim: Any) -> bool:
-    """Whether a test holds its size at 5% and 1%: by its exact probability where one exists (no Monte Carlo error
-    then), by the one-sided bound on the simulated rate otherwise."""
+    """Whether a test passes the size screen at 5% and 1%: by its exact probability where one exists (no Monte Carlo error
+    then), by the one-sided bound on the simulated rate otherwise. The screen is not the size-and-power manuscript's definition of
+    holding the size (an interval that includes the level, on 200,000 null repetitions)."""
     if row["exact"] is not None:
         return all(row["exact"][f"p<{a:g}"] <= a + 1e-12 for a in LEVELS)
     return all(within_size(sim.rates[f"p<{a:g}"], a) for a in LEVELS)
@@ -458,8 +482,8 @@ def _null(book: Book) -> dict[str, Any]:
     holds = {row["key"]: _holds(row, book.sims[row["key"]]) for row in book.rows if row["key"].endswith("@null")}
     within = sum(holds.values())
     impact = {
-        "tests_within_bound": _impact(within, "tests", f"Tests of the battery that hold their size at 5% and 1% (of {len(holds)})",
-                                      f"Pruebas de la batería que mantienen su tamaño al 5% y 1% (de {len(holds)})"),
+        "tests_within_bound": _impact(within, "tests", f"Tests of the battery that pass the size screen at 5% and 1% (of {len(holds)})",
+                                      f"Pruebas de la batería que pasan el filtro de tamaño al 5% y 1% (de {len(holds)})"),
         "size_hl_fitted": _impact(book.rate("pd.hosmer_lemeshow@fitted"), "probability",
                                   "Hosmer-Lemeshow with G − 2 on a validation sample: size at 5%",
                                   "Hosmer-Lemeshow con G − 2 en una muestra de validación: tamaño al 5%"),
@@ -497,13 +521,15 @@ def _null(book: Book) -> dict[str, Any]:
     kept = [k for k in trans if holds[k]]
     sizes = ", ".join(f"{TEST_LABEL[k.split('@')[0]]['en']} {_pct(book.rate(k), 2)['en']}" for k in trans)
     sizes_es = ", ".join(f"{TEST_LABEL[k.split('@')[0]]['es']} {_pct(book.rate(k), 2)['es']}" for k in trans)
+    small = book.sims["rating.markov_order@null"].rates["p<0.05"].to_dict()
+    bigr = book.sims["rating.markov_order@null-20000"].rates["p<0.05"].to_dict()
     big = book.rate("rating.markov_order@null-20000")
-    big_es = _pct(big, 2)["es"]
+    order_en, order_es = _order_reading(small, bigr, "en"), _order_reading(small, bigr, "es")
     findings.append(_finding(
         "F-TRANSITION-SIZE", "S4" if len(kept) == len(trans) else "S2", "closed" if len(kept) == len(trans) else "open",
         [*trans, "rating.markov_order@null-20000"],
-        f"The four transition tests in their default forms on a Markov chain of 5,000 obligors over five years: {len(kept)} of 4 hold their size at both levels (at 5%: {sizes}); the order test, near its bound in 4,000 repetitions, rejects {_pct(big, 2)['en']} at 5% over 20,000; the printed forms of three fail on sparse rating tables, which is why riskvalidation defaults to these",
-        f"Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: {len(kept)} de 4 mantienen su tamaño en ambos niveles (al 5%: {sizes_es}); la prueba de orden, cerca de su cota en 4.000 repeticiones, rechaza {big_es} al 5% en 20.000; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"))
+        f"The four transition tests in their default forms on a Markov chain of 5,000 obligors over five years: {len(kept)} of 4 pass the size screen at both levels (at 5%: {sizes}); {order_en}; the printed forms of three fail on sparse rating tables, which is why riskvalidation defaults to these",
+        f"Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: {len(kept)} de 4 pasan el filtro de tamaño en ambos niveles (al 5%: {sizes_es}); {order_es}; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"))
     values = {"size_hl_given": book.rate("pd.hosmer_lemeshow@null"), "size_hl_fitted": book.rate("pd.hosmer_lemeshow@fitted"),
               "size_normal": book.rate("pd.normal_multiperiod@null"),
               "auc_init_ecb_dev1": book.rate("disc.auc_vs_initial@dev1"),
@@ -571,8 +597,8 @@ def _null_other(book: Book) -> dict[str, Any]:
     ex = mc["study"]["excess"]
     conservative = [r for r in rows if r["rates"]["p<0.05"]["wilson_high"] < 0.05]
     impact = {
-        "other_tests_within_bound": _impact(len(kept), "tests", f"Tests of the other seven families that hold their size at 5% and 1% (of {len(by_test)})",
-                                            f"Pruebas de las otras siete familias que mantienen su tamaño al 5% y 1% (de {len(by_test)})"),
+        "other_tests_within_bound": _impact(len(kept), "tests", f"Tests of the other seven families that pass the size screen at 5% and 1% (of {len(by_test)})",
+                                            f"Pruebas de las otras siete familias que pasan el filtro de tamaño al 5% y 1% (de {len(by_test)})"),
         "other_size_mc_convergence": {"value": float(ex["measured"]), "unit": "probability", "label": mc_convergence_label(ex)},
     }
     if undocumented:
@@ -587,8 +613,8 @@ def _null_other(book: Book) -> dict[str, Any]:
         sev, status, tail_en, tail_es = "S4", "closed", "", ""
     findings = [
         _finding("F-OTHER-SIZE", sev, status, [r["key"] for r in over] or [top["key"]],
-                 f"{len(kept)} of {len(by_test)} tests of the other seven families hold their size at 5% and 1% in 4,000 repetitions (all {len(rows)} studies counted){tail_en}",
-                 f"{len(kept)} de {len(by_test)} pruebas de las otras siete familias mantienen su tamaño al 5% y 1% en 4.000 repeticiones (se cuentan los {len(rows)} estudios){tail_es}"),
+                 f"{len(kept)} of {len(by_test)} tests of the other seven families pass the size screen at 5% and 1% in 4,000 repetitions (all {len(rows)} studies counted){tail_en}",
+                 f"{len(kept)} de {len(by_test)} pruebas de las otras siete familias pasan el filtro de tamaño al 5% y 1% en 4.000 repeticiones (se cuentan los {len(rows)} estudios){tail_es}"),
         _finding("F-OTHER-MC-EXCESS", "S4", "accepted", [mc["key"]], *mc_excess_title(ex)),
     ]
     if conservative:
@@ -1250,7 +1276,7 @@ EXPECT: dict[str, tuple[float, float]] = {
     "auc_init_ext_dev1": (0.035, 0.066),
     "psi010_false_alarm_n100": (0.80, 0.90),        # Yurdakul and Naranjo Table 4: 0.849
     "auc_ecb_se_relative_error_pct": (-6.0, 6.0),
-    # all but the normal test over five years and Jeffreys at 1% (exact 1.38%); the four transition tests hold theirs in
+    # all but the normal test over five years and Jeffreys at 1% (exact 1.38%); the four transition tests pass the screen in
     # riskvalidation's size study (4,000 repetitions, other seeds), the grouped order test at 1% the closest, 1.25%
     # against a bound of 1.49%, so one of them may land above by chance: 18 or 19
     "tests_within_bound": (18.0, 19.0),
@@ -1289,7 +1315,7 @@ EXPECT: dict[str, tuple[float, float]] = {
     "chi2_power_c005": (0.88, 1.0),
     "hhi_max_statistic": (1.05, 1.15),              # ten grades: 1.0937 at an initial CV of 0.6, 1.0913 at P10's 0.6017
     # U16-P2, declared before the first bake from the engine's U16-E2 report (4,000 repetitions there; 4,000 and 2,000 here,
-    # other seeds): 20 of the 21 tests hold their size at both levels (the Monte Carlo quantile convergence test is the
+    # other seeds): 20 of the 21 tests pass the size screen at both levels (the Monte Carlo quantile convergence test is the
     # engine's documented excess, 1.55% at 1% against a bound of 1.49%); three more sit near their bounds (the LGD over
     # time test 5.92% at 5%, the market back-tests at 700 repetitions in the engine), so 18 to 21
     "other_tests_within_bound": (18.0, 21.0),

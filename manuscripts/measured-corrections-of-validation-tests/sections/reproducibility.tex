@@ -1,0 +1,21 @@
+The code, the committed results and the data are in the repository of the product, in the manuscript folder that holds this source. The experiments call the engine \texttt{riskvalidation} release \EnvEngine{} with \texttt{numpy} \EnvNumpy{} and \texttt{scipy} \EnvScipy{}; the engine is published on the Python Package Index and installs with \texttt{pip install riskvalidation}. The experiments draw only generated data; the numbers of the committed evidence are read from the repository files listed below. The repository and the inputs that the evidence reads are the following.
+\begin{itemize}
+\item The repository, in release v1.00.000 of CAOS\_Contraste (tag v1.00.000), whose manuscript folder holds this source: \url{https://github.com/fsantibanezleal/CAOS_Contraste}. % voice-ok: citation of the product release the results were produced with
+\item The coverage evidence: \texttt{data/derived/C20/fed-shift.json}.
+\item The fairness evidence: the six files \texttt{data/derived/C21/pair-*.json}.
+\item The small-design figures of the predictions, read from the saved outputs of notebook 09 in the folder \texttt{notebooks/en/13-ml-and-ai-risk} of the repository.
+\end{itemize}
+
+Every table, figure and number rebuilds from the repository root with the commands below, in which \texttt{FOLDER} stands for the manuscript folder. The environment variable \texttt{CAOS\_TEMP\_ROOT} names a temporary folder for the per-cell caches, or each script takes \texttt{--cache}; the compact results that the manuscript reads are committed in the subfolder \texttt{experiments/results}.
+\begin{verbatim}
+python manuscripts/FOLDER/experiments/exact_theory.py
+python manuscripts/FOLDER/experiments/exp_coverage.py
+python manuscripts/FOLDER/experiments/exp_shift.py
+python manuscripts/FOLDER/experiments/exp_situation.py
+python manuscripts/FOLDER/experiments/exp_situation_indep.py
+python manuscripts/FOLDER/make_tables.py
+python manuscripts/FOLDER/make_numbers.py
+python manuscripts/FOLDER/make_figures.py
+python -m pytest manuscripts/FOLDER/experiments
+\end{verbatim}
+The root seed of every random stream is \RootSeed{}, and a replication has its own stream built from the experiment, the cell and the replication index, so the experiments are deterministic and independent of the number of worker processes. A second run from an empty cache reproduces the committed results of the five experiments byte for byte. The wall times of one cold run (an empty cache, every replication computed) are measured by the scripts and written to the committed file \texttt{experiments/results/timings.json}, which is outside the deterministic outputs: on \TimeWorkers{} worker processes of a machine with \TimeCpus{} logical cores shared with other jobs, the resilience experiment took \TimeShiftMin{} minutes, the coverage experiment \TimeCovMin{}, the two situation experiments \TimeSitMin{} and \TimeSitInMin{}, and the exact computations, on one process, \TimeExactSec{} seconds. That run reproduced the five committed result files byte for byte. The tests of the experiment scripts check the vectorised p-values against the engine function and against \texttt{scipy}, the exact sizes against their guarantees, the variance factor of \cref{prop:variance} against the summed law, and the seed reproducibility of a replication.

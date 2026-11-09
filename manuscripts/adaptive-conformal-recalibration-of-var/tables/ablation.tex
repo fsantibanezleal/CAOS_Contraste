@@ -1,0 +1,25 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Ablation of the wrapper on HS-250, GARCH-t and FHS at two tail levels in the three stress windows (18 cells): each row changes one component of the full wrapper (the step, the clipping band of the working level, the ES paired with the recalibrated VaR) and keeps the others. $Z_2$ is the Acerbi--Szekely statistic, zero for a correct ES and negative for an understated one; clipped days count updates cut by the band.}
+\label{tab:ablation}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrrrrr}
+\toprule
+Variant & Cells passing & Independence failures & Mean $|$hit $-$ target$|$ (points) & Mean FZ0 change & Worst FZ0 change & Mean $Z_2$ & Clipped days \\
+\midrule
+\relax Unwrapped ($\gamma = 0$) & 6 / 18 & 1 & 3.08 & \relax +0.0\% & \relax +0.0\% & -2.28 & 0 \\
+\relax Full wrapper ($\gamma = 0.005$) & 15 / 18 & 0 & 1.20 & \relax -47.1\% & \relax +3.4\% & -1.11 & 37 \\
+\relax Step $\gamma = 0.001$ & 10 / 18 & 0 & 2.35 & \relax -15.4\% & \relax +0.8\% & -1.77 & 3 \\
+\relax Step $\gamma = 0.0025$ & 15 / 18 & 0 & 1.61 & \relax -29.7\% & \relax +1.4\% & -1.33 & 15 \\
+\relax Step $\gamma = 0.01$ & 15 / 18 & 0 & 1.02 & \relax -56.0\% & \relax +10.9\% & -1.02 & 64 \\
+\relax Step $\gamma = 0.02$ & 14 / 18 & 0 & 1.24 & \relax -59.1\% & \relax +22.3\% & -1.21 & 94 \\
+\relax Step $\gamma = 0.05$ & 10 / 18 & 0 & 1.91 & \relax -52.6\% & \relax +47.2\% & -1.74 & 171 \\
+\relax Band $[10^{-5}, 0.5]$ & 15 / 18 & 0 & 1.19 & \relax -45.8\% & \relax +3.4\% & -1.09 & 30 \\
+\relax Band $[\alpha/2, 2\alpha]$ & 12 / 18 & 0 & 1.96 & \relax -28.1\% & \relax +2.8\% & -1.59 & 115 \\
+ES keeps the target ES/VaR ratio & 15 / 18 & 0 & 1.20 & \relax -50.1\% & \relax +3.6\% & -1.00 & 37 \\
+ES left at the target level & 15 / 18 & 0 & 1.20 & \relax -45.4\% & \relax +3.0\% & -1.21 & 37 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

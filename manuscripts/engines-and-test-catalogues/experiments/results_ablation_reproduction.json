@@ -1,0 +1,50 @@
+{
+ "runs": 3,
+ "reruns": 2,
+ "reproduced": 2,
+ "reference_matrix": {
+  "m01": "B",
+  "m02": "A",
+  "m03": "C",
+  "m04": "C",
+  "m05": "AE",
+  "m06": "B",
+  "m07": "B",
+  "m08": "BE",
+  "m09": "E",
+  "m10": "D",
+  "m11": "A",
+  "m12": "C"
+ },
+ "per_run": [
+  {
+   "matrix_equals_reference": true,
+   "differences": {},
+   "false_alarms": 0,
+   "retries": 0,
+   "seconds": 1281,
+   "peak_working_set_mb": 423
+  },
+  {
+   "matrix_equals_reference": true,
+   "differences": {},
+   "false_alarms": 0,
+   "retries": 0,
+   "seconds": 1028,
+   "peak_working_set_mb": 424
+  },
+  {
+   "matrix_equals_reference": true,
+   "differences": {},
+   "false_alarms": 0,
+   "retries": 0,
+   "seconds": 992,
+   "peak_working_set_mb": 423
+  }
+ ],
+ "files": [
+  "results_ablation.json",
+  "results_ablation_rerun1.json",
+  "results_ablation_rerun2.json"
+ ]
+}

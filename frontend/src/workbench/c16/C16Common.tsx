@@ -12,6 +12,7 @@ import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { Pending } from '../Pending';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { UnavailableCard } from '../c14/C14Common';
+import { relevantDayOfCalendarDay } from './LadderViews';
 import { bankName, es, nameOf } from './localise';
 import {
   BASE_TEXT, CLASS_TEXT, COMPARED_AT_TEXT, DENOMINATOR_LONG, DENOMINATOR_SHORT, HAIRCUT_RULE_TEXT, ROLE_TEXT, SEGMENT_TEXT, SOURCE_KIND_TEXT,
@@ -168,21 +169,54 @@ export interface MedianRef {
   nBanks: number;
 }
 
-/** The survival period of each variant that has a daily path, with the LiST medians as reference bars, and the variants in a table. */
+export interface SurvivalBar {
+  id: string;
+  label: BiText;
+  value: number;
+  tone: 'accent' | 'neutral';
+  highlight?: boolean;
+  hint?: BiText;
+}
+
+const REFERENCE_HINT: BiText = { en: 'A published reference point, not a model result', es: 'Un punto de referencia publicado, no un resultado del modelo' };
+
+/** The bars of the Variants drawing, all in relevant days (the ladder's unit, US business days): the survival day of each variant whose daily path
+ *  counts relevant days, and the LiST annex medians, which the annex gives in calendar days, at the relevant day the document's own calendar puts them
+ *  on (`relevantDayOfCalendarDay`, the conversion the ladder view uses), never at their raw number. A reference bar names both units. */
+export function survivalBars(variants: Array<{ id: string; title: BiText; v: VariantArtifact<C16Outputs> }>, current: string, medians?: MedianRef | null): SurvivalBar[] {
+  const onLadder = variants.filter(({ v }) => v.outputs.variant.axis === 'relevant-days');
+  const bars = onLadder.flatMap(({ id, title, v }): SurvivalBar[] => {
+    const d = survivalDay(v.outputs.path?.survival);
+    return d === null ? [] : [{ id, label: title, value: d, tone: 'accent', highlight: id === current }];
+  });
+  const base = onLadder.find(({ v }) => v.outputs.path)?.v.outputs;
+  if (!medians || !base) return bars;
+  const reference = (id: string, en: string, es: string, calendar: number): SurvivalBar => {
+    const day = relevantDayOfCalendarDay(calendar, base.valuation_date, base.conventions.day_calendar);
+    return {
+      id,
+      label: {
+        en: `${en} (${medians.nBanks} banks): ${calendar} calendar days = relevant day ${day}`,
+        es: `${es} (${medians.nBanks} bancos): ${calendar} días calendario = día relevante ${day}`,
+      },
+      value: day,
+      tone: 'neutral',
+      hint: REFERENCE_HINT,
+    };
+  };
+  return [
+    ...bars,
+    reference('median-adverse', 'LiST median, Adverse', 'Mediana LiST, Adverso', medians.adverse),
+    reference('median-extreme', 'LiST median, Extreme', 'Mediana LiST, Extremo', medians.extreme),
+  ];
+}
+
+/** The survival period of each variant that has a daily path, with the LiST medians as reference bars in the same unit (relevant days), and the variants in a table. */
 export function C16VariantsTable({ variants, onPick, current, medians }: { variants: Array<{ id: string; title: BiText; v: VariantArtifact<C16Outputs> }>; onPick: (id: string) => void; current: string; medians?: MedianRef | null }) {
   const lang = useShellLang();
   const first = variants[0]?.v;
   const card = useCard(first as unknown as VariantArtifact | undefined);
-  const bars = variants.flatMap(({ id, title, v }) => {
-    const d = survivalDay(v.outputs.path?.survival);
-    return d === null ? [] : [{ id, label: title, value: d, tone: 'accent' as const, highlight: id === current }];
-  });
-  const refs = medians
-    ? [
-        { id: 'median-adverse', label: { en: `LiST median, Adverse (${medians.nBanks} banks)`, es: `Mediana LiST, Adverso (${medians.nBanks} bancos)` }, value: medians.adverse, tone: 'neutral' as const, hint: { en: 'A published reference point, not a model result', es: 'Un punto de referencia publicado, no un resultado del modelo' } },
-        { id: 'median-extreme', label: { en: `LiST median, Extreme (${medians.nBanks} banks)`, es: `Mediana LiST, Extremo (${medians.nBanks} bancos)` }, value: medians.extreme, tone: 'neutral' as const, hint: { en: 'A published reference point, not a model result', es: 'Un punto de referencia publicado, no un resultado del modelo' } },
-      ]
-    : [];
+  const bars = survivalBars(variants, current, medians);
   const survivors = variants.filter(({ v }) => v.outputs.path && survivalDay(v.outputs.path.survival) === null);
   return (
     <PlotCard
@@ -190,21 +224,21 @@ export function C16VariantsTable({ variants, onPick, current, medians }: { varia
       title={{ en: 'The variants of the case', es: 'Las variantes del caso' }}
       {...card}
       note={{
-        en: 'The five variants of the SDD at the last call report before the run. The bars give the survival period of each variant that has a daily path and one that is reached; a variant that survives its horizon is in the table with its horizon and has no bar, and the LCR gives a ratio and no daily path. Pick a variant to load it.',
-        es: 'Las cinco variantes del SDD en el último reporte de llamada antes de la corrida. Las barras dan el periodo de supervivencia de cada variante con trayectoria diaria que lo alcanza; una variante que sobrevive su horizonte está en la tabla con su horizonte y no tiene barra, y el LCR da una razón y no una trayectoria diaria. Elija una variante para cargarla.',
+        en: 'The five variants of the SDD at the last call report before the run. The bars give the survival period of each variant that has a daily path and one that is reached, in relevant days (US business days), with the LiST medians, which the annex gives in calendar days, converted to relevant days through the calendar of the call report; a variant that survives its horizon is in the table with its horizon and has no bar, and the LCR gives a ratio and no daily path. Pick a variant to load it.',
+        es: 'Las cinco variantes del SDD en el último reporte de llamada antes de la corrida. Las barras dan el periodo de supervivencia de cada variante con trayectoria diaria que lo alcanza, en días relevantes (días hábiles de EE. UU.), con las medianas de LiST, que el anexo da en días calendario, convertidas a días relevantes con el calendario del reporte de llamada; una variante que sobrevive su horizonte está en la tabla con su horizonte y no tiene barra, y el LCR da una razón y no una trayectoria diaria. Elija una variante para cargarla.',
       }}
     >
       {/* the drawing at its size (seven bars) and the table in the height it leaves, not the shared 42 % box: at 1280 the box ended on
           a row boundary and hid two variant rows, the reverse stress and the note with no cue (R4 c19 and c20 M1) */}
       <ChartAbove
-        chartHeight={`${Math.max(bars.length + refs.length, 2) * 1.5 + 3}rem`}
+        chartHeight={`${Math.max(bars.length, 2) * 1.5 + 3}rem`}
         chart={
           <BarChart
-            title={{ en: 'Survival period by variant, in days', es: 'Periodo de supervivencia por variante, en días' }}
+            title={{ en: 'Survival period by variant, in relevant days', es: 'Periodo de supervivencia por variante, en días relevantes' }}
             height="fill"
             orientation="horizontal"
-            data={[...bars, ...refs]}
-            axis={{ label: { en: 'Survival period: the first day on which the NLP turns negative', es: 'Periodo de supervivencia: el primer día en que la NLP pasa a negativa' }, unit: { en: 'days', es: 'días' }, format: { decimals: 0 } }}
+            data={bars}
+            axis={{ label: { en: 'Survival period: the first relevant day on which the NLP turns negative', es: 'Periodo de supervivencia: el primer día relevante en que la NLP pasa a negativa' }, unit: { en: 'relevant days', es: 'días relevantes' }, format: { decimals: 0 } }}
           />
         }
       >

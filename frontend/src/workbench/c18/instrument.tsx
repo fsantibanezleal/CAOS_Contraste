@@ -268,6 +268,8 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
             { id: 'fan', label: { en: 'CET1 fan', es: 'Abanico de CET1' }, content: <FanView sel={sel} /> },
             { id: 'stack', label: { en: 'Capital stack', es: 'Capital apilado' }, content: <StackView sel={sel} /> },
             { id: 'annex3', label: { en: 'Annex 3', es: 'Anexo 3' }, content: <Annex3View sel={sel} /> },
+            // the expected losses feed the capital projection (ADR-0071 rule 5: six peers at most in Stress)
+            { id: 'losses', label: { en: 'Losses', es: 'Pérdidas' }, content: <LossesView sel={sel} /> },
           ],
           { en: 'Views of the capital', es: 'Vistas del capital' },
           'c18-capital',
@@ -284,7 +286,6 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
             { id: 'var', label: { en: 'VAR forecast', es: 'Pronóstico VAR' }, content: <VarRungView sel={sel} /> },
             { id: 'gar', label: { en: 'Growth-at-risk', es: 'Crecimiento en riesgo' }, content: <GarRungView sel={sel} /> },
             { id: 'severity', label: { en: 'Severity', es: 'Severidad' }, content: <SeverityView sel={sel} /> },
-            { id: 'losses', label: { en: 'Losses', es: 'Pérdidas' }, content: <LossesView sel={sel} /> },
           ],
           { en: 'Views of the stress', es: 'Vistas del estrés' },
           'c18-stress',

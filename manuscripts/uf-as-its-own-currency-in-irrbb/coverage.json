@@ -1,7 +1,8 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:main-results",
+    "tab:shapley"
   ],
   "claims": {
     "BS-7": "sec:proposed-method"

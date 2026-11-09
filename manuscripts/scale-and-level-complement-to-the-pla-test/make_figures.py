@@ -1,13 +1,14 @@
 """Write the figures of the manuscript (vector PDF, grayscale-safe) from ``experiments/results.json``,
 ``experiments/results_theory.json``, the cached statistic rows of ``experiments/simulate.py`` and the C13 generator.
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/scale-and-level-complement-to-the-pla-test/make_figures.py \
-        [--cache D:/_Temp/ms-scale-and-level-complement-to-the-2026-11-04/cache]
+    python manuscripts/scale-and-level-complement-to-the-pla-test/make_figures.py \
+        [--cache <temp root>/contraste-scale-and-level/cache]
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import pathlib
 import sys
 
@@ -24,7 +25,9 @@ import theory  # noqa: E402
 R = json.loads((HERE / "experiments" / "results.json").read_text(encoding="utf-8"))
 RT = json.loads((HERE / "experiments" / "results_theory.json").read_text(encoding="utf-8"))
 OUT = HERE / "figures"
-DEFAULT_CACHE = pathlib.Path("D:/_Temp/ms-scale-and-level-complement-to-the-2026-11-04/cache")
+# The cache lives in the device's temp root (CAOS_TEMP_ROOT, as the pipeline reads it) or where --cache says.
+DEFAULT_CACHE = (pathlib.Path(os.environ["CAOS_TEMP_ROOT"]) / "contraste-scale-and-level" / "cache"
+                 if os.environ.get("CAOS_TEMP_ROOT") else None)
 S = figkit.STYLES
 
 
@@ -212,7 +215,8 @@ def fig_windows() -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--cache", type=pathlib.Path, default=DEFAULT_CACHE)
+    ap.add_argument("--cache", type=pathlib.Path, default=DEFAULT_CACHE, required=DEFAULT_CACHE is None,
+                    help="cache folder; defaults to $CAOS_TEMP_ROOT/contraste-scale-and-level/cache")
     cache = ap.parse_args().cache
     figkit.style()
     import matplotlib

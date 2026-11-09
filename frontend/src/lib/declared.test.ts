@@ -1,4 +1,5 @@
 // The build copies what the index declares: one artifact or several per manifest, and the index's further files.
+// A product takes this file verbatim: it tests the base script scripts/declared.mjs (0.15.003).
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -42,9 +43,6 @@ describe('the declared files of the site', () => {
     expect(missing).toEqual(['contract/index.json', 'B/v2.json']);
     expect(problems).toEqual(['manifests/C.json: names no artifact (artifact or artifacts)']);
   });
-});
-
-describe('the readiness document and the partial rule', () => {
   it('declares the readiness document right after the index, and reports it missing when absent', () => {
     expect(READINESS_REL).toBe('readiness.json');
     const bare = join(root, 'bare');
@@ -54,33 +52,71 @@ describe('the readiness document and the partial rule', () => {
     expect(declared).toEqual(['manifests/index.json', 'readiness.json']);
     expect(missing).toEqual(['readiness.json']);
   });
+  it('reads an index that names its manifest path', () => {
+    const named = join(root, 'named');
+    mkdirSync(join(named, 'manifests'), { recursive: true });
+    writeFileSync(join(named, 'manifests/index.json'), JSON.stringify({ cases: [{ case_id: 'A', path: 'manifests/A.json' }] }));
+    writeFileSync(join(named, 'manifests/A.json'), JSON.stringify({ artifact: { path: 'A/trace.json' } }));
+    const { declared, missing, problems } = declaredFiles(named);
+    expect(declared).toEqual(['manifests/index.json', 'readiness.json', 'manifests/A.json', 'A/trace.json']);
+    expect(missing).toEqual(['readiness.json', 'A/trace.json']);
+    expect(problems).toEqual([]);
+  });
+  it('adversarial: declares nothing for a refused case, and does not report it missing', () => {
+    const refused = join(root, 'refused');
+    mkdirSync(join(refused, 'manifests'), { recursive: true });
+    writeFileSync(
+      join(refused, 'manifests/index.json'),
+      JSON.stringify({ cases: [{ case_id: 'R', status: 'refused', path: null, reason: 'out of the declared envelope' }, { case_id: 'S', status: 'refused', manifest_path: 'manifests/S.json' }] }),
+    );
+    const { declared, missing, problems } = declaredFiles(refused);
+    expect(declared).toEqual(['manifests/index.json', 'readiness.json']);
+    expect(missing).toEqual(['readiness.json']);
+    expect(problems).toEqual([]);
+  });
+  it('adversarial: still reports an available case with no manifest file as missing, and an entry with no path as a problem', () => {
+    const open = join(root, 'open');
+    mkdirSync(join(open, 'manifests'), { recursive: true });
+    writeFileSync(
+      join(open, 'manifests/index.json'),
+      JSON.stringify({ cases: [{ case_id: 'A', status: 'available', manifest_path: 'manifests/A.json' }, { case_id: 'B', status: 'available' }] }),
+    );
+    const { missing, problems } = declaredFiles(open);
+    expect(missing).toEqual(['readiness.json', 'manifests/A.json']);
+    expect(problems).toEqual(['B: names neither manifest_path nor path']);
+  });
+});
+
+describe('a declared-partial bake builds', () => {
   const partial = join(root, 'partial');
   const putPartial = (rel: string, doc: unknown) => {
     mkdirSync(dirname(join(partial, rel)), { recursive: true });
     writeFileSync(join(partial, rel), JSON.stringify(doc));
   };
-  const readiness = (missing: string[], state = 'partial') => ({ contracts: [{ id: 'case-manifest', state, missing }, { id: 'other', state: 'partial', missing: ['some_case_id'] }] });
+  const readiness = (missing: string[], state = 'partial') => ({
+    contracts: [{ id: 'trace', state, missing }, { id: 'params-record', state: 'partial', missing: ['some_case_id'] }],
+  });
   const setup = (doc: unknown) => {
     putPartial('manifests/index.json', { cases: [{ case_id: 'A', manifest_path: 'manifests/A.json' }, { case_id: 'B', manifest_path: 'manifests/B.json' }] });
-    putPartial('manifests/A.json', { artifacts: [{ path: 'A/v.json' }] });
-    putPartial('A/v.json', {});
+    putPartial('manifests/A.json', { artifact: { path: 'A/trace.json' } });
+    putPartial('manifests/B.json', { artifact: { path: 'B/trace.json' } });
+    putPartial('A/trace.json', {});
     if (doc !== null) putPartial('readiness.json', doc);
   };
-  it('tolerates an absent manifest that the readiness lists in a partial row, and only that one', () => {
-    setup(readiness(['manifests/B.json']));
-    const { missing, tolerated, problems } = declaredFiles(partial);
-    expect(missing).toEqual(['manifests/B.json']);
-    expect(tolerated).toEqual(['manifests/B.json']);
-    expect(problems).toEqual([]);
+  it('tolerates an absent file that the readiness lists in a partial row, and only that one', () => {
+    setup(readiness(['B/trace.json']));
+    const { missing, tolerated } = declaredFiles(partial);
+    expect(missing).toEqual(['B/trace.json']);
+    expect(tolerated).toEqual(['B/trace.json']);
   });
   it('does not tolerate an absent file that the readiness does not list', () => {
-    setup(readiness(['manifests/Z.json']));
+    setup(readiness(['A/other.json']));
     const { missing, tolerated } = declaredFiles(partial);
-    expect(missing).toEqual(['manifests/B.json']);
+    expect(missing).toEqual(['B/trace.json']);
     expect(tolerated).toEqual([]);
   });
-  it('lists nothing as declared absent for a row whose state is not partial', () => {
-    setup(readiness(['manifests/B.json'], 'available'));
+  it('lists nothing as declared-absent for a row whose state is not partial', () => {
+    setup(readiness(['B/trace.json'], 'available'));
     expect(declaredFiles(partial).tolerated).toEqual([]);
   });
   it('tolerates nothing when the readiness is absent or unreadable', () => {

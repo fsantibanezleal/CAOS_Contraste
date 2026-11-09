@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
 LANGS = ("en", "es")
 TOPIC_01 = "01-getting-started"
-CLAIMS: frozenset[str] = frozenset({"BS-1", "BS-2", "BS-3", "BS-4", "BS-5", "BS-6", "BS-7", "BS-8", "BS-9", "BS-10", "BS-11", "BS-12"})  # the BS- claims the SDD states (decision N8: each enters with its level 4 notebook)
+CLAIMS: frozenset[str] = frozenset({"BS-1", "BS-2", "BS-3", "BS-4", "BS-5", "BS-6", "BS-7", "BS-8", "BS-9", "BS-10", "BS-11", "BS-12", "BS-13", "BS-14", "BS-15", "BS-16"})  # the BS- claims the SDD states (decision N8: each enters with its level 4 notebook)
 PENDING_CLAIMS: frozenset[str] = frozenset()
 # the PyPI pin of the notebooks, read from notebooks/requirements.txt; the engine release tag is the same number, zero-padded (X.XX.XXX)
 ENGINE_PIN = re.search(r"(?m)^riskvalidation==(\d+\.\d+\.\d+)$", (Path(__file__).resolve().parents[1] / "notebooks" / "requirements.txt").read_text(encoding="utf-8")).group(1)
@@ -36,11 +36,11 @@ ENGINE_TAG = "v%d.%02d.%03d" % tuple(int(part) for part in ENGINE_PIN.split(".")
 ENGINE_RELEASE = f"https://pypi.org/project/riskvalidation/{ENGINE_PIN}/"  # the README Packages row links the PyPI release
 
 # sha256 of the three adopted scripts at the template release 0.10 (git show of scripts/<name> at its tag)
-# the sha256 of the scripts at template 0.14.000 (check_notebooks.py: the level sections Comparison and Evidence; run_notebooks.py
-# copies models/ since 0.13.001; check_readme_areas.py unchanged since v0.11.000)
+# the sha256 of the scripts at template 0.15.006 (check_notebooks.py: prose `<` that starts no tag is text; run_notebooks.py: the external
+# role environment; check_readme_areas.py unchanged since v0.11.000)
 ADOPTED = {
-    "check_notebooks.py": "0f4fc43b9dee8a197abe67ffdc355263d24896687a6146ba52316e712679d01b",
-    "run_notebooks.py": "196088e5e94bc6de48aa793e5d45c6f40c00985095b4838ec1dddb48d73d5df9",
+    "check_notebooks.py": "7b93c487e5d286473861b2583d905a6f10bbfbb33d512f69e9c4edd870a4d8ce",
+    "run_notebooks.py": "c3765c617a807aed3daff899c182f946e024ff8a1eb132a00aa9ada18272513b",
     "check_readme_areas.py": "1eb76a810d13aeebf12809a69490e8e1cac4cdf6f51516e0568e9d2c717e96e2",
 }
 
@@ -452,13 +452,14 @@ def test_a_notebook_that_reads_test_rows_prints_the_engine_version_that_baked_th
             assert not recomputes_without_the_baked_version(source), path.name
 
 
-def test_topic_one_has_its_four_notebooks_in_both_languages():
-    plan = [1, 1, 1, 2]
+def test_topic_one_has_its_five_notebooks_in_both_languages():
+    # the fifth, from a licensed source to a committed document, joined on 2026-11-07
+    plan = [1, 1, 1, 2, 2]
     for lang in LANGS:
         found = notebooks(ROOT, lang)
         got = [p for p in found if p.parent.name == TOPIC_01]
         assert [read_nb(p)["metadata"]["caos"]["level"] for p in got] == plan
-        assert [p.name[:2] for p in got] == ["01", "02", "03", "04"]
+        assert [p.name[:2] for p in got] == ["01", "02", "03", "04", "05"]
 
 
 # ---- NB adversarial: a defect planted in a copy of the committed set --------------------------------------------------

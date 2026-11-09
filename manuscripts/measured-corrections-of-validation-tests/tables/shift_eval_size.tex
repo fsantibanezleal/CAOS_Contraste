@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The size (shift 0) and the power (shift 2) of four rules of the resilience test as the evaluation sample grows from 125 to 1,000 rows, with the development sample twice as large; rates with their standard errors over the replications of each cell.}
+\label{tab:shift-eval-size}
+\fitwidth{\begin{tabular}{llcccc}
+\toprule
+Rule & Rate & $n_{\mathrm{eval}}=125$ & 250 & 500 & 1,000 \\
+\midrule
+fixed 0.05 & size & $0.254 \pm 0.022$ & $0.212 \pm 0.020$ & $0.175 \pm 0.019$ & $0.125 \pm 0.017$ \\
+fixed 0.05 & power & $0.709 \pm 0.023$ & $0.853 \pm 0.018$ & $0.925 \pm 0.013$ & $0.993 \pm 0.004$ \\
+fixed 0.10 & size & $0.098 \pm 0.015$ & $0.068 \pm 0.013$ & $0.048 \pm 0.011$ & $0.040 \pm 0.010$ \\
+fixed 0.10 & power & $0.520 \pm 0.025$ & $0.635 \pm 0.024$ & $0.703 \pm 0.023$ & $0.792 \pm 0.020$ \\
+z rule & size & $0.035 \pm 0.009$ & $0.030 \pm 0.009$ & $0.065 \pm 0.012$ & $0.045 \pm 0.010$ \\
+z rule & power & $0.188 \pm 0.020$ & $0.422 \pm 0.025$ & $0.723 \pm 0.022$ & $0.940 \pm 0.012$ \\
+permutation, 199 & size & $0.048 \pm 0.011$ & $0.055 \pm 0.011$ & $0.062 \pm 0.012$ & $0.052 \pm 0.011$ \\
+permutation, 199 & power & $0.317 \pm 0.023$ & $0.527 \pm 0.025$ & $0.680 \pm 0.023$ & $0.870 \pm 0.017$ \\
+\bottomrule
+\end{tabular}}
+\end{table}

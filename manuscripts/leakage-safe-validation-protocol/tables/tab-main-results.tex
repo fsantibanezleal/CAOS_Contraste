@@ -1,0 +1,35 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{Bias of the holdout estimate of the AUC, the Brier score and the calibration error against the value on a reference sample of 50,000 rows that no step read, for the proposed protocol and for each leaked variant, on 300 planted data sets of 2,500 rows with 40 inputs; the coverage column is the share of the 95\% intervals of the engine's AUC variance that contain the reference value. The two five-fold rows compare the cross-validated AUC with the mean reference AUC of the fold models.}
+\label{tab:main-results}
+\fitwidth{%
+\begin{tabular}{llrrrrr}
+\toprule
+Model & Validation procedure & AUC bias $\pm$ 95\% half-width & RMSE & Coverage \% [Wilson 95\%] & Brier bias & ECE bias \\
+\midrule
+WoE scorecard & proposed protocol & $0.000\pm0.002$ & 0.018 & 95.3 [92, 97] & $-0.0001\pm0.0008$ & $+0.0148\pm0.0014$ \\
+ & imputation on all rows & $0.000\pm0.002$ & 0.018 & 95.3 [92, 97] & $0.0000\pm0.0008$ & $+0.0145\pm0.0014$ \\
+ & bin edges on all rows & $-0.001\pm0.002$ & 0.018 & 96.3 [94, 98] & $+0.0001\pm0.0008$ & $+0.0147\pm0.0014$ \\
+ & WoE with holdout labels & $+0.018\pm0.002$ & 0.026 & 78.3 [73, 83] & $-0.0062\pm0.0008$ & $+0.0126\pm0.0014$ \\
+ & screen with holdout labels & $+0.004\pm0.002$ & 0.019 & 94.3 [91, 96] & $-0.0016\pm0.0008$ & $+0.0132\pm0.0013$ \\
+ & everything fitted on training and holdout & $+0.025\pm0.002$ & 0.032 & 66.7 [61, 72] & $-0.0088\pm0.0009$ & $+0.0113\pm0.0014$ \\
+ & configuration chosen on the holdout & $+0.005\pm0.002$ & 0.018 & 96.0 [93, 98] & $-0.0018\pm0.0008$ & $+0.0127\pm0.0013$ \\
+ & calibration map fitted on the holdout & $+0.016\pm0.002$ & 0.023 & 88.0 [84, 91] & $-0.0081\pm0.0007$ & $-0.0055\pm0.0011$ \\
+ & calibration slice overlapping the holdout & $+0.004\pm0.002$ & 0.018 & 94.3 [91, 96] & $-0.0022\pm0.0008$ & $+0.0113\pm0.0014$ \\
+ & five-fold, preprocessing inside the folds & $-0.001\pm0.002$ & 0.015 & -- & -- & -- \\
+ & five-fold, preprocessing before the folds & $+0.054\pm0.001$ & 0.055 & -- & -- & -- \\
+standardised logit & proposed protocol & $-0.001\pm0.002$ & 0.017 & 94.7 [92, 97] & $+0.0002\pm0.0008$ & $+0.0150\pm0.0012$ \\
+ & imputation on all rows & $-0.001\pm0.002$ & 0.017 & 94.3 [91, 96] & $+0.0002\pm0.0008$ & $+0.0142\pm0.0013$ \\
+ & scaling on all rows & $-0.001\pm0.002$ & 0.017 & 95.0 [92, 97] & $+0.0002\pm0.0008$ & $+0.0149\pm0.0012$ \\
+ & screen with holdout labels & $+0.004\pm0.002$ & 0.017 & 93.7 [90, 96] & $-0.0017\pm0.0008$ & $+0.0130\pm0.0012$ \\
+ & everything fitted on training and holdout & $+0.009\pm0.002$ & 0.019 & 92.7 [89, 95] & $-0.0034\pm0.0008$ & $+0.0118\pm0.0013$ \\
+ & configuration chosen on the holdout & $-0.001\pm0.002$ & 0.017 & 95.0 [92, 97] & $+0.0002\pm0.0008$ & $+0.0150\pm0.0013$ \\
+ & calibration map fitted on the holdout & $+0.014\pm0.002$ & 0.021 & 87.0 [83, 90] & $-0.0079\pm0.0007$ & $-0.0063\pm0.0011$ \\
+ & calibration slice overlapping the holdout & $+0.003\pm0.002$ & 0.017 & 96.0 [93, 98] & $-0.0019\pm0.0007$ & $+0.0109\pm0.0012$ \\
+ & five-fold, preprocessing inside the folds & $-0.001\pm0.001$ & 0.012 & -- & -- & -- \\
+ & five-fold, preprocessing before the folds & $+0.005\pm0.001$ & 0.013 & -- & -- & -- \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}

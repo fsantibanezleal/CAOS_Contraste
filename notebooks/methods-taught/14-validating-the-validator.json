@@ -1,0 +1,9 @@
+{
+  "M-28": [
+    "14-validating-the-validator/02-the-null-family-does-every-test-hold-its-size.ipynb",
+    "14-validating-the-validator/03-power-against-underestimated-pds-and-exact-rejection-probabilities.ipynb",
+    "14-validating-the-validator/04-default-clustering-where-the-binomial-test-is-misused.ipynb",
+    "14-validating-the-validator/05-drift-the-psi-rules-their-benchmark-and-the-false-alarm-rate.ipynb",
+    "14-validating-the-validator/06-discrimination-decay-leakage-broken-monotonicity-and-concentration.ipynb"
+  ]
+}

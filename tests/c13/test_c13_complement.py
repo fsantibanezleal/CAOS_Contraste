@@ -173,3 +173,24 @@ def test_the_findings_and_texts_state_the_complement_in_both_languages_without_a
 def test_the_small_bake_validates_against_the_schema(built) -> None:
     for vid, doc in built["variants"].items():
         assert cs.errors("c13/variant-deficiency", doc) == [], vid
+
+
+def test_the_reading_names_the_statistic_each_number_belongs_to_and_reports_the_union_as_the_manuscript_does(built) -> None:
+    """The union of the three statistics (any of them past the threshold of the 1% family size) is the headline; the rolling-mean
+    statistic alone, the one the plan's rule judges, has its own numbers: the reading says which is which, from the document."""
+    b, none = block(built, "stale-volatility"), block(built, "none")
+    h = b["hypothesis"]
+    union, union_held = b["flags"]["family"]["any"], none["flags"]["family"]["any"]
+    roll, roll_held = b["flags"]["family"]["spearman_roll"], none["flags"]["family"]["spearman_roll"]
+    each = b["flags"]["per_statistic"]["spearman_roll"]
+    for lang in ("en", "es"):
+        text = h["reading"][lang]
+        p = lambda x: complement._p(x, lang)  # noqa: E731
+        union_sentence = next(s for s in text.split(";") if p(union["rate"]) in s)
+        assert ("union" in union_sentence) or ("unión" in union_sentence)
+        assert p(union["ci_low"]) in text and p(union["ci_high"]) in text
+        assert p(union_held["rate"]) in text and p(union_held["ci_low"]) in text and p(union_held["ci_high"]) in text
+        rolling = text.split("rolling" if lang == "en" else "móvil", 1)[1]
+        assert p(roll["rate"]) in rolling and p(roll_held["rate"]) in rolling and p(each["rate"]) in rolling
+        # the verdict rule is stated on the rolling-mean statistic, the plan's, in so many words
+        assert ("judges" in text) if lang == "en" else ("juzga" in text)

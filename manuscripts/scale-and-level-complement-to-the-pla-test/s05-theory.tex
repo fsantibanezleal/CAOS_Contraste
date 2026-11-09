@@ -77,11 +77,12 @@ The same argument explains a second feature of the regression component.
 
 \begin{corollary}[Noise in HPL that is independent of RTPL is invisible to the regression]
 \label{cor:noise}
-If $\HPL_t=\RTPL_t+\varepsilon_t$ with $\E[\varepsilon_t\mid\RTPL_t]=0$, the population coefficients are $(a,b)=(0,1)$ whatever the variance of $\varepsilon_t$, and the Wald statistic of Equation~\eqref{eq:wald} keeps its null law.
+If $\HPL_t=\RTPL_t+\varepsilon_t$ with $\E[\varepsilon_t\mid\RTPL_t]=0$, the population coefficients are $(a,b)=(0,1)$ whatever the variance of $\varepsilon_t$, so the regression keeps them; the null law of the Wald statistic of Equation~\eqref{eq:wald} is unchanged when the added noise only rescales the residual, which is the case of the generator's missing-basis term.
 \end{corollary}
 
 \begin{proof}
 $\Cov(\HPL_t,\RTPL_t)=\Var(\RTPL_t)+\Cov(\varepsilon_t,\RTPL_t)=\Var(\RTPL_t)$ and $\E\HPL_t=\E\RTPL_t$.
+For the null law, scaling the residual of the regression by a constant $c$ scales the error of the fitted coefficients by $c$ and the HC3 covariance by $c^2$, so the Wald statistic is unchanged; and the missing basis of the generator, independent of the desk and i.i.d. Gaussian, added to a residual that is i.i.d. Gaussian, leaves the residual i.i.d. Gaussian with a larger variance, which is such a rescaling.
 \end{proof}
 
 The generator's missing-basis variant adds such a term to HPL, and the experiments show the Wald statistic flagging it at its false-alarm rate (0.9\% against 0.8\% on the desk with no deficiency), while the absolute-value and rolling-mean rank statistics flag it in 100.0\% and 99.9\% of replications.
@@ -152,12 +153,12 @@ Sections~\ref{sec:results} and~\ref{sec:ablation} measure both statements.
 The default window of 20 days was fixed before the evaluation; Equation~\eqref{eq:rolling-corr} shows its role without determining the best value.
 We state a conjecture and its evidence rather than a result.
 
-\begin{remark}[Conjecture, claim status C]
+\begin{remark}[Conjecture]
 \label{rem:conjecture}
 For a fixed lag $L$ and fixed size, the power of the rolling-mean statistic as a function of the window $w$ is unimodal: it is low for $w=1$, where the statistic reduces to $\rho_{\mathrm{abs}}$, rises to a maximum at a window no longer than the lag, and decreases for longer windows, because a long window averages the two scale paths over spans in which both have changed.
 \end{remark}
 
 The evidence is the following.
 At $w=1$ the power on the stale desk is 4.5, 25.6 and 76.7\% at lags of 5, 10 and 20 days (the absolute-value Spearman statistic); at $w=5$ it is 91.1, 99.8 and 100\%; and it does not increase from $w=5$ to $w=60$ at any lag tested, falling to 15.4, 61.9 and 94.2\% at $w=60$ (Table~\ref{tab:ablation} and Figure~\ref{fig:window-ablation}).
-The conjecture holds in the conditions of the generator, with a null calibrated for each window; whether the location of the maximum is a fixed fraction of the lag, and how the maximum moves with the persistence $\phi$ of the volatility, is open.
+The evidence is consistent with the conjecture in the conditions of the generator, with a null calibrated for each window, on six windows (1, 5, 10, 20, 40 and 60 days); at lags of 10 and 20 days the power is 99.8 to 100\% at windows of 5 and 10 days, so the grid does not locate the maximum; whether the location of the maximum is a fixed fraction of the lag, and how the maximum moves with the persistence $\phi$ of the volatility, is open.
 It is not used in the method: the window stays at the 20 days fixed in advance.

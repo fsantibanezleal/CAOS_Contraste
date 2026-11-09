@@ -1,0 +1,123 @@
+\section{Theory}
+\label{sec:theory}
+
+The propositions below explain what the measurements of Section~\ref{sec:results} should show and under which conditions.
+Each is proved or derived from the definitions of Sections~\ref{sec:problem} and~\ref{sec:proposed-method}; where a proposition has an empirical counterpart, the experiment that checks it is named.
+
+\subsection{Detection limit and localization of a set of identities}
+\label{sec:theory-detection}
+
+Let $A\in\mathbb{R}^{m\times n}$ be the matrix of the identities, with one row for each equation (the line identity of \eqref{eq:waterfall} contributes one row per waterfall line, because the engine takes the largest of them), and let $a_j=Ae_j$ be the column of entry $j$.
+
+\begin{proposition}[Detection limit of an entry]
+\label{prop:limit}
+Let $x$ be a clean book, $Ax=0$, and let $j$ be an entry whose column is not zero. If the limit does not depend on entry $j$, a defect of size $\delta$ at entry $j$ is flagged if and only if $|\delta|\,\|a_j\|_\infty>\tlim$, so $\delta^{*}_j=\tlim/\|a_j\|_\infty$. If entry $j$ is a gross carrying amount closing, so that $\gross$ moves with it, then for $\delta>0$ the limit is $\delta^{*}_j=\tol\gross/(\|a_j\|_\infty-\tol)$.
+\end{proposition}
+
+\begin{proof}
+By linearity $r(x+\delta e_j)=\delta a_j$ and the test flags when $\max_i|\delta a_{ij}|>\tlim$, which is the first claim. A closing of the gross carrying amount enters $\gross=\sum_s|C^{G}_s|$ with coefficient $+1$ while it is positive, so $\tlim(x+\delta e_j)=\tol(\gross+\delta)$ and the flag condition $\delta\|a_j\|_\infty>\tol(\gross+\delta)$ solves to the second claim.
+\end{proof}
+
+Every nonzero coefficient of the twelve identities is $\pm1$, so $\|a_j\|_\infty=1$ for every entry that any identity sees, and the detection limit of every such entry is the limit itself, between \eoneCleanLimitLow{} and \eoneCleanLimitHigh{} USD on the six committed dates; no planted class changes a closing of the gross carrying amount, so the second case does not arise in the experiment, and if it did the ratio would be $1/(1-\tol)\approx1+10^{-6}$.
+The first experiment checks the proposition by bisecting 840 planted defects of seven classes; the largest deviation of the ratio $\delta^{*}/\tlim$ from one is \eoneThrDev{} (\cref{tab:main-results}).
+
+\begin{proposition}[Blind part and localization]
+\label{prop:blind}
+A change $h$ of the book is invisible to the test if $\|Ah\|_\infty\le\tlim$; the changes with $Ah=0$ form a subspace of dimension $n-\operatorname{rank}A$ that no size of defect makes visible. A defect at a single entry is localized to the group of entries whose columns have the same support and the same pattern of signs up to a common sign: the failing identities name the group and nothing finer.
+\end{proposition}
+
+\begin{proof}
+The first statement is the definition of the kernel. For the second, a defect $\delta e_j$ fails exactly the identities in the support of $a_j$ with residual $\delta a_{ij}$; two entries with proportional columns produce the same failing pattern and the same relative residuals, so no observation of the residuals separates them.
+\end{proof}
+
+For the committed books $n=\esixEntries{}$, there are $m=\esixEquations{}$ equations of which the engine reports \esixIdentities{}, the rank is \esixRank{} (no equation is a combination of the others) and the kernel has dimension \esixKernel{}.
+The kernel contains the misclassification, an amount moved between two movement lines consistently in the stage row and in the waterfall, because every sum is unchanged; it contains the merge of an overlay into the model loss, in which $E_s$, $C^{A}_{s}$, one movement $m^{A}_{s,\ell}$, the waterfall line $w_\ell$ and $w_C$ move together.
+The \esixPatterns{} distinct column patterns of the \esixEntries{} entries are the localization the test has: \esixSeenOne{} entries are seen by one identity, \esixSeenTwo{} by two and \esixSeenThree{} by three.
+The largest group that no pattern separates has \esixLargest{} entries, the opening, the closing and the six movements of one stage row of the gross carrying amount, because they appear in no equation but that row's own.
+The structure is that of a parity-check matrix, and the second proposition says in that language that the code has no redundancy to correct an error, only to locate it to a group \citep{hamming1950}.
+Two predictions about this structure were refuted by the experiment: we predicted one entry seen by no identity, the model ECL of the POCI stage, and found none, because the committed books carry no POCI row; and we predicted that the largest group would hold at least eleven entries, and found eight, because the gross amount rows of the committed books hold six movement lines, not nine.
+
+\subsection{Rounding and the tolerance basis}
+\label{sec:theory-rounding}
+
+Published tables are rounded.
+Let each stored entry of the book be rounded independently to the nearest multiple of a unit $u$, so that its error lies in $[-u/2,u/2]$ and has variance $u^{2}/12$ when it is uniform.
+
+\begin{proposition}[Rounding and the limit]
+\label{prop:rounding}
+Let $q$ be the largest number of nonzero terms in any identity. If $u\le2\tlim/q$ then no clean book rounded to the unit $u$ is flagged. Otherwise, if the rounding errors are independent and uniform, an identity of $q_i$ terms has a residual of standard deviation $u\sqrt{q_i/12}$ and, by the central limit theorem, is flagged with probability approximately $2\{1-\Norm(\sqrt{12}\,\tlim/(u\sqrt{q_i}))\}$.
+\end{proposition}
+
+\begin{proof}
+A clean book has residual zero before rounding and rounding adds to each identity the signed sum of the errors of its terms, so $|r_i|\le q_iu/2$, which does not exceed $\tlim$ if $u\le2\tlim/q_i$. The second statement is the variance of a sum of $q_i$ independent uniform errors and the normal approximation to its distribution.
+\end{proof}
+
+With $q=10$ and the smallest limit of the committed dates, $\tlim=\eoneCleanLimitLow{}$, the guarantee holds for $u\le9{,}425$ units.
+It follows that a tolerance of $10^{-6}$ of $\gross$ is compatible with tables disclosed in thousands of currency units and not in millions: for tables in a unit $u$ the smallest tolerance that cannot raise a false alarm is $\tol=qu/(2\gross)$, which is $10^{-4}$ for $u=10^{6}$ on the smallest book.
+The proposition does not bound the false alarms from above for $u>2\tlim/q$; the normal approximation does, and the experiment measures the rate (\cref{tab:rounding}).
+An absolute tolerance has the opposite weakness: the cancellation noise of floating-point sums of entries of order $10^{10}$ is about $10^{-5}$ units, so a tolerance of $10^{-6}$ units flags clean books, while a relative tolerance is scale free.
+
+\subsection{Overlays}
+\label{sec:theory-overlays}
+
+\begin{proposition}[Overlay invariance and the merge bias]
+\label{prop:overlay}
+Let $\LA=M+\sum_k\OVL_k$ with $M=\sum_sE_s$ computed from the stage ECLs alone. Then $\partial M/\partial\OVL_k=0$ and $\partial\LA/\partial\OVL_k=1$ for every $k$. If an overlay set with total $Q$ is merged into the model estimate, so that the model ECL reported is $M'=M+Q$, the model ECL is overstated by exactly $Q/M$, which equals $\theta/(1-\theta)$ when the overlays are a share $\theta$ of the allowance.
+\end{proposition}
+
+\begin{proof}
+The first two statements are \eqref{eq:allowance} with $M$ a function of the $E_s$ only. For the merge, $M'/M - 1=Q/M$, and with $Q=\theta\,\LA$ and $M=(1-\theta)\LA$ the ratio is $\theta/(1-\theta)$.
+\end{proof}
+
+At the share of one quarter that the European Central Bank found in the performing books of its sample \citep{ecb2024} the merge overstates the model ECL by \ethreeMergeAtQuarter{}; at the \ethreeSevenShare{} share of the two committed overlays of the synthetic bank (\ethreeSevenOverlay{} million CLP of an allowance of \ethreeSevenAllowance{} million) it overstates it by \ethreeSevenMerge{}.
+The invariance is a property of the engine's function, not of the data, so it is tested by a sweep over random inputs in the style of property-based testing \citep{claessen2000}, as a metamorphic relation between two runs that differ in the overlays \citep{chen2018}.
+The merge into a movement line is the second element of the kernel noted above, which is why the identities cannot flag it and the separation of overlays has to be enforced by the contract that offers an overlay line as the only way to add an amount that is not model ECL.
+
+\subsection{The region of convexity and the scenario sets}
+\label{sec:theory-convexity}
+
+\begin{proposition}[Sign of the index]
+\label{prop:convexity}
+Let $\mathrm{PD}$ be the conditional PD of \eqref{eq:pd} with $0<p<1$ and $0<\rho<1$. Its second derivative is $\mathrm{PD}''(z)=-\frac{\rho}{1-\rho}\,\zeta\,\varphi(\zeta)$ with $\zeta=(\Norm^{-1}(p)-\sqrt\rho z)/\sqrt{1-\rho}$ and $\varphi$ the standard normal density, so $\mathrm{PD}$ is strictly convex on $z>z^{*}$ and strictly concave on $z<z^{*}$. Consequently, for scenario factors $z_k$ with weights $w_k>0$: (i) if every $z_k\ge z^{*}$ then $\nu\ge0$, with equality only if all factors are equal; (ii) if every $z_k\le z^{*}$ then $\nu\le0$; (iii) if factors lie on both sides of $z^{*}$ the sign is not determined: a small weight on a factor far below $z^{*}$ gives $\nu<0$.
+\end{proposition}
+
+\begin{proof}
+With $c^{2}=\rho/(1-\rho)$ the first derivative is $\mathrm{PD}'(z)=-c\,\varphi(\zeta)$, because $d\zeta/dz=-c$. The second is $-c\,\varphi'(\zeta)\,(d\zeta/dz)=-c\,(-\zeta\varphi(\zeta))(-c)=-c^{2}\zeta\varphi(\zeta)$. This is positive when $\zeta<0$, that is when $\sqrt\rho z>\Norm^{-1}(p)$, which is $z>z^{*}$, and negative when $z<z^{*}$. For (i), the interval $[z^{*},\infty)$ is convex, contains every $z_k$ and so contains $\bar z$, and Jensen's inequality for the strictly convex $\mathrm{PD}$ on it gives $\sum_kw_k\mathrm{PD}(z_k)\ge\mathrm{PD}(\bar z)$ with equality only when the factors coincide \citep{jensen1906}. Case (ii) is the same with the inequality reversed. For (iii), take two scenarios $z_1<z^{*}<z_2$ and let $f(w)=w\mathrm{PD}(z_1)+(1-w)\mathrm{PD}(z_2)-\mathrm{PD}(wz_1+(1-w)z_2)$ be the numerator of $\nu$ for a weight $w$ on $z_1$. Then $f(0)=0$ and $f'(0)=\mathrm{PD}(z_1)-\mathrm{PD}(z_2)-\mathrm{PD}'(z_2)(z_1-z_2)$. The last term is the tangent line at $z_2$ extrapolated to $z_1$; because $\mathrm{PD}'(z_2)<0$ the tangent grows without bound as $z_1\to-\infty$ while $\mathrm{PD}(z_1)\le1$, so $f'(0)<0$ for $z_1$ low enough and $\nu<0$ for a small weight. That draws of both signs occur is shown by the sweep, not by the inequality.
+\end{proof}
+
+\begin{proposition}[Second-order index and the bias of a scenario set]
+\label{prop:bias}
+For a smooth $\mathrm{PD}$ and weights $w_k$, as the spread of the factors tends to zero,
+\begin{equation}
+\nu=\frac{\tfrac12\,\mathrm{PD}''(\bar z)\,\operatorname{Var}_w(z)}{\mathrm{PD}(\bar z)}+O\big(\max_k|z_k-\bar z|^{3}\big),\qquad \operatorname{Var}_w(z)=\sum_kw_k(z_k-\bar z)^{2}.
+\label{eq:second-order}
+\end{equation}
+For a normal factor with mean $\mu$ and standard deviation $\sigma$ and a scenario set $d$ whose factors and weights have the same moments as the factor up to order $\kappa$, the error of $P_d$ is of order $\sigma^{\kappa+1}$ times the $(\kappa+1)$-th derivative of $\mathrm{PD}$. In particular the base scenario alone has bias $-\tfrac12\mathrm{PD}''(\mu)\sigma^{2}$ to leading order, the three scenarios at $\mu\pm\sigma$ with weights $1/4,1/2,1/4$, whose variance is $\sigma^{2}/2$, have bias $-\tfrac14\mathrm{PD}''(\mu)\sigma^{2}$, and the $N$-point Gauss--Hermite rule, which integrates polynomials of degree up to $2N-1$ exactly, has error of order $\sigma^{2N}\mathrm{PD}^{(2N)}$ \citep{golubwelsch1969}.
+\end{proposition}
+
+\begin{proof}
+Expand $\mathrm{PD}(z_k)=\mathrm{PD}(\bar z)+\mathrm{PD}'(\bar z)(z_k-\bar z)+\tfrac12\mathrm{PD}''(\bar z)(z_k-\bar z)^{2}+O(|z_k-\bar z|^{3})$, weight and sum; the linear term vanishes because $\sum_kw_k(z_k-\bar z)=0$, which gives \eqref{eq:second-order}. For a design $d$ with central moments $M^{d}_j$ and a normal factor with central moments $M^{*}_j$, $P_d-P^{*}=\sum_{j\ge2}\mathrm{PD}^{(j)}(\mu)(M^{d}_j-M^{*}_j)/j!$, and the terms up to the matched order vanish. The base scenario has $M^{d}_2=0$ against $\sigma^{2}$, and the three-scenario set has $\sigma^{2}/2$ against $\sigma^{2}$, giving the stated leading terms. Exactness of the Gauss--Hermite rule for polynomials of degree $2N-1$ matches the first $2N-1$ moments.
+\end{proof}
+
+Both propositions have empirical counterparts.
+The sign statements are checked in \efourDraws{} draws and the formula \eqref{eq:second-order} against the index of the convex draws; the bias formulas are checked against the measured error of the scenario sets (\cref{tab:designs}).
+The convexity region also explains where the committed C06 dates stand: the inflection lies between \efourZstarLow{} and \efourZstarHigh{} and the lowest scenario factor of every date lies above \efourZminLow{}, so every date is in the convex region of the PD-level statement and the PD-level index is positive on all six.
+The ECL-level index is a different quantity, the ratio of the weighted model ECL to the ECL recomputed at the weighted mean macroeconomic path through the fitted hazard model with the staging recomputed, and Proposition~\ref{prop:convexity} says nothing about it.
+
+\subsection{The bridge}
+\label{sec:theory-bridge}
+
+\begin{proposition}[The bridge telescopes]
+\label{prop:bridge}
+If $T_I=d+\sum_k\OVL_k$ and $T_B=B+\text{top-up}$, then the steps of \eqref{eq:bridge} sum to $T_I-T_B$ identically, whatever the values of $a$, $b$ and $c$.
+\end{proposition}
+
+\begin{proof}
+Add the six steps: $(a-B)+(b-a)+(c-b)+(d-c)=d-B$, and $d-B-\text{top-up}+\sum_k\OVL_k=T_I-T_B$.
+\end{proof}
+
+The closure of the bridge is therefore not evidence that the steps have the right sizes.
+It is evidence that the two ways the product reaches the totals agree: the totals are sums over segments and over unallocated lines, while the ladder values are returned by the engine's allowance function on the whole portfolio, and the first step is a remainder that the product checks against the independently computed $a-B$.
+A defect in either aggregation, an account in a segment and not in the portfolio, would open the bridge.
+The measured residuals, at most \efiveBridgeMax{} currency units on totals of the order of $10^{11}$, are floating-point noise, as the proposition predicts.
+The proposition also fixes what a failed closure would mean: a residual above floating-point noise would point to an account counted in one aggregation and not in the other, or to a step whose independent recomputation differs, and would be localized to the step that disagrees.

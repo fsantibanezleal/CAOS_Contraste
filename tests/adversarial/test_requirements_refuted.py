@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 import pytest
-from planting import NODE, NODE_MODULES, copy_node_modules, edit, guard, link_node_modules, unlink_node_modules
+from planting import NODE, NODE_MODULES, edit, guard, link_node_modules, unlink_node_modules
 
 needs_web = pytest.mark.skipif(NODE is None or not (NODE_MODULES / "@fasl-work").is_dir(),
                                reason="needs node and `npm ci` in frontend/")
@@ -74,6 +74,33 @@ def test_a_build_without_the_routes_or_the_theme_script_fails(repo: Path) -> Non
         assert r.returncode == 0 and "routes and 404.html written" in r.stdout, r.stderr
         routes = sorted(p.parent.name for p in dist.glob("*/index.html"))
         assert routes and (dist / "404.html").is_file(), "every standard route is its own page and 404.html is the app"
+    finally:
+        unlink_node_modules(repo / "frontend")
+
+
+@needs_web
+def test_the_story_pages_are_the_routes_the_product_declares(repo: Path) -> None:
+    """#102 (ChancaDEM, 2026-11-07): the postbuild wrote the example's four story pages whatever the product declared, so a
+    product's own steps fell back to the Introduction on a direct load (G4). A product declaring two other steps gets exactly
+    those pages; a malformed declaration stops the build."""
+    link_node_modules(repo / "frontend")
+    try:
+        dist = repo / "frontend" / "dist"
+        dist.mkdir()
+        (dist / "build.json").write_text("{}", encoding="utf-8")
+        (dist / "index.html").write_text('<html data-theme="light"><body>app</body></html>', encoding="utf-8")
+        script = repo / "frontend" / "scripts" / "materialize-routes.mjs"
+        product = json.loads((repo / "product.json").read_text(encoding="utf-8"))
+        product["showcase"] = {"story_routes": ["/story/measure", "/story/solve"]}
+        (repo / "product.json").write_text(json.dumps(product, indent=2), encoding="utf-8")
+        r = subprocess.run([NODE, str(script)], capture_output=True, encoding="utf-8", errors="replace", cwd=repo / "frontend")
+        assert r.returncode == 0, r.stderr
+        story = sorted(p.parent.name for p in (dist / "story").glob("*/index.html"))
+        assert story == ["measure", "solve"], story
+        product["showcase"] = {"story_routes": "/story/measure"}
+        (repo / "product.json").write_text(json.dumps(product, indent=2), encoding="utf-8")
+        r = subprocess.run([NODE, str(script)], capture_output=True, encoding="utf-8", errors="replace", cwd=repo / "frontend")
+        assert r.returncode == 1 and "showcase.story_routes" in r.stderr, r.stderr
     finally:
         unlink_node_modules(repo / "frontend")
 

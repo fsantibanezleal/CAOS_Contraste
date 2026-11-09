@@ -1,0 +1,28 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Notation of the problem and the method: every symbol of the equations, its meaning and its unit, with the quantities that the experiments vary.}
+\label{tab:notation}
+\begin{tabular}{@{}l p{8.2cm} l@{}}
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+$t=1,\dots,T$ & Valuation date (a quarter-end); $T$ is the length of the history & quarter \\
+$\theta_t$ & Value of the behavioural parameter used at date $t$ (a core maturity, a core share, a deposit beta, a weighted average maturity) & as the parameter \\
+$b_t\in\{0,1\}$ & Breach flag: 1 when a limit was breached in the window ending at $t$ & none \\
+$B=\{t\ge 2: b_t=1\}$ & Breach dates after the first date; $m=|B|$ & none \\
+$\Delta_t=\theta_t-\theta_{t-1}$ & Change of the parameter between two dates & as the parameter \\
+$c$ & Number of dates at which the parameter changed while a limit was breached (the statistic of the proposed test) & none \\
+$c_\delta$ & The same count with a tolerance: changes larger than $\delta$ in absolute value & none \\
+$\delta,\ \delta_\alpha$ & Tolerance of the change, and its value calibrated to a false-flag rate $\alpha$ & as the parameter \\
+$S=\max_{t\in B}|\Delta_t|$ & Largest absolute change at a breach date (the statistic of the tolerance rule) & as the parameter \\
+$\lambda$ & Probability per quarter of a change of a stated parameter that has nothing to do with a breach & none \\
+$\pi_m$ & Probability that an assumption is changed at a breach date in the alternative arm & none \\
+$w_{t,j}$, $m_j$ & Weight of tranche $j$ in the replicating portfolio fitted at date $t$, and the maturity of the tranche & none; year \\
+$\mathrm{WAM}_t=\tfrac12\sum_j w_{t,j}m_j$ & Weighted average maturity of the replicating portfolio & year \\
+$n,\ k$ & Number of dates at which a change can occur ($T-1$) and the number of dates with a change & none \\
+$\alpha$ & Size: the false-flag rate that a rule is calibrated to & none \\
+$\mathrm{AUC}$ & Probability that a score on an alternative history exceeds a score on a null history, ties counting one half & none \\
+\bottomrule
+\end{tabular}
+\end{table}

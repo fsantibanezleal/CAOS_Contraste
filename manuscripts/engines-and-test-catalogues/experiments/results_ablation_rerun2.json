@@ -1,0 +1,189 @@
+{
+ "baseline_false_alarms": {
+  "A": false,
+  "B": false,
+  "C": false,
+  "D": false,
+  "E": false
+ },
+ "after_restore": {
+  "A": false,
+  "B": false,
+  "C": false,
+  "D": false,
+  "E": false
+ },
+ "layers": {
+  "A": "analytic anchors",
+  "B": "published vectors and ECB transcription",
+  "C": "regeneration of the committed rung",
+  "D": "known-truth simulator",
+  "E": "cross-implementation"
+ },
+ "mutants": [
+  {
+   "id": "m01",
+   "defect": "granularity delta scaled by 1.02",
+   "equivalent": false,
+   "detected_by": {
+    "A": false,
+    "B": true,
+    "C": false,
+    "D": false,
+    "E": false
+   },
+   "retried": {}
+  },
+  {
+   "id": "m02",
+   "defect": "large-portfolio distribution function with the correlation scaled by 1.05",
+   "equivalent": false,
+   "detected_by": {
+    "A": true,
+    "B": false,
+    "C": false,
+    "D": false,
+    "E": false
+   },
+   "retried": {}
+  },
+  {
+   "id": "m03",
+   "defect": "copula sampler drawn with the next seed (statistically equivalent)",
+   "equivalent": true,
+   "detected_by": {
+    "A": false,
+    "B": false,
+    "C": true,
+    "D": false,
+    "E": false
+   },
+   "retried": {}
+  },
+  {
+   "id": "m04",
+   "defect": "copula loadings scaled by 0.97 (correlation 6 percent low)",
+   "equivalent": false,
+   "detected_by": {
+    "A": false,
+    "B": false,
+    "C": true,
+    "D": false,
+    "E": false
+   },
+   "retried": {}
+  },
+  {
+   "id": "m05",
+   "defect": "CreditRisk+ recursion shifted by one loss unit",
+   "equivalent": false,
+   "detected_by": {
+    "A": true,
+    "B": false,
+    "C": false,
+    "D": false,
+    "E": true
+   },
+   "retried": {}
+  },
+  {
+   "id": "m06",
+   "defect": "Jeffreys prior Beta(1, 1) in place of Beta(1/2, 1/2)",
+   "equivalent": false,
+   "detected_by": {
+    "A": false,
+    "B": true,
+    "C": false,
+    "D": false,
+    "E": false
+   },
+   "retried": {}
+  },
+  {
+   "id": "m07",
+   "defect": "concentration statistic with sqrt(K) in place of sqrt(K-1)",
+   "equivalent": false,
+   "detected_by": {
+    "A": false,
+    "B": true,
+    "C": false,
+    "D": false,
+    "E": false
+   },
+   "retried": {}
+  },
+  {
+   "id": "m08",
+   "defect": "flattener long coefficient 0.65 in place of 0.60",
+   "equivalent": false,
+   "detected_by": {
+    "A": false,
+    "B": true,
+    "C": false,
+    "D": false,
+    "E": true
+   },
+   "retried": {}
+  },
+  {
+   "id": "m09",
+   "defect": "present value with annual compounding in place of continuous",
+   "equivalent": false,
+   "detected_by": {
+    "A": false,
+    "B": false,
+    "C": false,
+    "D": false,
+    "E": true
+   },
+   "retried": {}
+  },
+  {
+   "id": "m10",
+   "defect": "maximum-likelihood correlation scaled by 0.7",
+   "equivalent": false,
+   "detected_by": {
+    "A": false,
+    "B": false,
+    "C": false,
+    "D": true,
+    "E": false
+   },
+   "retried": {}
+  },
+  {
+   "id": "m11",
+   "defect": "large-portfolio capital scaled by 1.01",
+   "equivalent": false,
+   "detected_by": {
+    "A": true,
+    "B": false,
+    "C": false,
+    "D": false,
+    "E": false
+   },
+   "retried": {}
+  },
+  {
+   "id": "m12",
+   "defect": "copula sampler ignores the committed chunk size (statistically equivalent)",
+   "equivalent": true,
+   "detected_by": {
+    "A": false,
+    "B": false,
+    "C": true,
+    "D": false,
+    "E": false
+   },
+   "retried": {}
+  }
+ ],
+ "seed": 20261107,
+ "retries": [],
+ "run": {
+  "seconds": 992,
+  "peak_working_set_mb": 423,
+  "python": "3.13.14",
+  "platform": "Windows-11-10.0.26300-SP0"
+ }
+}

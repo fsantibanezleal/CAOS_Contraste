@@ -1,0 +1,299 @@
+{
+ "reps": 100,
+ "n": 1500,
+ "p": 40,
+ "seed": 20261108,
+ "g3_draws": 1,
+ "pass_rates": {
+  "woe/none": {
+   "G1": 1.0,
+   "G2": 1.0,
+   "G3": 1.0,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 0.0,
+   "subsets": {
+    "G1": 0.0,
+    "G2": 0.0,
+    "G3": 0.0,
+    "G1+G2": 0.0,
+    "G1+G3": 0.0,
+    "G2+G3": 0.0,
+    "G1+G2+G3": 0.0
+   }
+  },
+  "woe/impute_full": {
+   "G1": 0.0,
+   "G2": 1.0,
+   "G3": 0.0,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 1.0,
+    "G2": 0.0,
+    "G3": 1.0,
+    "G1+G2": 1.0,
+    "G1+G3": 1.0,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  },
+  "woe/bin_full": {
+   "G1": 0.0,
+   "G2": 1.0,
+   "G3": 0.0,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 1.0,
+    "G2": 0.0,
+    "G3": 1.0,
+    "G1+G2": 1.0,
+    "G1+G3": 1.0,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  },
+  "woe/woe_full": {
+   "G1": 0.0,
+   "G2": 0.0,
+   "G3": 0.0,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 1.0,
+    "G2": 1.0,
+    "G3": 1.0,
+    "G1+G2": 1.0,
+    "G1+G3": 1.0,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  },
+  "woe/screen_full": {
+   "G1": 0.0,
+   "G2": 0.0,
+   "G3": 0.0,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 1.0,
+    "G2": 1.0,
+    "G3": 1.0,
+    "G1+G2": 1.0,
+    "G1+G3": 1.0,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  },
+  "woe/fit_full": {
+   "G1": 0.0,
+   "G2": 0.0,
+   "G3": 0.0,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 1.0,
+    "G2": 1.0,
+    "G3": 1.0,
+    "G1+G2": 1.0,
+    "G1+G3": 1.0,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  },
+  "woe/select_test": {
+   "G1": 0.08,
+   "G2": 0.0,
+   "G3": 0.09,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 0.92,
+    "G2": 1.0,
+    "G3": 0.91,
+    "G1+G2": 1.0,
+    "G1+G3": 1.0,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  },
+  "woe/cal_test": {
+   "G1": 1.0,
+   "G2": 0.0,
+   "G3": 0.0,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 0.0,
+    "G2": 1.0,
+    "G3": 1.0,
+    "G1+G2": 1.0,
+    "G1+G3": 1.0,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  },
+  "woe/cal_overlap": {
+   "G1": 1.0,
+   "G2": 0.0,
+   "G3": 0.0,
+   "non_vacuous": 1.0,
+   "disjoint": 0.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 0.0,
+    "G2": 1.0,
+    "G3": 1.0,
+    "G1+G2": 1.0,
+    "G1+G3": 1.0,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  },
+  "linear/none": {
+   "G1": 1.0,
+   "G2": 1.0,
+   "G3": 1.0,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 0.0,
+   "subsets": {
+    "G1": 0.0,
+    "G2": 0.0,
+    "G3": 0.0,
+    "G1+G2": 0.0,
+    "G1+G3": 0.0,
+    "G2+G3": 0.0,
+    "G1+G2+G3": 0.0
+   }
+  },
+  "linear/impute_full": {
+   "G1": 0.0,
+   "G2": 1.0,
+   "G3": 0.0,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 1.0,
+    "G2": 0.0,
+    "G3": 1.0,
+    "G1+G2": 1.0,
+    "G1+G3": 1.0,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  },
+  "linear/scale_full": {
+   "G1": 0.0,
+   "G2": 1.0,
+   "G3": 0.0,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 1.0,
+    "G2": 0.0,
+    "G3": 1.0,
+    "G1+G2": 1.0,
+    "G1+G3": 1.0,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  },
+  "linear/screen_full": {
+   "G1": 0.0,
+   "G2": 0.0,
+   "G3": 0.0,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 1.0,
+    "G2": 1.0,
+    "G3": 1.0,
+    "G1+G2": 1.0,
+    "G1+G3": 1.0,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  },
+  "linear/fit_full": {
+   "G1": 0.0,
+   "G2": 0.0,
+   "G3": 0.0,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 1.0,
+    "G2": 1.0,
+    "G3": 1.0,
+    "G1+G2": 1.0,
+    "G1+G3": 1.0,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  },
+  "linear/select_test": {
+   "G1": 0.5,
+   "G2": 0.01,
+   "G3": 0.52,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 0.5,
+    "G2": 0.99,
+    "G3": 0.48,
+    "G1+G2": 0.99,
+    "G1+G3": 0.7,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  },
+  "linear/cal_test": {
+   "G1": 1.0,
+   "G2": 0.0,
+   "G3": 0.0,
+   "non_vacuous": 1.0,
+   "disjoint": 1.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 0.0,
+    "G2": 1.0,
+    "G3": 1.0,
+    "G1+G2": 1.0,
+    "G1+G3": 1.0,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  },
+  "linear/cal_overlap": {
+   "G1": 1.0,
+   "G2": 0.0,
+   "G3": 0.0,
+   "non_vacuous": 1.0,
+   "disjoint": 0.0,
+   "any_gate_fails": 1.0,
+   "subsets": {
+    "G1": 0.0,
+    "G2": 1.0,
+    "G3": 1.0,
+    "G1+G2": 1.0,
+    "G1+G3": 1.0,
+    "G2+G3": 1.0,
+    "G1+G2+G3": 1.0
+   }
+  }
+ },
+ "seconds": 865.9
+}

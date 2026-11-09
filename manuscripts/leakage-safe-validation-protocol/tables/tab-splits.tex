@@ -1,0 +1,25 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{The split each case declares in its committed documents: the locked stratified holdout and the disjoint calibration slice of C01 and C02 (the events are those of the holdout) and the out-of-time training windows of C03 (the events are the window's 5-year charge-offs), with the out-of-time claim each case makes or declines to make.}
+\label{tab:splits}
+\fitwidth{%
+\begin{tabular}{llrrl}
+\toprule
+Case & Split declared in the artifact & Training / calibration / holdout rows & Events & Out-of-time claim \\
+\midrule
+C01 card holders & \relax locked stratified holdout (30\%), calibration slice, training slice & 16,800 / 4,200 / 9,000 & 1,991 & none: single snapshot \\
+C02 horizon 1 & locked stratified holdout, calibration map on a separate slice & 3,309 / 828 / 1,773 & 123 & none: files carry no date \\
+C02 horizon 2 & locked stratified holdout, calibration map on a separate slice & 5,483 / 1,371 / 2,938 & 155 & none: files carry no date \\
+C02 horizon 3 & locked stratified holdout, calibration map on a separate slice & 5,881 / 1,471 / 3,151 & 149 & none: files carry no date \\
+C02 horizon 4 & locked stratified holdout, calibration map on a separate slice & 5,696 / 1,425 / 3,052 & 120 & none: files carry no date \\
+C02 horizon 5 & locked stratified holdout, calibration map on a separate slice & 3,934 / 984 / 2,109 & 81 & none: files carry no date \\
+C03 cohort FY2006-07 & out-of-time cohort at the 5-year mark; window FY1991 to FY2000, outcomes read to 2005-09-30 & 330,682 window loans & 23,320 & yes \\
+C03 cohort FY2008-10 & out-of-time cohort at the 5-year mark; window FY1991 to FY2002, outcomes read to 2007-09-30 & 413,083 window loans & 28,393 & yes \\
+C03 cohort FY2011-14 & out-of-time cohort at the 5-year mark; window FY1991 to FY2005, outcomes read to 2010-09-30 & 627,594 window loans & 50,614 & yes \\
+C03 cohort FY2015-17 & out-of-time cohort at the 5-year mark; window FY1991 to FY2009, outcomes read to 2014-09-30 & 900,254 window loans & 110,349 & yes \\
+C03 cohort FY2018-20 & out-of-time cohort at the 5-year mark; window FY1991 to FY2012, outcomes read to 2017-09-30 & 1,024,597 window loans & 115,237 & yes \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}

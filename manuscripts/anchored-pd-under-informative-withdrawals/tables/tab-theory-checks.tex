@@ -1,0 +1,23 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Numerical checks of the propositions of the theory section on 20,000 random cohorts (defaults 1 to 500, survivors 1 to 50,000, withdrawals 1 to 5,000) and on every binomial count up to the stated cohort size, run through the engine's functions.}
+\label{tab:theory-checks}
+\begin{tabular}{p{6.6cm}p{4.4cm}r}
+\toprule
+Property & Measure & Value \\
+\midrule
+\relax Limits of PD$(k)$ at $k=0,1,\infty$ & max abs. deviation & 2.2e-16 \\
+\relax Strict monotonicity of PD$(k)$ on 11 values of $k$ & share of cohorts & 1.00 \\
+\relax Concavity of $X(k)$ & share of cohorts & 1.00 \\
+\relax Half saturation $X(S/D)=W/2$ & max abs. deviation (ratings) & 4.5e-13 \\
+\relax Inverse $k(X)$ then $X(k)$ & max rel. deviation & 4.1e-16 \\
+\relax Tipping $k^*$ then PD$(k^*)=t$ & max abs. deviation & 2.2e-16 \\
+\relax Exact anchor returns the realised $k$ & max rel. deviation & 2.3e-06 \\
+\relax Exact anchor returns $(D+X)/N$ & max abs. deviation & 2.2e-11 \\
+\relax Jeffreys limits bracket $C/N$, every $C$ for $N\le3,000$ and for $N$ = 5,000, 10,000, 20,000, 40,000, 100,000 & violations in 4,679,505 counts & 0 \\
+Anchored interval contains the oracle's Jeffreys interval (exact anchor) & violations in 3,000 cohorts & 0 \\
+Width of the anchored interval over the oracle's (exact anchor) & median; maximum & 1.92; 2.27 \\
+\bottomrule
+\end{tabular}
+\end{table}

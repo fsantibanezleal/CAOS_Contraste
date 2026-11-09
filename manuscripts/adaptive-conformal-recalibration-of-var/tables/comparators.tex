@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Online recalibrations compared on the same forecasts: the ten level-parametric ladder models at two tail levels in the three stress windows (60 cells). A cell passes when the Kupiec and conditional coverage p-values are both at least 0.05; independence failures count the cells with a Christoffersen independence p-value below 0.05; the FZ0 change is relative to the unwrapped model.}
+\label{tab:comparators}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrrrr}
+\toprule
+Recalibration & Cells passing & Independence failures & Mean $|$hit $-$ target$|$ (points) & Mean FZ0 change & Worst FZ0 change & Cells over $+5\%$ \\
+\midrule
+Unwrapped & 17 / 60 & 2 & 4.02 & -- & -- & -- \\
+\relax Level wrapper, $\gamma = 0.005$ (proposed) & 45 / 60 & 0 & 1.83 & \relax -45.7\% & \relax +4.3\% & 0 \\
+Rolling split-conformal scale & 45 / 60 & 2 & 2.09 & \relax +0.4\% & \relax +353.6\% & 10 \\
+\relax Quantile tracker, $\eta = 0.01$ & 23 / 60 & 0 & 3.26 & \relax -13.6\% & \relax +0.3\% & 0 \\
+\relax Quantile tracker, $\eta = 0.05$ & 41 / 60 & 0 & 2.17 & \relax -35.4\% & \relax +1.3\% & 0 \\
+\relax Quantile tracker, $\eta = 0.2$ & 52 / 60 & 0 & 1.11 & \relax -56.7\% & \relax +5.4\% & 1 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

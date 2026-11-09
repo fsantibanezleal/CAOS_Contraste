@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Build ``notebooks/coverage.json`` (CAOS_MANAGE ``conventions/notebook-content-bar.md`` section 5) from the notebooks
 themselves, so the map can never drift from them: every method of the SDD's ``## Method ladder`` maps to the notebooks
-whose metadata ``caos.methods`` or ``caos.beyond`` names it; every contract of ``docs/contracts/catalog.md`` to the
+whose metadata ``caos.methods`` or ``caos.beyond`` names it, or whose topic declares it in
+``notebooks/methods-taught/<topic>.json`` (a method of any tier taught at level 2 or higher); every contract of ``docs/contracts/catalog.md`` to the
 notebooks whose ``caos.data`` reads a document the contract governs; every pipeline stage
 (``data-pipeline/pipeline/stages/*.py``) to the notebooks whose code imports or names it; every method package of
 ``product.json`` to the notebooks whose ``caos.packages`` pins it. Paths are relative to a language tree, and a notebook
@@ -75,13 +76,57 @@ def notebooks() -> dict[str, dict]:
     return found
 
 
-def build() -> tuple[dict, list[str]]:
+TAUGHT = NB / "methods-taught"
+
+
+def methods_taught(nbs: dict[str, dict], ladder: list[str]) -> tuple[dict[str, list[str]], list[str]]:
+    """The ladder methods each topic declares it teaches, from ``notebooks/methods-taught/<topic>.json``.
+
+    ``check_notebooks.py`` (template) keeps ``caos.methods`` for the sota methods a level 3 notebook runs and ``caos.beyond``
+    for the claims of a level 4 notebook, so a method of another tier taught at level 2 or 3 has no metadata key. Each topic
+    therefore declares ``{"<ladder id>": ["<topic>/<notebook>.ipynb", ...]}`` in its own file; a declaration counts only
+    when the id is a ladder row and the notebook exists in both trees at level 2 or higher, so it cannot drift silently."""
+    taught: dict[str, list[str]] = {}
+    problems: list[str] = []
+    for path in sorted(TAUGHT.glob("*.json")):
+        rel = f"notebooks/methods-taught/{path.name}"
+        try:
+            doc = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            problems.append(f"{rel}: cannot read ({exc})")
+            continue
+        if not isinstance(doc, dict):
+            problems.append(f"{rel}: must be an object of ladder id to notebook paths")
+            continue
+        for mid, paths in doc.items():
+            if mid not in ladder:
+                problems.append(f"{rel}: {mid!r} is not a row of the SDD's Method ladder")
+                continue
+            if not isinstance(paths, list) or not all(isinstance(p, str) for p in paths):
+                problems.append(f"{rel}: {mid} must list notebook paths")
+                continue
+            for p in paths:
+                if not p.startswith(f"{path.stem}/"):
+                    problems.append(f"{rel}: {mid} names {p}, outside the topic {path.stem}")
+                elif p not in nbs:
+                    problems.append(f"{rel}: {mid} names {p}, which is not in both trees")
+                elif nbs[p]["caos"].get("level", 0) < 2:
+                    problems.append(f"{rel}: {mid} names {p}, a level 1 notebook (methods count from level 2)")
+                else:
+                    taught.setdefault(mid, []).append(p)
+    return taught, problems
+
+
+def build() -> tuple[dict, list[str], list[str]]:
     nbs = notebooks()
     cov: dict[str, dict[str, list[str]]] = {"methods": {}, "contracts": {}, "stages": {}, "packages": {}}
     missing: list[str] = []
-    for mid in ladder_ids():
+    ladder = ladder_ids()
+    taught, problems = methods_taught(nbs, ladder)
+    for mid in ladder:
         hits = [p for p, n in nbs.items()
                 if mid in (n["caos"].get("methods") or []) + (n["caos"].get("beyond") or []) and n["caos"].get("level", 0) >= 2]
+        hits += [p for p in taught.get(mid, []) if p not in hits]
         cov["methods"][mid] = hits
         if not hits:
             missing.append(f"method {mid}")
@@ -104,16 +149,16 @@ def build() -> tuple[dict, list[str]]:
             missing.append(f"package {pk}")
     for group in cov:
         cov[group] = {k: v for k, v in cov[group].items() if v}
-    return cov, missing
+    return cov, missing, problems
 
 
 def main() -> int:
-    cov, missing = build()
+    cov, missing, declared = build()
     text = json.dumps(cov, indent=1, ensure_ascii=False) + "\n"
     if "--check" in sys.argv:
         current = OUT.read_text(encoding="utf-8") if OUT.is_file() else ""
         problems = (["notebooks/coverage.json is not current: run python scripts/build_notebook_coverage.py"]
-                    if current != text else []) + [f"no notebook covers {m}" for m in missing]
+                    if current != text else []) + [f"no notebook covers {m}" for m in missing] + declared
         for p in problems:
             print(f"  - {p}")
         print("notebook coverage: OK" if not problems else f"notebook coverage: {len(problems)} findings")
@@ -122,7 +167,9 @@ def main() -> int:
     print(f"wrote {OUT.relative_to(ROOT).as_posix()}: " + ", ".join(f"{len(v)} {k}" for k, v in cov.items()))
     for m in missing:
         print(f"  uncovered: {m}")
-    return 0
+    for d in declared:
+        print(f"  declaration: {d}")
+    return 1 if declared else 0
 
 
 if __name__ == "__main__":

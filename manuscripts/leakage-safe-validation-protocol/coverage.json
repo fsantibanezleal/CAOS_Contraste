@@ -1,7 +1,9 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:main-results",
+    "tab:gates",
+    "tab:planted-leak"
   ],
   "claims": {
     "BS-3": "sec:proposed-method"

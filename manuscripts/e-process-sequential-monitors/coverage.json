@@ -1,7 +1,12 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:main-results",
+    "tab:x3-seeds",
+    "tab:hypotheses",
+    "tab:pd-correlation",
+    "tab:pd-comparators",
+    "tab:pd-equal-size"
   ],
   "claims": {
     "BS-15": "sec:proposed-method"

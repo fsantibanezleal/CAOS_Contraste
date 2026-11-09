@@ -1,0 +1,37 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Why the capital is unstable}
+\label{sec:disc-why}
+
+The instability is the arithmetic of extrapolation. A capital at the level 0.999 of an annual loss with \lamMin{} to \lamMax{} losses a year above the floor (\cref{tab:truth}) lies at the quantile of the severity of order $1-\tailOrderLo\times10^{-5}$ to $1-\tailOrderHi\times10^{-5}$, far beyond a history of a few hundred recorded losses, and the estimator reaches it through the tail index, which multiplies the logarithm of the extrapolation factor $L$.
+\Cref{eq:leading} shows the consequence: the standard deviation of the logarithm of the capital is of order $(1+\xi)\,\ell/\sqrt k$ with $\ell\approx L-1/\xi$ between \ellMin{} and \ellMax{} in the 16 cells, so that a standard error of the fitted index of 0.1 becomes a standard deviation of the logarithm of the capital of almost one. The measurement and the theory agree to within \thSdMaxErr{} percent in all 16 cells, which means that the instability measured on the ladder is not a feature of one estimator or of one implementation: it is what an unbiased consistent estimator of the index does to a quantile that far out.
+The other rungs differ from the single loss approximation in bias and in the use they make of the data, and the ablation shows how: the splice spends its parameters on the few losses above EUR 100,000 and pays in variance, the lognormal ignores the tail and pays in bias, and the scenario combination borrows the tail from an expert and gains because the expert is right.
+
+\subsection{Which result is the most informative}
+\label{sec:disc-informative}
+
+The misclassification of the mean is the result with the most direct consequence. A validator who fits a generalised Pareto tail to five years of data at a process of index 0.96 finds an index of one or more in about one history in three (\infLo{} to \infHi{} percent), and the fitted index at 1.1 is below one in \finLo{} to \finHi{} percent of the histories. The fitted index is centred near the true value (a median of \cXiCFaMed{} at 0.96 and five years), so the validator cannot tell from the point estimate which side of the boundary the process is on, and the conclusion that the mean does not exist, which has practical consequences for the expected shortfall and for the mean-adjusted approximation, flips with the history.
+\Cref{prop:mean} says the same in advance: the band of indistinguishability of \exBandC{} around the boundary at five years is wider than the distance of 0.04 between 0.96 and one, so a history of that length cannot decide.
+
+\subsection{What the standardised approach does and does not do}
+\label{sec:disc-sma}
+
+The standardised approach is the stable number: its interquartile range over histories is small against its level, and a validator who recomputes it from another history of the same bank gets nearly the same capital. The measurement shows what it buys and what it costs. The capital does not move with the tail index, so it is \smaA{} times the true quantile at $\xi=0.6$ and \smaD{} times at $\xi=1.1$ for this process, and the measurement makes no claim about its adequacy because the approach is not calibrated to the 99.9 percent quantile of any bank.
+The comparison supports the argument of \citet{peters2016} that the standardised approach is insensitive to the risk of the bank, in the one sense that can be measured here, and it is consistent with the concern of the Basel Committee about the variability of risk-weighted assets under internal modelling \citep{bcbsd355}, in the sense that the measured dispersion is a source of variability even when every bank uses the same model; it does not show that either is the better capital, because their targets differ.
+
+\subsection{Negative and partial results}
+\label{sec:disc-negative}
+
+Four results go against a hope. The hypothesis written before the robust fits were run on the histories, that they beat the splice in spread and in bias, is not confirmed: it is inconclusive over the 16 cells (the bias count is \rhCvmBias{} and \rhObreBias{} of \rhCells{}) and refuted at the tail indices 0.96 and 1.1, partly because the mean-adjusted rungs are defined only where the fitted index is below one (\cref{sec:res-hypotheses}). The robust fits do not help on clean data of the assumed family: the Cram\'er-von Mises fit lowers the share within a factor of two by \abCvmDown{} points and the bias-robust fit by \abObreDown{}; the benefit that \citet{opdyke2012} expect from them is protection against contamination, which the synthetic losses do not contain, so the experiment cannot confirm or refute that benefit. The adjustment by one mean changes the share within a factor of two by only \abMeanadjustedDelta{} points.
+And the splice, the rung of the loss distribution approach that a practitioner would consider the most complete, is the worst of the ladder after the three lognormal rungs on the share within a factor of two, \plSpWithin{} percent, because it conditions on a fit that fails on up to \spUndMax{} of 1{,}000 histories and has the largest dispersion where it succeeds.
+
+One partial result concerns the interquartile range. The prediction from a lognormal ratio with median one is too large by up to \thIqrMaxErr{} percent, although the dispersion of the logarithm is right within \thSdMaxErr{} percent; the cause is the median, which is below one in \slBelowCells{} of the 16 cells (\slMedMin{} to \slMedMax{}), and not the shape of the ratio: multiplied by the measured median, the prediction is within \thIqrScaledErr{} percent of the measurement in every cell. The history needed for the green limit is given by the dispersion in any case, and the median combines the asymptotic gap of the approximation, largest at $\xi=0.6$ (\slGapA{} percent), with the finite-sample bias that \cref{conj:bias} states and does not explain (\slBeyondLoA{} to \slBeyondHiA{} points at $\xi=0.6$).
+
+\subsection{What follows for a validator}
+\label{sec:disc-implications}
+
+A validator can use the theory without the simulation. For a bank with $k$ recorded losses above its threshold and a tail index estimated at $\hat\xi$, \cref{eq:dispersion} gives the dispersion of the logarithm of the capital, and \cref{eq:years} gives the history after which the dispersion would be acceptable. The first number is a statement about what the capital means: a point estimate reported without an interval of that width suggests a precision it does not have.
+The second number says that at the horizons available, which are far shorter than the \yrsMin{} to \yrsMax{} years of the table, the right response is not a better fit of the same model but an interval on the capital, or a reliance on information that does not come from the history, as the scenario combination shows, with the condition that the information is accurate.
+
+The recommendation is conditional on the same assumptions as the theory, and it is a statement about the estimator and not about the bank: a validator who reports the interval has described the uncertainty of the number, not the adequacy of the model that produced it.

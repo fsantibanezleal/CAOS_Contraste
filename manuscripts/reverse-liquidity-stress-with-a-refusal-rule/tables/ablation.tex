@@ -1,0 +1,19 @@
+\begin{table*}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\caption{Ablation on the corpus of 20,000 instances: each row removes one component of the proposed solver; the columns are the share of refused instances answered with a number, the share of solved instances left without a number, the share of solved instances whose multiplier is a threshold, the share of all instances answered with a multiplier above the cap, and the median relative error.}
+\label{tab:ablation}
+\begin{tabular}{p{4.4cm}p{1.9cm}p{1.9cm}p{1.9cm}p{1.9cm}p{1.9cm}}
+\toprule
+Variant & answer if refused (\%) & no answer if solved (\%) & threshold (\%) & beyond cap (\%) & median rel. error \\
+\midrule
+proposed solver (all components) & 0.0 & 0.0 & 100.0 & 0.00 & 8.9e-08 \\
+without the cap on the scaled rates & 4.6 & 0.0 & 65.7 & 2.04 & 2.3e-07 \\
+without the refusal rule & 100.0 & 0.0 & 99.0 & 3.48 & 9.2e-08 \\
+without the continuous window function (Brent on SP) & 13.5 & 0.0 & 15.7 & 0.00 & 6.3e-02 \\
+without upward rounding and the neighbour check & 0.0 & 0.0 & 51.1 & 0.00 & 4.6e-08 \\
+without inflows and flows outside the segments & 1.4 & 4.6 & 34.4 & 0.00 & 1.5e-02 \\
+\bottomrule
+\end{tabular}
+\end{table*}

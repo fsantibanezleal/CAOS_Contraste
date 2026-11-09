@@ -1,7 +1,10 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:main-results",
+    "tab:planted-truth",
+    "tab:ablation",
+    "fig:truth-errors"
   ],
   "claims": {
     "BS-9": "sec:proposed-method"

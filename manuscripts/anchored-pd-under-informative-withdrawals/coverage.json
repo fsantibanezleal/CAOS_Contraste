@@ -1,7 +1,10 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:main-results",
+    "tab:real",
+    "tab:stability",
+    "fig:stability"
   ],
   "claims": {
     "BS-14": "sec:proposed-method"

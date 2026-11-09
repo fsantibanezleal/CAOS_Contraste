@@ -1,7 +1,7 @@
 """Phase 1 of the experiments: simulate every desk-year the manuscript uses and cache its statistic row.
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/scale-and-level-complement-to-the-pla-test/experiments/simulate.py \
-        [--cache D:/_Temp/ms-scale-and-level-complement-to-the-2026-11-04/cache] [--workers 24]
+    python manuscripts/scale-and-level-complement-to-the-pla-test/experiments/simulate.py \
+        [--cache <temp root>/contraste-scale-and-level/cache] [--workers 24]
 
 The jobs (each 1,000 desk-years, replications 0..999 of the C13 generator, deterministic from the seed):
 
@@ -25,6 +25,7 @@ import argparse
 import contextlib
 import dataclasses
 import multiprocessing as mp
+import os
 import pathlib
 import sys
 import time
@@ -34,7 +35,9 @@ import numpy as np
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import stats_core as sc  # noqa: E402
 
-DEFAULT_CACHE = pathlib.Path("D:/_Temp/ms-scale-and-level-complement-to-the-2026-11-04/cache")
+# The cache lives in the device's temp root (CAOS_TEMP_ROOT, as the pipeline reads it) or where --cache says.
+DEFAULT_CACHE = (pathlib.Path(os.environ["CAOS_TEMP_ROOT"]) / "contraste-scale-and-level" / "cache"
+                 if os.environ.get("CAOS_TEMP_ROOT") else None)
 NULL_CASE_SEEDS = tuple(range(5013, 5023))
 COMMITTED_SEED = 13
 LADDER_LAGS = (2, 5, 10, 40, 80)
@@ -117,7 +120,8 @@ def _run(args: tuple) -> tuple[str, float]:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--cache", type=pathlib.Path, default=DEFAULT_CACHE)
+    ap.add_argument("--cache", type=pathlib.Path, default=DEFAULT_CACHE, required=DEFAULT_CACHE is None,
+                    help="cache folder; defaults to $CAOS_TEMP_ROOT/contraste-scale-and-level/cache")
     ap.add_argument("--workers", type=int, default=24)
     a = ap.parse_args()
     a.cache.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,3360 @@
+{
+ "meta": {
+  "engine_version": "1.1.0",
+  "levels": [
+   0.01,
+   0.025
+  ],
+  "script": "experiments/exp_c11.py",
+  "rules": [
+   "e_rate",
+   "e_rate_upper",
+   "e_wwz",
+   "kupiec_cumulative",
+   "kupiec_sidak",
+   "kupiec_trailing",
+   "traffic_light",
+   "kupiec_end"
+  ],
+  "first_look": 50,
+  "window": 250
+ },
+ "windows": {
+  "calm-2004-06": {
+   "n_days": 750,
+   "start": "2004-01-02",
+   "end": "2006-12-29",
+   "asset_class": "mixed",
+   "levels": {
+    "0.01": {
+     "summary": {
+      "expected": 7.5,
+      "n_models": 18,
+      "e_rate": {
+       "flagged": 2,
+       "median_day": 351.5,
+       "first_day": 54
+      },
+      "e_rate_upper": {
+       "flagged": 1,
+       "median_day": 54.0,
+       "first_day": 54
+      },
+      "e_wwz": {
+       "flagged": 1,
+       "median_day": 81.0,
+       "first_day": 81
+      },
+      "kupiec_cumulative": {
+       "flagged": 7,
+       "median_day": 70.0,
+       "first_day": 50
+      },
+      "kupiec_sidak": {
+       "flagged": 1,
+       "median_day": 81.0,
+       "first_day": 81
+      },
+      "kupiec_trailing": {
+       "flagged": 17,
+       "median_day": 338.0,
+       "first_day": 250
+      },
+      "traffic_light": {
+       "flagged": 9,
+       "median_day": 252.0,
+       "first_day": 250
+      },
+      "kupiec_end": {
+       "flagged": 3,
+       "median_day": 750.0,
+       "first_day": 750
+      },
+      "overlap": {
+       "e_and_kupiec_end": 2,
+       "e_only_vs_kupiec_end": 0,
+       "kupiec_end_only_vs_e": 1,
+       "e_and_light": 1,
+       "light_missed_by_e": 8,
+       "median_e_day_among_light_flagged": Infinity,
+       "median_light_day": 252.0,
+       "e_before_kupiec_end": 2
+      }
+     },
+     "models": [
+      {
+       "model": "hs-250",
+       "exceedances": 9,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": 594,
+       "kupiec_end": null
+      },
+      {
+       "model": "hs-500",
+       "exceedances": 3,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 439,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "awhs",
+       "exceedances": 10,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 70,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": 252,
+       "kupiec_end": null
+      },
+      {
+       "model": "dn-rolling",
+       "exceedances": 0,
+       "e_rate": 649,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 192,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 750
+      },
+      {
+       "model": "cf-rolling",
+       "exceedances": 1,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 439,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": null,
+       "kupiec_end": 750
+      },
+      {
+       "model": "ewma",
+       "exceedances": 10,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 70,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 502,
+       "traffic_light": 250,
+       "kupiec_end": null
+      },
+      {
+       "model": "garch-t",
+       "exceedances": 9,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 502,
+       "traffic_light": 252,
+       "kupiec_end": null
+      },
+      {
+       "model": "gjr-t",
+       "exceedances": 9,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 70,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 502,
+       "traffic_light": 250,
+       "kupiec_end": null
+      },
+      {
+       "model": "egarch-t",
+       "exceedances": 10,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 502,
+       "traffic_light": 252,
+       "kupiec_end": null
+      },
+      {
+       "model": "fhs",
+       "exceedances": 8,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 502,
+       "traffic_light": 252,
+       "kupiec_end": null
+      },
+      {
+       "model": "evt-mf",
+       "exceedances": 8,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 502,
+       "traffic_light": 252,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-sav",
+       "exceedances": 4,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 388,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-as",
+       "exceedances": 5,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-es",
+       "exceedances": 4,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 388,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-fz-1",
+       "exceedances": 4,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-fz-2",
+       "exceedances": 3,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-hybrid",
+       "exceedances": 3,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "nn-fz",
+       "exceedances": 22,
+       "e_rate": 54,
+       "e_rate_upper": 54,
+       "e_wwz": 81,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 81,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 750
+      }
+     ]
+    },
+    "0.025": {
+     "summary": {
+      "expected": 18.75,
+      "n_models": 18,
+      "e_rate": {
+       "flagged": 3,
+       "median_day": 329.0,
+       "first_day": 88
+      },
+      "e_rate_upper": {
+       "flagged": 1,
+       "median_day": 81.0,
+       "first_day": 81
+      },
+      "e_wwz": {
+       "flagged": 1,
+       "median_day": 370.0,
+       "first_day": 370
+      },
+      "kupiec_cumulative": {
+       "flagged": 16,
+       "median_day": 88.0,
+       "first_day": 70
+      },
+      "kupiec_sidak": {
+       "flagged": 3,
+       "median_day": 447.0,
+       "first_day": 447
+      },
+      "kupiec_trailing": {
+       "flagged": 17,
+       "median_day": 338.0,
+       "first_day": 250
+      },
+      "traffic_light": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_end": {
+       "flagged": 7,
+       "median_day": 750.0,
+       "first_day": 750
+      },
+      "overlap": {
+       "e_and_kupiec_end": 3,
+       "e_only_vs_kupiec_end": 0,
+       "kupiec_end_only_vs_e": 4,
+       "e_and_light": 0,
+       "light_missed_by_e": 0,
+       "median_e_day_among_light_flagged": null,
+       "median_light_day": null,
+       "e_before_kupiec_end": 3
+      }
+     },
+     "models": [
+      {
+       "model": "hs-250",
+       "exceedances": 22,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 88,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "hs-500",
+       "exceedances": 11,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 245,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 750
+      },
+      {
+       "model": "awhs",
+       "exceedances": 20,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 81,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "dn-rolling",
+       "exceedances": 2,
+       "e_rate": 329,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 76,
+       "kupiec_sidak": 447,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 750
+      },
+      {
+       "model": "cf-rolling",
+       "exceedances": 2,
+       "e_rate": 329,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 76,
+       "kupiec_sidak": 447,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 750
+      },
+      {
+       "model": "ewma",
+       "exceedances": 17,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 88,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 388,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "garch-t",
+       "exceedances": 16,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 88,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 388,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gjr-t",
+       "exceedances": 13,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 388,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "egarch-t",
+       "exceedances": 13,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 360,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "fhs",
+       "exceedances": 15,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 88,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "evt-mf",
+       "exceedances": 15,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 88,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-sav",
+       "exceedances": 14,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 88,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-as",
+       "exceedances": 13,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 484,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-es",
+       "exceedances": 14,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 88,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-fz-1",
+       "exceedances": 9,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 309,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 320,
+       "traffic_light": null,
+       "kupiec_end": 750
+      },
+      {
+       "model": "gas-fz-2",
+       "exceedances": 9,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 427,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": null,
+       "kupiec_end": 750
+      },
+      {
+       "model": "gas-hybrid",
+       "exceedances": 11,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 750,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 338,
+       "traffic_light": null,
+       "kupiec_end": 750
+      },
+      {
+       "model": "nn-fz",
+       "exceedances": 35,
+       "e_rate": 88,
+       "e_rate_upper": 81,
+       "e_wwz": 370,
+       "kupiec_cumulative": 70,
+       "kupiec_sidak": 606,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 750
+      }
+     ]
+    }
+   }
+  },
+  "equity-2007-09": {
+   "n_days": 504,
+   "start": "2007-07-02",
+   "end": "2009-06-30",
+   "asset_class": "equity",
+   "levels": {
+    "0.01": {
+     "summary": {
+      "expected": 5.04,
+      "n_models": 18,
+      "e_rate": {
+       "flagged": 18,
+       "median_day": 24.0,
+       "first_day": 18
+      },
+      "e_rate_upper": {
+       "flagged": 18,
+       "median_day": 24.0,
+       "first_day": 18
+      },
+      "e_wwz": {
+       "flagged": 18,
+       "median_day": 91.0,
+       "first_day": 28
+      },
+      "kupiec_cumulative": {
+       "flagged": 18,
+       "median_day": 50.0,
+       "first_day": 50
+      },
+      "kupiec_sidak": {
+       "flagged": 16,
+       "median_day": 89.0,
+       "first_day": 50
+      },
+      "kupiec_trailing": {
+       "flagged": 18,
+       "median_day": 250.0,
+       "first_day": 250
+      },
+      "traffic_light": {
+       "flagged": 18,
+       "median_day": 250.0,
+       "first_day": 250
+      },
+      "kupiec_end": {
+       "flagged": 18,
+       "median_day": 504.0,
+       "first_day": 504
+      },
+      "overlap": {
+       "e_and_kupiec_end": 18,
+       "e_only_vs_kupiec_end": 0,
+       "kupiec_end_only_vs_e": 0,
+       "e_and_light": 18,
+       "light_missed_by_e": 0,
+       "median_e_day_among_light_flagged": 24.0,
+       "median_light_day": 250.0,
+       "e_before_kupiec_end": 18
+      }
+     },
+     "models": [
+      {
+       "model": "hs-250",
+       "exceedances": 19,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 298,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 305,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "hs-500",
+       "exceedances": 27,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 87,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 87,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "awhs",
+       "exceedances": 16,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 305,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 307,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "dn-rolling",
+       "exceedances": 57,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 41,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "cf-rolling",
+       "exceedances": 26,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 87,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 87,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "ewma",
+       "exceedances": 16,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 91,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 91,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "garch-t",
+       "exceedances": 16,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 91,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 91,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "gjr-t",
+       "exceedances": 14,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 250,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 301,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "egarch-t",
+       "exceedances": 20,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 87,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 87,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "fhs",
+       "exceedances": 13,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 91,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 91,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "evt-mf",
+       "exceedances": 13,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 91,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 91,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "caviar-sav",
+       "exceedances": 13,
+       "e_rate": 87,
+       "e_rate_upper": 87,
+       "e_wwz": 307,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "caviar-as",
+       "exceedances": 15,
+       "e_rate": 87,
+       "e_rate_upper": 87,
+       "e_wwz": 130,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 130,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "caviar-es",
+       "exceedances": 13,
+       "e_rate": 87,
+       "e_rate_upper": 87,
+       "e_wwz": 307,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "gas-fz-1",
+       "exceedances": 20,
+       "e_rate": 19,
+       "e_rate_upper": 19,
+       "e_wwz": 87,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 87,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "gas-fz-2",
+       "exceedances": 26,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 87,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 87,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "gas-hybrid",
+       "exceedances": 27,
+       "e_rate": 19,
+       "e_rate_upper": 19,
+       "e_wwz": 87,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 87,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      },
+      {
+       "model": "nn-fz",
+       "exceedances": 16,
+       "e_rate": 18,
+       "e_rate_upper": 18,
+       "e_wwz": 28,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 504
+      }
+     ]
+    },
+    "0.025": {
+     "summary": {
+      "expected": 12.600000000000001,
+      "n_models": 18,
+      "e_rate": {
+       "flagged": 18,
+       "median_day": 24.0,
+       "first_day": 18
+      },
+      "e_rate_upper": {
+       "flagged": 18,
+       "median_day": 24.0,
+       "first_day": 18
+      },
+      "e_wwz": {
+       "flagged": 18,
+       "median_day": 108.5,
+       "first_day": 31
+      },
+      "kupiec_cumulative": {
+       "flagged": 18,
+       "median_day": 50.0,
+       "first_day": 50
+      },
+      "kupiec_sidak": {
+       "flagged": 16,
+       "median_day": 139.0,
+       "first_day": 50
+      },
+      "kupiec_trailing": {
+       "flagged": 18,
+       "median_day": 250.0,
+       "first_day": 250
+      },
+      "traffic_light": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_end": {
+       "flagged": 18,
+       "median_day": 504.0,
+       "first_day": 504
+      },
+      "overlap": {
+       "e_and_kupiec_end": 18,
+       "e_only_vs_kupiec_end": 0,
+       "kupiec_end_only_vs_e": 0,
+       "e_and_light": 0,
+       "light_missed_by_e": 0,
+       "median_e_day_among_light_flagged": null,
+       "median_light_day": null,
+       "e_before_kupiec_end": 18
+      }
+     },
+     "models": [
+      {
+       "model": "hs-250",
+       "exceedances": 36,
+       "e_rate": 19,
+       "e_rate_upper": 19,
+       "e_wwz": 31,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "hs-500",
+       "exceedances": 47,
+       "e_rate": 19,
+       "e_rate_upper": 19,
+       "e_wwz": 31,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "awhs",
+       "exceedances": 22,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 315,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "dn-rolling",
+       "exceedances": 77,
+       "e_rate": 19,
+       "e_rate_upper": 19,
+       "e_wwz": 31,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "cf-rolling",
+       "exceedances": 56,
+       "e_rate": 19,
+       "e_rate_upper": 19,
+       "e_wwz": 31,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "ewma",
+       "exceedances": 26,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 114,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 310,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "garch-t",
+       "exceedances": 31,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 114,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 139,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "gjr-t",
+       "exceedances": 30,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 114,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 305,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "egarch-t",
+       "exceedances": 35,
+       "e_rate": 18,
+       "e_rate_upper": 18,
+       "e_wwz": 48,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "fhs",
+       "exceedances": 24,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 114,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 315,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "evt-mf",
+       "exceedances": 26,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 114,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 139,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "caviar-sav",
+       "exceedances": 26,
+       "e_rate": 19,
+       "e_rate_upper": 19,
+       "e_wwz": 87,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 139,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "caviar-as",
+       "exceedances": 24,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 114,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "caviar-es",
+       "exceedances": 26,
+       "e_rate": 19,
+       "e_rate_upper": 19,
+       "e_wwz": 87,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 139,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "gas-fz-1",
+       "exceedances": 27,
+       "e_rate": 41,
+       "e_rate_upper": 28,
+       "e_wwz": 139,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 315,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "gas-fz-2",
+       "exceedances": 44,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 103,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 139,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "gas-hybrid",
+       "exceedances": 33,
+       "e_rate": 41,
+       "e_rate_upper": 28,
+       "e_wwz": 137,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 178,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      },
+      {
+       "model": "nn-fz",
+       "exceedances": 23,
+       "e_rate": 24,
+       "e_rate_upper": 24,
+       "e_wwz": 87,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 318,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 504
+      }
+     ]
+    }
+   }
+  },
+  "fx-2008": {
+   "n_days": 251,
+   "start": "2008-07-01",
+   "end": "2009-06-30",
+   "asset_class": "fx",
+   "levels": {
+    "0.01": {
+     "summary": {
+      "expected": 2.5100000000000002,
+      "n_models": 18,
+      "e_rate": {
+       "flagged": 9,
+       "median_day": 68.0,
+       "first_day": 63
+      },
+      "e_rate_upper": {
+       "flagged": 9,
+       "median_day": 66.0,
+       "first_day": 33
+      },
+      "e_wwz": {
+       "flagged": 7,
+       "median_day": 78.0,
+       "first_day": 74
+      },
+      "kupiec_cumulative": {
+       "flagged": 18,
+       "median_day": 68.0,
+       "first_day": 50
+      },
+      "kupiec_sidak": {
+       "flagged": 7,
+       "median_day": 72.0,
+       "first_day": 72
+      },
+      "kupiec_trailing": {
+       "flagged": 7,
+       "median_day": 250.0,
+       "first_day": 250
+      },
+      "traffic_light": {
+       "flagged": 11,
+       "median_day": 250.0,
+       "first_day": 250
+      },
+      "kupiec_end": {
+       "flagged": 7,
+       "median_day": 251.0,
+       "first_day": 251
+      },
+      "overlap": {
+       "e_and_kupiec_end": 7,
+       "e_only_vs_kupiec_end": 2,
+       "kupiec_end_only_vs_e": 0,
+       "e_and_light": 9,
+       "light_missed_by_e": 2,
+       "median_e_day_among_light_flagged": 68.0,
+       "median_light_day": 250.0,
+       "e_before_kupiec_end": 7
+      }
+     },
+     "models": [
+      {
+       "model": "hs-250",
+       "exceedances": 10,
+       "e_rate": 79,
+       "e_rate_upper": 68,
+       "e_wwz": 128,
+       "kupiec_cumulative": 64,
+       "kupiec_sidak": 119,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 251
+      },
+      {
+       "model": "hs-500",
+       "exceedances": 13,
+       "e_rate": 68,
+       "e_rate_upper": 66,
+       "e_wwz": 79,
+       "kupiec_cumulative": 64,
+       "kupiec_sidak": 78,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 251
+      },
+      {
+       "model": "awhs",
+       "exceedances": 6,
+       "e_rate": 128,
+       "e_rate_upper": 128,
+       "e_wwz": null,
+       "kupiec_cumulative": 68,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": 250,
+       "kupiec_end": null
+      },
+      {
+       "model": "dn-rolling",
+       "exceedances": 23,
+       "e_rate": 68,
+       "e_rate_upper": 66,
+       "e_wwz": 78,
+       "kupiec_cumulative": 64,
+       "kupiec_sidak": 72,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 251
+      },
+      {
+       "model": "cf-rolling",
+       "exceedances": 14,
+       "e_rate": 68,
+       "e_rate_upper": 66,
+       "e_wwz": 79,
+       "kupiec_cumulative": 64,
+       "kupiec_sidak": 78,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 251
+      },
+      {
+       "model": "ewma",
+       "exceedances": 3,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 68,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "garch-t",
+       "exceedances": 3,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 68,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gjr-t",
+       "exceedances": 3,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 68,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "egarch-t",
+       "exceedances": 3,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 68,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "fhs",
+       "exceedances": 3,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 68,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "evt-mf",
+       "exceedances": 3,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 68,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-sav",
+       "exceedances": 5,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 68,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": 250,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-as",
+       "exceedances": 4,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 68,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-es",
+       "exceedances": 5,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 68,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": 250,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-fz-1",
+       "exceedances": 11,
+       "e_rate": 68,
+       "e_rate_upper": 66,
+       "e_wwz": 74,
+       "kupiec_cumulative": 64,
+       "kupiec_sidak": 72,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 251
+      },
+      {
+       "model": "gas-fz-2",
+       "exceedances": 19,
+       "e_rate": 68,
+       "e_rate_upper": 66,
+       "e_wwz": 74,
+       "kupiec_cumulative": 64,
+       "kupiec_sidak": 72,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 251
+      },
+      {
+       "model": "gas-hybrid",
+       "exceedances": 16,
+       "e_rate": 68,
+       "e_rate_upper": 66,
+       "e_wwz": 74,
+       "kupiec_cumulative": 64,
+       "kupiec_sidak": 72,
+       "kupiec_trailing": 250,
+       "traffic_light": 250,
+       "kupiec_end": 251
+      },
+      {
+       "model": "nn-fz",
+       "exceedances": 5,
+       "e_rate": 63,
+       "e_rate_upper": 33,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": 250,
+       "kupiec_end": null
+      }
+     ]
+    },
+    "0.025": {
+     "summary": {
+      "expected": 6.275,
+      "n_models": 18,
+      "e_rate": {
+       "flagged": 7,
+       "median_day": 68.0,
+       "first_day": 40
+      },
+      "e_rate_upper": {
+       "flagged": 7,
+       "median_day": 68.0,
+       "first_day": 40
+      },
+      "e_wwz": {
+       "flagged": 6,
+       "median_day": 71.5,
+       "first_day": 50
+      },
+      "kupiec_cumulative": {
+       "flagged": 11,
+       "median_day": 64.0,
+       "first_day": 50
+      },
+      "kupiec_sidak": {
+       "flagged": 6,
+       "median_day": 69.5,
+       "first_day": 50
+      },
+      "kupiec_trailing": {
+       "flagged": 6,
+       "median_day": 250.0,
+       "first_day": 250
+      },
+      "traffic_light": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_end": {
+       "flagged": 6,
+       "median_day": 251.0,
+       "first_day": 251
+      },
+      "overlap": {
+       "e_and_kupiec_end": 6,
+       "e_only_vs_kupiec_end": 1,
+       "kupiec_end_only_vs_e": 0,
+       "e_and_light": 0,
+       "light_missed_by_e": 0,
+       "median_e_day_among_light_flagged": null,
+       "median_light_day": null,
+       "e_before_kupiec_end": 6
+      }
+     },
+     "models": [
+      {
+       "model": "hs-250",
+       "exceedances": 13,
+       "e_rate": 81,
+       "e_rate_upper": 79,
+       "e_wwz": 128,
+       "kupiec_cumulative": 68,
+       "kupiec_sidak": 157,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 251
+      },
+      {
+       "model": "hs-500",
+       "exceedances": 26,
+       "e_rate": 50,
+       "e_rate_upper": 50,
+       "e_wwz": 66,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 64,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 251
+      },
+      {
+       "model": "awhs",
+       "exceedances": 10,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 90,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "dn-rolling",
+       "exceedances": 35,
+       "e_rate": 40,
+       "e_rate_upper": 40,
+       "e_wwz": 50,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 251
+      },
+      {
+       "model": "cf-rolling",
+       "exceedances": 31,
+       "e_rate": 50,
+       "e_rate_upper": 50,
+       "e_wwz": 66,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 64,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 251
+      },
+      {
+       "model": "ewma",
+       "exceedances": 8,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "garch-t",
+       "exceedances": 7,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gjr-t",
+       "exceedances": 8,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "egarch-t",
+       "exceedances": 8,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 68,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "fhs",
+       "exceedances": 7,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "evt-mf",
+       "exceedances": 7,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-sav",
+       "exceedances": 8,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-as",
+       "exceedances": 10,
+       "e_rate": 68,
+       "e_rate_upper": 68,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-es",
+       "exceedances": 8,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-fz-1",
+       "exceedances": 10,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 90,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-fz-2",
+       "exceedances": 21,
+       "e_rate": 79,
+       "e_rate_upper": 78,
+       "e_wwz": 90,
+       "kupiec_cumulative": 66,
+       "kupiec_sidak": 81,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 251
+      },
+      {
+       "model": "gas-hybrid",
+       "exceedances": 21,
+       "e_rate": 68,
+       "e_rate_upper": 68,
+       "e_wwz": 77,
+       "kupiec_cumulative": 64,
+       "kupiec_sidak": 75,
+       "kupiec_trailing": 250,
+       "traffic_light": null,
+       "kupiec_end": 251
+      },
+      {
+       "model": "nn-fz",
+       "exceedances": 10,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 64,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      }
+     ]
+    }
+   }
+  },
+  "equity-2020": {
+   "n_days": 104,
+   "start": "2020-02-03",
+   "end": "2020-06-30",
+   "asset_class": "equity",
+   "levels": {
+    "0.01": {
+     "summary": {
+      "expected": 1.04,
+      "n_models": 18,
+      "e_rate": {
+       "flagged": 12,
+       "median_day": 25.0,
+       "first_day": 18
+      },
+      "e_rate_upper": {
+       "flagged": 12,
+       "median_day": 25.0,
+       "first_day": 18
+      },
+      "e_wwz": {
+       "flagged": 6,
+       "median_day": 27.0,
+       "first_day": 25
+      },
+      "kupiec_cumulative": {
+       "flagged": 13,
+       "median_day": 50.0,
+       "first_day": 50
+      },
+      "kupiec_sidak": {
+       "flagged": 9,
+       "median_day": 50.0,
+       "first_day": 50
+      },
+      "kupiec_trailing": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "traffic_light": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_end": {
+       "flagged": 13,
+       "median_day": 104.0,
+       "first_day": 104
+      },
+      "overlap": {
+       "e_and_kupiec_end": 12,
+       "e_only_vs_kupiec_end": 0,
+       "kupiec_end_only_vs_e": 1,
+       "e_and_light": 0,
+       "light_missed_by_e": 0,
+       "median_e_day_among_light_flagged": null,
+       "median_light_day": null,
+       "e_before_kupiec_end": 12
+      }
+     },
+     "models": [
+      {
+       "model": "hs-250",
+       "exceedances": 8,
+       "e_rate": 18,
+       "e_rate_upper": 18,
+       "e_wwz": 27,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "hs-500",
+       "exceedances": 10,
+       "e_rate": 18,
+       "e_rate_upper": 18,
+       "e_wwz": 27,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "awhs",
+       "exceedances": 5,
+       "e_rate": 25,
+       "e_rate_upper": 25,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "dn-rolling",
+       "exceedances": 16,
+       "e_rate": 18,
+       "e_rate_upper": 18,
+       "e_wwz": 25,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "cf-rolling",
+       "exceedances": 8,
+       "e_rate": 18,
+       "e_rate_upper": 18,
+       "e_wwz": 27,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "ewma",
+       "exceedances": 7,
+       "e_rate": 18,
+       "e_rate_upper": 18,
+       "e_wwz": 30,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "garch-t",
+       "exceedances": 3,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gjr-t",
+       "exceedances": 3,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "egarch-t",
+       "exceedances": 3,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "fhs",
+       "exceedances": 2,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "evt-mf",
+       "exceedances": 2,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-sav",
+       "exceedances": 4,
+       "e_rate": 25,
+       "e_rate_upper": 25,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "caviar-as",
+       "exceedances": 4,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 100,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "caviar-es",
+       "exceedances": 4,
+       "e_rate": 25,
+       "e_rate_upper": 25,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "gas-fz-1",
+       "exceedances": 6,
+       "e_rate": 25,
+       "e_rate_upper": 25,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "gas-fz-2",
+       "exceedances": 7,
+       "e_rate": 25,
+       "e_rate_upper": 25,
+       "e_wwz": 91,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 55,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "gas-hybrid",
+       "exceedances": 6,
+       "e_rate": 28,
+       "e_rate_upper": 28,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 55,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "nn-fz",
+       "exceedances": 4,
+       "e_rate": 25,
+       "e_rate_upper": 25,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      }
+     ]
+    },
+    "0.025": {
+     "summary": {
+      "expected": 2.6,
+      "n_models": 18,
+      "e_rate": {
+       "flagged": 15,
+       "median_day": 25.0,
+       "first_day": 21
+      },
+      "e_rate_upper": {
+       "flagged": 15,
+       "median_day": 25.0,
+       "first_day": 21
+      },
+      "e_wwz": {
+       "flagged": 6,
+       "median_day": 27.0,
+       "first_day": 25
+      },
+      "kupiec_cumulative": {
+       "flagged": 15,
+       "median_day": 50.0,
+       "first_day": 50
+      },
+      "kupiec_sidak": {
+       "flagged": 6,
+       "median_day": 50.0,
+       "first_day": 50
+      },
+      "kupiec_trailing": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "traffic_light": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_end": {
+       "flagged": 12,
+       "median_day": 104.0,
+       "first_day": 104
+      },
+      "overlap": {
+       "e_and_kupiec_end": 12,
+       "e_only_vs_kupiec_end": 3,
+       "kupiec_end_only_vs_e": 0,
+       "e_and_light": 0,
+       "light_missed_by_e": 0,
+       "median_e_day_among_light_flagged": null,
+       "median_light_day": null,
+       "e_before_kupiec_end": 12
+      }
+     },
+     "models": [
+      {
+       "model": "hs-250",
+       "exceedances": 13,
+       "e_rate": 21,
+       "e_rate_upper": 21,
+       "e_wwz": 27,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "hs-500",
+       "exceedances": 14,
+       "e_rate": 21,
+       "e_rate_upper": 21,
+       "e_wwz": 27,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "awhs",
+       "exceedances": 9,
+       "e_rate": 23,
+       "e_rate_upper": 23,
+       "e_wwz": 28,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "dn-rolling",
+       "exceedances": 20,
+       "e_rate": 21,
+       "e_rate_upper": 21,
+       "e_wwz": 25,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "cf-rolling",
+       "exceedances": 11,
+       "e_rate": 21,
+       "e_rate_upper": 21,
+       "e_wwz": 27,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "ewma",
+       "exceedances": 9,
+       "e_rate": 23,
+       "e_rate_upper": 23,
+       "e_wwz": 28,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 50,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "garch-t",
+       "exceedances": 6,
+       "e_rate": 25,
+       "e_rate_upper": 25,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gjr-t",
+       "exceedances": 5,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "egarch-t",
+       "exceedances": 7,
+       "e_rate": 30,
+       "e_rate_upper": 28,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "fhs",
+       "exceedances": 5,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "evt-mf",
+       "exceedances": 4,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-sav",
+       "exceedances": 6,
+       "e_rate": 25,
+       "e_rate_upper": 25,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-as",
+       "exceedances": 9,
+       "e_rate": 91,
+       "e_rate_upper": 91,
+       "e_wwz": null,
+       "kupiec_cumulative": 63,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "caviar-es",
+       "exceedances": 6,
+       "e_rate": 25,
+       "e_rate_upper": 25,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-fz-1",
+       "exceedances": 8,
+       "e_rate": 55,
+       "e_rate_upper": 28,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "gas-fz-2",
+       "exceedances": 8,
+       "e_rate": 55,
+       "e_rate_upper": 28,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "gas-hybrid",
+       "exceedances": 8,
+       "e_rate": 55,
+       "e_rate_upper": 28,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      },
+      {
+       "model": "nn-fz",
+       "exceedances": 7,
+       "e_rate": 25,
+       "e_rate_upper": 25,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 104
+      }
+     ]
+    }
+   }
+  },
+  "rates-2022": {
+   "n_days": 249,
+   "start": "2022-01-03",
+   "end": "2022-12-30",
+   "asset_class": "rates",
+   "levels": {
+    "0.01": {
+     "summary": {
+      "expected": 2.49,
+      "n_models": 18,
+      "e_rate": {
+       "flagged": 8,
+       "median_day": 51.5,
+       "first_day": 49
+      },
+      "e_rate_upper": {
+       "flagged": 8,
+       "median_day": 51.5,
+       "first_day": 49
+      },
+      "e_wwz": {
+       "flagged": 3,
+       "median_day": 65.0,
+       "first_day": 65
+      },
+      "kupiec_cumulative": {
+       "flagged": 17,
+       "median_day": 54.0,
+       "first_day": 50
+      },
+      "kupiec_sidak": {
+       "flagged": 5,
+       "median_day": 54.0,
+       "first_day": 54
+      },
+      "kupiec_trailing": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "traffic_light": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_end": {
+       "flagged": 8,
+       "median_day": 249.0,
+       "first_day": 249
+      },
+      "overlap": {
+       "e_and_kupiec_end": 8,
+       "e_only_vs_kupiec_end": 0,
+       "kupiec_end_only_vs_e": 0,
+       "e_and_light": 0,
+       "light_missed_by_e": 0,
+       "median_e_day_among_light_flagged": null,
+       "median_light_day": null,
+       "e_before_kupiec_end": 8
+      }
+     },
+     "models": [
+      {
+       "model": "hs-250",
+       "exceedances": 8,
+       "e_rate": 49,
+       "e_rate_upper": 49,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 54,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "hs-500",
+       "exceedances": 8,
+       "e_rate": 182,
+       "e_rate_upper": 149,
+       "e_wwz": null,
+       "kupiec_cumulative": 54,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "awhs",
+       "exceedances": 7,
+       "e_rate": 49,
+       "e_rate_upper": 49,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 54,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "dn-rolling",
+       "exceedances": 15,
+       "e_rate": 49,
+       "e_rate_upper": 49,
+       "e_wwz": 65,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 54,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "cf-rolling",
+       "exceedances": 4,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "ewma",
+       "exceedances": 6,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 54,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "garch-t",
+       "exceedances": 6,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 54,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gjr-t",
+       "exceedances": 6,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 54,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "egarch-t",
+       "exceedances": 6,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 54,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "fhs",
+       "exceedances": 5,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 54,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "evt-mf",
+       "exceedances": 5,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 54,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-sav",
+       "exceedances": 6,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 54,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-as",
+       "exceedances": 6,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 54,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-es",
+       "exceedances": 6,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 54,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-fz-1",
+       "exceedances": 10,
+       "e_rate": 170,
+       "e_rate_upper": 146,
+       "e_wwz": 242,
+       "kupiec_cumulative": 54,
+       "kupiec_sidak": 242,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "gas-fz-2",
+       "exceedances": 8,
+       "e_rate": 54,
+       "e_rate_upper": 54,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "gas-hybrid",
+       "exceedances": 9,
+       "e_rate": 54,
+       "e_rate_upper": 54,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "nn-fz",
+       "exceedances": 11,
+       "e_rate": 49,
+       "e_rate_upper": 49,
+       "e_wwz": 65,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 54,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      }
+     ]
+    },
+    "0.025": {
+     "summary": {
+      "expected": 6.2250000000000005,
+      "n_models": 18,
+      "e_rate": {
+       "flagged": 16,
+       "median_day": 54.0,
+       "first_day": 11
+      },
+      "e_rate_upper": {
+       "flagged": 17,
+       "median_day": 54.0,
+       "first_day": 11
+      },
+      "e_wwz": {
+       "flagged": 10,
+       "median_day": 130.0,
+       "first_day": 58
+      },
+      "kupiec_cumulative": {
+       "flagged": 18,
+       "median_day": 50.0,
+       "first_day": 50
+      },
+      "kupiec_sidak": {
+       "flagged": 6,
+       "median_day": 61.5,
+       "first_day": 58
+      },
+      "kupiec_trailing": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "traffic_light": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_end": {
+       "flagged": 13,
+       "median_day": 249.0,
+       "first_day": 249
+      },
+      "overlap": {
+       "e_and_kupiec_end": 12,
+       "e_only_vs_kupiec_end": 4,
+       "kupiec_end_only_vs_e": 1,
+       "e_and_light": 0,
+       "light_missed_by_e": 0,
+       "median_e_day_among_light_flagged": null,
+       "median_light_day": null,
+       "e_before_kupiec_end": 12
+      }
+     },
+     "models": [
+      {
+       "model": "hs-250",
+       "exceedances": 14,
+       "e_rate": 58,
+       "e_rate_upper": 58,
+       "e_wwz": 149,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "hs-500",
+       "exceedances": 18,
+       "e_rate": 58,
+       "e_rate_upper": 58,
+       "e_wwz": 111,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 111,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "awhs",
+       "exceedances": 10,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "dn-rolling",
+       "exceedances": 25,
+       "e_rate": 41,
+       "e_rate_upper": 28,
+       "e_wwz": 65,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 58,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "cf-rolling",
+       "exceedances": 16,
+       "e_rate": 58,
+       "e_rate_upper": 58,
+       "e_wwz": 149,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 184,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "ewma",
+       "exceedances": 9,
+       "e_rate": 58,
+       "e_rate_upper": 58,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "garch-t",
+       "exceedances": 14,
+       "e_rate": 54,
+       "e_rate_upper": 54,
+       "e_wwz": 182,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "gjr-t",
+       "exceedances": 18,
+       "e_rate": 11,
+       "e_rate_upper": 11,
+       "e_wwz": 58,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 58,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "egarch-t",
+       "exceedances": 16,
+       "e_rate": 54,
+       "e_rate_upper": 28,
+       "e_wwz": 72,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 65,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "fhs",
+       "exceedances": 12,
+       "e_rate": null,
+       "e_rate_upper": 184,
+       "e_wwz": null,
+       "kupiec_cumulative": 72,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "evt-mf",
+       "exceedances": 13,
+       "e_rate": 54,
+       "e_rate_upper": 54,
+       "e_wwz": 184,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "caviar-sav",
+       "exceedances": 11,
+       "e_rate": 54,
+       "e_rate_upper": 28,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-as",
+       "exceedances": 11,
+       "e_rate": 54,
+       "e_rate_upper": 54,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-es",
+       "exceedances": 11,
+       "e_rate": 54,
+       "e_rate_upper": 28,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-fz-1",
+       "exceedances": 14,
+       "e_rate": 112,
+       "e_rate_upper": 112,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "gas-fz-2",
+       "exceedances": 15,
+       "e_rate": 58,
+       "e_rate_upper": 58,
+       "e_wwz": 200,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "gas-hybrid",
+       "exceedances": 14,
+       "e_rate": 112,
+       "e_rate_upper": 112,
+       "e_wwz": null,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      },
+      {
+       "model": "nn-fz",
+       "exceedances": 12,
+       "e_rate": 41,
+       "e_rate_upper": 28,
+       "e_wwz": 65,
+       "kupiec_cumulative": 50,
+       "kupiec_sidak": 58,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": 249
+      }
+     ]
+    }
+   }
+  },
+  "mixed-2023": {
+   "n_days": 64,
+   "start": "2023-03-01",
+   "end": "2023-05-31",
+   "asset_class": "mixed",
+   "levels": {
+    "0.01": {
+     "summary": {
+      "expected": 0.64,
+      "n_models": 18,
+      "e_rate": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "e_rate_upper": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "e_wwz": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_cumulative": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_sidak": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_trailing": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "traffic_light": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_end": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "overlap": {
+       "e_and_kupiec_end": 0,
+       "e_only_vs_kupiec_end": 0,
+       "kupiec_end_only_vs_e": 0,
+       "e_and_light": 0,
+       "light_missed_by_e": 0,
+       "median_e_day_among_light_flagged": null,
+       "median_light_day": null,
+       "e_before_kupiec_end": 0
+      }
+     },
+     "models": [
+      {
+       "model": "hs-250",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "hs-500",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "awhs",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "dn-rolling",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "cf-rolling",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "ewma",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "garch-t",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gjr-t",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "egarch-t",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "fhs",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "evt-mf",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-sav",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-as",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-es",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-fz-1",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-fz-2",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-hybrid",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "nn-fz",
+       "exceedances": 1,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      }
+     ]
+    },
+    "0.025": {
+     "summary": {
+      "expected": 1.6,
+      "n_models": 18,
+      "e_rate": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "e_rate_upper": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "e_wwz": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_cumulative": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_sidak": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_trailing": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "traffic_light": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "kupiec_end": {
+       "flagged": 0,
+       "median_day": null,
+       "first_day": null
+      },
+      "overlap": {
+       "e_and_kupiec_end": 0,
+       "e_only_vs_kupiec_end": 0,
+       "kupiec_end_only_vs_e": 0,
+       "e_and_light": 0,
+       "light_missed_by_e": 0,
+       "median_e_day_among_light_flagged": null,
+       "median_light_day": null,
+       "e_before_kupiec_end": 0
+      }
+     },
+     "models": [
+      {
+       "model": "hs-250",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "hs-500",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "awhs",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "dn-rolling",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "cf-rolling",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "ewma",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "garch-t",
+       "exceedances": 1,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gjr-t",
+       "exceedances": 1,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "egarch-t",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "fhs",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "evt-mf",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-sav",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-as",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "caviar-es",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-fz-1",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-fz-2",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "gas-hybrid",
+       "exceedances": 0,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      },
+      {
+       "model": "nn-fz",
+       "exceedances": 1,
+       "e_rate": null,
+       "e_rate_upper": null,
+       "e_wwz": null,
+       "kupiec_cumulative": null,
+       "kupiec_sidak": null,
+       "kupiec_trailing": null,
+       "traffic_light": null,
+       "kupiec_end": null
+      }
+     ]
+    }
+   }
+  }
+ }
+}

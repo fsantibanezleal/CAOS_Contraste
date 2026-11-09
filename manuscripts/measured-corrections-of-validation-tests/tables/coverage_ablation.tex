@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The components of the coverage test removed or changed one at a time on the same covered counts: the size and the power at two shapes of drift for equal windows (the first three columns) and for a test window four times the calibration window (the last three); simulated rates with their standard errors.}
+\label{tab:coverage-ablation}
+\fitwidth{\begin{tabular}{p{5.2cm}cccccc}
+\toprule
+Variant & Size & Power, $b=1.05$ & Power, $b=1.10$ & Size  & Power, $b=1.05$  & Power, $b=1.10$  \\
+\midrule
+binomial p-value (published practice) & $0.157 \pm 0.006$ & $0.204 \pm 0.006$ & $0.372 \pm 0.008$ & $0.361 \pm 0.008$ & $0.412 \pm 0.008$ & $0.532 \pm 0.008$ \\
+Beta-Binomial p-value, minimum-likelihood rule (proposed) & $0.051 \pm 0.003$ & $0.076 \pm 0.004$ & $0.190 \pm 0.006$ & $0.048 \pm 0.003$ & $0.079 \pm 0.004$ & $0.162 \pm 0.006$ \\
+Beta-Binomial, equal-tail p-value & $0.052 \pm 0.004$ & $0.069 \pm 0.004$ & $0.179 \pm 0.006$ & $0.046 \pm 0.003$ & $0.070 \pm 0.004$ & $0.146 \pm 0.006$ \\
+normal test with the variance ratio of Proposition 2 & $0.051 \pm 0.003$ & $0.076 \pm 0.004$ & $0.190 \pm 0.006$ & $0.047 \pm 0.003$ & $0.079 \pm 0.004$ & $0.162 \pm 0.006$ \\
+Beta-Binomial with the calibration size halved & $0.018 \pm 0.002$ & $0.033 \pm 0.003$ & $0.102 \pm 0.005$ & $0.007 \pm 0.001$ & $0.020 \pm 0.002$ & $0.055 \pm 0.004$ \\
+Beta-Binomial with the calibration size doubled & $0.089 \pm 0.005$ & $0.122 \pm 0.005$ & $0.264 \pm 0.007$ & $0.124 \pm 0.005$ & $0.164 \pm 0.006$ & $0.286 \pm 0.007$ \\
+binomial with the exact size-calibrated cut & $0.052 \pm 0.004$ & $0.069 \pm 0.004$ & $0.179 \pm 0.006$ & $0.048 \pm 0.003$ & $0.072 \pm 0.004$ & $0.151 \pm 0.006$ \\
+\bottomrule
+\end{tabular}}
+\end{table}

@@ -1,0 +1,94 @@
+\section{Results}
+\label{sec:results}
+
+The results are given in the order of the hypotheses. Every number in this section is written by a committed script from the outputs of the experiments, and the main comparison is Table~\ref{tab:main-results}.
+
+\input{tables/main-results}
+
+\subsection{What the catalogue holds and which ECB statistics it implements}
+
+The registry of release \inventoryVersion{} holds \testsTotal{} tests in \familiesTotal{} families, \pvalueTests{} decided by a $p$-value and \metricTests{} by a metric, and every one has a non-empty primary source (Table~\ref{tab:catalogue}). Six of them cite the ECB instructions: the five statistics of Section~\ref{sec:proposed-method} and the area under the ROC curve with the ECB standard error. Table~\ref{tab:ecb-coverage} sets the \ecbSections{} statistics that the instructions fix against the registry. The engine implements \ecbImpl{} as specified, namely the Jeffreys test, the area against its development value, the matrix weighted bandwidth, the migration z-tests and the concentration test; \ecbRelated{} is implemented in a related but different form, the paired $t$-test of the loss given default, which in the engine is two-sided and by segment and not the one-sided test over the twelve fixed segments of the instructions; and \ecbAbsent{} are not implemented: the qualitative validation tools of the probability of default, of the loss given default and of the credit conversion factor (four groups of sections), the generalised area statistic of the loss given default and of the credit conversion factor, the loss-in-default and expected-loss best-estimate tests, the credit conversion factor and exposure back-tests and the slotting statistics. The \ecbSections{} entries are the author's reading of Sections 2.5 to 2.10 of the instructions, with one entry for each statistic, one for each group of qualitative validation tools (Sections 2.5.2, 2.6.4, 2.9.2 and 2.9.5) and one for the slotting section (2.10); the count of absent statistics depends on that grouping, and counting each qualitative sub-section as a statistic would raise it. The second part of Hypothesis~H1, that all statistics the instructions fix are implemented, is refuted: \ecbAbsent{} of \ecbSections{} are absent. The package implements the ECB statistics of the probability of default and not those of the loss and exposure parameters.
+
+\input{tables/catalogue}
+\input{tables/ecb-coverage}
+
+\subsection{The five ECB statistics against the transcription}
+
+Table~\ref{tab:ecb-conformance} gives the largest and the mean absolute difference between the engine and the transcription on \ecbInputs{} random inputs per statistic, and Figure~\ref{fig:ecb-agreement} draws them. The migration test is compared on every defined cell of every matrix, \ecbMigCells{} cells in all, and both the cell $z$ and the cell $p$-value agree to \ecbMigMax{}. The matrix weighted bandwidth agrees to \ecbMwbMax{}, the concentration test to \ecbHhiMax{}, and the area test and its variance agree to \ecbAucMax{} and \ecbSsqMax{} on samples with tied scores. The Jeffreys test agrees to \ecbJeffMax{}, which is the accuracy of the quadrature that evaluates the Beta distribution function in the transcription and not a property of the engine, since the engine calls the library function. Hypothesis~H1 holds for the five statistics: every difference is far below $10^{-8}$.
+
+\input{tables/ecb-conformance}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{ecb-agreement}
+\caption{Largest and mean absolute difference between each ECB statistic of the engine and an independent transcription of the instructions, over \ecbInputs{} seeded random inputs per statistic, on a logarithmic axis; the Jeffreys bar is the accuracy of the quadrature used by the transcription.}
+\label{fig:ecb-agreement}
+\end{figure}
+
+\subsection{The Jeffreys test against the nearest generic tests on the credit-card holdout}
+
+On the \cCells{} grade cells of the eight models of the credit-card holdout (every grade with obligors, and the portfolio row of each model) the ECB Jeffreys test flags \flagJeffFive{} cells at the 5\,\% level and the exact one-sided binomial test of SciPy flags \flagBinFive{}; at the 1\,\% level both flag \flagJeffOne{}, so they differ in \disagreeFive{} cell at 5\,\% and in \disagreeOne{} at 1\,\%. The cell that differs is grade \diffGrade{} of the model \texttt{\diffModel{}}, with \diffN{} obligors and \diffD{} defaults, where the binomial $p$-value is \diffPb{} and the Jeffreys value \diffPj{}: the binomial value lies just above the level and the Jeffreys value just below, as Proposition~\ref{prop:sandwich} predicts, and no cell goes the other way. The Jeffreys interval of statsmodels, used as a one-sided limit at 5\,\%, reproduces the engine's decision on \smMatch{} of \cCells{} cells, so the building block exists in a statistics library and what the engine adds is the assembly: the grade-by-grade and portfolio tests with the obligor-weighted portfolio probability and the reporting fields. Figure~\ref{fig:jeffreys-binomial} plots the two $p$-values. The median absolute difference of the two is \medPGap{}, and the largest, \maxPGap{}, occurs in a grade of \worstGapN{} obligors with \worstGapD{} defaults of the model \texttt{\worstGapModel{}} where the two $p$-values are \worstGapPj{} and \worstGapPb{}; the sandwich bounds the difference by the probability of the observed count, which in a grade that small is large. The engine's values equal the committed $p$-values of the case to \committedGap{}. Hypothesis~H2 holds, narrowly: the two tests differ in one cell of \cCells{} at 5\,\% and in none at 1\,\%.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.55\textwidth]{jeffreys-binomial}
+\caption{One-sided $p$-value of the ECB Jeffreys test against that of the exact binomial test for every grade cell of the eight credit-card models of the committed holdout; points lie on or below the diagonal as the sandwich of Proposition~\ref{prop:sandwich} requires, and dashed lines mark the 5\,\% level.}
+\label{fig:jeffreys-binomial}
+\end{figure}
+
+\subsection{The portfolio engine against anchors, independent routes and its own rung}
+
+The integral of the large-portfolio density equals the engine's distribution function to \lhpMax{} at seven points (Figure~\ref{fig:lhp-anchor}), which is the accuracy of the quadrature. The IRB capital of the credit-card book, at a default probability of \irbPd{} and correlation $0.04$, is \irbK{} by the formula written with SciPy, and the engine's IRB module and its large-portfolio capital differ from it by \irbDiff{}; the identity is exact because all three call the same normal distribution function, so the check holds the wiring and the formula and not the distribution function. The CreditRisk+ recursion returns a probability of no loss of \crpPzero{}, a mean of \crpMean{} loss units and a variance of \crpVar{}, and the variance differs from the closed form of Proposition~\ref{prop:crp} by a relative \crpVarGap{}, with \crpMass{} of probability mass beyond the grid of \crpNmax{} units at $\sigma^2=\crpSigma{}$. The independent recursion of \eqref{eq:crp}, written for the experiment, differs from the stable form by at most \crpIndMax{} in absolute terms over \crpCompared{} probabilities and by a relative \crpIndRel{} over the \crpIndPositive{} that are positive, which is the relative criterion of Hypothesis~H3, and from the engine's Panjer form by \crpIndPanjer{} in absolute terms. The granularity factor is $\delta=\gaDelta{}$ against the printed $4.83$, which agrees to the printed digits, and for identical names the product of the adjustment and the number of names is \gaTimesN{} at 10, 100, 1,000 and 10,000 names with a relative spread of \gaSpread{}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{lhp-anchor}
+\caption{Left: the distribution function of the large-portfolio loss rate at the fitted default probability and correlation of the commercial book, with the integral of the engine density computed by adaptive quadrature at seven points. Right: absolute difference of the two routes on a logarithmic axis.}
+\label{fig:lhp-anchor}
+\end{figure}
+
+The copula sampler is compared with an independent simulator that draws its own normals. Over \mcReps{} runs of \mcScen{} scenarios each, at the correlation \mcRho{} of the one-factor rung, the 99\,\% value at risk is \mcVarNinetyNineEng{} $\pm$ \mcVarNinetyNineEngSd{} for the engine and \mcVarNinetyNineInd{} $\pm$ \mcVarNinetyNineIndSd{} for the independent simulator ($z=\mcVarNinetyNineZ{}$); the 99\,\% expected shortfall is \mcEsNinetyNineEng{} $\pm$ \mcEsNinetyNineEngSd{} and \mcEsNinetyNineInd{} $\pm$ \mcEsNinetyNineIndSd{} ($z=\mcEsNinetyNineZ{}$); the 99.9\,\% value at risk is \mcVarNinetyNineNineEng{} $\pm$ \mcVarNinetyNineNineEngSd{} and \mcVarNinetyNineNineInd{} $\pm$ \mcVarNinetyNineNineIndSd{} ($z=\mcVarNinetyNineNineZ{}$); and the 99.9\,\% expected shortfall is \mcEsNinetyNineNineEng{} $\pm$ \mcEsNinetyNineNineEngSd{} and \mcEsNinetyNineNineInd{} $\pm$ \mcEsNinetyNineNineIndSd{} ($z=\mcEsNinetyNineNineZ{}$). The mean loss is \mcMeanEng{} and \mcMeanInd{} against the exact expected loss of \mcElExact{}. All four $|z|$ values are below one, so the sampler agrees with the independent simulator within the resolution of Proposition~\ref{prop:power} (Figure~\ref{fig:mc-agreement}). The committed rung of \regenN{} scenarios at seed \regenSeed{} and chunk size \regenChunk{} is regenerated by the engine in \regenSeconds{} seconds (measured under load, Section~\ref{sec:reproducibility}) with a largest relative difference of \regenRel{} over the eight values, the rounding of the committed file; the file holds rounded values, so the comparison cannot show equality of the unrounded sample. The Gaussian importance sampler estimates the probability that the loss exceeds the committed 99.9\,\% value at risk of \isThreshold{} as \isMean{} $\pm$ \isSd{} over \isReps{} seeds, against \isPlainMean{} $\pm$ \isPlainSd{} for plain sampling ($z=\isZ{}$, importance sampler minus plain sampling, the order of the other rows), with a variance ratio of \isRatio{} (Figure~\ref{fig:importance-sampling}); the expected-shortfall contributions of the groups sum to the sample expected shortfall of \eulerEs{} with a relative gap of \eulerGap{}. The Student $t$ importance sampler is not implemented, and the committed rung records that it did not run. Hypotheses~H3 and~H4 hold.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{mc-agreement}
+\caption{Mean over \mcReps{} runs of the engine's copula sampler for four risk measures, relative to the mean of an independent simulator written from the model, with one standard deviation over the runs as the bar; the independent simulator sits at one by construction.}
+\label{fig:mc-agreement}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{importance-sampling}
+\caption{Estimate of the probability that the portfolio loss exceeds the committed 99.9\,\% value at risk, from plain Monte Carlo and from the Gaussian importance sampler, as the mean over \isReps{} seeds of \isScen{} scenarios with one standard deviation as the bar; the dotted line is the nominal 0.1\,\%.}
+\label{fig:importance-sampling}
+\end{figure}
+
+\subsection{The correlation estimator against a known truth}
+
+Table~\ref{tab:grid} and Figure~\ref{fig:coverage-grid} give the coverage of the nominal 95\,\% interval in the committed simulator. The maximum-likelihood estimator has a mean coverage of \gridMlMeanCov{} over the \gridMlCells{} cells and its coverage is outside the 99\,\% band of $\pm\gridBandHalf{}$ in \gridMlFail{} of them: the lowest is \gridMlWorstCov{} at a true correlation of \gridMlWorstRho{} with series of \gridMlWorstYears{} years ($z=\gridMlWorstZ{}$). The coverage is below $0.95$ in \gridMlBelow{} of the \gridMlCells{} cells, equal to it in \gridMlEqual{} and above it in \gridMlAbove{}, and the bias is negative in \gridMlNegBias{} of them, from \gridMlBiasMin{} to \gridMlBiasMax{}, so the undercoverage is not confined to one cell: the coverage is below nominal in most cells and the bias is negative in all of them. Pooled over the \gridMlPooledReps{} replications of all cells the coverage lies $\gridMlPooledZ{}$ binomial standard errors from $0.95$, a figure that holds only if the cells are independent, which was not checked: one seed drives the 22-year grid. At a correlation of 0.24 and 22 years the coverage is \gridMlCovTwentyFour{} and the bias \gridMlBiasTwentyFour{}. The moments estimator has a mean coverage of \gridMomMeanCov{}, is outside the band in \gridMomFail{} of \gridMomCells{} cells, and its lowest coverage is \gridMomWorstCov{} at a correlation of \gridMomWorstRho{} with series of \gridMomWorstYears{} years; at 0.24 and 22 years its bias is \gridMomBiasTwentyFour{} and its coverage \gridMomCovTwentyFour{}. The re-run of three 22-year cells with \cellReps{} fresh replications gives coverages of \cellLowCov{} $\pm$ \cellLowCovSe{}, \cellMidCov{} $\pm$ \cellMidCovSe{} and \cellHighCov{} $\pm$ \cellHighCovSe{} at correlations of 0.02, 0.12 and 0.24, and biases of \cellLowBias{} $\pm$ \cellLowBiasSe{}, \cellMidBias{} $\pm$ \cellMidBiasSe{} and \cellHighBias{} $\pm$ \cellHighBiasSe{}. Hypothesis~H5 is refuted: \gridMlFail{} of \gridMlCells{} cells lie outside the band where \gridChance{} are expected by chance, and the mean coverage and the sign of the bias show an undercoverage that the single cell understates. The cell outside the band is the one at the lowest correlation with 22 years, and the re-run at that correlation is below $0.95$ as well.
+
+\input{tables/grid}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{coverage-grid}
+\caption{Coverage of the nominal 95\,\% interval of the asset correlation by the maximum-likelihood and the moments estimators against the known correlation of the committed simulator, for series of 22 and 40 years with \gridReps{} replications per cell; the shaded band is the 99\,\% binomial band around 0.95.}
+\label{fig:coverage-grid}
+\end{figure}
+
+\subsection{The IRRBB engine against the standard and against QuantLib}
+
+At a mid-point of 3.5 years the engine returns $\alpha_{\mathrm{s}}=\irrAlpha{}$, a short-up shock of \irrShort{} basis points, a steepener of \irrSteep{} and a flattener of \irrFlat{}, against the printed 0.417, 41.7, 25.4 and $-1.6$: the deviations are \irrAlphaDev{}, \irrShortDev{}, \irrSteepDev{} and \irrFlatDev{}, each inside the half-unit of the last printed digit (0.0005 for the factor and 0.05 basis points for the shocks). The transcription of the shocks written for the experiment equals the engine's values to the last digit shown. Over the \irrVariants{} committed variants, two currency legs and six shocks, that is \irrLegs{} leg and shock pairs, the shock shape stored in the artifact equals the engine's to \irrShapeEng{} and equals the transcription to \irrShapeInd{}; the engine's present value equals the stored one with a relative difference of \irrEngMax{}, as the artifact was written by the same function, and the QuantLib present value differs from the stored one by a relative \irrQlMax{} at most (Figure~\ref{fig:eve-reconciliation}). The pair rule that combines the peso and UF legs returns the stored value with a difference of \irrPair{}. Hypothesis~H6 holds, with the limit that QuantLib's present value is the same exponential discounting and so holds the time convention and the wiring of the engine and not the choice of continuous compounding.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{eve-reconciliation}
+\caption{Relative difference between the stored economic value of equity of each of the 72 leg and shock pairs of the six committed interest rate risk variants and the engine's present value and the QuantLib present value of the same cash flows, on a logarithmic axis; zero differences are drawn at the axis floor.}
+\label{fig:eve-reconciliation}
+\end{figure}
+
+\subsection{The open toolkits}
+
+The survey queried \pypiQueried{} package names on \pypiDate{}, of which \pypiFound{} exist on PyPI; the \pypiMissing{} that do not are \pypiMissingNames{}. Table~\ref{tab:toolkits} sets the vocabulary of the catalogue against the \distScanned{} installed distributions, whose \filesScanned{} Python files were scanned, and against the summary and long description of the \pypiFound{} packages. In the installed sources the word Jeffreys appears in the statistics library for the proportion and rate intervals, Herfindahl in the binning library for a concentration index of the bins, Vasicek in the SciPy entropy estimator of that name and not in the credit model, and the weighted-matrix words in a graph test. In the package texts, the only package that names the Jeffreys test, CreditRisk+, the granularity adjustment, the Vasicek model, the ECB or the interest rate risk in the banking book is the engine itself. Hypothesis~H7 is not refuted by this survey; its limits are those of a search of metadata and of an installed environment, and Section~\ref{sec:limitations} states them.
+
+\input{tables/toolkits}

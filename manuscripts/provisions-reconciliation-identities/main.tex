@@ -3,17 +3,29 @@
 % The four macros of the header standard; tools/zenodo/publish_revision.py patches them when it reserves the DOI.
 \newcommand{\doctype}{Preprint}
 \newcommand{\docversion}{v1.00.000}
-\newcommand{\docdate}{4 November 2026}
-\newcommand{\versiondoi}{10.5281/zenodo.0}
-\newcommand{\conceptdoi}{10.5281/zenodo.0}
+\newcommand{\docdate}{8 November 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.24053190}
+\newcommand{\conceptdoi}{10.5281/zenodo.24053189}
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
 \input{../_shared/preamble}
-\makeatletter
-\def\input@path{{sections/}}
-\makeatother
+\usepackage{adjustbox}
+\setlength{\emergencystretch}{3em}
 
-\title{Provisions reconciliation identities as gates: overlays apart and three regimes on one portfolio}
+% Every number quoted in the text is a macro generated from the experiment outputs (make_numbers.py, make_tables.py).
+\input{tables/numbers}
+\input{tables/hypotheses-count}
+
+% Notation used by the proposed method and the theory.
+\newcommand{\tol}{\tau}
+\newcommand{\tlim}{\lambda}
+\newcommand{\gross}{G}
+\newcommand{\res}{r}
+\newcommand{\Norm}{\Phi}
+\newcommand{\LA}{\mathrm{LA}}
+\newcommand{\OVL}{\mathrm{OVL}}
+
+\title{Reconciliation identities as acceptance tests of an expected credit loss allowance: detection limits on a public loan book, overlays kept apart, the convex region of scenario weighting and three provisioning regimes on one synthetic bank}
 \author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
 \small CAOS open-research programme, Santiago, Chile\\
 \small \texttt{fsantibanez@gmail.com}}
@@ -24,68 +36,29 @@
 \headerblock
 
 \begin{abstract}
-% ABSTRACT
+An expected credit loss allowance is published in tables that must reconcile, is moved by overlays and differs across regimes; published work gives no detection limit for the reconciliation and no test of the overlay rule.
+We test a protocol: the IFRS 7 identities as an acceptance test with a measured detection limit, overlays as separate lines, the region of the non-linearity of the weighted loss, and a bridge between three regimes.
+Twelve identities on a tolerance of one millionth of the gross amount, run on six dates of an SBA 7(a) loan book, name a planted defect from that size in \eoneAboveFullK{} of \eoneAboveFullN{} cases of seven classes; the stage arithmetic and a pooled row name \eoneAboveStageK{}.
+An absolute tolerance of $10^{-6}$ units flags \etwoAbsCommittedK{} of six clean tables.
+No identity sees an amount booked under another line or an overlay merged into the model loss.
+The weighted PD is never below the PD at the mean factor in \efourConvexN{} convex draws and is below it in \efourMixedNeg{} of \efourMixedN{} mixed draws.
+Three scenarios at one standard deviation understate the expected PD by a median \efourAdhocMed{}.
+One synthetic bank has an IFRS 9 total of \efiveBaseMean{} of B-1 in the base scenario over \efiveSeeds{} seeds (95\% interval \efiveBaseLo{} to \efiveBaseHi{}), above it only in the combined severe one.
+Of \hypTotal{} predictions, \hypRefuted{} were refuted: the books flagged after rounding to millions (\etwoRoundMillionPct{}, predicted above 99\%), the entries no identity sees, and the largest group of indistinguishable entries.
 \end{abstract}
 
-\section{Introduction}
-\label{sec:introduction}
-
-% TEXT
-
-\section{Related work}
-\label{sec:related-work}
-
-% TEXT
-
-\section{Problem formulation}
-\label{sec:problem}
-
-% TEXT
-
-\section{Proposed method}
-\label{sec:proposed-method}
-
-% TEXT
-
-\section{Theory}
-\label{sec:theory}
-
-% TEXT
-
-\section{Experimental design}
-\label{sec:experimental-design}
-
-% TEXT
-
-\section{Results}
-\label{sec:results}
-
-% TEXT
-
-\section{Ablation}
-\label{sec:ablation}
-
-% TEXT
-
-\section{Discussion}
-\label{sec:discussion}
-
-% TEXT
-
-\section{Limitations}
-\label{sec:limitations}
-
-% TEXT
-
-\section{Reproducibility}
-\label{sec:reproducibility}
-
-% TEXT
-
-\section{Conclusions}
-\label{sec:conclusions}
-
-% TEXT
+\input{sections/01-introduction}
+\input{sections/02-related-work}
+\input{sections/03-problem}
+\input{sections/04-proposed-method}
+\input{sections/05-theory}
+\input{sections/06-experimental-design}
+\input{sections/07-results}
+\input{sections/08-ablation}
+\input{sections/09-discussion}
+\input{sections/10-limitations}
+\input{sections/11-reproducibility}
+\input{sections/12-conclusions}
 
 \bibliographystyle{plainnat}
 \bibliography{references}

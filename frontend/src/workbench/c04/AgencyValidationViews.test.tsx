@@ -675,6 +675,30 @@ describe('Anchored k: the default page as the anchor of the withdrawals (withdra
     }
   });
 
+  it('draws the pooled k of every grade when the chosen grade has no cohort k above 0, so the chart is the stage and no card is text only (gate G6)', () => {
+    for (const id of ['sp', 'fitch']) {
+      const o = agencyOf(id).outputs;
+      const aaa = o.withdrawal_bounds!.grades.find((g) => g.grade === GRADES[0])!;
+      expect(aaa.cohorts.some((c) => c.k !== null && c.k > 0)).toBe(false);
+      for (const lang of LANGS) {
+        captured.length = 0;
+        const markup = html(<AnchoredKView sel={makeSel(dataOf(id), { grade: 0 })} />, lang);
+        const [chart, table] = figures(markup);
+        expect(captured).toHaveLength(1);
+        const p = captured[0];
+        expect(p.y.log).toBe(true);
+        expect(p.x.values).toEqual(GRADES.map((_, g) => g + 1));
+        const ks = p.series.find((s) => s.id === 'k')!.values;
+        o.withdrawal_bounds!.grades.forEach((g, i) => expect(ks[i], `${id} ${g.grade}`).toBe(g.pooled?.k != null && g.pooled.k > 0 ? g.pooled.k : null));
+        expect(p.marks?.map((m) => m.x)).toEqual([1]);
+        expect(chart.title).toContain(lang === 'en' ? 'the pooled k of every grade' : 'la k agrupada de cada grado');
+        expect(chart.note).toContain(lang === 'en' ? 'No cohort of AAA has a k above 0' : 'Ninguna cohorte de AAA tiene una k sobre 0');
+        expect(table.title).toContain(lang === 'en' ? 'the anchored k by grade' : 'la k anclada por grado');
+        for (const bad of DASHES) expect(text(markup).includes(bad), `${id} ${lang}: ${bad}`).toBe(false);
+      }
+    }
+  });
+
   it("matches the finding's stability verdicts: S&P's CCC to C not stable, Fitch's stable", () => {
     expect(agencyOf('sp').outputs.withdrawal_bounds!.grades.find((g) => g.grade === GRADES[CCC])!.stability!.stable).toBe(false);
     expect(agencyOf('fitch').outputs.withdrawal_bounds!.grades.find((g) => g.grade === GRADES[CCC])!.stability!.stable).toBe(true);

@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Contribution of each part of the acceptance rule on the netting set: rejection rate in percent when the pair-aware errors, the family-wise bound, or the comparison of the dates, of the EEPE or of the CVA is taken away, under the null (size) and against four planted defects (power).}
+\label{tab:ablation}
+\begin{tabular}{p{6.4cm}lllll}
+\toprule
+Component removed or changed & Size & Vol. +2 \% & Vol. +5 \% & Rev. +50 \% & Measure \\
+\midrule
+Refinement: pair-aware errors and bound 3.18 & 3.8 & 76.5 & 100.0 & 100.0 & 100.0 \\
+without the family-wise bound (bound 2) & 56.0 & 99.8 & 100.0 & 100.0 & 100.0 \\
+without the pair-aware errors (product errors, bound 3.18) & 0.2 & 18.5 & 99.0 & 100.0 & 100.0 \\
+without either (the product's rule) & 12.5 & 75.0 & 100.0 & 100.0 & 100.0 \\
+dates only, product errors & 9.5 & 68.2 & 100.0 & 100.0 & 100.0 \\
+EEPE only & 6.2 & 52.5 & 100.0 & 100.0 & 58.5 \\
+CVA only & 0.0 & 0.2 & 100.0 & 100.0 & 0.0 \\
+\bottomrule
+\end{tabular}
+\end{table}

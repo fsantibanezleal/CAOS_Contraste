@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The eight rows of the band in the order in which every aggregate shows them, with the quantity each row reports, how the engine computes it and the status label it carries; only the simple sum is labelled headline capital.}
+\label{tab:protocol}
+\fitwidth{\begin{tabular}{rp{2.0cm}p{5.2cm}p{2.7cm}p{2.3cm}}
+\toprule
+\# & Row & Capital of the row & Computation & Status \\
+\midrule
+\relax 1 & \relax lower bound & \relax best value at risk over all couplings, less the expected losses & \relax rearrangement, outer end of the range & \relax information, not capital \\
+\relax 2 & \relax simple sum (headline) & \relax sum of the marginal capitals; the comonotonic row & \relax closed form & \relax headline capital \\
+\relax 3 & \relax square-root rule & $\sqrt{\mathrm{EC}^{\top}R\,\mathrm{EC}}$ with the named matrix $R$ & \relax closed form & \relax information, not capital \\
+\relax 4 & \relax Gaussian copula & \relax value at risk of the sum under the Gaussian copula of $R$, less expected losses & \relax Monte Carlo, $10^6$ draws & \relax information, not capital \\
+\relax 5 & $t$ copula, $\nu=4$ & \relax the same under the $t$ copula with $\nu=4$ and the matrix $R$ & \relax Monte Carlo, $10^6$ draws & \relax information, not capital \\
+\relax 6 & $t$ copula, $\nu=8$ & \relax the same with $\nu=8$ & \relax Monte Carlo, $10^6$ draws & \relax information, not capital \\
+\relax 7 & $t$ copula, $\nu=30$ & \relax the same with $\nu=30$ & \relax Monte Carlo, $10^6$ draws & \relax information, not capital \\
+\relax 8 & \relax worst case & \relax worst value at risk over all couplings, less the expected losses & \relax rearrangement, outer end of the range & \relax information, not capital \\
+\bottomrule
+\end{tabular}}
+\end{table}

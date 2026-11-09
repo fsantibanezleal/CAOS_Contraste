@@ -1,0 +1,13 @@
+\section{Reproducibility}
+\label{sec:reproducibility}
+
+The source code, the committed results and the scripts of this work are in the repository named in the header block, release v1.00.000 of CAOS\_Contraste (tag v1.00.000), with the engine \texttt{riskvalidation} 1.1.0 from the Python Package Index. The results of the 16 cells are the committed documents \texttt{data/derived/C17/xi-0-6.json}, \texttt{xi-0-8.json}, \texttt{xi-0-96.json} and \texttt{xi-1-1.json}, listed with their digests in \texttt{data/derived/C17/SHA256SUMS.txt}.\ % voice-ok: citation of the product release the results were produced with
+Four commands rebuild every table and figure from the manuscript folder, in this order (each script resolves its inputs from its own location, so the commands also run from the repository root with the folder prefixed):
+\begin{enumerate}
+\item \texttt{python experiments/extract\_histories.py --cache <folder>} reads the cached per-history arrays of the case bake, refuses any cell whose percentiles, shares and counts do not reproduce the committed document for all ten rungs, and writes the four \texttt{histories-*.json} files; with \texttt{--check-rerun 8} it redraws the first eight histories of a cell through the pipeline and compares them with the cache.
+\item \texttt{python experiments/analyse.py} computes every statistic, bootstrap interval, theory value and ablation, and writes \texttt{results.json}.
+\item \texttt{python tables/make\_tables.py} writes the nine tables and the number macros.
+\item \texttt{python figures/make\_figures.py} writes the nine figures as vector PDF.
+\end{enumerate}
+The bibliography is rebuilt with \texttt{experiments/fetch\_references.py}, which fetches each record. The seeds are in \cref{eq:seeds} with $\varsigma_0=42$ and in the settings of \texttt{analyse.py}. The bake of the 16{,}000 histories takes about 70 minutes on ten processes; the extraction takes under a minute, the analysis about 20 seconds, the tables and figures a few seconds, and the check of eight histories about 25 seconds on eight processes.
+The per-history files total about 2 MB. The document builds with \texttt{pdflatex} and \texttt{bibtex} from the manuscript folder.

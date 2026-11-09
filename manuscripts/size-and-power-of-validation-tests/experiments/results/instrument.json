@@ -1,0 +1,224 @@
+{
+ "agreement_failure": [
+  {
+   "factor": 1.0,
+   "failure_probability": 0.001148591902662699,
+   "level": 0.05,
+   "p_nominal": 0.047870585757947115,
+   "p_wrong": 0.047870585757947115,
+   "test": "pd.binomial"
+  },
+  {
+   "factor": 1.02,
+   "failure_probability": 0.1476557018936855,
+   "level": 0.05,
+   "p_nominal": 0.047870585757947115,
+   "p_wrong": 0.055096532345651116,
+   "test": "pd.binomial"
+  },
+  {
+   "factor": 1.05,
+   "failure_probability": 0.9846206308686847,
+   "level": 0.05,
+   "p_nominal": 0.047870585757947115,
+   "p_wrong": 0.06729683216094605,
+   "test": "pd.binomial"
+  },
+  {
+   "factor": 1.1,
+   "failure_probability": 0.9999999999999839,
+   "level": 0.05,
+   "p_nominal": 0.047870585757947115,
+   "p_wrong": 0.09142402729827806,
+   "test": "pd.binomial"
+  },
+  {
+   "factor": 1.25,
+   "failure_probability": 1.0,
+   "level": 0.05,
+   "p_nominal": 0.047870585757947115,
+   "p_wrong": 0.19269389829149286,
+   "test": "pd.binomial"
+  },
+  {
+   "factor": 1.0,
+   "failure_probability": 0.0015065611895097586,
+   "level": 0.01,
+   "p_nominal": 0.006904994767580767,
+   "p_wrong": 0.006904994767580767,
+   "test": "pd.binomial"
+  },
+  {
+   "factor": 1.02,
+   "failure_probability": 0.033656480215831786,
+   "level": 0.01,
+   "p_nominal": 0.006904994767580767,
+   "p_wrong": 0.00839490696336428,
+   "test": "pd.binomial"
+  },
+  {
+   "factor": 1.05,
+   "failure_probability": 0.4855202785111613,
+   "level": 0.01,
+   "p_nominal": 0.006904994767580767,
+   "p_wrong": 0.011105678838497248,
+   "test": "pd.binomial"
+  },
+  {
+   "factor": 1.1,
+   "failure_probability": 0.9990475009898805,
+   "level": 0.01,
+   "p_nominal": 0.006904994767580767,
+   "p_wrong": 0.01712981682556165,
+   "test": "pd.binomial"
+  },
+  {
+   "factor": 1.25,
+   "failure_probability": 1.0,
+   "level": 0.01,
+   "p_nominal": 0.006904994767580767,
+   "p_wrong": 0.05073793452054668,
+   "test": "pd.binomial"
+  },
+  {
+   "factor": 1.0,
+   "failure_probability": 0.001148591902662699,
+   "level": 0.05,
+   "p_nominal": 0.047870585757947115,
+   "p_wrong": 0.047870585757947115,
+   "test": "pd.jeffreys"
+  },
+  {
+   "factor": 1.02,
+   "failure_probability": 0.1476557018936855,
+   "level": 0.05,
+   "p_nominal": 0.047870585757947115,
+   "p_wrong": 0.055096532345651116,
+   "test": "pd.jeffreys"
+  },
+  {
+   "factor": 1.05,
+   "failure_probability": 0.9846206308686847,
+   "level": 0.05,
+   "p_nominal": 0.047870585757947115,
+   "p_wrong": 0.06729683216094605,
+   "test": "pd.jeffreys"
+  },
+  {
+   "factor": 1.1,
+   "failure_probability": 0.9999999999999839,
+   "level": 0.05,
+   "p_nominal": 0.047870585757947115,
+   "p_wrong": 0.09142402729827806,
+   "test": "pd.jeffreys"
+  },
+  {
+   "factor": 1.25,
+   "failure_probability": 1.0,
+   "level": 0.05,
+   "p_nominal": 0.047870585757947115,
+   "p_wrong": 0.19269389829149286,
+   "test": "pd.jeffreys"
+  },
+  {
+   "factor": 1.0,
+   "failure_probability": 0.0012385557945506775,
+   "level": 0.01,
+   "p_nominal": 0.013832581730008505,
+   "p_wrong": 0.013832581730008505,
+   "test": "pd.jeffreys"
+  },
+  {
+   "factor": 1.02,
+   "failure_probability": 0.05063461011318937,
+   "level": 0.01,
+   "p_nominal": 0.013832581730008505,
+   "p_wrong": 0.016508614845051957,
+   "test": "pd.jeffreys"
+  },
+  {
+   "factor": 1.05,
+   "failure_probability": 0.7240966133492449,
+   "level": 0.01,
+   "p_nominal": 0.013832581730008505,
+   "p_wrong": 0.02125746458347261,
+   "test": "pd.jeffreys"
+  },
+  {
+   "factor": 1.1,
+   "failure_probability": 0.9999959485375065,
+   "level": 0.01,
+   "p_nominal": 0.013832581730008505,
+   "p_wrong": 0.031407165727575154,
+   "test": "pd.jeffreys"
+  },
+  {
+   "factor": 1.25,
+   "failure_probability": 1.0,
+   "level": 0.01,
+   "p_nominal": 0.013832581730008505,
+   "p_wrong": 0.08284773054087124,
+   "test": "pd.jeffreys"
+  }
+ ],
+ "agreement_simulated": [
+  {
+   "blocks": 200,
+   "factor": 1.0,
+   "flagged": 0,
+   "mean_rate": 0.04805625,
+   "p_nominal": 0.047870585757947115,
+   "share_flagged": 0.0
+  },
+  {
+   "blocks": 200,
+   "factor": 1.05,
+   "flagged": 198,
+   "mean_rate": 0.06736625,
+   "p_nominal": 0.047870585757947115,
+   "share_flagged": 0.99
+  },
+  {
+   "blocks": 200,
+   "factor": 1.1,
+   "flagged": 200,
+   "mean_rate": 0.09096,
+   "p_nominal": 0.047870585757947115,
+   "share_flagged": 1.0
+  }
+ ],
+ "engine": "riskvalidation 1.1.0",
+ "flag_probability": {
+  "1000": {
+   "0.01": 0.003288359787727457,
+   "0.05": 0.0015415873669927028
+  },
+  "2000": {
+   "0.01": 0.0025576140395729466,
+   "0.05": 0.001306962461507332
+  },
+  "20000": {
+   "0.01": 0.0013467689846224785,
+   "0.05": 0.0011130444229265882
+  },
+  "4000": {
+   "0.01": 0.0017843273519904009,
+   "0.05": 0.0013559414278516847
+  }
+ },
+ "flag_probability_family_21": {
+  "1000": 0.09657994664800962,
+  "2000": 0.07803024502443867,
+  "20000": 0.050375049427930474,
+  "4000": 0.06386767242126645
+ },
+ "flag_probability_per_test": {
+  "1000": 0.004824877860813315,
+  "2000": 0.003861233795539598,
+  "20000": 0.0024583143938418095,
+  "4000": 0.00313784933646466
+ },
+ "seconds": 201.5,
+ "z_agree": 3.29,
+ "z_bound": 3.090232306167813
+}

@@ -1,0 +1,2463 @@
+{
+ "bases": {
+  "list-adverse": {
+   "engine": {
+    "status": "solved",
+    "multiplier": 2.118175,
+    "sp_at": 30,
+    "sp_just_below": 31,
+    "evals": 17
+   },
+   "committed": {
+    "status": "solved",
+    "multiplier": 2.118175,
+    "survival_at_multiplier": 30,
+    "target_days": 30,
+    "round_trip_error": 0.0,
+    "refusal_reason": null
+   },
+   "cap": 145.23463381265603,
+   "base_sp": 62,
+   "horizon": 125,
+   "curve_multipliers": [
+    1.0,
+    1.25,
+    1.5,
+    2.0,
+    3.0,
+    5.0,
+    8.0,
+    13.0,
+    21.0,
+    34.0,
+    55.0,
+    89.0,
+    144.0
+   ],
+   "curve_sp": [
+    62,
+    50,
+    42,
+    32,
+    22,
+    13,
+    9,
+    5,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "curve_equals_committed": true,
+   "time_us_median": 3788.599919062108,
+   "opening_total": 175481000.0,
+   "equals_committed": true,
+   "hyperbolic_rule": {
+    "value": 2.066666666666667,
+    "rel_error": 0.02431731718735848
+   },
+   "raw_capacity_multiplier": 2.194759
+  },
+  "list-extreme": {
+   "engine": {
+    "status": "solved",
+    "multiplier": 1.383141,
+    "sp_at": 30,
+    "sp_just_below": 31,
+    "evals": 17
+   },
+   "committed": {
+    "status": "solved",
+    "multiplier": 1.383141,
+    "survival_at_multiplier": 30,
+    "target_days": 30,
+    "round_trip_error": 0.0,
+    "refusal_reason": null
+   },
+   "cap": 93.87652795783818,
+   "base_sp": 41,
+   "horizon": 125,
+   "curve_multipliers": [
+    1.0,
+    1.25,
+    1.5,
+    2.0,
+    3.0,
+    5.0,
+    8.0,
+    13.0,
+    21.0,
+    34.0,
+    55.0,
+    89.0
+   ],
+   "curve_sp": [
+    41,
+    34,
+    28,
+    21,
+    15,
+    9,
+    6,
+    4,
+    1,
+    1,
+    1,
+    1
+   ],
+   "curve_equals_committed": true,
+   "time_us_median": 2977.35002823174,
+   "opening_total": 175481000.0,
+   "equals_committed": true,
+   "hyperbolic_rule": {
+    "value": 1.3666666666666667,
+    "rel_error": 0.011910812659977007
+   },
+   "raw_capacity_multiplier": 1.433265
+  },
+  "fast-run": {
+   "engine": {
+    "status": "refused",
+    "reason": "the target of 30 days is not below the horizon of 5 days",
+    "multiplier": null,
+    "evals": 0
+   },
+   "committed": {
+    "status": "refused",
+    "multiplier": null,
+    "survival_at_multiplier": null,
+    "target_days": 30,
+    "round_trip_error": null,
+    "refusal_reason": {
+     "en": "The target of 30 days is not below the horizon of 5 days, so a survival period under it cannot be separated from surviving the horizon: no bracket exists.",
+     "es": "El objetivo de 30 d\u00edas no es menor que el horizonte de 5 d\u00edas, as\u00ed que un periodo de supervivencia bajo \u00e9l no se puede separar de sobrevivir el horizonte: no existe un intervalo."
+    }
+   },
+   "cap": 18.430329053777722,
+   "base_sp": null,
+   "horizon": 5,
+   "curve_multipliers": [
+    1.0,
+    1.25,
+    1.5,
+    2.0,
+    3.0,
+    5.0,
+    8.0,
+    13.0
+   ],
+   "curve_sp": [
+    null,
+    null,
+    null,
+    5,
+    1,
+    1,
+    1,
+    1
+   ],
+   "curve_equals_committed": true,
+   "time_us_median": 12.79998105019331,
+   "opening_total": 175481000.0,
+   "equals_committed": true,
+   "raw_capacity_multiplier": null
+  }
+ },
+ "band": {
+  "list-adverse": {
+   "haircut_x_monetisation": [
+    {
+     "haircut": "low",
+     "monetisation": "immediate",
+     "status": "solved",
+     "multiplier": 2.229711,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 18
+    },
+    {
+     "haircut": "low",
+     "monetisation": "central",
+     "status": "solved",
+     "multiplier": 2.229711,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "haircut": "low",
+     "monetisation": "slow",
+     "status": "solved",
+     "multiplier": 1.063646,
+     "sp_at": 4,
+     "sp_just_below": 61,
+     "evals": 14
+    },
+    {
+     "haircut": "central",
+     "monetisation": "immediate",
+     "status": "solved",
+     "multiplier": 2.118175,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 18
+    },
+    {
+     "haircut": "central",
+     "monetisation": "central",
+     "status": "solved",
+     "multiplier": 2.118175,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "haircut": "central",
+     "monetisation": "slow",
+     "status": "refused",
+     "reason": "the base survival period of 4 days is already at or below the target of 30 days",
+     "multiplier": null,
+     "evals": 1
+    },
+    {
+     "haircut": "high",
+     "monetisation": "immediate",
+     "status": "solved",
+     "multiplier": 1.946672,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 18
+    },
+    {
+     "haircut": "high",
+     "monetisation": "central",
+     "status": "solved",
+     "multiplier": 1.946672,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "haircut": "high",
+     "monetisation": "slow",
+     "status": "refused",
+     "reason": "the base survival period of 3 days is already at or below the target of 30 days",
+     "multiplier": null,
+     "evals": 1
+    }
+   ],
+   "joint_min": 1.063646,
+   "joint_max": 2.229711,
+   "joint_max_rel_deviation": 0.49784791152761215,
+   "all_solved": false,
+   "one_at_a_time": [
+    {
+     "factor": "haircut low",
+     "status": "solved",
+     "multiplier": 2.229711,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "factor": "haircut high",
+     "status": "solved",
+     "multiplier": 1.946672,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "factor": "monetisation immediate",
+     "status": "solved",
+     "multiplier": 2.118175,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 18
+    },
+    {
+     "factor": "monetisation slow",
+     "status": "refused",
+     "reason": "the base survival period of 4 days is already at or below the target of 30 days",
+     "multiplier": null,
+     "evals": 1
+    }
+   ],
+   "mapping": [
+    {
+     "mapping": "operational deposits",
+     "class_rate": 0.00514464,
+     "base_sp": 79,
+     "status": "solved",
+     "multiplier": 2.796956,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 18
+    },
+    {
+     "mapping": "non-financial corporates (central)",
+     "class_rate": 0.00688541,
+     "base_sp": 62,
+     "status": "solved",
+     "multiplier": 2.118175,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "mapping": "other legal entities",
+     "class_rate": 1.0,
+     "base_sp": 1,
+     "status": "refused",
+     "reason": "the base survival period of 1 days is already at or below the target of 30 days",
+     "multiplier": null,
+     "evals": 1
+    }
+   ],
+   "uninsured_share": [
+    {
+     "uninsured_share": 0.5,
+     "base_sp": 77,
+     "status": "solved",
+     "multiplier": 2.71241,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "uninsured_share": 0.55,
+     "base_sp": 75,
+     "status": "solved",
+     "multiplier": 2.63119,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "uninsured_share": 0.6,
+     "base_sp": 73,
+     "status": "solved",
+     "multiplier": 2.553869,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "uninsured_share": 0.65,
+     "base_sp": 71,
+     "status": "solved",
+     "multiplier": 2.480239,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "uninsured_share": 0.7,
+     "base_sp": 69,
+     "status": "solved",
+     "multiplier": 2.410097,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "uninsured_share": 0.75,
+     "base_sp": 68,
+     "status": "solved",
+     "multiplier": 2.343253,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 16
+    },
+    {
+     "uninsured_share": 0.8,
+     "base_sp": 66,
+     "status": "solved",
+     "multiplier": 2.279521,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 16
+    },
+    {
+     "uninsured_share": 0.85,
+     "base_sp": 64,
+     "status": "solved",
+     "multiplier": 2.218727,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "uninsured_share": 0.9,
+     "base_sp": 63,
+     "status": "solved",
+     "multiplier": 2.160705,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "uninsured_share": 0.95,
+     "base_sp": 61,
+     "status": "solved",
+     "multiplier": 2.105298,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    }
+   ],
+   "by_target": [
+    {
+     "target": 1,
+     "status": "solved",
+     "multiplier": 20.40607,
+     "reason": null
+    },
+    {
+     "target": 2,
+     "status": "solved",
+     "multiplier": 20.40607,
+     "reason": null
+    },
+    {
+     "target": 3,
+     "status": "solved",
+     "multiplier": 20.40607,
+     "reason": null
+    },
+    {
+     "target": 4,
+     "status": "solved",
+     "multiplier": 15.669873,
+     "reason": null
+    },
+    {
+     "target": 5,
+     "status": "solved",
+     "multiplier": 12.65873,
+     "reason": null
+    },
+    {
+     "target": 6,
+     "status": "solved",
+     "multiplier": 10.613306,
+     "reason": null
+    },
+    {
+     "target": 7,
+     "status": "solved",
+     "multiplier": 9.133386,
+     "reason": null
+    },
+    {
+     "target": 8,
+     "status": "solved",
+     "multiplier": 8.012995,
+     "reason": null
+    },
+    {
+     "target": 9,
+     "status": "solved",
+     "multiplier": 7.135338,
+     "reason": null
+    },
+    {
+     "target": 10,
+     "status": "solved",
+     "multiplier": 6.429256,
+     "reason": null
+    },
+    {
+     "target": 11,
+     "status": "solved",
+     "multiplier": 5.848926,
+     "reason": null
+    },
+    {
+     "target": 12,
+     "status": "solved",
+     "multiplier": 5.363505,
+     "reason": null
+    },
+    {
+     "target": 13,
+     "status": "solved",
+     "multiplier": 4.951473,
+     "reason": null
+    },
+    {
+     "target": 14,
+     "status": "solved",
+     "multiplier": 4.597359,
+     "reason": null
+    },
+    {
+     "target": 15,
+     "status": "solved",
+     "multiplier": 4.289755,
+     "reason": null
+    },
+    {
+     "target": 16,
+     "status": "solved",
+     "multiplier": 4.020063,
+     "reason": null
+    },
+    {
+     "target": 17,
+     "status": "solved",
+     "multiplier": 3.781683,
+     "reason": null
+    },
+    {
+     "target": 18,
+     "status": "solved",
+     "multiplier": 3.569461,
+     "reason": null
+    },
+    {
+     "target": 19,
+     "status": "solved",
+     "multiplier": 3.379316,
+     "reason": null
+    },
+    {
+     "target": 20,
+     "status": "solved",
+     "multiplier": 3.207974,
+     "reason": null
+    },
+    {
+     "target": 21,
+     "status": "solved",
+     "multiplier": 3.052777,
+     "reason": null
+    },
+    {
+     "target": 22,
+     "status": "solved",
+     "multiplier": 2.911548,
+     "reason": null
+    },
+    {
+     "target": 23,
+     "status": "solved",
+     "multiplier": 2.782481,
+     "reason": null
+    },
+    {
+     "target": 24,
+     "status": "solved",
+     "multiplier": 2.664071,
+     "reason": null
+    },
+    {
+     "target": 25,
+     "status": "solved",
+     "multiplier": 2.55505,
+     "reason": null
+    },
+    {
+     "target": 26,
+     "status": "solved",
+     "multiplier": 2.454346,
+     "reason": null
+    },
+    {
+     "target": 27,
+     "status": "solved",
+     "multiplier": 2.36104,
+     "reason": null
+    },
+    {
+     "target": 28,
+     "status": "solved",
+     "multiplier": 2.274347,
+     "reason": null
+    },
+    {
+     "target": 29,
+     "status": "solved",
+     "multiplier": 2.193589,
+     "reason": null
+    },
+    {
+     "target": 30,
+     "status": "solved",
+     "multiplier": 2.118175,
+     "reason": null
+    },
+    {
+     "target": 31,
+     "status": "solved",
+     "multiplier": 2.047593,
+     "reason": null
+    },
+    {
+     "target": 32,
+     "status": "solved",
+     "multiplier": 1.981394,
+     "reason": null
+    },
+    {
+     "target": 33,
+     "status": "solved",
+     "multiplier": 1.91918,
+     "reason": null
+    },
+    {
+     "target": 34,
+     "status": "solved",
+     "multiplier": 1.860603,
+     "reason": null
+    },
+    {
+     "target": 35,
+     "status": "solved",
+     "multiplier": 1.805354,
+     "reason": null
+    },
+    {
+     "target": 36,
+     "status": "solved",
+     "multiplier": 1.753156,
+     "reason": null
+    },
+    {
+     "target": 37,
+     "status": "solved",
+     "multiplier": 1.703763,
+     "reason": null
+    },
+    {
+     "target": 38,
+     "status": "solved",
+     "multiplier": 1.656957,
+     "reason": null
+    },
+    {
+     "target": 39,
+     "status": "solved",
+     "multiplier": 1.612538,
+     "reason": null
+    },
+    {
+     "target": 40,
+     "status": "solved",
+     "multiplier": 1.570328,
+     "reason": null
+    },
+    {
+     "target": 41,
+     "status": "solved",
+     "multiplier": 1.530168,
+     "reason": null
+    },
+    {
+     "target": 42,
+     "status": "solved",
+     "multiplier": 1.491911,
+     "reason": null
+    },
+    {
+     "target": 43,
+     "status": "solved",
+     "multiplier": 1.455425,
+     "reason": null
+    },
+    {
+     "target": 44,
+     "status": "solved",
+     "multiplier": 1.42059,
+     "reason": null
+    },
+    {
+     "target": 45,
+     "status": "solved",
+     "multiplier": 1.387297,
+     "reason": null
+    },
+    {
+     "target": 46,
+     "status": "solved",
+     "multiplier": 1.355445,
+     "reason": null
+    },
+    {
+     "target": 47,
+     "status": "solved",
+     "multiplier": 1.324943,
+     "reason": null
+    },
+    {
+     "target": 48,
+     "status": "solved",
+     "multiplier": 1.295707,
+     "reason": null
+    },
+    {
+     "target": 49,
+     "status": "solved",
+     "multiplier": 1.26766,
+     "reason": null
+    },
+    {
+     "target": 50,
+     "status": "solved",
+     "multiplier": 1.240731,
+     "reason": null
+    },
+    {
+     "target": 51,
+     "status": "solved",
+     "multiplier": 1.214854,
+     "reason": null
+    },
+    {
+     "target": 52,
+     "status": "solved",
+     "multiplier": 1.189969,
+     "reason": null
+    },
+    {
+     "target": 53,
+     "status": "solved",
+     "multiplier": 1.16602,
+     "reason": null
+    },
+    {
+     "target": 54,
+     "status": "solved",
+     "multiplier": 1.142955,
+     "reason": null
+    },
+    {
+     "target": 55,
+     "status": "solved",
+     "multiplier": 1.120726,
+     "reason": null
+    },
+    {
+     "target": 56,
+     "status": "solved",
+     "multiplier": 1.099289,
+     "reason": null
+    },
+    {
+     "target": 57,
+     "status": "solved",
+     "multiplier": 1.078602,
+     "reason": null
+    },
+    {
+     "target": 58,
+     "status": "solved",
+     "multiplier": 1.058627,
+     "reason": null
+    },
+    {
+     "target": 59,
+     "status": "solved",
+     "multiplier": 1.039326,
+     "reason": null
+    },
+    {
+     "target": 60,
+     "status": "solved",
+     "multiplier": 1.020668,
+     "reason": null
+    },
+    {
+     "target": 61,
+     "status": "solved",
+     "multiplier": 1.00262,
+     "reason": null
+    },
+    {
+     "target": 62,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 62 days"
+    },
+    {
+     "target": 63,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 63 days"
+    },
+    {
+     "target": 64,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 64 days"
+    },
+    {
+     "target": 65,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 65 days"
+    },
+    {
+     "target": 66,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 66 days"
+    },
+    {
+     "target": 67,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 67 days"
+    },
+    {
+     "target": 68,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 68 days"
+    },
+    {
+     "target": 69,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 69 days"
+    },
+    {
+     "target": 70,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 70 days"
+    },
+    {
+     "target": 71,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 71 days"
+    },
+    {
+     "target": 72,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 72 days"
+    },
+    {
+     "target": 73,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 73 days"
+    },
+    {
+     "target": 74,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 74 days"
+    },
+    {
+     "target": 75,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 75 days"
+    },
+    {
+     "target": 76,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 76 days"
+    },
+    {
+     "target": 77,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 77 days"
+    },
+    {
+     "target": 78,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 78 days"
+    },
+    {
+     "target": 79,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 79 days"
+    },
+    {
+     "target": 80,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 80 days"
+    },
+    {
+     "target": 81,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 81 days"
+    },
+    {
+     "target": 82,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 82 days"
+    },
+    {
+     "target": 83,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 83 days"
+    },
+    {
+     "target": 84,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 84 days"
+    },
+    {
+     "target": 85,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 85 days"
+    },
+    {
+     "target": 86,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 86 days"
+    },
+    {
+     "target": 87,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 87 days"
+    },
+    {
+     "target": 88,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 88 days"
+    },
+    {
+     "target": 89,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 89 days"
+    },
+    {
+     "target": 90,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 90 days"
+    },
+    {
+     "target": 91,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 91 days"
+    },
+    {
+     "target": 92,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 92 days"
+    },
+    {
+     "target": 93,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 93 days"
+    },
+    {
+     "target": 94,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 94 days"
+    },
+    {
+     "target": 95,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 95 days"
+    },
+    {
+     "target": 96,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 96 days"
+    },
+    {
+     "target": 97,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 97 days"
+    },
+    {
+     "target": 98,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 98 days"
+    },
+    {
+     "target": 99,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 99 days"
+    },
+    {
+     "target": 100,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 100 days"
+    },
+    {
+     "target": 101,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 101 days"
+    },
+    {
+     "target": 102,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 102 days"
+    },
+    {
+     "target": 103,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 103 days"
+    },
+    {
+     "target": 104,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 104 days"
+    },
+    {
+     "target": 105,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 105 days"
+    },
+    {
+     "target": 106,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 106 days"
+    },
+    {
+     "target": 107,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 107 days"
+    },
+    {
+     "target": 108,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 108 days"
+    },
+    {
+     "target": 109,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 109 days"
+    },
+    {
+     "target": 110,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 110 days"
+    },
+    {
+     "target": 111,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 111 days"
+    },
+    {
+     "target": 112,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 112 days"
+    },
+    {
+     "target": 113,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 113 days"
+    },
+    {
+     "target": 114,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 114 days"
+    },
+    {
+     "target": 115,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 115 days"
+    },
+    {
+     "target": 116,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 116 days"
+    },
+    {
+     "target": 117,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 117 days"
+    },
+    {
+     "target": 118,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 118 days"
+    },
+    {
+     "target": 119,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 119 days"
+    },
+    {
+     "target": 120,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 120 days"
+    },
+    {
+     "target": 121,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 121 days"
+    },
+    {
+     "target": 122,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 122 days"
+    },
+    {
+     "target": 123,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 123 days"
+    },
+    {
+     "target": 124,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 62 days is already at or below the target of 124 days"
+    }
+   ],
+   "by_target_monotone": true,
+   "by_target_solved_up_to": 61
+  },
+  "list-extreme": {
+   "haircut_x_monetisation": [
+    {
+     "haircut": "low",
+     "monetisation": "immediate",
+     "status": "solved",
+     "multiplier": 1.456144,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 18
+    },
+    {
+     "haircut": "low",
+     "monetisation": "central",
+     "status": "solved",
+     "multiplier": 1.456144,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "haircut": "low",
+     "monetisation": "slow",
+     "status": "refused",
+     "reason": "the base survival period of 3 days is already at or below the target of 30 days",
+     "multiplier": null,
+     "evals": 1
+    },
+    {
+     "haircut": "central",
+     "monetisation": "immediate",
+     "status": "solved",
+     "multiplier": 1.383141,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "haircut": "central",
+     "monetisation": "central",
+     "status": "solved",
+     "multiplier": 1.383141,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "haircut": "central",
+     "monetisation": "slow",
+     "status": "refused",
+     "reason": "the base survival period of 3 days is already at or below the target of 30 days",
+     "multiplier": null,
+     "evals": 1
+    },
+    {
+     "haircut": "high",
+     "monetisation": "immediate",
+     "status": "solved",
+     "multiplier": 1.270925,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "haircut": "high",
+     "monetisation": "central",
+     "status": "solved",
+     "multiplier": 1.270925,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "haircut": "high",
+     "monetisation": "slow",
+     "status": "refused",
+     "reason": "the base survival period of 2 days is already at or below the target of 30 days",
+     "multiplier": null,
+     "evals": 1
+    }
+   ],
+   "joint_min": 1.270925,
+   "joint_max": 1.456144,
+   "joint_max_rel_deviation": 0.08113128018040089,
+   "all_solved": false,
+   "one_at_a_time": [
+    {
+     "factor": "haircut low",
+     "status": "solved",
+     "multiplier": 1.456144,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "factor": "haircut high",
+     "status": "solved",
+     "multiplier": 1.270925,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "factor": "monetisation immediate",
+     "status": "solved",
+     "multiplier": 1.383141,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "factor": "monetisation slow",
+     "status": "refused",
+     "reason": "the base survival period of 3 days is already at or below the target of 30 days",
+     "multiplier": null,
+     "evals": 1
+    }
+   ],
+   "mapping": [
+    {
+     "mapping": "operational deposits",
+     "class_rate": 0.00750509,
+     "base_sp": 57,
+     "status": "solved",
+     "multiplier": 1.936593,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "mapping": "non-financial corporates (central)",
+     "class_rate": 0.01065229,
+     "base_sp": 41,
+     "status": "solved",
+     "multiplier": 1.383141,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "mapping": "other legal entities",
+     "class_rate": 1.0,
+     "base_sp": 1,
+     "status": "refused",
+     "reason": "the base survival period of 1 days is already at or below the target of 30 days",
+     "multiplier": null,
+     "evals": 1
+    }
+   ],
+   "uninsured_share": [
+    {
+     "uninsured_share": 0.5,
+     "base_sp": 57,
+     "status": "solved",
+     "multiplier": 1.948441,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 16
+    },
+    {
+     "uninsured_share": 0.55,
+     "base_sp": 55,
+     "status": "solved",
+     "multiplier": 1.865199,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "uninsured_share": 0.6,
+     "base_sp": 53,
+     "status": "solved",
+     "multiplier": 1.787725,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "uninsured_share": 0.65,
+     "base_sp": 51,
+     "status": "solved",
+     "multiplier": 1.715556,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 18
+    },
+    {
+     "uninsured_share": 0.7,
+     "base_sp": 49,
+     "status": "solved",
+     "multiplier": 1.648262,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 18
+    },
+    {
+     "uninsured_share": 0.75,
+     "base_sp": 47,
+     "status": "solved",
+     "multiplier": 1.585443,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 18
+    },
+    {
+     "uninsured_share": 0.8,
+     "base_sp": 45,
+     "status": "solved",
+     "multiplier": 1.526729,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "uninsured_share": 0.85,
+     "base_sp": 44,
+     "status": "solved",
+     "multiplier": 1.471783,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "uninsured_share": 0.9,
+     "base_sp": 43,
+     "status": "solved",
+     "multiplier": 1.420297,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    },
+    {
+     "uninsured_share": 0.95,
+     "base_sp": 41,
+     "status": "solved",
+     "multiplier": 1.371988,
+     "sp_at": 30,
+     "sp_just_below": 31,
+     "evals": 17
+    }
+   ],
+   "by_target": [
+    {
+     "target": 1,
+     "status": "solved",
+     "multiplier": 13.29849,
+     "reason": null
+    },
+    {
+     "target": 2,
+     "status": "solved",
+     "multiplier": 13.29849,
+     "reason": null
+    },
+    {
+     "target": 3,
+     "status": "solved",
+     "multiplier": 13.29849,
+     "reason": null
+    },
+    {
+     "target": 4,
+     "status": "solved",
+     "multiplier": 10.228312,
+     "reason": null
+    },
+    {
+     "target": 5,
+     "status": "solved",
+     "multiplier": 8.263687,
+     "reason": null
+    },
+    {
+     "target": 6,
+     "status": "solved",
+     "multiplier": 6.928896,
+     "reason": null
+    },
+    {
+     "target": 7,
+     "status": "solved",
+     "multiplier": 5.963015,
+     "reason": null
+    },
+    {
+     "target": 8,
+     "status": "solved",
+     "multiplier": 5.231716,
+     "reason": null
+    },
+    {
+     "target": 9,
+     "status": "solved",
+     "multiplier": 4.658814,
+     "reason": null
+    },
+    {
+     "target": 10,
+     "status": "solved",
+     "multiplier": 4.197885,
+     "reason": null
+    },
+    {
+     "target": 11,
+     "status": "solved",
+     "multiplier": 3.819029,
+     "reason": null
+    },
+    {
+     "target": 12,
+     "status": "solved",
+     "multiplier": 3.502121,
+     "reason": null
+    },
+    {
+     "target": 13,
+     "status": "solved",
+     "multiplier": 3.233117,
+     "reason": null
+    },
+    {
+     "target": 14,
+     "status": "solved",
+     "multiplier": 3.001921,
+     "reason": null
+    },
+    {
+     "target": 15,
+     "status": "solved",
+     "multiplier": 2.801086,
+     "reason": null
+    },
+    {
+     "target": 16,
+     "status": "solved",
+     "multiplier": 2.625,
+     "reason": null
+    },
+    {
+     "target": 17,
+     "status": "solved",
+     "multiplier": 2.469355,
+     "reason": null
+    },
+    {
+     "target": 18,
+     "status": "solved",
+     "multiplier": 2.330788,
+     "reason": null
+    },
+    {
+     "target": 19,
+     "status": "solved",
+     "multiplier": 2.206634,
+     "reason": null
+    },
+    {
+     "target": 20,
+     "status": "solved",
+     "multiplier": 2.094756,
+     "reason": null
+    },
+    {
+     "target": 21,
+     "status": "solved",
+     "multiplier": 1.993419,
+     "reason": null
+    },
+    {
+     "target": 22,
+     "status": "solved",
+     "multiplier": 1.901201,
+     "reason": null
+    },
+    {
+     "target": 23,
+     "status": "solved",
+     "multiplier": 1.816924,
+     "reason": null
+    },
+    {
+     "target": 24,
+     "status": "solved",
+     "multiplier": 1.739605,
+     "reason": null
+    },
+    {
+     "target": 25,
+     "status": "solved",
+     "multiplier": 1.668417,
+     "reason": null
+    },
+    {
+     "target": 26,
+     "status": "solved",
+     "multiplier": 1.602658,
+     "reason": null
+    },
+    {
+     "target": 27,
+     "status": "solved",
+     "multiplier": 1.541731,
+     "reason": null
+    },
+    {
+     "target": 28,
+     "status": "solved",
+     "multiplier": 1.485121,
+     "reason": null
+    },
+    {
+     "target": 29,
+     "status": "solved",
+     "multiplier": 1.432386,
+     "reason": null
+    },
+    {
+     "target": 30,
+     "status": "solved",
+     "multiplier": 1.383141,
+     "reason": null
+    },
+    {
+     "target": 31,
+     "status": "solved",
+     "multiplier": 1.337051,
+     "reason": null
+    },
+    {
+     "target": 32,
+     "status": "solved",
+     "multiplier": 1.293822,
+     "reason": null
+    },
+    {
+     "target": 33,
+     "status": "solved",
+     "multiplier": 1.253196,
+     "reason": null
+    },
+    {
+     "target": 34,
+     "status": "solved",
+     "multiplier": 1.214945,
+     "reason": null
+    },
+    {
+     "target": 35,
+     "status": "solved",
+     "multiplier": 1.178867,
+     "reason": null
+    },
+    {
+     "target": 36,
+     "status": "solved",
+     "multiplier": 1.144781,
+     "reason": null
+    },
+    {
+     "target": 37,
+     "status": "solved",
+     "multiplier": 1.112527,
+     "reason": null
+    },
+    {
+     "target": 38,
+     "status": "solved",
+     "multiplier": 1.081961,
+     "reason": null
+    },
+    {
+     "target": 39,
+     "status": "solved",
+     "multiplier": 1.052955,
+     "reason": null
+    },
+    {
+     "target": 40,
+     "status": "solved",
+     "multiplier": 1.025391,
+     "reason": null
+    },
+    {
+     "target": 41,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 41 days"
+    },
+    {
+     "target": 42,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 42 days"
+    },
+    {
+     "target": 43,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 43 days"
+    },
+    {
+     "target": 44,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 44 days"
+    },
+    {
+     "target": 45,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 45 days"
+    },
+    {
+     "target": 46,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 46 days"
+    },
+    {
+     "target": 47,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 47 days"
+    },
+    {
+     "target": 48,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 48 days"
+    },
+    {
+     "target": 49,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 49 days"
+    },
+    {
+     "target": 50,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 50 days"
+    },
+    {
+     "target": 51,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 51 days"
+    },
+    {
+     "target": 52,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 52 days"
+    },
+    {
+     "target": 53,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 53 days"
+    },
+    {
+     "target": 54,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 54 days"
+    },
+    {
+     "target": 55,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 55 days"
+    },
+    {
+     "target": 56,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 56 days"
+    },
+    {
+     "target": 57,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 57 days"
+    },
+    {
+     "target": 58,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 58 days"
+    },
+    {
+     "target": 59,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 59 days"
+    },
+    {
+     "target": 60,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 60 days"
+    },
+    {
+     "target": 61,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 61 days"
+    },
+    {
+     "target": 62,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 62 days"
+    },
+    {
+     "target": 63,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 63 days"
+    },
+    {
+     "target": 64,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 64 days"
+    },
+    {
+     "target": 65,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 65 days"
+    },
+    {
+     "target": 66,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 66 days"
+    },
+    {
+     "target": 67,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 67 days"
+    },
+    {
+     "target": 68,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 68 days"
+    },
+    {
+     "target": 69,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 69 days"
+    },
+    {
+     "target": 70,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 70 days"
+    },
+    {
+     "target": 71,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 71 days"
+    },
+    {
+     "target": 72,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 72 days"
+    },
+    {
+     "target": 73,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 73 days"
+    },
+    {
+     "target": 74,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 74 days"
+    },
+    {
+     "target": 75,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 75 days"
+    },
+    {
+     "target": 76,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 76 days"
+    },
+    {
+     "target": 77,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 77 days"
+    },
+    {
+     "target": 78,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 78 days"
+    },
+    {
+     "target": 79,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 79 days"
+    },
+    {
+     "target": 80,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 80 days"
+    },
+    {
+     "target": 81,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 81 days"
+    },
+    {
+     "target": 82,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 82 days"
+    },
+    {
+     "target": 83,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 83 days"
+    },
+    {
+     "target": 84,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 84 days"
+    },
+    {
+     "target": 85,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 85 days"
+    },
+    {
+     "target": 86,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 86 days"
+    },
+    {
+     "target": 87,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 87 days"
+    },
+    {
+     "target": 88,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 88 days"
+    },
+    {
+     "target": 89,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 89 days"
+    },
+    {
+     "target": 90,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 90 days"
+    },
+    {
+     "target": 91,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 91 days"
+    },
+    {
+     "target": 92,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 92 days"
+    },
+    {
+     "target": 93,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 93 days"
+    },
+    {
+     "target": 94,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 94 days"
+    },
+    {
+     "target": 95,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 95 days"
+    },
+    {
+     "target": 96,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 96 days"
+    },
+    {
+     "target": 97,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 97 days"
+    },
+    {
+     "target": 98,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 98 days"
+    },
+    {
+     "target": 99,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 99 days"
+    },
+    {
+     "target": 100,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 100 days"
+    },
+    {
+     "target": 101,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 101 days"
+    },
+    {
+     "target": 102,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 102 days"
+    },
+    {
+     "target": 103,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 103 days"
+    },
+    {
+     "target": 104,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 104 days"
+    },
+    {
+     "target": 105,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 105 days"
+    },
+    {
+     "target": 106,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 106 days"
+    },
+    {
+     "target": 107,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 107 days"
+    },
+    {
+     "target": 108,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 108 days"
+    },
+    {
+     "target": 109,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 109 days"
+    },
+    {
+     "target": 110,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 110 days"
+    },
+    {
+     "target": 111,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 111 days"
+    },
+    {
+     "target": 112,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 112 days"
+    },
+    {
+     "target": 113,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 113 days"
+    },
+    {
+     "target": 114,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 114 days"
+    },
+    {
+     "target": 115,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 115 days"
+    },
+    {
+     "target": 116,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 116 days"
+    },
+    {
+     "target": 117,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 117 days"
+    },
+    {
+     "target": 118,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 118 days"
+    },
+    {
+     "target": 119,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 119 days"
+    },
+    {
+     "target": 120,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 120 days"
+    },
+    {
+     "target": 121,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 121 days"
+    },
+    {
+     "target": 122,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 122 days"
+    },
+    {
+     "target": 123,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 123 days"
+    },
+    {
+     "target": 124,
+     "status": "refused",
+     "multiplier": null,
+     "reason": "the base survival period of 41 days is already at or below the target of 124 days"
+    }
+   ],
+   "by_target_monotone": true,
+   "by_target_solved_up_to": 40
+  }
+ },
+ "labelled_run": {
+  "rows": [
+   {
+    "row_id": "svb-2023",
+    "bank": "SVB",
+    "year": 2023,
+    "days": 2,
+    "observed": 0.85,
+    "role": "scored",
+    "modelled": 0.17083002185967083,
+    "ratio": 0.2009764963054951,
+    "light": "red",
+    "equals_committed": true
+   },
+   {
+    "row_id": "first-republic-2023",
+    "bank": "First Republic",
+    "year": 2023,
+    "days": 90,
+    "observed": 0.57,
+    "role": "scored",
+    "modelled": null,
+    "ratio": null,
+    "light": null,
+    "equals_committed": true
+   },
+   {
+    "row_id": "svb-uk-2023",
+    "bank": "SVB UK",
+    "year": 2023,
+    "days": 1,
+    "observed": 0.3,
+    "role": "scored",
+    "modelled": 0.12628958397883855,
+    "ratio": 0.42096527992946187,
+    "light": "red",
+    "equals_committed": true
+   },
+   {
+    "row_id": "credit-suisse-2023",
+    "bank": "Credit Suisse",
+    "year": 2023,
+    "days": 90,
+    "observed": 0.21,
+    "role": "scored",
+    "modelled": null,
+    "ratio": null,
+    "light": null,
+    "equals_committed": true
+   },
+   {
+    "row_id": "signature-2023",
+    "bank": "Signature",
+    "year": 2023,
+    "days": 1,
+    "observed": 0.2,
+    "role": "scored",
+    "modelled": 0.12628958397883855,
+    "ratio": 0.6314479198941927,
+    "light": "amber",
+    "equals_committed": true
+   },
+   {
+    "row_id": "icesave-2008",
+    "bank": "Icesave",
+    "year": 2008,
+    "days": 75,
+    "observed": 0.2,
+    "role": "calibration",
+    "modelled": null,
+    "ratio": null,
+    "light": null,
+    "equals_committed": true
+   },
+   {
+    "row_id": "northern-rock-2007",
+    "bank": "Northern Rock",
+    "year": 2007,
+    "days": 4,
+    "observed": 0.2,
+    "role": "calibration",
+    "modelled": 0.2528234115028157,
+    "ratio": 1.2641170575140783,
+    "light": "green",
+    "equals_committed": true
+   },
+   {
+    "row_id": "wamu-2008",
+    "bank": "WaMu",
+    "year": 2008,
+    "days": 10,
+    "observed": 0.1,
+    "role": "calibration",
+    "modelled": null,
+    "ratio": null,
+    "light": null,
+    "equals_committed": true
+   },
+   {
+    "row_id": "indymac-2008",
+    "bank": "IndyMac",
+    "year": 2008,
+    "days": 14,
+    "observed": 0.08,
+    "role": "calibration",
+    "modelled": null,
+    "ratio": null,
+    "light": null,
+    "equals_committed": true
+   }
+  ],
+  "denominators": [
+   {
+    "id": "board-stated-share",
+    "realised_share": 0.85,
+    "modelled_share": 0.17083002185967083,
+    "ratio": 0.2009764963054951,
+    "light": "red"
+   },
+   {
+    "id": "call-report-dep",
+    "realised_share": 0.7982757244352199,
+    "modelled_share": 0.17093035081912725,
+    "ratio": 0.21412445047112072,
+    "light": "red"
+   }
+  ],
+  "svb_modelled_2d": 0.17083002185967083,
+  "svb_ratio_2d": 0.2009764963054951,
+  "rules": [
+   {
+    "rule": "maximum-implied-daily-rate",
+    "rate": 0.05425839099682417,
+    "modelled_2d": 0.17083002185967083,
+    "ratio_2d": 0.2009764963054951,
+    "light": "red"
+   },
+   {
+    "rule": "median-implied-daily-rate",
+    "rate": 0.008209435105664242,
+    "modelled_2d": 0.09375478063618133,
+    "ratio_2d": 0.1102997419249192,
+    "light": "red"
+   },
+   {
+    "rule": "mean-implied-daily-rate",
+    "rate": 0.01841202172421899,
+    "modelled_2d": 0.11114747536659689,
+    "ratio_2d": 0.1307617357254081,
+    "light": "red"
+   }
+  ],
+  "leave_one_out": [
+   {
+    "left_out": "Icesave",
+    "rate": 0.05425839099682417
+   },
+   {
+    "left_out": "Northern Rock",
+    "rate": 0.010480741793785553
+   },
+   {
+    "left_out": "WaMu",
+    "rate": 0.05425839099682417
+   },
+   {
+    "left_out": "IndyMac",
+    "rate": 0.05425839099682417
+   }
+  ],
+  "implied_rates": {
+   "Icesave": 0.002970825688723311,
+   "Northern Rock": 0.05425839099682417,
+   "WaMu": 0.010480741793785553,
+   "IndyMac": 0.005938128417542932
+  },
+  "multiplier_of_labelled_run": 12.218168059280186,
+  "share_2d_at_that_multiplier": 0.85,
+  "sp_at_that_multiplier": 1,
+  "cap": 18.430329053777722,
+  "reverse_by_target": {
+   "1": {
+    "status": "solved",
+    "multiplier": 2.669936,
+    "sp_at": 1,
+    "sp_just_below": 4,
+    "evals": 11
+   },
+   "2": {
+    "status": "solved",
+    "multiplier": 2.669936,
+    "sp_at": 1,
+    "sp_just_below": 4,
+    "evals": 11
+   },
+   "3": {
+    "status": "solved",
+    "multiplier": 2.669936,
+    "sp_at": 1,
+    "sp_just_below": 4,
+    "evals": 11
+   },
+   "4": {
+    "status": "solved",
+    "multiplier": 2.06764,
+    "sp_at": 4,
+    "sp_just_below": 5,
+    "evals": 17
+   },
+   "5": {
+    "status": "refused",
+    "reason": "the target of 5 days is not below the horizon of 5 days",
+    "multiplier": null,
+    "evals": 0
+   },
+   "30": {
+    "status": "refused",
+    "reason": "the target of 30 days is not below the horizon of 5 days",
+    "multiplier": null,
+    "evals": 0
+   }
+  },
+  "ratio_labelled_to_reverse_t2": 4.576202597845112,
+  "curves": {
+   "calibrated": [
+    0.12628958397883855,
+    0.17083002185967083,
+    0.21296446249340154,
+    0.2528234115028157,
+    0.29053029363456584
+   ],
+   "reverse_t2": [
+    0.2049175651101242,
+    0.31249499333143665,
+    0.404563828156328,
+    0.48336998919511154,
+    0.5508340452219382
+   ],
+   "labelled": [
+    0.6544906087442628,
+    0.85,
+    0.9174282860593485,
+    0.9416155695029651,
+    0.9511613936174191
+   ]
+  },
+  "cbc_total_day": [
+   35959135.27149031,
+   57400752.43438451,
+   71675110.54298063,
+   71614950.54298063,
+   71554790.54298063
+  ],
+  "opening_total": 175481000.0
+ },
+ "derivative": {
+  "list-adverse": {
+   "t0_day": 30,
+   "capacity_at_t0": 70050790.54298063,
+   "dX_dm": 21338388.528117888,
+   "dm_dcapacity": 4.686389502573197e-08,
+   "finite_difference": 4.686599500951837e-08,
+   "rel_difference": 4.4808262066649437e-05,
+   "eps": 70050.79054298063,
+   "elasticity": 1.549849702916795,
+   "multiplier_up": 2.121459,
+   "multiplier_down": 2.114893
+  },
+  "list-extreme": {
+   "t0_day": 30,
+   "capacity_at_t0": 70050790.54298063,
+   "dX_dm": 32605535.3621123,
+   "dm_dcapacity": 3.06696390319664e-08,
+   "finite_difference": 3.0670603191576485e-08,
+   "rel_difference": 3.143595201127345e-05,
+   "eps": 70050.79054298063,
+   "elasticity": 1.5532996707183877,
+   "multiplier_up": 1.38529,
+   "multiplier_down": 1.380993
+  }
+ },
+ "R": {
+  "R1": true,
+  "R2": true,
+  "R3": true,
+  "R4": true,
+  "R5": true
+ },
+ "H": {
+  "H7": {
+   "list-adverse": 4.4808262066649437e-05,
+   "list-extreme": 3.143595201127345e-05
+  },
+  "H7_held": true,
+  "H8_joint_max_rel_deviation": 0.49784791152761215,
+  "H8_held": false,
+  "H9_row": {
+   "mapping": "other legal entities",
+   "class_rate": 1.0,
+   "base_sp": 1,
+   "status": "refused",
+   "reason": "the base survival period of 1 days is already at or below the target of 30 days",
+   "multiplier": null,
+   "evals": 1
+  },
+  "H9_held": true,
+  "H10_ratio_2d": 0.2009764963054951,
+  "H10_held": false,
+  "H11_ratio": 4.576202597845112,
+  "H11_held": true,
+  "H12_max_ratio_other_rules": 0.1307617357254081,
+  "H12_held": true
+ }
+}

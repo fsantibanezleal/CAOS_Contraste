@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{The effect of the last digit of a held parameter on the proposed test: a parameter held at 4 years through a 12-quarter history with two breach dates, to which Gaussian noise of the stated size is added at each date; the last row is the same value recomputed as 0.1 plus 0.2 and as 0.3, two floating-point numbers that differ.}
+\label{tab:last-digit}
+\begin{tabular}{lll}
+\toprule
+Noise on the held value (standard deviation) & Engine & Flagged changes \\
+\midrule
+0 & green & 0 \\
+1e-16 & green & 0 \\
+1e-13 & red & 2 \\
+1e-09 & red & 2 \\
+1e-06 & red & 2 \\
+$0.1+0.2$ against $0.3$ & red & 2 \\
+\bottomrule
+\end{tabular}
+\end{table}

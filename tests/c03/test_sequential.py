@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 
 from pipeline.cases.c03 import sequential as sq
+from pipeline.stages.export import compact
 
 ROOT = Path(__file__).resolve().parents[2]
 DERIVED = ROOT / "data" / "derived" / "C03"
@@ -100,13 +101,32 @@ def _doc(c: str) -> dict:
     return json.loads((DERIVED / f"{c}.json").read_text(encoding="utf-8"))
 
 
+# The committed vintage curves the rebuild reads are themselves rounded to nine significant digits by the writer, so a rebuild from them
+# agrees with the committed block to about the seventh significant digit (measured: 24 of 185 floats differ, at most 9.6e-9 relative,
+# 2026-11-08); 1e-7 relative is five orders below any printed digit and still fails on any real change of the block.
+REL_TOL = 1e-7
+
+
+def _same(a, b) -> bool:
+    """Equal structure and strings, floats equal to REL_TOL relative."""
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(_same(a[k], b[k]) for k in a)
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(_same(x, y) for x, y in zip(a, b))
+    if isinstance(a, float) or isinstance(b, float):
+        return isinstance(a, (int, float)) and isinstance(b, (int, float)) and math.isclose(a, b, rel_tol=REL_TOL, abs_tol=0.0)
+    return a == b
+
+
 @pytest.mark.parametrize("c", COHORTS)
 def test_every_committed_cohort_carries_the_block_and_it_is_the_build_of_its_own_curves(c):
     d = _doc(c)
     s = d["outputs"]["sequential"]
     champ = d["outputs"]["calibration"]["rung_id"]
-    again = sq.build([x for x in d["outputs"]["vintage_curves"]], d["tests"], champ)
-    assert again == {k: v for k, v in s.items() if k in again}
+    # the document is what the writer makes of the build: the product's own rounding (`export.compact`, nine significant digits), compared
+    # to REL_TOL because the curves the rebuild reads are rounded too
+    again = compact(sq.build([x for x in d["outputs"]["vintage_curves"]], d["tests"], champ))
+    assert _same(again, {k: v for k, v in s.items() if k in again})
     assert s["months"] == MONTHS and s["alpha_level"] == 0.05 and s["threshold"] == 20.0
     assert s["engine"] == "riskvalidation.validation.sequential" and s["engine_version"] == "1.1.0"
     for t in ("reading", "limits"):

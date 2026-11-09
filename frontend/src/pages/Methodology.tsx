@@ -268,7 +268,7 @@ function SizeAndPower() {
         />
         <Equation
           tex="\hat r = \frac{1}{n_{sim}}\sum_{i=1}^{n_{sim}} \mathbb 1(p_i < \alpha), \qquad \widehat{\mathrm{SE}}(\hat r) = \sqrt{\frac{\hat r(1-\hat r)}{n_{sim}}}, \qquad \hat r \le \alpha + z_{0.999}\sqrt{\frac{\alpha(1-\alpha)}{n_{sim}}}"
-          caption={t('The rejection rate, its Monte Carlo standard error (Morris, White and Crowther 2019, Table 6) and the size bound: a test holds its size when its rate under the null at its boundary is at most the level plus 3.09 standard errors, 6.06% at 5% with 4,000 repetitions.', 'La tasa de rechazo, su error estándar de Monte Carlo (Morris, White y Crowther 2019, tabla 6) y la cota de tamaño: una prueba mantiene su tamaño cuando su tasa bajo la nula en su frontera es a lo más el nivel más 3,09 errores estándar, 6,06 % al 5 % con 4.000 repeticiones.')}
+          caption={t('The rejection rate, its Monte Carlo standard error (Morris, White and Crowther 2019, Table 6) and the size bound: a test passes the size screen when its rate under the null at its boundary is at most the level plus 3.09 standard errors, 6.06% at 5% with 4,000 repetitions (on 200,000 repetitions per test, 12 of the 21 credit-family tests hold their size by the definition of the paper, a stricter reading than the screen).', 'La tasa de rechazo, su error estándar de Monte Carlo (Morris, White y Crowther 2019, tabla 6) y la cota de tamaño: una prueba pasa el filtro de tamaño cuando su tasa bajo la nula en su frontera es a lo más el nivel más 3,09 errores estándar, 6,06 % al 5 % con 4.000 repeticiones (con 200.000 repeticiones por prueba, 12 de las 21 pruebas de las familias de crédito mantienen su tamaño según la definición del artículo, una lectura más estricta que el filtro).')}
         />
               <h3 className="ct-sub">
           <T en="Where no simulation is needed" es="Donde no se necesita simulación" />
@@ -327,7 +327,6 @@ export function Methodology() {
               { id: 'scorecards', label: t('Scorecards', 'Tarjetas de puntuación'), content: <Scorecards /> },
               { id: 'glass-box', label: t('Glass-box models', 'Modelos de caja de vidrio'), content: <GlassBox /> },
               { id: 'boosting', label: t('Boosting and TabPFN', 'Potenciación y TabPFN'), content: <Boosting /> },
-              { id: 'migrations', label: t('Migration matrices', 'Matrices de migración'), content: <Migrations /> },
               ...registered('models', lang),
             ],
           },
@@ -344,7 +343,14 @@ export function Methodology() {
             ],
           },
           ...(registered('loss', lang).length > 0
-            ? [{ id: 'loss', label: t('Expected loss, severity and exposure', 'Pérdida esperada, severidad y exposición'), tabs: registered('loss', lang) }]
+            ? [
+                {
+                  id: 'loss',
+                  label: t('Expected loss, severity and exposure', 'Pérdida esperada, severidad y exposición'),
+                  // the migration matrices are the lifetime PD's input, so they open this group (ADR-0071 rule 5: at most six peers in a row)
+                  tabs: [{ id: 'migrations', label: t('Migration matrices', 'Matrices de migración'), content: <Migrations /> }, ...registered('loss', lang)],
+                },
+              ]
             : []),
           ...(registered('capital', lang).length > 0
             ? [{ id: 'capital', label: t('Capital models', 'Modelos de capital'), tabs: registered('capital', lang) }]

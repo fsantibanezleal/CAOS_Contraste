@@ -1,0 +1,440 @@
+{
+ "reps": 20,
+ "n_draws": 1000000,
+ "structures": [
+  {
+   "id": "gaussian-base",
+   "label": "Gaussian, base matrix",
+   "family": "in the band",
+   "truth": 487881.13167340076,
+   "truth_se": 650.3033742261528,
+   "truth_over_headline": 0.7414089384232807,
+   "hybrid_calibrated": 492082.75326891075,
+   "gaussian_kendall_calibrated": 484706.08600756346,
+   "gaussian_kendall_se": 3101.831817729791,
+   "gaussian_kendall_note": "ok",
+   "relative_error": {
+    "simple-sum": 0.34878330726178275,
+    "variance-covariance": 0.08244878632221653,
+    "gaussian-copula": 0.0003890224113041185,
+    "t-copula-nu4": 0.12105242695960894,
+    "t-copula-nu8": 0.07140539896181308,
+    "t-copula-nu30": 0.022281231166682902,
+    "hybrid-calibrated": 0.00861197804698599,
+    "gaussian-kendall-calibrated": -0.006507826312009857
+   },
+   "covered_sharp_range": true,
+   "covered_interior": true,
+   "covered_interior_with_stress": true,
+   "gaussian_within_tolerance": true,
+   "interior_range": [
+    488070.9283676742,
+    546940.3267302664
+   ],
+   "interior_range_with_stress": [
+    488070.9283676742,
+    584399.6546551468
+   ],
+   "truth_above_worst": false,
+   "truth_below_lower": false
+  },
+  {
+   "id": "gaussian-stress",
+   "label": "Gaussian, market-credit 0.8",
+   "family": "in the band",
+   "truth": 551088.1765939594,
+   "truth_se": 1057.6040597449044,
+   "truth_over_headline": 0.8374615730367355,
+   "hybrid_calibrated": 530566.2008382253,
+   "gaussian_kendall_calibrated": 547789.2876621604,
+   "gaussian_kendall_se": 3228.411046239855,
+   "gaussian_kendall_note": "ok",
+   "relative_error": {
+    "simple-sum": 0.19408463886155491,
+    "variance-covariance": -0.04170265072028623,
+    "gaussian-copula": -0.11435057201874288,
+    "t-copula-nu4": -0.007526653700554942,
+    "t-copula-nu8": -0.05147941703779535,
+    "t-copula-nu30": -0.09496928961051199,
+    "hybrid-calibrated": -0.037239005711520945,
+    "gaussian-kendall-calibrated": -0.00598613628800404
+   },
+   "covered_sharp_range": true,
+   "covered_interior": false,
+   "covered_interior_with_stress": true,
+   "gaussian_within_tolerance": false,
+   "interior_range": [
+    488070.9283676742,
+    546940.3267302664
+   ],
+   "interior_range_with_stress": [
+    488070.9283676742,
+    584399.6546551468
+   ],
+   "truth_above_worst": false,
+   "truth_below_lower": false
+  },
+  {
+   "id": "gaussian-crisis",
+   "label": "Gaussian, crisis matrix",
+   "family": "matrix outside the band",
+   "truth": 575935.3069785145,
+   "truth_se": 673.7478329481188,
+   "truth_over_headline": 0.8752205339092168,
+   "hybrid_calibrated": 552522.8545515202,
+   "gaussian_kendall_calibrated": 577704.9180778419,
+   "gaussian_kendall_se": 2983.1453099179753,
+   "gaussian_kendall_note": "ok",
+   "relative_error": {
+    "simple-sum": 0.14256917114758427,
+    "variance-covariance": -0.08304573022281592,
+    "gaussian-copula": -0.15255945858189623,
+    "t-copula-nu4": -0.050344161743377414,
+    "t-copula-nu8": -0.09240070509172482,
+    "t-copula-nu30": -0.13401432781288958,
+    "hybrid-calibrated": -0.04065118450511618,
+    "gaussian-kendall-calibrated": 0.0030725865872178737
+   },
+   "covered_sharp_range": true,
+   "covered_interior": false,
+   "covered_interior_with_stress": true,
+   "gaussian_within_tolerance": false,
+   "interior_range": [
+    488070.9283676742,
+    546940.3267302664
+   ],
+   "interior_range_with_stress": [
+    488070.9283676742,
+    584399.6546551468
+   ],
+   "truth_above_worst": false,
+   "truth_below_lower": false
+  },
+  {
+   "id": "gaussian-independent",
+   "label": "Gaussian, independent risks",
+   "family": "matrix outside the band",
+   "truth": 348751.8007482981,
+   "truth_se": 453.3209660440029,
+   "truth_over_headline": 0.529980943266104,
+   "hybrid_calibrated": 359220.02427396755,
+   "gaussian_kendall_calibrated": 347681.5562647759,
+   "gaussian_kendall_se": 2162.14545598781,
+   "gaussian_kendall_note": "ok",
+   "relative_error": {
+    "simple-sum": 0.8868602969709025,
+    "variance-covariance": 0.5142755900220517,
+    "gaussian-copula": 0.39947930683209787,
+    "t-copula-nu4": 0.5682795775010359,
+    "t-copula-nu8": 0.49882660793409994,
+    "t-copula-nu30": 0.4301050858516968,
+    "hybrid-calibrated": 0.03001625655611906,
+    "gaussian-kendall-calibrated": -0.0030687855409659015
+   },
+   "covered_sharp_range": true,
+   "covered_interior": false,
+   "covered_interior_with_stress": false,
+   "gaussian_within_tolerance": false,
+   "interior_range": [
+    488070.9283676742,
+    546940.3267302664
+   ],
+   "interior_range_with_stress": [
+    488070.9283676742,
+    584399.6546551468
+   ],
+   "truth_above_worst": false,
+   "truth_below_lower": false
+  },
+  {
+   "id": "t3-base",
+   "label": "t copula, 3 degrees, base matrix",
+   "family": "degrees outside the set",
+   "truth": 555614.1688822287,
+   "truth_se": 782.9499314552413,
+   "truth_over_headline": 0.8443395007119627,
+   "hybrid_calibrated": 505912.21892969747,
+   "gaussian_kendall_calibrated": 487743.6720549581,
+   "gaussian_kendall_se": 2093.9890885784275,
+   "gaussian_kendall_note": "ok",
+   "relative_error": {
+    "simple-sum": 0.18435771293038106,
+    "variance-covariance": -0.049508870675825545,
+    "gaussian-copula": -0.12156500733312181,
+    "t-copula-nu4": -0.01561126882241326,
+    "t-copula-nu8": -0.05920599617163591,
+    "t-copula-nu30": -0.10234160343056853,
+    "hybrid-calibrated": -0.08945407215320011,
+    "gaussian-kendall-calibrated": -0.12215400655424391
+   },
+   "covered_sharp_range": true,
+   "covered_interior": false,
+   "covered_interior_with_stress": true,
+   "gaussian_within_tolerance": false,
+   "interior_range": [
+    488070.9283676742,
+    546940.3267302664
+   ],
+   "interior_range_with_stress": [
+    488070.9283676742,
+    584399.6546551468
+   ],
+   "truth_above_worst": false,
+   "truth_below_lower": false
+  },
+  {
+   "id": "t25-base",
+   "label": "t copula, 2.5 degrees, base matrix",
+   "family": "degrees outside the set",
+   "truth": 560942.8959164004,
+   "truth_se": 760.9388208655863,
+   "truth_over_headline": 0.8524373048635637,
+   "hybrid_calibrated": 492575.1273899518,
+   "gaussian_kendall_calibrated": 488572.32166666555,
+   "gaussian_kendall_se": 2186.042433697709,
+   "gaussian_kendall_note": "ok",
+   "relative_error": {
+    "simple-sum": 0.173106801279719,
+    "variance-covariance": -0.058538145872003344,
+    "gaussian-copula": -0.1299097788370719,
+    "t-copula-nu4": -0.024962557308544242,
+    "t-copula-nu8": -0.06814315265990345,
+    "t-copula-nu30": -0.11086898937318967,
+    "hybrid-calibrated": -0.12188008623365776,
+    "gaussian-kendall-calibrated": -0.1290159386571864
+   },
+   "covered_sharp_range": true,
+   "covered_interior": false,
+   "covered_interior_with_stress": true,
+   "gaussian_within_tolerance": false,
+   "interior_range": [
+    488070.9283676742,
+    546940.3267302664
+   ],
+   "interior_range_with_stress": [
+    488070.9283676742,
+    584399.6546551468
+   ],
+   "truth_above_worst": false,
+   "truth_below_lower": false
+  },
+  {
+   "id": "t3-crisis",
+   "label": "t copula, 3 degrees, crisis matrix",
+   "family": "degrees and matrix outside",
+   "truth": 611091.2407176623,
+   "truth_se": 556.9263057526852,
+   "truth_over_headline": 0.9286452757585679,
+   "hybrid_calibrated": 555206.1499320529,
+   "gaussian_kendall_calibrated": 573167.6281494871,
+   "gaussian_kendall_se": 3209.7645831495674,
+   "gaussian_kendall_note": "ok",
+   "relative_error": {
+    "simple-sum": 0.07683743847525171,
+    "variance-covariance": -0.1357978912785972,
+    "gaussian-copula": -0.20131251137802875,
+    "t-copula-nu4": -0.10497763625617895,
+    "t-copula-nu8": -0.14461467666824512,
+    "t-copula-nu30": -0.18383427757146809,
+    "hybrid-calibrated": -0.0914513039329089,
+    "gaussian-kendall-calibrated": -0.06205883842098259
+   },
+   "covered_sharp_range": true,
+   "covered_interior": false,
+   "covered_interior_with_stress": false,
+   "gaussian_within_tolerance": false,
+   "interior_range": [
+    488070.9283676742,
+    546940.3267302664
+   ],
+   "interior_range_with_stress": [
+    488070.9283676742,
+    584399.6546551468
+   ],
+   "truth_above_worst": false,
+   "truth_below_lower": false
+  },
+  {
+   "id": "regime-mixture",
+   "label": "Gaussian regimes, 5 percent crisis",
+   "family": "family outside the band",
+   "truth": 493686.36945831345,
+   "truth_se": 565.8083916181329,
+   "truth_over_headline": 0.7502308725051424,
+   "hybrid_calibrated": 500768.0296891323,
+   "gaussian_kendall_calibrated": 489103.34929465345,
+   "gaussian_kendall_se": 2954.242678356196,
+   "gaussian_kendall_note": "ok",
+   "relative_error": {
+    "simple-sum": 0.3329230196310611,
+    "variance-covariance": 0.06972031540760426,
+    "gaussian-copula": -0.011374511102667628,
+    "t-copula-nu4": 0.10787001741689717,
+    "t-copula-nu8": 0.058806786786562926,
+    "t-copula-nu30": 0.010260268067200373,
+    "hybrid-calibrated": 0.014344451597051444,
+    "gaussian-kendall-calibrated": -0.009283262506697532
+   },
+   "covered_sharp_range": true,
+   "covered_interior": true,
+   "covered_interior_with_stress": true,
+   "gaussian_within_tolerance": true,
+   "interior_range": [
+    488070.9283676742,
+    546940.3267302664
+   ],
+   "interior_range_with_stress": [
+    488070.9283676742,
+    584399.6546551468
+   ],
+   "truth_above_worst": false,
+   "truth_below_lower": false
+  },
+  {
+   "id": "clayton-survival",
+   "label": "Clayton, reflected, same mean tau",
+   "family": "family outside the band",
+   "truth": 583194.0709447376,
+   "truth_se": 1101.280100959926,
+   "truth_over_headline": 0.8862513201747232,
+   "hybrid_calibrated": 481291.1219484215,
+   "gaussian_kendall_calibrated": 455784.98459694715,
+   "gaussian_kendall_se": 2026.2428991165743,
+   "gaussian_kendall_note": "ok",
+   "relative_error": {
+    "simple-sum": 0.12834810762578197,
+    "variance-covariance": -0.0944586628017614,
+    "gaussian-copula": -0.16310718389672574,
+    "t-copula-nu4": -0.062164116579138784,
+    "t-copula-nu8": -0.1036972003509744,
+    "t-copula-nu30": -0.14479287633680438,
+    "hybrid-calibrated": -0.1747324845591104,
+    "gaussian-kendall-calibrated": -0.21846773260468133
+   },
+   "covered_sharp_range": true,
+   "covered_interior": false,
+   "covered_interior_with_stress": true,
+   "gaussian_within_tolerance": false,
+   "interior_range": [
+    488070.9283676742,
+    546940.3267302664
+   ],
+   "interior_range_with_stress": [
+    488070.9283676742,
+    584399.6546551468
+   ],
+   "truth_above_worst": false,
+   "truth_below_lower": false
+  },
+  {
+   "id": "gumbel",
+   "label": "Gumbel, same mean tau",
+   "family": "family outside the band",
+   "truth": 577019.7639853198,
+   "truth_se": 1133.7756185624776,
+   "truth_over_headline": 0.8768685298368794,
+   "hybrid_calibrated": 475065.6420847185,
+   "gaussian_kendall_calibrated": 451981.2141576001,
+   "gaussian_kendall_se": 2750.6607486771804,
+   "gaussian_kendall_note": "ok",
+   "relative_error": {
+    "simple-sum": 0.14042181464309866,
+    "variance-covariance": -0.08476906371127713,
+    "gaussian-copula": -0.15415214723894377,
+    "t-copula-nu4": -0.0521289549032129,
+    "t-copula-nu8": -0.0941064567421307,
+    "t-copula-nu30": -0.13564187038354603,
+    "hybrid-calibrated": -0.17669086617836394,
+    "gaussian-kendall-calibrated": -0.21669716989260845
+   },
+   "covered_sharp_range": true,
+   "covered_interior": false,
+   "covered_interior_with_stress": true,
+   "gaussian_within_tolerance": false,
+   "interior_range": [
+    488070.9283676742,
+    546940.3267302664
+   ],
+   "interior_range_with_stress": [
+    488070.9283676742,
+    584399.6546551468
+   ],
+   "truth_above_worst": false,
+   "truth_below_lower": false
+  }
+ ],
+ "band_rows_used": {
+  "base": {
+   "lower-bound": 118508.51353539355,
+   "simple-sum": 658045.9263290708,
+   "variance-covariance": 528106.3388493821,
+   "gaussian-copula": 488070.9283676742,
+   "t-copula-nu4": 546940.3267302664,
+   "t-copula-nu8": 522718.4785264808,
+   "t-copula-nu30": 498751.7239500787,
+   "worst-case": 823346.9923477678
+  },
+  "stress": {
+   "lower-bound": 118508.51353539356,
+   "simple-sum": 658045.9263290708,
+   "variance-covariance": 568520.4605747111,
+   "gaussian-copula": 549690.2674738858,
+   "t-copula-nu4": 584399.6546551468,
+   "t-copula-nu8": 572390.5037149366,
+   "t-copula-nu30": 558345.0412513812,
+   "worst-case": 823346.8714285825
+  }
+ },
+ "self_checks": {
+  "stable_laplace": {
+   "0.5": {
+    "simulated": 0.517263425937268,
+    "closed_form": 0.5169785186244024
+   },
+   "1.0": {
+    "simulated": 0.36817224209749866,
+    "closed_form": 0.36787944117144233
+   },
+   "2.0": {
+    "simulated": 0.2198626435001666,
+    "closed_form": 0.2196507340824983
+   }
+  },
+  "clayton": {
+   "theta": 2.0,
+   "tau_simulated": 0.4982394431888638,
+   "tau_closed_form": 0.5
+  },
+  "gumbel": {
+   "theta": 1.6666666666666667,
+   "tau_simulated": 0.39402663253265074,
+   "tau_closed_form": 0.4
+  }
+ },
+ "H4a": {
+  "criterion": {
+   "covered_min_share": 1.0,
+   "truth_se_widening": 3.0
+  },
+  "covered_share": 1.0,
+  "outcome": "held"
+ },
+ "H4b": {
+  "criterion": {
+   "covered_min_share": 0.75,
+   "truth_se_widening": 3.0
+  },
+  "covered_share": 0.2,
+  "covered_share_with_stress": 0.8,
+  "outcome": "refuted"
+ },
+ "H4c": {
+  "criterion": {
+   "within_share_max": 0.5,
+   "relative_tolerance": 0.05
+  },
+  "within_share": 0.2,
+  "outcome": "held"
+ },
+ "seconds": 490
+}

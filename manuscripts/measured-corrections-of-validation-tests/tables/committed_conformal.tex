@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The conformal coverage rows of the committed shift variant of the gradient-boosting model fitted on the Polish company bankruptcy data, evaluated on the locked holdout shifted by sizes taken from the Federal Reserve corporate portfolios: the calibration and test sizes, the empirical coverage against the target 0.90, both p-values of the engine and the light the Beta-Binomial p-value sets; the light never reads the binomial one.}
+\label{tab:committed-conformal}
+\fitwidth{\begin{tabular}{lrrcccl}
+\toprule
+Window & $n$ & $m$ & Coverage & $p$ Beta-Binomial & $p$ binomial & Light \\
+\midrule
+baseline & 1,471 & 3,151 & 0.8946 & 0.523 & 0.313 & green \\
+higher risk x0.25 & 1,471 & 3,151 & 0.7509 & 2.13e-35 & 3.69e-127 & red \\
+higher risk x0.5 & 1,471 & 3,151 & 0.7099 & 4.56e-52 & 1.19e-194 & red \\
+higher risk x1 & 1,471 & 3,151 & 0.8800 & 0.0372 & 0.000258 & amber \\
+pooled & 1,471 & 12,604 & 0.8089 & 2.86e-20 & 2.16e-207 & red \\
+\bottomrule
+\end{tabular}}
+\end{table}

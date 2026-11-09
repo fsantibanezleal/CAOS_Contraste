@@ -1,7 +1,11 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:main-results",
+    "tab:miss-categories",
+    "tab:committed-ore",
+    "tab:rule-size-power",
+    "fig:power"
   ],
   "claims": {
     "BS-2": "sec:proposed-method"

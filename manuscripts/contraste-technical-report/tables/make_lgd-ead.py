@@ -409,6 +409,7 @@ def c09_numbers() -> None:
         for r in o["ccf_by_design"]["rows"]:
             k = f"{r['design']}-{r['treatment']}-{r['estimator']}-{lv}"
             put(f"bias-{k}", plain(r["bias"], 3))
+            put(f"biasfine-{k}", plain(r["bias"], 4))
             put(f"half-{k}", f"{(r['ci_high'] - r['ci_low']) / 2:.3f}")
             put(f"rmse-{k}", f"{r['rmse']:.3f}")
             put(f"est-{k}", f"{r['estimate']['value']:.3f}")

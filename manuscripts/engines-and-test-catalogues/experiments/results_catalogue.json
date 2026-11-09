@@ -1,0 +1,549 @@
+{
+ "inventory": {
+  "version": "1.1.0",
+  "tests": 134,
+  "families": 18,
+  "by_family": {
+   "aggregation": 8,
+   "ccr": 8,
+   "discrimination": 4,
+   "fairness": 12,
+   "governance": 5,
+   "ifrs9": 9,
+   "irrbb": 7,
+   "lgd_ead": 6,
+   "liquidity": 11,
+   "market": 12,
+   "ml": 13,
+   "oprisk": 5,
+   "pd-calibration": 11,
+   "portfolio": 5,
+   "rating-system": 3,
+   "stability": 5,
+   "stress": 6,
+   "transitions": 4
+  },
+  "by_decision": {
+   "metric": 92,
+   "p_value": 42
+  },
+  "with_reference": 134,
+  "ecb_referenced": [
+   "disc.auc",
+   "disc.auc_vs_initial",
+   "pd.jeffreys",
+   "rating.hhi",
+   "rating.migration_ztests",
+   "rating.mwb"
+  ]
+ },
+ "ecb": {
+  "sections": 17,
+  "implemented": 5,
+  "related_only": 1,
+  "absent": 11,
+  "rows": [
+   {
+    "section": "2.5.2",
+    "statistic": "PD qualitative tools: process statistics and override rates",
+    "engine_id": null,
+    "related_id": null
+   },
+   {
+    "section": "2.5.3.1",
+    "statistic": "PD back-testing: Jeffreys test",
+    "engine_id": "pd.jeffreys",
+    "related_id": null
+   },
+   {
+    "section": "2.5.4.1",
+    "statistic": "PD discriminatory power: AUC against the AUC at development",
+    "engine_id": "disc.auc_vs_initial",
+    "related_id": null
+   },
+   {
+    "section": "2.5.5.1",
+    "statistic": "PD stability: matrix weighted bandwidth",
+    "engine_id": "rating.mwb",
+    "related_id": null
+   },
+   {
+    "section": "2.5.5.2",
+    "statistic": "PD stability: migration matrix z-tests",
+    "engine_id": "rating.migration_ztests",
+    "related_id": null
+   },
+   {
+    "section": "2.5.5.3",
+    "statistic": "PD stability: concentration in rating grades (Herfindahl)",
+    "engine_id": "rating.hhi",
+    "related_id": null
+   },
+   {
+    "section": "2.6.2.1",
+    "statistic": "LGD back-testing: one-sample paired t-test, one-sided, 12 segments",
+    "engine_id": null,
+    "related_id": "lgd_ead.lgd_calibration_by_segment"
+   },
+   {
+    "section": "2.6.3.1",
+    "statistic": "LGD discriminatory power: generalised AUC",
+    "engine_id": null,
+    "related_id": null
+   },
+   {
+    "section": "2.6.4",
+    "statistic": "LGD qualitative tools: assignment process, portfolio distribution, defaulted portfolios",
+    "engine_id": null,
+    "related_id": null
+   },
+   {
+    "section": "2.7.2.1",
+    "statistic": "ELBE back-testing: paired t-test",
+    "engine_id": null,
+    "related_id": null
+   },
+   {
+    "section": "2.8.2.1",
+    "statistic": "LGD in-default back-testing: paired t-test",
+    "engine_id": null,
+    "related_id": null
+   },
+   {
+    "section": "2.9.2",
+    "statistic": "CCF qualitative tools, back-testing portfolio: assignment process, EAD approach",
+    "engine_id": null,
+    "related_id": null
+   },
+   {
+    "section": "2.9.3.1",
+    "statistic": "CCF back-testing: paired t-test",
+    "engine_id": null,
+    "related_id": null
+   },
+   {
+    "section": "2.9.3.2",
+    "statistic": "EAD back-testing",
+    "engine_id": null,
+    "related_id": null
+   },
+   {
+    "section": "2.9.4.1",
+    "statistic": "CCF generalised AUC",
+    "engine_id": null,
+    "related_id": null
+   },
+   {
+    "section": "2.9.5",
+    "statistic": "CCF qualitative tools, application portfolio: assignment process, distribution, EAD",
+    "engine_id": null,
+    "related_id": null
+   },
+   {
+    "section": "2.10",
+    "statistic": "Slotting: slot back-testing, tenor check, migrations",
+    "engine_id": null,
+    "related_id": null
+   }
+  ]
+ },
+ "installed_scan": {
+  "distributions": 106,
+  "python_files": 16365,
+  "hits": {
+   "jeffreys": {
+    "statsmodels": 4
+   },
+   "herfindahl": {
+    "optbinning": 4
+   },
+   "matrix weighted bandwidth": {
+    "networkx": 1
+   },
+   "creditrisk+": {},
+   "granularity adjustment": {},
+   "vasicek": {
+    "scipy": 3
+   },
+   "irrbb": {},
+   "economic value of equity": {},
+   "somers d": {
+    "scipy": 3,
+    "statsmodels": 2
+   },
+   "migration matrix test": {}
+  }
+ },
+ "survey": {
+  "date": "2026-11-06",
+  "queried": 37,
+  "found": 34,
+  "rows": [
+   {
+    "name": "validmind",
+    "status": "found",
+    "version": "2.15.0",
+    "latest_upload": "2026-10-26",
+    "license": "DUAL LICENSE NOTICE  This software is du",
+    "summary": "ValidMind Library",
+    "description_chars": 3647,
+    "hits": {}
+   },
+   {
+    "name": "piml",
+    "status": "found",
+    "version": "0.6.0.post2",
+    "latest_upload": "2024-03-01",
+    "license": "Apache",
+    "summary": "A low-code interpretable machine learning toolbox in Python.",
+    "description_chars": 3005,
+    "hits": {}
+   },
+   {
+    "name": "modeva",
+    "status": "found",
+    "version": "2.1.0",
+    "latest_upload": "2026-07-16",
+    "license": "proprietary",
+    "summary": "Integrated tool for model development and validation.",
+    "description_chars": 2217,
+    "hits": {}
+   },
+   {
+    "name": "mercury-robust",
+    "status": "found",
+    "version": "1.2.1",
+    "latest_upload": "2026-03-19",
+    "license": null,
+    "summary": "Mercury's robust is a library to perform robust testing on models and/or datasets..",
+    "description_chars": 5419,
+    "hits": {}
+   },
+   {
+    "name": "mercury-monitoring",
+    "status": "found",
+    "version": "1.2.1",
+    "latest_upload": "2026-03-19",
+    "license": null,
+    "summary": "Mercury's monitoring is a library to perform monitoring testing on models and/or datasets..",
+    "description_chars": 4144,
+    "hits": {}
+   },
+   {
+    "name": "mercury-explainability",
+    "status": "found",
+    "version": "1.2.3",
+    "latest_upload": "2026-06-02",
+    "license": null,
+    "summary": "Mercury's explainability is a library with implementations of different state-of-the-art methods in the field of explainability",
+    "description_chars": 3008,
+    "hits": {}
+   },
+   {
+    "name": "probatus",
+    "status": "found",
+    "version": "3.2.1",
+    "latest_upload": "2026-11-05",
+    "license": "Copyright (c) ING Bank N.V.\n        \n   ",
+    "summary": "Validation of regression & classifiers and data used to develop them",
+    "description_chars": 1947,
+    "hits": {}
+   },
+   {
+    "name": "popmon",
+    "status": "found",
+    "version": "1.4.12",
+    "latest_upload": "2026-01-09",
+    "license": "Copyright 2023 ING Analytics Wholesale B",
+    "summary": "Monitor the stability of a pandas or spark dataset",
+    "description_chars": 21545,
+    "hits": {}
+   },
+   {
+    "name": "evidently",
+    "status": "found",
+    "version": "0.7.23",
+    "latest_upload": "2026-09-11",
+    "license": "Apache License 2.0",
+    "summary": "Open-source tools to analyze, monitor, and debug machine learning model in production.",
+    "description_chars": 8434,
+    "hits": {}
+   },
+   {
+    "name": "nannyml",
+    "status": "found",
+    "version": "0.13.1",
+    "latest_upload": "2025-07-12",
+    "license": "Apache-2.0",
+    "summary": "NannyML, Your library for monitoring model performance.",
+    "description_chars": 21144,
+    "hits": {}
+   },
+   {
+    "name": "fairlearn",
+    "status": "found",
+    "version": "0.15.0",
+    "latest_upload": "2026-10-12",
+    "license": "MIT",
+    "summary": "A Python package to assess and improve fairness of machine learning models.",
+    "description_chars": 6080,
+    "hits": {}
+   },
+   {
+    "name": "giskard",
+    "status": "found",
+    "version": "3.0.1",
+    "latest_upload": "2026-10-02",
+    "license": "Apache Software License 2.0",
+    "summary": "Evals, red teaming, and test generation for agentic systems",
+    "description_chars": 11541,
+    "hits": {}
+   },
+   {
+    "name": "deepchecks",
+    "status": "found",
+    "version": "0.19.1",
+    "latest_upload": "2024-12-15",
+    "license": null,
+    "summary": "Package for validating your machine learning model and data",
+    "description_chars": 2248,
+    "hits": {}
+   },
+   {
+    "name": "alibi",
+    "status": "found",
+    "version": "0.9.6",
+    "latest_upload": "2024-04-18",
+    "license": "Business Source License 1.1",
+    "summary": "Algorithms for monitoring and explaining machine learning models",
+    "description_chars": 19818,
+    "hits": {}
+   },
+   {
+    "name": "alibi-detect",
+    "status": "found",
+    "version": "0.13.0",
+    "latest_upload": "2025-12-11",
+    "license": "Business Source License 1.1",
+    "summary": "Algorithms for outlier detection, concept drift and metrics.",
+    "description_chars": 26156,
+    "hits": {}
+   },
+   {
+    "name": "mapie",
+    "status": "found",
+    "version": "1.6.0",
+    "latest_upload": "2026-10-19",
+    "license": "BSD-3-Clause",
+    "summary": "A scikit-learn-compatible module for estimating prediction intervals.",
+    "description_chars": 9920,
+    "hits": {}
+   },
+   {
+    "name": "interpret",
+    "status": "found",
+    "version": "0.7.8",
+    "latest_upload": "2026-03-17",
+    "license": null,
+    "summary": "Fit interpretable models. Explain blackbox machine learning.",
+    "description_chars": 170,
+    "hits": {}
+   },
+   {
+    "name": "shap",
+    "status": "found",
+    "version": "0.54.1",
+    "latest_upload": "2026-10-16",
+    "license": "MIT License",
+    "summary": "A unified approach to explain the output of any machine learning model.",
+    "description_chars": 21914,
+    "hits": {}
+   },
+   {
+    "name": "dalex",
+    "status": "found",
+    "version": "1.8.0",
+    "latest_upload": "2026-01-20",
+    "license": null,
+    "summary": "Responsible Machine Learning in Python",
+    "description_chars": 28076,
+    "hits": {}
+   },
+   {
+    "name": "credoai-lens",
+    "status": "found",
+    "version": "1.1.8",
+    "latest_upload": "2023-05-03",
+    "license": null,
+    "summary": "Lens: comprehensive assessment framework for AI systems",
+    "description_chars": 3012,
+    "hits": {}
+   },
+   {
+    "name": "transitionmatrix",
+    "status": "found",
+    "version": "0.5.1",
+    "latest_upload": "2022-02-21",
+    "license": null,
+    "summary": "A Python powered library for statistical analysis and visualization of state transition phenomena",
+    "description_chars": 4452,
+    "hits": {}
+   },
+   {
+    "name": "scorecardpy",
+    "status": "found",
+    "version": "0.1.9.7",
+    "latest_upload": "2023-07-29",
+    "license": null,
+    "summary": "Credit Risk Scorecard",
+    "description_chars": 3285,
+    "hits": {}
+   },
+   {
+    "name": "toad",
+    "status": "found",
+    "version": "0.1.7",
+    "latest_upload": "2026-05-18",
+    "license": null,
+    "summary": "Toad is dedicated to facilitating model development process, especially for a scorecard.",
+    "description_chars": 3858,
+    "hits": {}
+   },
+   {
+    "name": "skorecard",
+    "status": "found",
+    "version": "1.6.9",
+    "latest_upload": "2024-08-17",
+    "license": "The MIT License (MIT)  Copyright (c) 202",
+    "summary": "Tools for building scorecard models in python, with a sklearn-compatible API",
+    "description_chars": 3781,
+    "hits": {}
+   },
+   {
+    "name": "optbinning",
+    "status": "found",
+    "version": "1.0.0",
+    "latest_upload": "2026-09-12",
+    "license": "Apache-2.0",
+    "summary": "OptBinning: The Python Optimal Binning library",
+    "description_chars": 31901,
+    "hits": {}
+   },
+   {
+    "name": "lifelines",
+    "status": "found",
+    "version": "0.30.3",
+    "latest_upload": "2026-03-05",
+    "license": "MIT",
+    "summary": "Survival analysis in Python, including Kaplan Meier, Nelson Aalen and regression",
+    "description_chars": 2257,
+    "hits": {}
+   },
+   {
+    "name": "pycox",
+    "status": "found",
+    "version": "0.3.0",
+    "latest_upload": "2024-09-04",
+    "license": "BSD license",
+    "summary": "Survival analysis with PyTorch",
+    "description_chars": 595,
+    "hits": {}
+   },
+   {
+    "name": "open-source-risk-engine",
+    "status": "found",
+    "version": "1.8.17.0",
+    "latest_upload": "2026-09-15",
+    "license": "ORE-SWIG is",
+    "summary": "Python bindings for the OREAnalytics library",
+    "description_chars": 2889,
+    "hits": {}
+   },
+   {
+    "name": "quantlib",
+    "status": "found",
+    "version": "1.44",
+    "latest_upload": "2026-10-13",
+    "license": "BSD-3-Clause",
+    "summary": "Python bindings for the QuantLib library",
+    "description_chars": 954,
+    "hits": {}
+   },
+   {
+    "name": "creditmetrics",
+    "status": "HTTP 404"
+   },
+   {
+    "name": "creditrisk",
+    "status": "HTTP 404"
+   },
+   {
+    "name": "pycreditrisk",
+    "status": "HTTP 404"
+   },
+   {
+    "name": "arch",
+    "status": "found",
+    "version": "8.0.0",
+    "latest_upload": "2025-10-21",
+    "license": "NCSA",
+    "summary": "ARCH for Python",
+    "description_chars": 9706,
+    "hits": {}
+   },
+   {
+    "name": "statsmodels",
+    "status": "found",
+    "version": "0.15.0",
+    "latest_upload": "2026-08-27",
+    "license": "BSD-3-Clause",
+    "summary": "Statistical computations and models for Python",
+    "description_chars": 5994,
+    "hits": {}
+   },
+   {
+    "name": "riskfolio-lib",
+    "status": "found",
+    "version": "7.4.1",
+    "latest_upload": "2026-11-04",
+    "license": "BSD (3-clause)",
+    "summary": "Portfolio Optimization in Python",
+    "description_chars": 17589,
+    "hits": {}
+   },
+   {
+    "name": "pyfinance",
+    "status": "found",
+    "version": "2.0.2",
+    "latest_upload": "2026-04-19",
+    "license": "MIT",
+    "summary": "Python package designed for security returns analysis.",
+    "description_chars": 4477,
+    "hits": {}
+   },
+   {
+    "name": "riskvalidation",
+    "status": "found",
+    "version": "1.1.0",
+    "latest_upload": "2026-11-02",
+    "license": "MIT",
+    "summary": "Validation tests, regulatory calculators and reference engines for financial risk models: the toolkit of an independent model validator.",
+    "description_chars": 7632,
+    "hits": {
+     "jeffreys": 3,
+     "creditrisk+": 2,
+     "granularity adjustment": 1,
+     "vasicek": 1,
+     "irrbb": 1,
+     "ecb": 1
+    }
+   }
+  ]
+ },
+ "run": {
+  "seconds": 621,
+  "peak_working_set_mb": 139,
+  "python": "3.13.14",
+  "platform": "Windows-11-10.0.26300-SP0"
+ }
+}

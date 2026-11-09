@@ -1,0 +1,40 @@
+\section{Problem formulation}
+\label{sec:problem}
+
+\subsection{The forward model}
+
+A bank has $S$ deposit segments indexed by $j$, with opening balances $A_j\ge 0$, and a ladder of $H$ days counted from 1, day 1 being the first relevant day after the valuation date. Segment $j$ loses the share $q_{j,d}\in[0,1]$ of the stock it holds at the start of day $d$. The stock left after day $d$ is $A_j\prod_{s\le d}(1-q_{j,s})$, so the cumulative outflow share of the segment and its outflow on day $d$ are
+\begin{equation}
+F_j(t)=1-\prod_{s\le t}\bigl(1-q_{j,s}\bigr),\qquad O_{j,d}=A_j\prod_{s<d}\bigl(1-q_{j,s}\bigr)\,q_{j,d}.
+\label{eq:outflow}
+\end{equation}
+A rate of exactly 1 empties the segment on that day, which is how the supervisory exercise treats the sight deposits of financial customers \citep{ecblist2019}. The first equation is the constant daily compounding of that exercise when $q_{j,d}$ does not depend on $d$: after $n$ days the share is $1-(1-q)^n$.
+
+The effective capacity $C_t$ collects what is available against the outflows: the counterbalancing capacity on day $t$ (the unencumbered liquid assets after haircuts, released by a monetisation schedule), plus the cumulative inflows, less the cumulative flows that do not run off by segment, such as borrowings that mature. With the cumulative segment outflow $X_t=\sum_j\sum_{d\le t}O_{j,d}=\sum_j A_jF_j(t)$, the net liquidity position and the survival period are
+\begin{equation}
+\mathrm{NLP}_t=C_t-X_t,\qquad \mathrm{SP}=\min\{t\le H:\ \mathrm{NLP}_t<0\},\quad \mathrm{SP}=\infty\ \text{if no such day exists}.
+\label{eq:nlp-sp}
+\end{equation}
+A position of exactly zero is not negative. The survival period of a bank that never turns negative is not a number: it survives the horizon, and a comparison of survival periods counts it as longer than any day. The symbols are collected in \cref{tab:notation}.
+
+\input{tables/notation}
+
+\subsection{The reverse problem}
+
+The multiplier $m\ge 1$ scales every rate of the base scenario and is capped so that the scaled rate remains a share,
+\begin{equation}
+q_{j,d}(m)=\min\bigl(m\,q_{j,d},\,1\bigr),\qquad m\le m_{\max}=\frac{1}{\max\{q_{j,d}:\ q_{j,d}<1\}},
+\label{eq:scaled}
+\end{equation}
+with $m_{\max}=\infty$ when no rate lies in $(0,1)$, in which case scaling changes nothing. A rate already at 1 stays at 1. Write $X_t(m)$, $\mathrm{NLP}_t(m)$ and $\mathrm{SP}(m)$ for the quantities of \cref{eq:outflow,eq:nlp-sp} computed with the scaled rates, the capacity $C_t$ being independent of $m$. For a target $T$ the reverse stress asks for
+\begin{equation}
+m^\ast_T=\min\{m\in[1,m_{\max}]:\ \mathrm{SP}(m)\le T\}.
+\label{eq:reverse}
+\end{equation}
+The answer is a distance to a stated outcome in a stated scenario family. It is not a probability, because no distribution of runs is assumed, and it is not a forecast: a multiplier of 2.1 does not say that deposits will leave twice as fast. The choice of one common multiplier is deliberate. It gives a family with a single parameter, ordered by severity, in which a larger multiplier is a more severe scenario for every segment at once, so that two banks or two base scenarios are compared by one number, and so that the question has an answer that does not depend on a measure of how plausible each segment's speed is. The price is that the family cannot describe a run concentrated on one segment, a limit discussed in \cref{sec:limitations}.
+
+\subsection{Assumptions and what they exclude}
+
+Four assumptions bound the problem. First, the segments run off independently of one another and of the capacity: a faster run does not change the haircut or the monetisation schedule, so $C_t$ is a constant of the problem. Second, the rates are shares of the stock of the previous day, which makes the outflow a compounding process and prevents an outflow larger than the stock. Third, days are integers and the survival period is evaluated at end-of-day positions, so a position that is negative during a day and positive at its end is not seen. Fourth, the base scenario is given: the choice of segments, of rates and of the capacity is the modelling choice of the bank, and the reverse stress inherits it. In the case studied below the segments are a mapping of call-report deposits to supervisory classes, a convention stated in every document of the case, and the deposit behaviour is synthetic. The reverse stress therefore describes the model, not the bank.
+
+The problem has three outcomes that are not a multiplier. The target may not be below the horizon, in which case a survival period at most $T$ cannot be told from surviving the horizon. The base scenario may already have a survival period at most $T$, in which case the smallest admissible multiplier is trivially 1 and carries no information about distance. And no admissible multiplier may reach the target, because the capacity exceeds everything that can leave even when every scalable rate is 1. The method of the next section gives each of the three outcomes a reason and no number.

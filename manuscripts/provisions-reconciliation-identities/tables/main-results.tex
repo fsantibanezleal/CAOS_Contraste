@@ -1,0 +1,28 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Main comparison of the proposed protocol with the comparators run on the same data: detection of planted defects by the twelve identities, the stage arithmetic and the pooled row; false alarms on clean tables by tolerance basis; overlay bookings; the non-linearity of the weighted PD; the error of short scenario sets against the full distribution of the factor; and the three regimes of the synthetic bank over ten seeds. Intervals as stated in the last column.}
+\label{tab:main-results}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{p{5.4cm}p{3.3cm}p{4.0cm}p{3.0cm}}
+\toprule
+Measurement & Proposed protocol & Comparator & Uncertainty \\
+\midrule
+Detection above the limit (1.01 times), seven defect classes, 600 cases each & 4,200/4,200 [99.9, 100.0] & stage 1,800/4,200 [41.4, 44.4]; pooled 1,800/4,200 [41.4, 44.4] & Wilson 95\% interval, percent \\
+Detection below the limit (0.99 times), eight classes & 0/4,800 [0.0, 0.1] & stage 0/4,800; pooled 0/4,800 & Wilson 95\% interval, percent \\
+Smallest defect named, as a multiple of the limit, 120 bisections per class & 1 within $2.4\times10^{-10}$ & not applicable (no comparator names a size) & largest deviation over 840 bisections \\
+Clean committed tables flagged (six dates) & 0/6 (relative 1e-6) & 4/6 (absolute 1e-6) & count, no sampling \\
+Clean resampled books flagged (1,200) & 0/1,200 [0.0, 0.3] & absolute 1e-6: 68/1,200 [4.5, 7.1] & Wilson 95\% interval, percent \\
+Wrong overlay bookings detected (four kinds, 18 cases each) & 72/72 & stage 0/72; pooled 0/72 & count over the full enumeration \\
+Negative index among draws in the convex region & 0/16,906 & unqualified statement fails in 1,844/20,000 draws & count over the sweep \\
+Median absolute error of the expected PD, base scenario alone & not applicable & 9.20\% [8.94, 9.54] & bootstrap 95\% interval \\
+Median absolute error, three scenarios at one standard deviation, 25/50/25 & not applicable & 4.56\% [4.41, 4.75] & bootstrap 95\% interval \\
+Median absolute error, three equal-probability tertile scenarios & not applicable & 1.84\% [1.77, 1.92] & bootstrap 95\% interval \\
+Median absolute error, three-point Gauss--Hermite scenarios & not applicable & $3.0\times10^{-3}$\% [$2.7\times10^{-3}$, $3.4\times10^{-3}$] & bootstrap 95\% interval \\
+IFRS 9 over B-1, base scenario, ten seeds & 0.621 [0.606, 0.635] & B-1 is the reference (1) & mean and 95\% $t$ interval \\
+IFRS 9 over B-1, combined severe scenario, ten seeds & 1.185 [1.170, 1.200] & B-1 is the reference (1) & mean and 95\% $t$ interval \\
+Largest bridge residual, 60 runs (currency units) & $3.8\times10^{-5}$ & not applicable & maximum, no sampling \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

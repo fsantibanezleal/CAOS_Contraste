@@ -1,0 +1,1655 @@
+{
+ "quantlib_version": "1.44",
+ "gate": 1e-06,
+ "curve_date": "2025-09-30",
+ "a": 0.16746565442492117,
+ "sigma": 0.008798469610451831,
+ "part1": {
+  "bond_call": {
+   "engine": 0.039287299009757026,
+   "quantlib": 0.039287299009757026,
+   "relative_difference": 0.0
+  },
+  "bond_put": {
+   "engine": 0.03583822809810577,
+   "quantlib": 0.03583822809810577,
+   "relative_difference": 0.0
+  },
+  "swaption_payer": {
+   "engine": 7010.256951189982,
+   "quantlib": 7010.256285174523,
+   "relative_difference": 9.50058644788894e-08
+  },
+  "swaption_receiver": {
+   "engine": 11140.502980011051,
+   "quantlib": 11140.503857201424,
+   "relative_difference": 7.873884192648519e-08
+  }
+ },
+ "part2": {
+  "rows": [
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.2282188869308325e-09,
+    "abs_difference": 2.201300276283291e-06
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 3.1705547629448897e-13,
+    "abs_difference": 4.052708391100168e-09
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 3.2697378275166637e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 3.5326879612031056e-14,
+    "abs_difference": 5.820766091346741e-10
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 7.530699164254223e-11,
+    "abs_difference": 3.0890078051015735e-07
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.8151072884138415e-07,
+    "abs_difference": 9.849464356648241e-05
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 5.0759825393363146e-14,
+    "abs_difference": 4.285993782104924e-11
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 1.9476948593702302e-12,
+    "abs_difference": 8.96831017167883e-44
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 1.2416896763551806e-14,
+    "abs_difference": 2.7755575615628914e-17
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 1.6254153012745903e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.7508073470720388e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.5891319693569434e-14,
+    "abs_difference": 5.551115123125783e-17
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 2.872636221550752e-12,
+    "abs_difference": 8.40256683676266e-18
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 4.7508204494141515e-08,
+    "abs_difference": 9.824443310435527e-06
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.116346686905008e-08,
+    "abs_difference": 3.14126151756966e-08
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.674277055589827e-08,
+    "abs_difference": 0.0005758191837230697
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.8937218658443992e-14,
+    "abs_difference": 8.913048077374697e-11
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.6764096208305305e-09,
+    "abs_difference": 6.197850569960548e-287
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.719010093930245e-14,
+    "abs_difference": 5.551115123125783e-17
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 3.943609169902668e-10,
+    "abs_difference": 4.716377588920295e-06
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 7.041646911326672e-10,
+    "abs_difference": 5.2202565711922944e-05
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 2.62577114771909e-12,
+    "abs_difference": 1.6093625997831706e-20
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 2.0468943746109522e-08,
+    "abs_difference": 1.6095970863716502e-05
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.6648995536785902e-12,
+    "abs_difference": 8.051159738897695e-11
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 2.4274853337436724e-13,
+    "abs_difference": 1.0408340855860843e-17
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.481878151169229e-09,
+    "abs_difference": 2.306352871528361e-05
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.728171436429696e-08,
+    "abs_difference": 0.000606129426159896
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 6.000261730696429e-08,
+    "abs_difference": 9.153310611509369e-05
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 6.5759487788832724e-09,
+    "abs_difference": 1.2568030797410756e-05
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 4.576967029361378e-10,
+    "abs_difference": 3.0174458515830338e-05
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.0175441847508903e-10,
+    "abs_difference": 1.4328797988127917e-06
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 6.281930814232704e-09,
+    "abs_difference": 2.8700075745291542e-05
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 3.0881163218033717e-12,
+    "abs_difference": 3.924811864397526e-17
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.0691250706011262e-07,
+    "abs_difference": 1.839296026682341e-10
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 2.5252381128435694e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 2.958751479167208e-11,
+    "abs_difference": 5.267072733976138e-66
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.6619866647332002e-13,
+    "abs_difference": 3.009265538105056e-36
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.5893908498006553e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.2920776158172987e-07,
+    "abs_difference": 0.00017512964689103683
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.4317950054486053e-07,
+    "abs_difference": 5.032841922769649e-06
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.4148581950102772e-07,
+    "abs_difference": 0.0019856410453940043
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 5.094193297240457e-10,
+    "abs_difference": 2.5299618755525444e-07
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 1.571219735546628e-13,
+    "abs_difference": 4.163336342344337e-17
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 3.4570509451449577e-12,
+    "abs_difference": 2.9891680242144503e-09
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 3.313005578440417e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 6.997300597820609e-08,
+    "abs_difference": 0.000390419708310219
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 6.611389644938768e-08,
+    "abs_difference": 0.0004055477465954027
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.6107160432697314e-09,
+    "abs_difference": 1.215536758536473e-05
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 3.153595951821385e-11,
+    "abs_difference": 6.359477993100882e-07
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.1694978326488521e-14,
+    "abs_difference": 2.7755575615628914e-17
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 8.79840330542874e-08,
+    "abs_difference": 0.0006500744402728742
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 9.271219330992357e-13,
+    "abs_difference": 1.9117102933589427e-57
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.611424556277646e-06,
+    "abs_difference": 6.284196727790459e-05
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.9320861282020034e-08,
+    "abs_difference": 0.00011702298252203036
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 8.56545137604157e-15,
+    "abs_difference": 1.1459633242338896e-10
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 5.80835842045612e-14,
+    "abs_difference": 5.551115123125783e-17
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 6.772485036398342e-09,
+    "abs_difference": 7.370550842888272e-23
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 3.156511513705142e-08,
+    "abs_difference": 0.000263971594904433
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 4.724334560490664e-09,
+    "abs_difference": 3.240451594663414e-17
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.4848502565251484e-12,
+    "abs_difference": 2.501337803550996e-09
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 3.091879845680312e-13,
+    "abs_difference": 2.42861286636753e-17
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.3022667804825959e-07,
+    "abs_difference": 0.00010752741900432738
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 4.405567119655203e-11,
+    "abs_difference": 2.3520078684668988e-07
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 2.9999922696553935e-07,
+    "abs_difference": 1.8623898910163916e-05
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 3.0473579081564497e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 6.446340641235428e-11,
+    "abs_difference": 8.944667923005412e-18
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 5.1916489159194105e-12,
+    "abs_difference": 1.7875663615996018e-08
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 5.764840987231627e-08,
+    "abs_difference": 7.886734737505563e-10
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 1.2393905285354807e-11,
+    "abs_difference": 3.853570776893247e-44
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 6.317144158988219e-12,
+    "abs_difference": 1.5945988707244396e-07
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 9.803220403605972e-15,
+    "abs_difference": 6.938893903907228e-18
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 4.542886644915073e-14,
+    "abs_difference": 8.326672684688674e-17
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.9096199427480337e-11,
+    "abs_difference": 9.654513632995076e-09
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 7.819411241284607e-12,
+    "abs_difference": 3.7167046684771776e-07
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.1056363064134604e-07,
+    "abs_difference": 0.0023978964673005976
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 7.237571866206659e-13,
+    "abs_difference": 3.854802343994379e-08
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 2.19972460854185e-13,
+    "abs_difference": 9.540979117872439e-18
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 1.5078505116400566e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.6258563986136043e-13,
+    "abs_difference": 8.087226888164878e-09
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.9713030277237864e-09,
+    "abs_difference": 0.00016467175737489015
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 4.178111716656569e-07,
+    "abs_difference": 1.989799507108559e-17
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.5592911744621174e-11,
+    "abs_difference": 7.32889020582661e-08
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 4.216205035922781e-10,
+    "abs_difference": 9.57358988634173e-19
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 6.895372379377913e-10,
+    "abs_difference": 2.868222965992512e-17
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 2.2389437935055458e-13,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.8659880468980794e-11,
+    "abs_difference": 2.894819800536297e-17
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 4.612628477153679e-09,
+    "abs_difference": 7.261826249305159e-05
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 2.2883663619666607e-07,
+    "abs_difference": 0.0009211583655996947
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 4.758169977982049e-08,
+    "abs_difference": 8.321804307342973e-05
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.1750313602994654e-15,
+    "abs_difference": 5.093170329928398e-11
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 2.3913714810636596e-11,
+    "abs_difference": 9.755591191836514e-50
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.3670241618370082e-13,
+    "abs_difference": 5.4424162954092026e-09
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.2905597829910706e-09,
+    "abs_difference": 3.4453656553523615e-05
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 4.413354671990655e-10,
+    "abs_difference": 3.915882189176045e-06
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.3415775598711392e-09,
+    "abs_difference": 5.968307959847152e-06
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 4.518520605100072e-12,
+    "abs_difference": 2.1892446966376156e-08
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 1.4758998089573618e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 6.42145444785587e-09,
+    "abs_difference": 2.7087539820058737e-05
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 2.6253084931103473e-08,
+    "abs_difference": 3.281485237494053e-05
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 3.21338595550634e-08,
+    "abs_difference": 0.00039459198887925595
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 8.787173158276287e-13,
+    "abs_difference": 3.2959746043559335e-17
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 3.684729894667696e-08,
+    "abs_difference": 0.0018664892995730042
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 6.044954667094055e-08,
+    "abs_difference": 0.0007950939252623357
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.5836855493738556e-07,
+    "abs_difference": 0.0020974913823010866
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.2451028429124986e-09,
+    "abs_difference": 4.258163971826434e-05
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 6.4657246697182296e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.1639327897055125e-13,
+    "abs_difference": 4.69299266114831e-09
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 4.7028254573768486e-11,
+    "abs_difference": 3.507870133034885e-06
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 3.359417264963733e-13,
+    "abs_difference": 1.474514954580286e-17
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 9.184321187579727e-15,
+    "abs_difference": 6.002665031701326e-11
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.7054737775969866e-12,
+    "abs_difference": 3.4438311059246704e-41
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 4.799762061663926e-13,
+    "abs_difference": 2.2551405187698492e-17
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 8.705593578183009e-10,
+    "abs_difference": 2.515291635063477e-05
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.4568679436945473e-13,
+    "abs_difference": 7.258904588525183e-11
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 2.635875340962579e-10,
+    "abs_difference": 2.3893105376149304e-17
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.9819102805402465e-08,
+    "abs_difference": 0.00021170824220462237
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 9.56333346421981e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 6.832413673814097e-10,
+    "abs_difference": 6.64533581584692e-06
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 6.438750202003228e-12,
+    "abs_difference": 2.1136656869202852e-07
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 2.27920065297061e-09,
+    "abs_difference": 3.212602314306423e-05
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 3.531383849222167e-10,
+    "abs_difference": 1.5983732737367973e-06
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 8.442857220027415e-09,
+    "abs_difference": 3.9568204556417186e-05
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 4.657558676340807e-11,
+    "abs_difference": 1.3166427379474044e-06
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 5.445806832569242e-07,
+    "abs_difference": 7.341514978520536e-05
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.2423158760197022e-12,
+    "abs_difference": 1.313717310304516e-46
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 2.33669881248191e-07,
+    "abs_difference": 0.000465156717609716
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 8.794241166278859e-09,
+    "abs_difference": 1.1744833787259268e-22
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.1078702970788925e-08,
+    "abs_difference": 4.571411227516364e-05
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 8.599497625018486e-14,
+    "abs_difference": 6.835421118012164e-12
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 2.1055488579742118e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 1.4382382526886778e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.695275564022623e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 6.139557468147898e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 8.45569809613808e-08,
+    "abs_difference": 0.0019146698177792132
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 4.937386481915622e-11,
+    "abs_difference": 7.5171507471343e-52
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 8.401612984484524e-11,
+    "abs_difference": 2.2709582481184043e-07
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 8.046865330602083e-13,
+    "abs_difference": 4.0046188587439246e-11
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 2.4121647239057915e-12,
+    "abs_difference": 4.4889020500704646e-08
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 4.858227129784169e-11,
+    "abs_difference": 8.766711800944904e-10
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 7.476475768898367e-13,
+    "abs_difference": 1.5490367659397273e-120
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 7.249171538098897e-13,
+    "abs_difference": 3.739842213690281e-08
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 5.6075862814001396e-08,
+    "abs_difference": 0.0010129258989763912
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 2.5019307085590255e-14,
+    "abs_difference": 6.938893903907228e-18
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.337693552090001e-08,
+    "abs_difference": 0.0003439166339376243
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 3.5511859574624454e-11,
+    "abs_difference": 2.231058715551626e-08
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.3995906625382348e-14,
+    "abs_difference": 1.1823431123048067e-10
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 2.0460618121507304e-11,
+    "abs_difference": 2.802596928649634e-44
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 3.75443481080641e-12,
+    "abs_difference": 1.691355389077387e-17
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.0604601504452088e-08,
+    "abs_difference": 3.485235083644511e-05
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 3.643995064522495e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 7.215231781386536e-08,
+    "abs_difference": 0.0007649355393368751
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 6.198401055104657e-12,
+    "abs_difference": 1.0021494745160453e-09
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 5.1799091021411685e-12,
+    "abs_difference": 7.505150279030204e-09
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.330766382038982e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.128831420196964e-12,
+    "abs_difference": 2.0529569155769423e-09
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 5.323874679048775e-10,
+    "abs_difference": 8.762843938391752e-211
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 4.371454393318971e-10,
+    "abs_difference": 1.0615016894990892e-17
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 9.032058797944754e-14,
+    "abs_difference": 3.469446951953614e-17
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 6.93648051691346e-13,
+    "abs_difference": 1.9277649698778987e-08
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 5.51231597357136e-07,
+    "abs_difference": 1.1388134637068679e-18
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 2.478042002938825e-11,
+    "abs_difference": 6.743272606968276e-11
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 4.533479527073867e-12,
+    "abs_difference": 3.002605808433145e-08
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 1.2647171113303095e-11,
+    "abs_difference": 6.911788849595091e-18
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.398412942870693e-08,
+    "abs_difference": 0.00015818828251212835
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 7.250522270802786e-08,
+    "abs_difference": 2.203550918326142e-17
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 8.124831796748076e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 6.433456141236224e-13,
+    "abs_difference": 3.474269760772586e-08
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 6.418693552838869e-11,
+    "abs_difference": 5.230467650108039e-06
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 1.075645105721105e-12,
+    "abs_difference": 9.75781955236954e-18
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 7.974062203993e-14,
+    "abs_difference": 1.7535057850182056e-09
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 6.731805558760914e-12,
+    "abs_difference": 3.019858152799186e-31
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.7154014108572568e-08,
+    "abs_difference": 0.0004545919146039523
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 5.344125561070938e-13,
+    "abs_difference": 2.42861286636753e-17
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 3.7192928612274126e-09,
+    "abs_difference": 0.000155388297571335
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.0721614086554369e-08,
+    "abs_difference": 1.2664730748227892e-17
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.2944801160073527e-11,
+    "abs_difference": 1.4694887795485556e-07
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 4.729342012473734e-13,
+    "abs_difference": 4.794856067746878e-09
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 5.2808740574187554e-14,
+    "abs_difference": 5.551115123125783e-17
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 4.3622302137372885e-14,
+    "abs_difference": 5.551115123125783e-17
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 5.995962063219984e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 8.398244593274356e-16,
+    "abs_difference": 5.551115123125783e-17
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 2.539402094578507e-15,
+    "abs_difference": 2.220446049250313e-16
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 9.396461688730928e-08,
+    "abs_difference": 0.00010929588324870565
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 2.1333583390572713e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 2.048032098997318e-14,
+    "abs_difference": 1.3877787807814457e-17
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 4.4149965924427826e-11,
+    "abs_difference": 3.0886876629665494e-06
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.3101743065163996e-09,
+    "abs_difference": 8.835221524350345e-05
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.1067673662835744e-11,
+    "abs_difference": 5.47814238416322e-10
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.2434518901568008e-08,
+    "abs_difference": 0.00015551950855297036
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.4389473678307812e-13,
+    "abs_difference": 1.0631993063725531e-09
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 9.57094586845825e-12,
+    "abs_difference": 6.246867986000465e-21
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 2.149242524543976e-09,
+    "abs_difference": 3.2924170659774654e-17
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.8610717746264973e-12,
+    "abs_difference": 7.083258424245287e-10
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 2.3665230194776823e-11,
+    "abs_difference": 3.9828584874612716e-11
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.7339546348873275e-10,
+    "abs_difference": 4.391337513879607e-91
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 8.57731614077785e-12,
+    "abs_difference": 3.430722372854689e-11
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 9.572480025024328e-15,
+    "abs_difference": 6.938893903907228e-18
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 3.831078136991747e-13,
+    "abs_difference": 1.3729732017964125e-08
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 1.105351733962326e-14,
+    "abs_difference": 2.7755575615628914e-17
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.1023079179765582e-08,
+    "abs_difference": 0.00027534660694072954
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 2.068545787896731e-07,
+    "abs_difference": 0.0010319473667550483
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.711237951986345e-08,
+    "abs_difference": 8.835240350890672e-05
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 3.326732836366631e-13,
+    "abs_difference": 5.185938789509237e-09
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.7904885519499554e-07,
+    "abs_difference": 0.00041956700715672923
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 2.6026639437750654e-14,
+    "abs_difference": 6.938893903907228e-18
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 1.416335508354602e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 6.364455524127235e-11,
+    "abs_difference": 2.642036633915268e-07
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 3.9917549467171305e-14,
+    "abs_difference": 8.326672684688674e-17
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.035168919653788e-09,
+    "abs_difference": 5.812019935547141e-06
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.984638109066677e-11,
+    "abs_difference": 1.3672688510268927e-06
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.099135011157619e-13,
+    "abs_difference": 5.8753357734531164e-09
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 7.482677453632758e-08,
+    "abs_difference": 0.00024166841558326269
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 4.3889920788581194e-08,
+    "abs_difference": 0.0006973166837269673
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 5.123696093137559e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.102603682057698e-12,
+    "abs_difference": 8.28804331831634e-08
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 3.8402399713792253e-10,
+    "abs_difference": 1.1290102153952569e-17
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 1.1191009494859396e-13,
+    "abs_difference": 2.0816681711721685e-17
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 3.299798711959025e-08,
+    "abs_difference": 9.526136318527278e-05
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.4910214136833401e-07,
+    "abs_difference": 0.002586710725154262
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 2.032561219856303e-08,
+    "abs_difference": 3.889881259055983e-05
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 3.5295385088885005e-15,
+    "abs_difference": 2.7755575615628914e-17
+   },
+   {
+    "kind": "swaption_receiver",
+    "relative_difference": 1.2005368682116863e-07,
+    "abs_difference": 0.001309463394136401
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 5.410060588734457e-14,
+    "abs_difference": 8.673617379884035e-19
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 0.0,
+    "abs_difference": 0.0
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 2.745407558521137e-15,
+    "abs_difference": 1.1102230246251565e-16
+   },
+   {
+    "kind": "bond_call",
+    "relative_difference": 4.6052481837174207e-07,
+    "abs_difference": 5.6313066439181035e-18
+   },
+   {
+    "kind": "swaption_payer",
+    "relative_difference": 1.1359273774951369e-08,
+    "abs_difference": 0.000126610377265024
+   },
+   {
+    "kind": "bond_put",
+    "relative_difference": 1.3374540816202713e-15,
+    "abs_difference": 1.1102230246251565e-16
+   }
+  ],
+  "cases": 297,
+  "seed": 20261104,
+  "max_relative_difference": 1.611424556277646e-06,
+  "median_relative_difference": 8.046865330602083e-13,
+  "within_gate": 296,
+  "worst": [
+   {
+    "kind": "swaption_receiver",
+    "a": 0.49502255745536367,
+    "sigma": 0.004371022351183893,
+    "start_months": 24,
+    "end_months": 60,
+    "rate": 0.033875306589631615,
+    "engine": 38.99783474080696,
+    "quantlib": 38.99777189883968,
+    "relative_difference": 1.611424556277646e-06
+   },
+   {
+    "kind": "bond_call",
+    "a": 0.23805056108460423,
+    "sigma": 0.006429535770393238,
+    "expiry": 2.0,
+    "maturity": 5.0,
+    "strike": 0.9798907440237914,
+    "engine": 2.0659425936700806e-12,
+    "quantlib": 2.0659437324835443e-12,
+    "relative_difference": 5.51231597357136e-07
+   },
+   {
+    "kind": "swaption_payer",
+    "a": 0.4813739845715299,
+    "sigma": 0.0063273175159216976,
+    "start_months": 36,
+    "end_months": 96,
+    "rate": 0.04747187414453465,
+    "engine": 134.81034502668336,
+    "quantlib": 134.81041844183315,
+    "relative_difference": 5.445806832569242e-07
+   },
+   {
+    "kind": "bond_call",
+    "a": 0.19011460894897617,
+    "sigma": 0.004766469301657906,
+    "expiry": 5.0,
+    "maturity": 6.0,
+    "strike": 0.9928250685724136,
+    "engine": 1.2228014269615252e-11,
+    "quantlib": 1.2228019900921896e-11,
+    "relative_difference": 4.6052481837174207e-07
+   },
+   {
+    "kind": "bond_put",
+    "a": 0.49476186328257754,
+    "sigma": 0.009981052393602915,
+    "expiry": 2.0,
+    "maturity": 7.0,
+    "strike": 0.7428228040658897,
+    "engine": 4.7624392869545173e-11,
+    "quantlib": 4.76243729715501e-11,
+    "relative_difference": 4.178111716656569e-07
+   }
+  ],
+  "by_kind": {
+   "bond_call": {
+    "n": 73,
+    "max": 5.51231597357136e-07
+   },
+   "bond_put": {
+    "n": 89,
+    "max": 4.178111716656569e-07
+   },
+   "swaption_payer": {
+    "n": 71,
+    "max": 5.445806832569242e-07
+   },
+   "swaption_receiver": {
+    "n": 64,
+    "max": 1.611424556277646e-06
+   }
+  }
+ },
+ "part3": {
+  "plants": [
+   {
+    "delta": 1e-08,
+    "swaption_relative_difference": 1.0751952355971613e-07,
+    "bond_call_relative_difference": 3.24176891013224e-10,
+    "detected_swaption": false,
+    "detected_bond_call": false
+   },
+   {
+    "delta": 1e-07,
+    "swaption_relative_difference": 2.2014243517780937e-07,
+    "bond_call_relative_difference": 3.2417689101322397e-09,
+    "detected_swaption": false,
+    "detected_bond_call": false
+   },
+   {
+    "delta": 1e-06,
+    "swaption_relative_difference": 1.3463716330935085e-06,
+    "bond_call_relative_difference": 3.241775692312044e-08,
+    "detected_swaption": true,
+    "detected_bond_call": false
+   },
+   {
+    "delta": 1e-05,
+    "swaption_relative_difference": 1.2608665511481055e-05,
+    "bond_call_relative_difference": 3.241829582382406e-07,
+    "detected_swaption": true,
+    "detected_bond_call": false
+   },
+   {
+    "delta": 0.0001,
+    "swaption_relative_difference": 0.00012523179336914892,
+    "bond_call_relative_difference": 3.2423694269393798e-06,
+    "detected_swaption": true,
+    "detected_bond_call": true
+   },
+   {
+    "delta": 0.001,
+    "swaption_relative_difference": 0.001251481970067374,
+    "bond_call_relative_difference": 3.247769011915326e-05,
+    "detected_swaption": true,
+    "detected_bond_call": true
+   },
+   {
+    "delta": 0.01,
+    "swaption_relative_difference": 0.01251585493890117,
+    "bond_call_relative_difference": 0.00033018858356985496,
+    "detected_swaption": true,
+    "detected_bond_call": true
+   }
+  ],
+  "elasticity_swaption": 1.2513656349033833,
+  "elasticity_bond_call": 0.032417696150446686,
+  "smallest_detected_sigma_error_swaption": 7.991269474786312e-07,
+  "smallest_detected_sigma_error_bond_call": 3.084734940321232e-05
+ }
+}

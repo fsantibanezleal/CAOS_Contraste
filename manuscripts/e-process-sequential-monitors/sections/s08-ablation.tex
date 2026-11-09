@@ -1,0 +1,41 @@
+\section{Ablation}
+\label{sec:ablation}
+
+Each component of the proposed monitors is removed or replaced in turn on the same generators, with one change at a time and the same streams for every variant of a scenario, so that the differences within a table are paired and smaller than the differences between runs. The three tables below are the ablation: \cref{tab:ablation-grid} for the mixture of the rate monitor, \cref{tab:ablation-battery} for the combination of the two VaR monitors,
+and \cref{tab:ablation-pd} for the PD monitor.
+
+\subsection{The mixture over alternative hit rates}
+\label{sec:ablation-mixture}
+
+\Cref{tab:ablation-grid} replaces the full grid by single alternatives and by parts of the grid. A single alternative is the likelihood-ratio e-process of one hit rate and is the monitor that the theory says is fastest when its alternative is the truth. At a hit rate three times the nominal, the single alternative at $3\alpha$ has a median of \nAbMedThreeSingleThree\ days and \nAbByThreeSingleThree\,\% power by day 250,
+and at four times the nominal the one at $4\alpha$ has \nAbMedFourSingleFour\ days and \nAbByFourSingleFour\,\%; against them the full grid has \nAbMedThreeFull\ days and \nAbByThreeFull\,\% at three times and \nAbMedFourFull\ days and \nAbByFourFull\,\% at four times. The difference is the price of not knowing the severity. A single alternative that is far from the truth is worse than the mixture: the alternative at $10\alpha$ has a median beyond the horizon at three times
+the nominal (\nAbMedThreeSingleTen) and only \nAbByThreeSingleTen\,\% power by day 250, and the alternative at $1.5\alpha$ has \nAbByThreeSingleOneFive\,\% there.
+
+Cutting the grid shows which alternatives carry the power. Dropping the two alternatives below the nominal level (the upper half) raises the power by day 250 at three times the nominal from \nAbByThreeFull\ to \nAbByThreeUpper\,\% and lowers the median from \nAbMedThreeFull\ to \nAbMedThreeUpper\ days at no visible cost in size (\nAbNullFull\ and \nAbNullUpper\,\%), because the weight on the alternatives that point the other way is wasted when the departure is upward.
+Keeping only the alternatives $1.5$ to $4$ gives \nAbByThreeUpperLow\,\% at three times the nominal and, among the cuts of the grid, the best power against twice the nominal (\nAbEverTwoUpperLow\,\% rejected within 1,000 days), while keeping only $3$ to $10$ gives the fastest delays at four and six times and loses power at twice the nominal (\nAbEverTwoUpperHigh\,\%). The grid trades breadth of coverage against speed at a given severity, and no cut dominates; the full grid is the choice that does not prejudge the severity or the direction.
+
+\input{tables/ablation-grid}
+
+\subsection{The direction of the alternatives}
+\label{sec:ablation-direction}
+
+The upper half of the grid is the one-sided monitor of a supervisor, who penalises a VaR that understates the risk and does not penalise one that is too conservative. It is the cheapest change in \cref{tab:ablation-grid}, and it is the one that moves the hypotheses. On the pooled \nSeedsPooledN\ streams per factor of \cref{tab:x3-seeds} the upper-side monitor has a median of \nSeedsUpThreeMed\ days at three times the nominal level against \nSeedsThreeMed\ for the two-sided one, and a power cost of \nSeedsUpThreeCost\ points against \nSeedsThreeCost;
+at four times the nominal, \nSeedsUpFourMed\ days against \nSeedsFourMed\ and \nSeedsUpFourCost\ points against \nSeedsFourCost. The upper-side monitor rejects a correct model in \nNullSizeEUp\,\% of the main-run series, against \nNullSizeE\,\% for the two-sided one: its size is not larger in any way that matters. The price is that it has no power against a model that is too conservative, which the supervisory test does not ask for and a validator of the efficiency of a model may; for that validator the two-sided monitor is the choice, and its delay at a hit rate below the nominal is not measured here.
+
+\subsection{The combination of the two VaR monitors}
+\label{sec:ablation-battery}
+
+\Cref{tab:ablation-battery} runs the rate monitor, the clustering monitor, their average, the union of the two at a threshold of 40 each (the Bonferroni split of the size, valid by the union bound) and their product on the same streams. The average and the union are valid and almost identical: they reject \nAbBatThreeAverage\ and \nAbBatThreeUnion\,\% of the streams with a hit rate three times too high, against \nAbBatThreeRate\,\% for the rate monitor alone, and \nAbBatClFourAverage\ and \nAbBatClFourUnion\,\% of the streams with clusters at $q=0.4$, against
+\nAbBatClFourCluster\,\% for the clustering monitor alone. Averaging two monitors costs at most the factor two on each, and it buys the detection of either departure, which neither monitor has alone. The product is not an e-process for two monitors of one stream (\cref{prop:product}), but its measured size at a level of 1\,\% is \nAbBatNullProduct\,\%: the rate monitor and the clustering monitor rarely move together on a correct model at that level, so the invalidity does not show at 1\,\% and does show at the level of
+$0.2$ of the enumeration (\cref{tab:null-expectation}). The product detects \nAbBatClFourProduct\,\% at $q=0.4$, about the same as the average (\nAbBatClFourAverage\,\%), so nothing is gained by taking the risk.
+
+\input{tables/ablation-battery}
+
+\subsection{The PD monitor: combination, direction and grid}
+\label{sec:ablation-pd}
+
+\Cref{tab:ablation-pd} varies the combination of the grades, the direction and the grid of the PD monitor. With the PD right, none of the monitors rejects more than \nPdOneSingle\,\% of the histories; the chi-square test read once at year 10 is at \nPdOneChiOne\,\% and read every year at \nPdOneChiEvery\,\%. With every PD multiplied by $1.1$, the combination by product rejects \nPdOneOneProd\,\%, by average \nPdOneOneAvg\,\%, and the upper-side average \nPdOneOneAvgUp\,\% of the histories, so the direction and the combination matter little against the grid. The grid matters a great deal: with four alternatives between $1.1$ and $2$ instead of the
+sixteen of the default, the upper-side average rejects \nPdOneOneCoarse\,\% of the histories at $1.1$ and \nPdOneZeroFiveCoarse\,\% at $1.05$, against \nPdOneOneAvgUp\ and \nPdOneZeroFiveAvgUp\,\%, with a size of \nPdOneCoarse\,\%. A single alternative at $1.25$ gives \nPdOneOneSingle\,\% at $1.1$. The default grid spreads the weight over alternatives far from the departures that a small relative error produces: half of its upper alternatives are above $2$, and
+\cref{prop:growth} says that a mixture pays the logarithm of the number of alternatives it does not need. The coarse grid still detects less than the chi-square rule at a nominal size of 5\,\% (\nPdcOneOneChiSim\,\% at $1.1$ and \nPdcOneZeroFiveChiSim\,\% at $1.05$; \cref{tab:pd-equal-size}). A validator who knows the range of miscalibrations of interest can set a coarse grid before the data and gain power at no cost in size; the default of the engine was fixed before these experiments and is not changed here.
+
+\input{tables/ablation-pd}

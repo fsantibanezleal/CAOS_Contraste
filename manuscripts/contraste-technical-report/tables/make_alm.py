@@ -35,6 +35,10 @@ C15_LABEL = {"long-uf": "Long UF", "short-uf": "Short UF", "cpi-surprise": "CPI 
 C16_VARIANTS = ["lcr-standard", "list-adverse", "list-extreme", "fast-run", "htm-losses"]
 C16_LABEL = {"lcr-standard": "LCR standard run-off", "list-adverse": "LiST Adverse", "list-extreme": "LiST Extreme",
              "fast-run": "2023 fast run", "htm-losses": "HTM losses in the CBC"}
+#: The cumulative outflow the ECB prints for the stable retail sight deposit under the Adverse scenario (12.11 per cent, written as a fraction
+#: to four decimals); the tolerance is half a unit of its last printed digit.
+ECB_PRINTED_CUMULATIVE = 0.1211
+ECB_PRINTED_TOLERANCE = 5e-5
 LIGHT = {"green": "G", "amber": "A", "red": "R", "not_evaluated": "n/e"}
 
 
@@ -122,9 +126,9 @@ def fit_width() -> None:
         if p.name == "alm-numbers.tex":
             continue
         s = p.read_text(encoding="utf-8")
-        if "\\resizebox" in s:
+        if "\\resizebox" in s or "\\fitwidth" in s:
             continue
-        s = s.replace("\\begin{tabular}", "\\resizebox{\\ifdim\\width>\\textwidth\\textwidth\\else\\width\\fi}{!}{%\n\\begin{tabular}", 1)
+        s = s.replace("\\begin{tabular}", "\\fitwidth{%\n\\begin{tabular}", 1)
         s = s.replace("\\end{tabular}", "\\end{tabular}}", 1)
         p.write_text(s, encoding="utf-8", newline="\n")
 
@@ -199,8 +203,8 @@ def build_c14() -> None:
     for d in DATES:
         e = docs[d]["outputs"]["ear_evar"]
         for lv in e["levels"]:
-            rows_ear.append([DATE_LABEL[d], f(100 * lv["level"], 0), f(bn_k(e["base_nii"])), f"${f(bn_k(lv['ear']), 3)}\\pm{bn_k(lv['ear_se']):.4f}$",
-                             f(bn_k(e["base_eve"])), f"${f(bn_k(lv['evar']), 3)}\\pm{bn_k(lv['evar_se']):.4f}$"])
+            rows_ear.append([DATE_LABEL[d], f(100 * lv["level"], 0), f(bn_k(e["base_nii"])), f"${bn_k(lv['ear']):.3f}\\pm{bn_k(lv['ear_se']):.4f}$",
+                             f(bn_k(e["base_eve"])), f"${bn_k(lv['evar']):.3f}\\pm{bn_k(lv['evar_se']):.4f}$"])
     tbl("c14-ear",
         ["Date", "Level (\\%)", "Base NII (USD bn)", "EaR $\\pm$ s.e. (USD bn)", "Base EVE (USD bn)", "EVaR $\\pm$ s.e. (USD bn)"],
         rows_ear,
@@ -221,7 +225,7 @@ def build_c14() -> None:
          "$\\Delta$NII +100 bp, earnings gap (USD bn)", "Duration gap (years)", "$\\Delta E$ for +100 bp (USD bn)"],
         rows_nii,
         caption="Net interest income measures of Silicon Valley Bank under the capped behavioural treatment: the twelve-month dynamic projection on a constant balance sheet for the two parallel shocks of the 2024 table, "
-                "the earnings-gap approximation for a rise of 100 basis points, and the duration gap with its first-order change in equity; a positive change is a loss.",
+                "the earnings-gap approximation for a rise of 100 basis points, and the duration gap with its first-order change in equity value for a rise of 100 basis points, which is negative when equity loses value; in the other columns a positive change is a loss.",
         label="tab:alm-c14-nii", align="lrrrrrr")
 
     # the battery
@@ -299,6 +303,7 @@ def build_c14() -> None:
         macro(f"CDynUp{k}", f(bn_k(dyn["parallel-up"]["delta_vs_base"]), 3))
         macro(f"CDynDown{k}", f(bn_k(dyn["parallel-down"]["delta_vs_base"]), 3))
         lad = next(x for x in o["ladder"] if x["nmd_assumption"] == "behavioural")
+        macro(f"CGapUp{k}", f(bn_k(lad["delta_nii_gap_100bp_up"]), 3))
         macro(f"CDurationGap{k}", f(lad["duration_gap"]["duration_gap_years"], 2))
         macro(f"CBeta{k}", f(o["assumptions"]["deposit_beta"]["value"], 3))
         macro(f"CCoreShare{k}", f(o["assumptions"]["nmd_core_share"]["value"], 3))
@@ -504,7 +509,7 @@ def build_c16() -> None:
     tbl("c16-scenarios",
         ["Variant", "Family", "Phase", "Horizon (days)", "Survival period (day)", "Minimum NLP (USD bn)", "Cliff effect (\\% of assets)", "Modelled outflow, 2 days (\\% of base)", "LCR"],
         rows,
-        caption="The six liquidity variants of Silicon Valley Bank at 31 December 2022: the scenario family and phase, the horizon in days, the first day on which the net liquidity position turns negative "
+        caption="The five liquidity variants of Silicon Valley Bank at 31 December 2022: the scenario family and phase, the horizon in days, the first day on which the net liquidity position turns negative "
                 "(horizon when it never does), the minimum position in billions of US dollars, the cliff effect as a share of total assets, the modelled cumulative outflow after the two days of the March 2023 run as a share "
                 "of the modelled deposit base, and the Basel liquidity coverage ratio of the call-report aggregates where the variant runs the formula.",
         label="tab:alm-c16-scenarios", align="lllrrrrrr")
@@ -551,9 +556,9 @@ def build_c16() -> None:
     # the battery
     tids = ["liq.list_compounding_golden", "liq.cbc_haircut_rules", "liq.nlp_identity", "liq.survival_monotone_in_severity", "liq.cliff_effect_diagnostic",
             "liq.runoff_adequacy_back_test", "liq.htm_loss_effect", "liq.htm_revaluation_vs_reported", "liq.runoff_vs_generator_truth", "liq.uninsured_share_sensitivity"]
-    names = {"liq.list_compounding_golden": "Printed compounding example (absolute deviation)", "liq.cbc_haircut_rules": "Nine haircut cases (largest deviation)",
+    names = {"liq.list_compounding_golden": "Compounding example, closed form at six decimals (absolute deviation)", "liq.cbc_haircut_rules": "Nine haircut cases (largest deviation)",
              "liq.nlp_identity": "Net liquidity position identity (residual)", "liq.survival_monotone_in_severity": "Survival monotone in severity (largest increase, days)",
-             "liq.cliff_effect_diagnostic": "Cliff effect (share of assets)", "liq.runoff_adequacy_back_test": "Modelled over realised outflow, board share",
+             "liq.cliff_effect_diagnostic": "Cliff effect (share of assets)", "liq.runoff_adequacy_back_test": "Modelled over observed and expected outflow, board share",
              "liq.htm_loss_effect": "Held-to-maturity loss lowers the capacity (USD thousands)", "liq.htm_revaluation_vs_reported": "Revaluation against reported fair value",
              "liq.runoff_vs_generator_truth": "Run-off against generator truth (largest z)", "liq.uninsured_share_sensitivity": "Survival monotone in uninsured share (days)"}
     rows4 = []
@@ -567,7 +572,7 @@ def build_c16() -> None:
         rows4.append(row)
     tbl("c16-battery", ["Test"] + [C16_LABEL[v] for v in C16_VARIANTS], rows4,
         caption="The liquidity validation tests run on the five path and formula variants of Silicon Valley Bank: the light (G green, A amber, R red, n/e not evaluated, a dash where the test does not apply to the variant) "
-                "and, in parentheses, the statistic; the run-off adequacy row is the ratio of modelled to realised cumulative outflow at the two-day event horizon against the 85 per cent of the board review.",
+                "and, in parentheses, the statistic; the run-off adequacy row is the ratio of modelled to observed and expected cumulative outflow at the two-day event horizon against the 85 per cent of the board review, which includes the outflow that management expected for the second day.",
         label="tab:alm-c16-battery", align="lccccc")
 
     # the scoring against Table A.1 for the fast run
@@ -746,7 +751,11 @@ def build_acceptance() -> None:
     rows.append(["Annex 1", "Worked cases of the Chilean standard reproduced (pairs, table rows, charge, Hoja 10)", f"{t['n']} of {t['n']}", f"{t['n'] - len(t['extras']['failed'])} of {t['n']}", str(t["statistic"]), "0", "pass" if t["light"] == "green" else "fail"])
     l = c16("list-adverse")
     g = test_of(l, "liq.list_compounding_golden")
-    rows.append(["Run-off compounding", "Cumulative outflow after 125 days at 0.103258 per cent a day", "0.1211", f"{g['metric']:.6f}", num_tex(g["statistic"], 2), "5e-07", "pass" if g["light"] == "green" else "fail"])
+    printed_dev = abs(g["metric"] - ECB_PRINTED_CUMULATIVE)
+    rows.append(["Run-off compounding", "Cumulative outflow after 125 days at 0.103258 per cent a day, against the value the ECB prints", f"{ECB_PRINTED_CUMULATIVE}",
+                 f"{g['metric']:.6f}", num_tex(printed_dev, 2), "5e-05", "pass" if printed_dev <= ECB_PRINTED_TOLERANCE else "fail"])
+    rows.append(["Run-off compounding", "The same, against the closed form rounded to six decimals", "0.121148", f"{g['metric']:.6f}", num_tex(g["statistic"], 2), "5e-07",
+                 "pass" if g["light"] == "green" else "fail"])
     adv = l["outputs"]["path"]["survival"]["day"]
     ext = c16("list-extreme")["outputs"]["path"]["survival"]["day"]
     m = test_of(c16("list-extreme"), "liq.survival_monotone_in_severity")
@@ -759,6 +768,9 @@ def build_acceptance() -> None:
                 "the worked cases of the Chilean Annex 1, the compounding example of the European Central Bank, the monotone survival period and the net liquidity position identity, "
                 "each with the reference value, the computed value, the deviation, the tolerance and whether the check passes.",
         label="tab:alm-accept", align="lllrrrl")
+    macro("LGoldenPrinted", f"{ECB_PRINTED_CUMULATIVE}")
+    macro("LGoldenPrintedDev", sci(printed_dev, 1))
+    macro("LGoldenPrintedTol", sci(ECB_PRINTED_TOLERANCE, 0))
     macro("AcceptSurvivalAdv", str(adv))
     macro("AcceptSurvivalExt", str(ext))
 

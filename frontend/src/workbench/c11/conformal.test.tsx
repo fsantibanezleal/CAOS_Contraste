@@ -11,6 +11,7 @@ import { fixtureData, html, setLang } from '../c03/u6-testkit';
 import { committed, committedData } from '../c08/spanish-testkit';
 import { C11ContextView } from './C11Common';
 import { ConformalVerdictView, ConformalView, wrappedFocus } from './ConformalViews';
+import { MANUSCRIPT_URL, PASSES_HEADER, TESTS_TOO_EASY, UPPER_BOUND, VERDICT_LABEL } from './caveat';
 import { useInstrument } from './instrument';
 import { defaultSel, outputsOf, type C11Sel } from './selection';
 
@@ -26,6 +27,8 @@ const TITLE = { en: 'Market VaR and ES back-testing', es: 'Pruebas retrospectiva
 const WINDOWS = ['calm-2004-06', 'equity-2007-09', 'equity-2020', 'fx-2008', 'mixed-2023', 'rates-2022'];
 const WRAPPED = ['hs-250', 'garch-t', 'fhs'];
 const selOf = (w: string) => defaultSel(committedData('C11', `${w}.json`, 'models-ladder.json', TITLE)) as C11Sel;
+const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/'/g, '&#x27;');
+const h = (sel: C11Sel) => (outputsOf(sel) as Outputs).conformal!.hypothesis;
 const fixture = <T,>(rel: string): T => JSON.parse(readFileSync(new URL(`../../../../docs/contracts/fixtures/c11/${rel}`, import.meta.url), 'utf8')) as T;
 const fixtureSel = (): C11Sel => {
   const data = fixtureData('C11', fixture<VariantArtifact>('variant-window-fixture.json'), fixture<ModelsArtifact>('models-fixture.json'), TITLE);
@@ -100,6 +103,34 @@ describe('BS-16, the committed windows', () => {
     expect(es).toContain('Se refuta si');
     expect(es).toContain(h.verdict.es.replace(/&/g, '&amp;'));
     expect(es).not.toMatch(/NaN|undefined|Infinity|Windows passed/);
+  });
+
+  it('SHOW-F F1: the verdict is the bake reading by the criterion, with the caveat and the manuscript beside it, never as an endorsement', () => {
+    for (const lang of ['en', 'es'] as const) {
+      setLang(lang);
+      const sel = selOf('equity-2007-09');
+      const m = html(<ConformalVerdictView sel={sel} />);
+      expect(m).toContain(esc(VERDICT_LABEL[lang]));
+      expect(m).toContain(esc(TESTS_TOO_EASY[lang]));
+      expect(m).toContain(`href="${MANUSCRIPT_URL}"`);
+      expect(m).toContain(lang === 'en' ? 'Holds by the criterion' : 'Se cumple por el criterio');
+      // the label comes before the verdict it qualifies
+      expect(m.indexOf(esc(VERDICT_LABEL[lang]))).toBeLessThan(m.indexOf(esc(h(sel).verdict[lang])));
+    }
+  });
+
+  it('SHOW-F F1: the pass of a recalibrated row is qualified as an upper bound, the unwrapped row is not', () => {
+    for (const lang of ['en', 'es'] as const) {
+      setLang(lang);
+      const sel = selOf('equity-2007-09');
+      const m = html(<ConformalView sel={sel} />);
+      expect(m).toContain(esc(PASSES_HEADER[lang]));
+      expect(m).not.toContain(lang === 'en' ? 'Passes coverage' : 'Aprueba cobertura');
+      expect(m).toContain(esc(TESTS_TOO_EASY[lang]));
+      const wrappedRows = (m.match(/data-side="wrapped"/g) ?? []).length;
+      expect(wrappedRows).toBeGreaterThan(0);
+      expect(m.split(`data-lenient=""> (${UPPER_BOUND[lang]})`).length - 1).toBe(wrappedRows);
+    }
   });
 
   it('the wrapped view of each committed window draws the path of the model in focus in both languages', () => {

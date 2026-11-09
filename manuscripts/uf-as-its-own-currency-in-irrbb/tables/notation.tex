@@ -1,0 +1,28 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{The notation of the paper: the grid and the rates of the two currencies, the shock and the floor, the flows of the two legs, the pair rule and its two bounds, the net UF position, the indexation charge, the treatment of the UF leg as five switches and the Shapley value of a switch.}
+\label{tab:notation}
+\begin{tabular}{p{3.3cm}p{8.5cm}p{2.0cm}}
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+$k=1,\dots,19$, $t_k$ & bucket index and bucket midpoint of the Annex 1 grid & years \\
+$r_{0,c}(t_k)$ & pre-shock continuously compounded zero rate of currency $c\in\{\mathrm{CLP},\mathrm{UR}\}$ & decimal \\
+$\Delta S_{i,c}(t_k)$ & shock $i$ applied to currency $c$ at $t_k$ & bp \\
+$f_c$ & post-shock floor of currency $c$ & decimal \\
+$\mathrm{CF}_{c}(t_k)$, $\mathrm{CF}_{i,c}(t_k)$ & signed repricing flows of leg $c$ before and under shock $i$ (term-deposit redemption depends on $i$) & CLP million \\
+$U$ & value of the UF on the valuation date & CLP per UF \\
+$a_{i}$, $b_{i}$ & loss-positive delta of the CLP leg and of the UR leg under shock $i$ & CLP million \\
+$P_\lambda(a,b)$ & pair rule with offsetting share $\lambda$ (Annex 1: $\lambda=1/2$) & CLP million \\
+$N(a,b)$, $Q(a,b)$ & sum of the legs, $\max\{a+b,0\}$, and positive parts, $\max\{a,0\}+\max\{b,0\}$ & CLP million \\
+$\mathrm{PN}_{\mathrm{UR}}$ & net UF position converted at $U$ (assets positive) & CLP million \\
+$\kappa$ & indexation charge rate, 2.5 percent & share \\
+$T_1$, $\nu=\mathrm{PN}_{\mathrm{UR}}/T_1$ & Tier 1 capital and the net UF position as a share of it & CLP million, share \\
+$\tau\in\{0,1\}^5$ & treatment: the five switches (curve, sizes, floor, pair rule, charge) & none \\
+$M_m(\tau)$ & measure $m\in\{\Delta\mathrm{EVE},\Delta\mathrm{NII}\}$ under treatment $\tau$ & CLP million \\
+$\varphi_j^{m}$ & exact Shapley value of switch $j$ for measure $m$ & CLP million \\
+\bottomrule
+\end{tabular}
+\end{table}

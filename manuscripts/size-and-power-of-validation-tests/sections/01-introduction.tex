@@ -1,0 +1,53 @@
+\section{Introduction}
+\label{sec:introduction}
+
+A bank that uses a model to price credit, set provisions or hold capital must show, on a regular schedule, that the model still does what it was built to do.
+The evidence is a battery of statistical tests: a test of whether the default rates that occurred are consistent with the probabilities of default the model assigned, a test of whether the model still ranks defaulters above survivors, an index of whether the population it scores has moved, a test of whether the rating migrations still obey the monotonicity the rating scale promises.
+Each test returns a p-value, the p-value is read against a level, and the result is a light, green, amber or red, that goes into a report which a committee reads and a supervisor may inspect.
+The 2011 supervisory guidance on model risk management, since replaced in the United States but still the reference text of the practice that followed, lists outcomes analysis, including back-testing, among the three core elements of validation \citep{fed2011sr117}, and the European Central Bank prescribes the tests that an institution reports for its internal ratings-based models \citep{ecb2019instructions}.
+
+A decision rule that is read every quarter has two error rates, and a reader who acts on its light needs both.
+The size of a test is the probability that it rejects a model that satisfies the null hypothesis; the power is the probability that it rejects a model that has a given defect \citep{neymanpearson1933}.
+The texts that define the tests state neither.
+The instructions of the European Central Bank define the tests and set no thresholds for pass or fail \citep{ecb2019instructions}; the study of validation methods of the Basel Committee concludes that no really powerful tests of adequate calibration are currently available \citep{bcbswp14}; and the population stability index is applied with bands that are used without reference to type~I or type~II error rates, as the study that derives the distribution of the index observes \citep{yurdakul2020}.
+Published size and power studies exist for a few tests, one for the normal test and the traffic-lights test of the Basel Committee, one for the stability index, one for the comparison of areas under the ROC curve on nested models \citep{bcbswp14,yurdakul2020,demler2012}.
+None of them covers a battery under one protocol, and in the documentation of the validation toolkits read for this study the tests are listed with thresholds and traffic lights and no measured size or power is recorded; that statement is limited to the documentation that was read.
+
+The gap matters because the answer is not obvious from the form of a test.
+A test can be exact under its assumptions and badly sized when one assumption fails, and the assumptions of the validation tests fail in the ways that real portfolios fail: defaults are correlated, the reference value of a statistic is itself an estimate, a rule of thumb has a fixed threshold that ignores the sample size, a Bayesian interval is used as a frequentist test on a discrete count.
+A test can also be valid and blind: it holds its size and cannot see the defect that a validator expects it to see.
+With real outcomes neither property can be measured, because the truth about the model is unknown.
+On a generator whose truth is known, both can.
+
+\paragraph{The proposed measurement.}
+We measure the size and the power of each test of a validation battery on generators of known truth.
+A generator is a frozen configuration with an exact truth; the test is called exactly as a validator calls it; the null is the generator at the boundary of the test's null hypothesis with every assumption met; a defect is a departure planted in the generator at six severities along a ladder.
+Every rejection rate carries its Monte Carlo standard error and its Wilson interval; where the rejection probability can be computed without simulation, the exact value is placed beside the simulated rate, which checks the generator, the harness and the test together; a test is said to hold its size when the evidence does not show its rejection probability above the level, that is, when its exact probability does not exceed the level, where it has one, and otherwise when the Wilson interval of its rate does not lie wholly above it (\cref{sec:pf-estimands}).
+Each repetition draws from an independent random stream spawned from one seed, so that any repetition reruns alone.
+The design follows the structure that \citet{morris2019} recommend for simulation studies, and every rate carries the Monte Carlo standard error that their review found missing from most of the published studies it examined.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+\item A measurement protocol for the size and power of validation tests, with its estimator, its error, its exact checks and its decision rules stated as equations and as two algorithms (\cref{sec:proposed-method}).
+\item Propositions on the error of the measurement itself: the probability that the size judgement flags a correct test, the smallest excess that a given number of repetitions can see, and the monotonicity that exact power curves must have, together with derivations of why four families of tests fail their level (\cref{sec:theory}).
+\item The measured size of \nTests{} tests and the measured power of \nPowerTests{} of them, from \nSims{} simulations and \nReps{} seeded repetitions in \nFamilies{} families, with \nRates{} rates, every one with its standard error and its Wilson interval (\cref{sec:results}).
+\item Evidence that the instrument is sound: \nExactRows{} rows carry an exact probability and all \nAgree{} comparisons agree within 3.29 standard errors; the three published simulation studies that can be rerun are rerun; every committed count reproduces exactly from its seed; fifty independent replications show how far the judgement of one cell can be trusted (\cref{sec:results,sec:ablation}).
+\item An extension to \nExtTests{} further tests of counterparty, provisioning, loss-given-default, market, portfolio, fairness and machine-learning families at one stated alternative each (\cref{sec:extension}).
+\end{enumerate}
+
+\paragraph{Main results.}
+One definition of holding a size is used for every count in this paper (\cref{sec:pf-estimands}): a test holds its size when its exact rejection probability, or the Wilson interval of its simulated rate, does not lie above the level at 5\,\% or at 1\,\%.
+On the best evidence of the paper, \nRepsPooled{} repetitions per test, \nHold{} of the \nTests{} tests hold their size and \nNotHold{} do not.
+Two of the nine exceed their level by more than the others: the Jeffreys test of the default probability, whose exact size is \jeffExactOne\,\% at the 1\,\% level, and the normal test over five years, which rejects \pooledNorm\,\% of correct models at the 5\,\% level (Wilson interval \pooledNormLo\,\% to \pooledNormHi\,\%); the other seven exceed it by \smallExcMin{} to \smallExcMax{} points.
+The committed cells of \nNullReps{} repetitions resolve an excess of about \detIntFiveFour{} points at 5\,\%, and by the same definition they show \nHoldCellDef{} of the \nTests{} tests as holding and miss \nMissedByCell{} of the \nNotHold{}; the one-sided bound that the pipeline applies to every cell, the screen of \cref{alg:judgement}, passes \nHoldCellRule{} on the cells and \nHoldPoolRule{} on the pool.
+The count is a statement about the evidence, and the paper gives it with its repetitions (\cref{sec:rs-size}).
+The assumptions behind the lights matter more than these excesses.
+A test that assumes independent defaults rejects a correct PD in \binRhoOneZeroExact\,\% of samples when the asset correlation of the defaults is 10\,\% (exact value, portfolio of 1,000 obligors), the 0.10 rule of the population stability index raises a false alarm in \psiHundred\,\% of samples of 100 in which nothing changed, and the concentration test of the European Central Bank cannot reject at 5\,\% with ten grades and an initial coefficient of variation of 0.6, because its statistic never exceeds \hhiPeak{} (it can reject with \hhiKMinThree{} grades or more at an initial coefficient of variation of 0.3).
+On power, \nReach{} of the \nPowerTests{} tests reach 80\,\% on the ladder of the defect planted for them, and the default-profile test, the Vasicek-corrected binomial test, the characteristic stability index and the concentration test do not.
+
+\paragraph{Structure.}
+\Cref{sec:related-work} places the measurement among the published tests, simulation methodology and interval estimators.
+\Cref{sec:problem} defines size, power and the estimands.
+\Cref{sec:proposed-method} gives the measurement in full, and \cref{sec:theory} its theory.
+\Cref{sec:experimental-design} states the predictions, the data and the experiments; \cref{sec:results} reports them and \cref{sec:ablation} removes one component of the protocol at a time.
+\Cref{sec:discussion,sec:limitations} interpret the results and bound them, \cref{sec:reproducibility} gives the commands that rebuild every number, and \cref{sec:conclusions} concludes.

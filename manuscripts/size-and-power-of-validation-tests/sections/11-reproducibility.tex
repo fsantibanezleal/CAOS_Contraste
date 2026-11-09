@@ -1,0 +1,23 @@
+\section{Reproducibility}
+\label{sec:reproducibility}
+
+Every number of the text comes from the committed documents under \texttt{data/derived/C22} or from the compact results of the three experiments under \texttt{experiments/results}, through the scripts of the manuscript folder; no number is typed.
+The scripts run with the Python environment of the engine (\texttt{riskvalidation} 1.1.0 with its market, machine-learning and stress extras, NumPy \citep{harris2020} and SciPy \citep{virtanen2020}) and read no data outside the repository; a random stream is a function of its seed and the index of the repetition, so a rerun on another machine returns the same counts.
+
+The commands, run from the manuscript folder of the repository, are the following.
+\begin{verbatim}
+python experiments/exp_reproduce.py
+python experiments/exp_seed_replication.py
+python experiments/exp_instrument.py
+python make_numbers.py
+python make_tables.py
+python make_figures.py
+python fetch_references.py
+\end{verbatim}
+The first reruns the 21 committed null cells with their seeds and takes \reproSeconds{} seconds on six worker processes; the second measures each test in 50 further blocks of 4,000 repetitions and takes \seedMinutes{} minutes; the third computes the exact probabilities of the instrument and 600 simulated blocks and takes \instrMinutes{} minutes in one process.
+Their outputs are the JSON files of \texttt{experiments/results}, each under 250 kilobytes.
+The next three scripts regenerate the numbers file, the tables and the vector figures from the documents and the results, and the last writes the bibliography from the publishers' records of the works that the text cites.
+The document is built with \texttt{pdflatex}, \texttt{bibtex} and two further passes of \texttt{pdflatex} from the manuscript folder.
+
+The code, the committed documents and the results of this paper are those of release v1.00.000 of \texttt{CAOS\_Contraste} (tag \texttt{v1.00.000}, \url{https://github.com/fsantibanezleal/CAOS_Contraste}), and the cases of the repository record, for every committed document, the seed of the case, the version of the engine and the generators that were drawn.\ % voice-ok: citation of the product release the results were produced with
+The practice follows the recommendations on the computational reproducibility of research \citep{sandve2013}: every result has a script, every random number has a seed, and the version of every program is recorded.

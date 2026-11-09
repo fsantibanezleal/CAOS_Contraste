@@ -1,7 +1,7 @@
 """Checks of the comparators written for this manuscript against independent implementations, and of the shared decision rule
 against the engine's own calibration. Run from the repository root:
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe -m pytest manuscripts/scale-and-level-complement-to-the-pla-test/experiments -q
+    python -m pytest manuscripts/scale-and-level-complement-to-the-pla-test/experiments -q
 """
 from __future__ import annotations
 

@@ -1,0 +1,437 @@
+{
+ "H1": {
+  "criterion": {
+   "aggregates": 6,
+   "rows": 8,
+   "headline_rows": 1,
+   "information_rows": 7,
+   "euler_relative_error_max": 1e-06
+  },
+  "aggregates": 6,
+  "all_pass": true,
+  "outcome": "held",
+  "per_aggregate": {
+   "baseline": {
+    "checks": {
+     "rows": true,
+     "order": true,
+     "headline_is_simple_sum": true,
+     "information_rows": true,
+     "one_horizon_and_level": true,
+     "euler_additive": true,
+     "model_risk_information": true,
+     "euler_information": true
+    },
+    "all_pass": true,
+    "euler_relative_error": 1.6410625961512174e-16,
+    "simple_sum_recomputed": true,
+    "variance_covariance_recomputed": true,
+    "headline": 658045.9263290708,
+    "sha256": "c5fb179f5e55b6ca1fbb84113976b7f604ccea04b8e66872b22c909359c2456f"
+   },
+   "eba-2025-adverse": {
+    "checks": {
+     "rows": true,
+     "order": true,
+     "headline_is_simple_sum": true,
+     "information_rows": true,
+     "one_horizon_and_level": true,
+     "euler_additive": true,
+     "model_risk_information": true,
+     "euler_information": true
+    },
+    "all_pass": true,
+    "euler_relative_error": 1.6410625961512174e-16,
+    "simple_sum_recomputed": true,
+    "variance_covariance_recomputed": true,
+    "headline": 658045.9263290708,
+    "sha256": "c5fb179f5e55b6ca1fbb84113976b7f604ccea04b8e66872b22c909359c2456f"
+   },
+   "fed-2026-severely-adverse": {
+    "checks": {
+     "rows": true,
+     "order": true,
+     "headline_is_simple_sum": true,
+     "information_rows": true,
+     "one_horizon_and_level": true,
+     "euler_additive": true,
+     "model_risk_information": true,
+     "euler_information": true
+    },
+    "all_pass": true,
+    "euler_relative_error": 1.6410625961512174e-16,
+    "simple_sum_recomputed": true,
+    "variance_covariance_recomputed": true,
+    "headline": 658045.9263290708,
+    "sha256": "c5fb179f5e55b6ca1fbb84113976b7f604ccea04b8e66872b22c909359c2456f"
+   },
+   "ngfs-delayed-transition": {
+    "checks": {
+     "rows": true,
+     "order": true,
+     "headline_is_simple_sum": true,
+     "information_rows": true,
+     "one_horizon_and_level": true,
+     "euler_additive": true,
+     "model_risk_information": true,
+     "euler_information": true
+    },
+    "all_pass": true,
+    "euler_relative_error": 1.6410625961512174e-16,
+    "simple_sum_recomputed": true,
+    "variance_covariance_recomputed": true,
+    "headline": 658045.9263290708,
+    "sha256": "c5fb179f5e55b6ca1fbb84113976b7f604ccea04b8e66872b22c909359c2456f"
+   },
+   "t-copula-baseline": {
+    "checks": {
+     "rows": true,
+     "order": true,
+     "headline_is_simple_sum": true,
+     "information_rows": true,
+     "one_horizon_and_level": true,
+     "euler_additive": true,
+     "model_risk_information": true,
+     "euler_information": true
+    },
+    "all_pass": true,
+    "euler_relative_error": 1.6410625961512174e-16,
+    "simple_sum_recomputed": true,
+    "variance_covariance_recomputed": true,
+    "headline": 658045.9263290708,
+    "sha256": "c5fb179f5e55b6ca1fbb84113976b7f604ccea04b8e66872b22c909359c2456f"
+   },
+   "t-copula-baseline, market-credit 0.8": {
+    "checks": {
+     "rows": true,
+     "order": true,
+     "headline_is_simple_sum": true,
+     "information_rows": true,
+     "one_horizon_and_level": true,
+     "euler_additive": true,
+     "model_risk_information": true,
+     "euler_information": true
+    },
+    "all_pass": true,
+    "euler_relative_error": 0.0,
+    "simple_sum_recomputed": true,
+    "variance_covariance_recomputed": true,
+    "headline": 658045.9263290708,
+    "sha256": "972b1f7b1cdc015a98d03111b266ca7a4e4b08d8674587cb105768f8b677c1aa"
+   }
+  }
+ },
+ "distinct_aggregates": 2,
+ "identical_to_baseline": [
+  "baseline",
+  "eba-2025-adverse",
+  "fed-2026-severely-adverse",
+  "ngfs-delayed-transition",
+  "t-copula-baseline"
+ ],
+ "tests_of_the_document": [
+  {
+   "test_id": "aggregation.simple_sum_and_variance_covariance",
+   "light": "green",
+   "statistic": 0.9315803965487653,
+   "metric": 0.7476279282051226
+  },
+  {
+   "test_id": "aggregation.copula_choice_sensitivity",
+   "light": "amber",
+   "statistic": 0.12280216658879661,
+   "metric": 0.12280216658879661
+  },
+  {
+   "test_id": "aggregation.worst_case_bracket",
+   "light": "green",
+   "statistic": 704814.0560671377,
+   "metric": 1.0710712244644753
+  },
+  {
+   "test_id": "aggregation.correlation_stress",
+   "light": "amber",
+   "statistic": 0.12113490109002112,
+   "metric": 0.12113490109002112
+  },
+  {
+   "test_id": "aggregation.diversification_sign",
+   "light": "green",
+   "statistic": 0.8394382575910049,
+   "metric": 0.2523720717948774
+  },
+  {
+   "test_id": "aggregation.horizon_confidence_consistency",
+   "light": "green",
+   "statistic": 0.0,
+   "metric": null
+  },
+  {
+   "test_id": "portfolio.euler_additivity",
+   "light": "green",
+   "statistic": 709389.8922561734,
+   "metric": 1.6410625961512174e-16
+  },
+  {
+   "test_id": "aggregation.elliptical_mc_agreement",
+   "light": "green",
+   "statistic": -0.8868380963445248,
+   "metric": -0.0026652460965338465
+  },
+  {
+   "test_id": "aggregation.rosenberg_schuermann_reference",
+   "light": "green",
+   "statistic": 0.33756372959576697,
+   "metric": 0.33756372959576697
+  }
+ ],
+ "findings_of_the_document": [
+  {
+   "id": "headline-simple-sum",
+   "severity": "S4"
+  },
+  {
+   "id": "model-risk",
+   "severity": "S3"
+  },
+  {
+   "id": "rosenberg-schuermann-reference",
+   "severity": "S4"
+  }
+ ],
+ "closed_form": {
+  "vc_base": 528106.338849382,
+  "vc_stress": 568520.4605747112,
+  "square_difference": 44319208959.18347,
+  "closed_form_difference": 44319208959.18334
+ },
+ "analytic_bound": {
+  "sum_of_es": 980225.9035999494,
+  "worst_var": 890060.2231380921,
+  "lower_var": 185246.16707095428,
+  "el_total": 66728.71131165659,
+  "slack": 90165.68046185735,
+  "worst_var_over_sum_of_es": 0.9080154073354749,
+  "sum_of_var": 724774.6376407273,
+  "comonotonic_var": 724774.6376407273
+ },
+ "H5": {
+  "criterion": {
+   "bound_relative_difference_max": 1e-09,
+   "gaussian_move_min": 0.1
+  },
+  "lower_relative_difference": 0.0,
+  "worst_relative_difference": 0.0,
+  "gaussian_move": 0.12113490109002112,
+  "row_moves": {
+   "lower-bound": 0.0,
+   "simple-sum": 0.0,
+   "variance-covariance": 0.07652648482383673,
+   "gaussian-copula": 0.12113490109002112,
+   "t-copula-nu4": 0.06361801374137732,
+   "t-copula-nu8": 0.09226339854598864,
+   "t-copula-nu30": 0.11639269460675372,
+   "worst-case": 0.0
+  },
+  "outcome": "held"
+ },
+ "base_rows": {
+  "lower-bound": 118517.45575929769,
+  "simple-sum": 658045.9263290708,
+  "variance-covariance": 528106.338849382,
+  "gaussian-copula": 491973.5125652239,
+  "t-copula-nu4": 552388.9258125339,
+  "t-copula-nu8": 528320.2561750368,
+  "t-copula-nu30": 499128.337377142,
+  "worst-case": 823331.5118264355
+ },
+ "stress_rows": {
+  "lower-bound": 118517.45575929769,
+  "simple-sum": 658045.9263290708,
+  "variance-covariance": 568520.4605747112,
+  "gaussian-copula": 551568.6753487226,
+  "t-copula-nu4": 587530.8120854604,
+  "t-copula-nu8": 577064.878530433,
+  "t-copula-nu30": 557223.2295190564,
+  "worst-case": 823331.5118264355
+ },
+ "headline": 658045.9263290708,
+ "marginals": {
+  "credit": {
+   "el": 37619.14924230087,
+   "var": 298226.53459331125,
+   "es": 346948.98761972535,
+   "ec": 260607.3853510104,
+   "var_se": 1526.3653156275925
+  },
+  "market": {
+   "el": 0.0,
+   "var": 283435.3606894786,
+   "es": 355803.0083217577,
+   "ec": 283435.3606894786,
+   "var_se": null
+  },
+  "irrbb": {
+   "el": 27922.02227797251,
+   "var": 100745.72602650108,
+   "es": 106382.42111286118,
+   "ec": 72823.70374852857,
+   "var_se": 275.63057555874025
+  },
+  "operational": {
+   "el": 1187.5397913832105,
+   "var": 42367.0163314365,
+   "es": 171091.4865456052,
+   "ec": 41179.476540053285,
+   "var_se": null
+  }
+ },
+ "euler": {
+  "status": "information-not-capital",
+  "label": {
+   "en": "Information, not capital: an allocation of the aggregate expected shortfall shown for the validator",
+   "es": "Información, no capital: una asignación del déficit esperado agregado que se muestra al validador"
+  },
+  "risk_measure": "es",
+  "level": 0.999,
+  "horizon_years": 1,
+  "copula": {
+   "family": "gaussian",
+   "nu": null
+  },
+  "es_total_clp_m": 709389.8922561733,
+  "allocation": [
+   {
+    "risk": "credit",
+    "contribution_clp_m": 254919.0933464973,
+    "share": 0.3593497682011537
+   },
+   {
+    "risk": "market",
+    "contribution_clp_m": 275995.64367787854,
+    "share": 0.3890605810580278
+   },
+   {
+    "risk": "irrbb",
+    "contribution_clp_m": 78542.81210960397,
+    "share": 0.11071882044978555
+   },
+   {
+    "risk": "operational",
+    "contribution_clp_m": 99932.34312219355,
+    "share": 0.14087083029103295
+   }
+  ],
+  "additivity": {
+   "sum_clp_m": 709389.8922561734,
+   "relative_error": 1.6410625961512174e-16,
+   "tolerance": 1e-06
+  }
+ },
+ "model_risk": {
+  "status": "information-not-capital",
+  "label": {
+   "en": "Information, not capital: model risk measures are sensitivity information for the validator",
+   "es": "Información, no capital: las medidas de riesgo de modelo son información de sensibilidad para el validador"
+  },
+  "set_of_models": "band-rows",
+  "reference_model": {
+   "method": "gaussian-copula",
+   "nu": null
+  },
+  "barrieu_scandolo": {
+   "rho_x0_clp_m": 491973.5125652239,
+   "rho_max_clp_m": 823331.5118264355,
+   "rho_min_clp_m": 118517.45575929769,
+   "am": 0.6735281286455059,
+   "rm": 0.470135344788935
+  },
+  "glasserman_xu": {
+   "quantity": {
+    "en": "Expected aggregate loss under the Gaussian copula, and its worst case over reweightings of the sample within the relative entropy budget",
+    "es": "Pérdida agregada esperada bajo la cópula gaussiana, y su peor caso sobre reponderaciones de la muestra dentro del presupuesto de entropía relativa"
+   },
+   "relative_entropy_budget": 0.05,
+   "theta": 7.878363820062733e-07,
+   "baseline_clp_m": 66898.5418620889,
+   "worst_case_clp_m": 143201.82314318852
+  }
+ },
+ "diversification": {
+  "status": "information-not-capital",
+  "label": {
+   "en": "Information, not capital: the diversification of the Gaussian copula row against the simple sum",
+   "es": "Información, no capital: la diversificación de la fila de la cópula gaussiana contra la suma simple"
+  },
+  "reference_row": {
+   "method": "gaussian-copula",
+   "nu": null
+  },
+  "factor": 0.7476279282051226,
+  "benefit": 0.2523720717948774,
+  "euler_benefit_by_risk": [
+   {
+    "risk": "credit",
+    "benefit": 0.26525482868420336
+   },
+   {
+    "risk": "market",
+    "benefit": 0.22430210756314983
+   },
+   {
+    "risk": "irrbb",
+    "benefit": 0.2616936963083605
+   },
+   {
+    "risk": "operational",
+    "benefit": 0.41591282453697
+   }
+  ]
+ },
+ "rosenberg_schuermann": {
+  "role": "reference-not-a-gate",
+  "weights": {
+   "market": 0.041,
+   "credit": 0.264,
+   "operational": 0.695
+  },
+  "correlations": {
+   "market_credit": 0.5,
+   "market_operational": 0.2,
+   "credit_operational": 0.2
+  },
+  "published_additive_overestimate": {
+   "low": 0.3,
+   "high": 0.4
+  },
+  "case_additive_overestimate": 0.33756372959576697,
+  "within_published_range": true
+ },
+ "copula_sensitivity": [
+  {
+   "nu": 4.0,
+   "gaussian_capital_clp_m": 491973.5125652239,
+   "t_capital_clp_m": 552388.9258125339,
+   "relative_difference": 0.12280216658879661
+  },
+  {
+   "nu": 8.0,
+   "gaussian_capital_clp_m": 491973.5125652239,
+   "t_capital_clp_m": 528320.2561750368,
+   "relative_difference": 0.07387947253561578
+  },
+  {
+   "nu": 30.0,
+   "gaussian_capital_clp_m": 491973.5125652239,
+   "t_capital_clp_m": 499128.337377142,
+   "relative_difference": 0.014543109799980414
+  }
+ ],
+ "grid_minimum": {
+  "credit": 0.0,
+  "market": -1238863.3829309912,
+  "irrbb": -139795.90219274795,
+  "operational": 0.0
+ },
+ "grid_points": 1961
+}

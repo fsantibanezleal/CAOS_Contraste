@@ -1,0 +1,818 @@
+{
+ "meta": {
+  "seed": 20261104,
+  "reps": 2000,
+  "pd_reps": 1000,
+  "pd_book": [
+   0.005,
+   0.01,
+   0.02,
+   0.05,
+   0.1
+  ],
+  "obligors": 2000,
+  "years": 10,
+  "assumed_rho": 0.12,
+  "calibration_reps": 50000,
+  "bonferroni_every_year": 0.001,
+  "bonferroni_once": 0.01,
+  "engine_version": "1.1.0",
+  "script": "experiments/exp_pd_comparators.py"
+ },
+ "correlation": [
+  {
+   "rho": 0.0,
+   "reps": 2000,
+   "binomial": {
+    "every_year": {
+     "ever": 0.0365,
+     "ever_ci": [
+      0.029129752228693392,
+      0.045647350629009445
+     ],
+     "by3": 0.0115,
+     "median_year_among_detected": 5.0
+    },
+    "once": {
+     "ever": 0.0345,
+     "ever_ci": [
+      0.027351694097690574,
+      0.043433076949258034
+     ]
+    }
+   },
+   "jeffreys": {
+    "every_year": {
+     "ever": 0.041,
+     "ever_ci": [
+      0.03315349069372972,
+      0.05060635873817018
+     ],
+     "by3": 0.0125,
+     "median_year_among_detected": 6.0
+    },
+    "once": {
+     "ever": 0.0365,
+     "ever_ci": [
+      0.029129752228693392,
+      0.045647350629009445
+     ]
+    }
+   },
+   "vasicek_assumed": {
+    "every_year": {
+     "ever": 0.0,
+     "ever_ci": [
+      1.0842021724855044e-19,
+      0.001917047311437806
+     ],
+     "by3": 0.0,
+     "median_year_among_detected": null
+    },
+    "once": {
+     "ever": 0.0,
+     "ever_ci": [
+      1.0842021724855044e-19,
+      0.001917047311437806
+     ]
+    }
+   },
+   "vasicek_true": {
+    "every_year": {
+     "ever": 0.0365,
+     "ever_ci": [
+      0.029129752228693392,
+      0.045647350629009445
+     ],
+     "by3": 0.0115,
+     "median_year_among_detected": 5.0
+    },
+    "once": {
+     "ever": 0.0345,
+     "ever_ci": [
+      0.027351694097690574,
+      0.043433076949258034
+     ]
+    }
+   },
+   "chi2_sim": {
+    "ever": 0.044,
+    "ever_ci": [
+     0.03585182035848328,
+     0.053896526789548
+    ],
+    "by3": 0.0215,
+    "median_year_among_detected": 4.0
+   },
+   "chi2_matched": {
+    "ever": 0.003,
+    "ever_ci": [
+     0.0013756299155696819,
+     0.006529915111999497
+    ],
+    "by3": 0.0025,
+    "median_year_among_detected": 2.0
+   },
+   "chi2_nominal": {
+    "year_10": 0.0415,
+    "every_year": 0.2075
+   }
+  },
+  {
+   "rho": 0.03,
+   "reps": 2000,
+   "binomial": {
+    "every_year": {
+     "ever": 0.9505,
+     "ever_ci": [
+      0.9400999949211079,
+      0.9591727454512867
+     ],
+     "by3": 0.5875,
+     "median_year_among_detected": 3.0
+    },
+    "once": {
+     "ever": 0.325,
+     "ever_ci": [
+      0.3048253686289812,
+      0.34584559793002206
+     ]
+    }
+   },
+   "jeffreys": {
+    "every_year": {
+     "ever": 0.953,
+     "ever_ci": [
+      0.9428245574407699,
+      0.9614385976950675
+     ],
+     "by3": 0.5955,
+     "median_year_among_detected": 3.0
+    },
+    "once": {
+     "ever": 0.3265,
+     "ever_ci": [
+      0.3062981240696284,
+      0.3473670913474405
+     ]
+    }
+   },
+   "vasicek_assumed": {
+    "every_year": {
+     "ever": 0.0,
+     "ever_ci": [
+      1.0842021724855044e-19,
+      0.001917047311437806
+     ],
+     "by3": 0.0,
+     "median_year_among_detected": null
+    },
+    "once": {
+     "ever": 0.0,
+     "ever_ci": [
+      1.0842021724855044e-19,
+      0.001917047311437806
+     ]
+    }
+   },
+   "vasicek_true": {
+    "every_year": {
+     "ever": 0.0135,
+     "ever_ci": [
+      0.00929449397056005,
+      0.019570793063468934
+     ],
+     "by3": 0.0045,
+     "median_year_among_detected": 6.0
+    },
+    "once": {
+     "ever": 0.017,
+     "ever_ci": [
+      0.012190680490094124,
+      0.023661187212754797
+     ]
+    }
+   },
+   "chi2_sim": {
+    "ever": 0.992,
+    "ever_ci": [
+     0.9870439222802743,
+     0.9950697031652709
+    ],
+    "by3": 0.902,
+    "median_year_among_detected": 1.0
+   },
+   "chi2_matched": {
+    "ever": 0.9785,
+    "ever_ci": [
+     0.971166166194924,
+     0.98399921952803
+    ],
+    "by3": 0.8385,
+    "median_year_among_detected": 1.0
+   },
+   "chi2_nominal": {
+    "year_10": 0.7305,
+    "every_year": 0.999
+   }
+  },
+  {
+   "rho": 0.12,
+   "reps": 2000,
+   "binomial": {
+    "every_year": {
+     "ever": 0.967,
+     "ever_ci": [
+      0.9582322304627232,
+      0.9739772473483937
+     ],
+     "by3": 0.656,
+     "median_year_among_detected": 2.0
+    },
+    "once": {
+     "ever": 0.3095,
+     "ever_ci": [
+      0.28962106080886146,
+      0.3301093342167964
+     ]
+    }
+   },
+   "jeffreys": {
+    "every_year": {
+     "ever": 0.9675,
+     "ever_ci": [
+      0.9587882595417486,
+      0.9744193012220571
+     ],
+     "by3": 0.658,
+     "median_year_among_detected": 2.0
+    },
+    "once": {
+     "ever": 0.312,
+     "ever_ci": [
+      0.29207160011526356,
+      0.33264920967383704
+     ]
+    }
+   },
+   "vasicek_assumed": {
+    "every_year": {
+     "ever": 0.0235,
+     "ever_ci": [
+      0.017718224322382813,
+      0.031108721765417416
+     ],
+     "by3": 0.0085,
+     "median_year_among_detected": 5.0
+    },
+    "once": {
+     "ever": 0.015,
+     "ever_ci": [
+      0.010527098007952776,
+      0.021332437884141894
+     ]
+    }
+   },
+   "vasicek_true": {
+    "every_year": {
+     "ever": 0.0235,
+     "ever_ci": [
+      0.017718224322382813,
+      0.031108721765417416
+     ],
+     "by3": 0.0085,
+     "median_year_among_detected": 5.0
+    },
+    "once": {
+     "ever": 0.015,
+     "ever_ci": [
+      0.010527098007952776,
+      0.021332437884141894
+     ]
+    }
+   },
+   "chi2_sim": {
+    "ever": 1.0,
+    "ever_ci": [
+     0.9980829526885622,
+     1.0
+    ],
+    "by3": 0.9875,
+    "median_year_among_detected": 1.0
+   },
+   "chi2_matched": {
+    "ever": 1.0,
+    "ever_ci": [
+     0.9980829526885622,
+     1.0
+    ],
+    "by3": 0.9765,
+    "median_year_among_detected": 1.0
+   },
+   "chi2_nominal": {
+    "year_10": 0.891,
+    "every_year": 1.0
+   }
+  },
+  {
+   "rho": 0.24,
+   "reps": 2000,
+   "binomial": {
+    "every_year": {
+     "ever": 0.966,
+     "ever_ci": [
+      0.9571215720157152,
+      0.9730917398900246
+     ],
+     "by3": 0.6525,
+     "median_year_among_detected": 2.0
+    },
+    "once": {
+     "ever": 0.3325,
+     "ever_ci": [
+      0.3121915204089251,
+      0.3534506904404066
+     ]
+    }
+   },
+   "jeffreys": {
+    "every_year": {
+     "ever": 0.967,
+     "ever_ci": [
+      0.9582322304627232,
+      0.9739772473483937
+     ],
+     "by3": 0.653,
+     "median_year_among_detected": 2.0
+    },
+    "once": {
+     "ever": 0.3345,
+     "ever_ci": [
+      0.31415682400104716,
+      0.35547771865903877
+     ]
+    }
+   },
+   "vasicek_assumed": {
+    "every_year": {
+     "ever": 0.1245,
+     "ever_ci": [
+      0.11074657024387774,
+      0.13969313228701202
+     ],
+     "by3": 0.038,
+     "median_year_among_detected": 5.0
+    },
+    "once": {
+     "ever": 0.0495,
+     "ever_ci": [
+      0.04082725454871328,
+      0.059900005078892184
+     ]
+    }
+   },
+   "vasicek_true": {
+    "every_year": {
+     "ever": 0.0175,
+     "ever_ci": [
+      0.012609752927205314,
+      0.02424019772833217
+     ],
+     "by3": 0.003,
+     "median_year_among_detected": 6.0
+    },
+    "once": {
+     "ever": 0.016,
+     "ever_ci": [
+      0.011356235319609694,
+      0.022499466477862107
+     ]
+    }
+   },
+   "chi2_sim": {
+    "ever": 1.0,
+    "ever_ci": [
+     0.9980829526885622,
+     1.0
+    ],
+    "by3": 0.999,
+    "median_year_among_detected": 1.0
+   },
+   "chi2_matched": {
+    "ever": 1.0,
+    "ever_ci": [
+     0.9980829526885622,
+     1.0
+    ],
+    "by3": 0.9985,
+    "median_year_among_detected": 1.0
+   },
+   "chi2_nominal": {
+    "year_10": 0.954,
+    "every_year": 1.0
+   }
+  }
+ ],
+ "equal_size_chi2": {
+  "critical_value_5pct": 15.158218077770728,
+  "critical_value_matched": 21.843536638044892,
+  "matched_size": 0.004,
+  "scenarios": {
+   "all-x1": {
+    "reps": 1000,
+    "binomial": {
+     "every_year": {
+      "ever": 0.026,
+      "ever_ci": [
+       0.017803938148884417,
+       0.03782382895243355
+      ],
+      "by3": 0.007,
+      "median_year_among_detected": 7.0
+     },
+     "once": {
+      "ever": 0.041,
+      "ever_ci": [
+       0.030364971010377058,
+       0.05514799333457009
+      ]
+     }
+    },
+    "jeffreys": {
+     "every_year": {
+      "ever": 0.034,
+      "ever_ci": [
+       0.024431348599850012,
+       0.04713519036473686
+      ],
+      "by3": 0.012,
+      "median_year_among_detected": 6.0
+     },
+     "once": {
+      "ever": 0.044,
+      "ever_ci": [
+       0.03293821451334182,
+       0.058551789280331154
+      ]
+     }
+    },
+    "vasicek_assumed": {
+     "every_year": {
+      "ever": 0.0,
+      "ever_ci": [
+       2.168404344971009e-19,
+       0.0038267585456940676
+      ],
+      "by3": 0.0,
+      "median_year_among_detected": null
+     },
+     "once": {
+      "ever": 0.0,
+      "ever_ci": [
+       2.168404344971009e-19,
+       0.0038267585456940676
+      ]
+     }
+    },
+    "chi2_sim": {
+     "ever": 0.041,
+     "ever_ci": [
+      0.030364971010377058,
+      0.05514799333457009
+     ],
+     "by3": 0.021,
+     "median_year_among_detected": 3.0
+    },
+    "chi2_matched": {
+     "ever": 0.004,
+     "ever_ci": [
+      0.0015565881296028053,
+      0.01023955634772571
+     ],
+     "by3": 0.002,
+     "median_year_among_detected": 4.0
+    },
+    "chi2_nominal": {
+     "year_10": 0.044,
+     "every_year": 0.208
+    }
+   },
+   "all-x1.05": {
+    "reps": 1000,
+    "binomial": {
+     "every_year": {
+      "ever": 0.157,
+      "ever_ci": [
+       0.1357693268237746,
+       0.18085582953857152
+      ],
+      "by3": 0.042,
+      "median_year_among_detected": 5.0
+     },
+     "once": {
+      "ever": 0.109,
+      "ever_ci": [
+       0.09116003325518025,
+       0.12983249192755247
+      ]
+     }
+    },
+    "jeffreys": {
+     "every_year": {
+      "ever": 0.169,
+      "ever_ci": [
+       0.14704962532274432,
+       0.19348368883450515
+      ],
+      "by3": 0.046,
+      "median_year_among_detected": 5.0
+     },
+     "once": {
+      "ever": 0.113,
+      "ever_ci": [
+       0.09484035818450129,
+       0.1341215529298659
+      ]
+     }
+    },
+    "vasicek_assumed": {
+     "every_year": {
+      "ever": 0.0,
+      "ever_ci": [
+       2.168404344971009e-19,
+       0.0038267585456940676
+      ],
+      "by3": 0.0,
+      "median_year_among_detected": null
+     },
+     "once": {
+      "ever": 0.0,
+      "ever_ci": [
+       2.168404344971009e-19,
+       0.0038267585456940676
+      ]
+     }
+    },
+    "chi2_sim": {
+     "ever": 0.532,
+     "ever_ci": [
+      0.5010103114046786,
+      0.5627447760483971
+     ],
+     "by3": 0.154,
+     "median_year_among_detected": 6.0
+    },
+    "chi2_matched": {
+     "ever": 0.232,
+     "ever_ci": [
+      0.20689343920905212,
+      0.2591577033714399
+     ],
+     "by3": 0.024,
+     "median_year_among_detected": 7.0
+    },
+    "chi2_nominal": {
+     "year_10": 0.66,
+     "every_year": 0.787
+    }
+   },
+   "all-x1.1": {
+    "reps": 1000,
+    "binomial": {
+     "every_year": {
+      "ever": 0.555,
+      "ever_ci": [
+       0.5240461063792335,
+       0.5855329501807401
+      ],
+      "by3": 0.213,
+      "median_year_among_detected": 5.0
+     },
+     "once": {
+      "ever": 0.315,
+      "ever_ci": [
+       0.2869639071416552,
+       0.34445199352025146
+      ]
+     }
+    },
+    "jeffreys": {
+     "every_year": {
+      "ever": 0.594,
+      "ever_ci": [
+       0.5632592742952518,
+       0.6240212950981576
+      ],
+      "by3": 0.234,
+      "median_year_among_detected": 5.0
+     },
+     "once": {
+      "ever": 0.344,
+      "ever_ci": [
+       0.31520449198117434,
+       0.37398945668508204
+      ]
+     }
+    },
+    "vasicek_assumed": {
+     "every_year": {
+      "ever": 0.0,
+      "ever_ci": [
+       2.168404344971009e-19,
+       0.0038267585456940676
+      ],
+      "by3": 0.0,
+      "median_year_among_detected": null
+     },
+     "once": {
+      "ever": 0.0,
+      "ever_ci": [
+       2.168404344971009e-19,
+       0.0038267585456940676
+      ]
+     }
+    },
+    "chi2_sim": {
+     "ever": 0.998,
+     "ever_ci": [
+      0.9927371920716791,
+      0.9994513564168096
+     ],
+     "by3": 0.604,
+     "median_year_among_detected": 3.0
+    },
+    "chi2_matched": {
+     "ever": 0.988,
+     "ever_ci": [
+      0.9791427314363097,
+      0.9931223522230928
+     ],
+     "by3": 0.293,
+     "median_year_among_detected": 5.0
+    },
+    "chi2_nominal": {
+     "year_10": 0.998,
+     "every_year": 0.998
+    }
+   },
+   "all-x1.25": {
+    "reps": 1000,
+    "binomial": {
+     "every_year": {
+      "ever": 1.0,
+      "ever_ci": [
+       0.9961732414543059,
+       1.0
+      ],
+      "by3": 0.986,
+      "median_year_among_detected": 1.0
+     },
+     "once": {
+      "ever": 0.966,
+      "ever_ci": [
+       0.9528648096352631,
+       0.9755686514001499
+      ]
+     }
+    },
+    "jeffreys": {
+     "every_year": {
+      "ever": 1.0,
+      "ever_ci": [
+       0.9961732414543059,
+       1.0
+      ],
+      "by3": 0.99,
+      "median_year_among_detected": 1.0
+     },
+     "once": {
+      "ever": 0.97,
+      "ever_ci": [
+       0.9574965857376578,
+       0.9789062612293897
+      ]
+     }
+    },
+    "vasicek_assumed": {
+     "every_year": {
+      "ever": 0.0,
+      "ever_ci": [
+       2.168404344971009e-19,
+       0.0038267585456940676
+      ],
+      "by3": 0.0,
+      "median_year_among_detected": null
+     },
+     "once": {
+      "ever": 0.0,
+      "ever_ci": [
+       2.168404344971009e-19,
+       0.0038267585456940676
+      ]
+     }
+    },
+    "chi2_sim": {
+     "ever": 1.0,
+     "ever_ci": [
+      0.9961732414543059,
+      1.0
+     ],
+     "by3": 1.0,
+     "median_year_among_detected": 1.0
+    },
+    "chi2_matched": {
+     "ever": 1.0,
+     "ever_ci": [
+      0.9961732414543059,
+      1.0
+     ],
+     "by3": 1.0,
+     "median_year_among_detected": 1.0
+    },
+    "chi2_nominal": {
+     "year_10": 1.0,
+     "every_year": 1.0
+    }
+   },
+   "grade5-x1.3": {
+    "reps": 1000,
+    "binomial": {
+     "every_year": {
+      "ever": 1.0,
+      "ever_ci": [
+       0.9961732414543059,
+       1.0
+      ],
+      "by3": 0.998,
+      "median_year_among_detected": 1.0
+     },
+     "once": {
+      "ever": 0.971,
+      "ever_ci": [
+       0.9586616415497693,
+       0.9797335519001868
+      ]
+     }
+    },
+    "jeffreys": {
+     "every_year": {
+      "ever": 1.0,
+      "ever_ci": [
+       0.9961732414543059,
+       1.0
+      ],
+      "by3": 0.999,
+      "median_year_among_detected": 1.0
+     },
+     "once": {
+      "ever": 0.977,
+      "ever_ci": [
+       0.9657235492320532,
+       0.9846257231153547
+      ]
+     }
+    },
+    "vasicek_assumed": {
+     "every_year": {
+      "ever": 0.0,
+      "ever_ci": [
+       2.168404344971009e-19,
+       0.0038267585456940676
+      ],
+      "by3": 0.0,
+      "median_year_among_detected": null
+     },
+     "once": {
+      "ever": 0.0,
+      "ever_ci": [
+       2.168404344971009e-19,
+       0.0038267585456940676
+      ]
+     }
+    },
+    "chi2_sim": {
+     "ever": 1.0,
+     "ever_ci": [
+      0.9961732414543059,
+      1.0
+     ],
+     "by3": 1.0,
+     "median_year_among_detected": 1.0
+    },
+    "chi2_matched": {
+     "ever": 1.0,
+     "ever_ci": [
+      0.9961732414543059,
+      1.0
+     ],
+     "by3": 1.0,
+     "median_year_among_detected": 1.0
+    },
+    "chi2_nominal": {
+     "year_10": 1.0,
+     "every_year": 1.0
+    }
+   }
+  }
+ }
+}

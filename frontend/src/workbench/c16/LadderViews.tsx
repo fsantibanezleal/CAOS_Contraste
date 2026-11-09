@@ -20,7 +20,23 @@ const lowerFirst = (s: string): string => (/^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]/
 
 const NO_PATH: BiText = { en: 'Not available: this variant has no daily path.', es: 'No disponible: esta variante no tiene trayectoria diaria.' };
 
-/** The NLP by day with the CBC and the cumulative net outflow, the survival day and the LiST medians marked where the ladder reaches them. */
+/** The relevant day of the ladder that a calendar day after the valuation date falls on, by the document's own calendar: the number of relevant days
+ *  (US business days from `first_day`, with the document's holidays) among the calendar days 1 to `calendarDay` after the valuation date. The ECB annex
+ *  gives the LiST median survival periods in calendar days; the ladder counts relevant days, so a median is marked at its converted day, never at its raw number. */
+export function relevantDayOfCalendarDay(calendarDay: number, valuationDate: string, cal: { first_day: string; excluded_weekdays: string[]; holidays: string[] }): number {
+  const weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  const start = Date.parse(`${valuationDate}T00:00:00Z`);
+  let count = 0;
+  for (let k = 1; k <= calendarDay; k += 1) {
+    const d = new Date(start + k * 86_400_000);
+    const iso = d.toISOString().slice(0, 10);
+    if (iso < cal.first_day || cal.excluded_weekdays.includes(weekdays[d.getUTCDay()]) || cal.holidays.includes(iso)) continue;
+    count += 1;
+  }
+  return count;
+}
+
+/** The NLP by day with the CBC and the cumulative net outflow, the survival day and the LiST medians marked where the ladder reaches them (the medians converted from calendar days to the ladder's relevant days, both units in the label). */
 export function LadderView({ sel }: { sel: C16Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -36,11 +52,19 @@ export function LadderView({ sel }: { sel: C16Sel | null }) {
   const sday = survivalDay(path.survival);
   const last = l.day_index[l.day_index.length - 1];
   const annex = fitOf(sel)?.list_parameters.results_annex;
+  // the annex counts calendar days; a ladder on relevant days is compared in its own unit through the document's calendar
+  const onRelevantDays = o.variant.axis === 'relevant-days';
+  const inLadderDays = (calendar: number): number => (onRelevantDays ? relevantDayOfCalendarDay(calendar, o.valuation_date, o.conventions.day_calendar) : calendar);
+  const extremeDay = annex ? inLadderDays(annex.median_survival_days.extreme) : null;
+  const adverseDay = annex ? inLadderDays(annex.median_survival_days.adverse) : null;
+  const medianLabel = (en: string, es: string, calendar: number, day: number): BiText => (onRelevantDays
+    ? { en: `${en}: ${calendar} calendar days = relevant day ${day}`, es: `${es}: ${calendar} días calendario = día relevante ${day}` }
+    : { en: `${en}: day ${calendar}`, es: `${es}: día ${calendar}` });
   const marks = [
     ...(sday !== null ? [{ x: sday, label: { en: `Survival: day ${sday}`, es: `Supervivencia: día ${sday}` } }] : []),
     ...(sel.day !== sday ? [{ x: sel.day, label: { en: `Day ${sel.day}`, es: `Día ${sel.day}` } }] : []),
-    ...(annex && annex.median_survival_days.extreme <= last ? [{ x: annex.median_survival_days.extreme, label: { en: `LiST median, Extreme: day ${annex.median_survival_days.extreme}`, es: `Mediana LiST, Extremo: día ${annex.median_survival_days.extreme}` } }] : []),
-    ...(annex && annex.median_survival_days.adverse <= last ? [{ x: annex.median_survival_days.adverse, label: { en: `LiST median, Adverse: day ${annex.median_survival_days.adverse}`, es: `Mediana LiST, Adverso: día ${annex.median_survival_days.adverse}` } }] : []),
+    ...(annex && extremeDay !== null && extremeDay <= last ? [{ x: extremeDay, label: medianLabel('LiST median, Extreme', 'Mediana LiST, Extremo', annex.median_survival_days.extreme, extremeDay) }] : []),
+    ...(annex && adverseDay !== null && adverseDay <= last ? [{ x: adverseDay, label: medianLabel('LiST median, Adverse', 'Mediana LiST, Adverso', annex.median_survival_days.adverse, adverseDay) }] : []),
   ];
   return (
     <ViewsRow>
@@ -332,7 +356,7 @@ export function RunSpeedsView({ sel }: { sel: C16Sel | null }) {
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Reference point', es: 'Punto de referencia' }, lang)}</th>
-                <th>{pick({ en: 'Survival period (days)', es: 'Periodo de supervivencia (días)' }, lang)}</th>
+                <th>{pick({ en: 'Survival period (calendar days, as the annex gives it)', es: 'Periodo de supervivencia (días calendario, como lo da el anexo)' }, lang)}</th>
                 <th>{pick({ en: 'Banks', es: 'Bancos' }, lang)}</th>
               </tr>
             </thead>

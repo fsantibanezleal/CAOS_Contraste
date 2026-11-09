@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Ablation of the gates over the 15 leaks planted in the compact pipeline (100 draws each): the number of leaks that at least one gate of the subset detects in every draw, the number never detected by any gate of the subset, the mean over leaks of the share of draws in which at least one gate of the subset fails, and the largest false alarm rate on the protocol.}
+\label{tab:ablation-gates}
+\fitwidth{%
+\begin{tabular}{lrrrr}
+\toprule
+Gates kept & Leaks always detected & Leaks never detected & Mean detection \% & False alarm \% \\
+\midrule
+G1 only & 9 of 15 & 4 & 69.5 & 0 \\
+G2 only & 10 of 15 & 4 & 73.3 & 0 \\
+G3 only & 13 of 15 & 0 & 95.9 & 0 \\
+G1 and G2 & 14 of 15 & 0 & 99.9 & 0 \\
+G1 and G3 & 14 of 15 & 0 & 98.0 & 0 \\
+G2 and G3 & 15 of 15 & 0 & 100.0 & 0 \\
+G1, G2 and G3 & 15 of 15 & 0 & 100.0 & 0 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

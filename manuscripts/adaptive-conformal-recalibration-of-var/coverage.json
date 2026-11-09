@@ -1,7 +1,9 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:main-results",
+    "tab:hypotheses",
+    "tab:dispersion"
   ],
   "claims": {
     "BS-16": "sec:proposed-method"

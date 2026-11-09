@@ -439,6 +439,35 @@ on). One manifest per case, `data/derived/manifests/<case>.json`, and one artifa
 The TypeScript mirror `frontend/src/lib/contract.types.ts` is checked against every committed artifact in both
 directions by `frontend/src/lib/contract.test.ts`; a drift fails the build.
 
+## Visualization catalog
+
+The six view kinds of ADR-0082, answered for a purely financial problem: no physical asset exists, so V2 is replaced by a view
+of the same purpose (rule 1, last paragraph). V1 takes the domain's known form for a bank's models, the model inventory of
+SR 11-7 drawn as the flow from what the bank is exposed to, through its model families, to what they set. The story is
+`/story/<step>` with five steps (`inventory`, `backtest`, `crisis`, `recalibrate`, `decide`); the default window is the 2007 to
+2009 crisis (`equity-2007-09`) and the window selector of the story changes the market case for every step.
+
+| id | question | data contract | kind | interactions | linked views | placement |
+|---|---|---|---|---|---|---|
+| V1 | Where in the bank do the validated models sit, and which model families carry the most severe findings? | `contraste.governance.inventory` (34 entries, read from `governance/inventory.json`) and `contraste.governance.findings` (`rows`, `counts.by_case`, severity S1 to S4, read from `governance/findings.json`) | The system: a 2D flow of the bank, exposures (retail cards, corporate, SME, mortgages, the loan book, trading book, derivatives counterparties, banking book, funding, operations, the capital plan) to the model families (PD scoring, ratings, provisions, LGD and EAD, credit capital, market VaR and ES, counterparty credit, IRRBB, liquidity, operational risk, aggregation and stress, ML and fairness, validation of the tests) to what they set (provisions, Pillar 1 and ICAAP capital, liquidity buffers, credit decisions), each family node with its findings by severity and the market node with the Basel zone of the shared day | Select a family node, which selects its row in the panel and filters the panel to it; hover reads its entries and findings; scrub the shared day, which the market node shows | V2 (the family opened in the panel), V3 (the market node reads the same day) | Story step 1 (inventory), reached from the Introduction; the Experiments page shows the same two documents as tables in its governance tabs |
+| V2 | Which part of the selected model failed its validation? | `contraste.governance.findings` rows of the selected family: severity with its ECB F equivalent, status, the evidence test ids named in words | Replacement of the key component, inapplicable as a physical part because a bank's models have no physical asset: the selected model family opened by the three elements of SR 11-7 (conceptual soundness, ongoing monitoring, outcomes analysis), each with its findings and the tests that evidence them | Select a finding, which rings its exposure node in V1; the family chips and the flow nodes are one selection | V1, V3 | Story step 1 (the docked panel); the register of the Experiments page shows the same rows as a table |
+| V3 | Is the VaR model in the green, amber or red zone of the Basel back-test? | The C11 window documents (`C11/<window>.json`): `outputs.models[].by_level` (`exceedance_days`, `traffic_light`) for the 1% tail, the zone cuts of `fit.traffic_light` in `C11/models-ladder.json` (MAR32.9 Table 1; BCBS 1996, https://www.bis.org/publ/bcbs22.htm) | The domain's own diagram: the Basel traffic light, the exceptions of each model in the trailing 250 days by day against the green (0 to 4), amber (5 to 9, the Basel yellow) and red (10 or more) zones; a window of fewer than 250 days is drawn against the zones as not evaluated, with the document's reason | Select a model (the line or the panel row); scrub the day; the keyboard moves the day | V4, V5, V6 (the model and the day are kept), V1 (the day) | Story step 2 (backtest); the App's C11 Exceedances group shows the same counts |
+| V4 | How did the losses and the VaR forecasts move through the crisis? | The same C11 window documents: `outputs.models[].by_level` (`var`, `es`, `exceedance_days`) and `outputs.grid` (`dates`, `realised_loss`, committed only where its licence class allows) | State and dynamics: the VaR and the ES of the selected model by day, the range the ladder's VaR spans as the uncertainty band, the exceedance days marked, the stretch in the amber or red zone and the end of the evaluation marked; the realised loss where the document commits it, and where it is withheld the exceedance days sit on the VaR and the view says why | Scrub the shared day (keyboard and pointer); hover reads the VaR, the ES and the count | V3, V5 (the shared day) | Story step 3 (crisis); the App's C11 Exceedances group draws the same VaR and ES |
+| V5 | How does the proposed recalibration correct the VaR, day by day? | `outputs.conformal` of the window document (`rows[].series`, `rows[].unwrapped` and `wrapped`, `method`, `hypothesis`): the adaptive conformal recalibration of HS-250, GARCH-t and FHS | The method at work: the recalibrated VaR advancing day by day against the raw VaR, the days each was exceeded, coupled to V3 with the exceptions in the trailing 250 days without (dashed) and with (solid) the recalibration against the same zones | Play and pause the days; scrub the shared day; the keyboard moves the day; reduced motion turns the player off and leaves the day by hand | V3 (same zones and axes), V4 (same day) | Story step 4 (recalibrate); the App's C11 conformal views read the same block |
+| V6 | Which VaR model should the bank keep? | `outputs.models` (`eligible`, `failed_gates`), `outputs.es_backtests` (p-values), `outputs.comparison` (`champions`, `mcs`) and `impact.eligible_models` of the window document | Comparison and decision: the models on one axis, each exception rate with its 95% Wilson interval against the promised tail level, the gates it fails, whether the model confidence set keeps it, the expected-shortfall back-test p-value and the champion marked with its reason; a window with no champion says why in the document's words | Select a model (the row or the panel); the selected model is the one of V3 | V3, V4 (the selected model) | Story step 5 (decide); the App's C11 comparison views read the same block |
+
+What is real and what a view does not claim. Every number on a story view is read from the committed artifacts at the
+release: the inventory and the register of findings (34 entries and 732 findings), and the six windows of the market case,
+whose VaR and ES paths, exceedance days, tests, gates, confidence sets and conformal recalibration are the engine's own output
+on public daily series. Nothing is typed in or illustrative. Two things are stated conventions of Contraste, labelled so on the
+views: which exposure, which family and which output a case belongs to (read from the exposure and regulatory-use basis of its
+inventory entry), and which element of SR 11-7 a finding's first test evidences (by the test's namespace). The Basel zone cuts are
+the table of the models document, and the Wilson interval is a function of the exception count and the days. The realised loss of
+a window is drawn only where its data licence class lets the document commit it (rates 2022 and FX 2008); in the equity windows
+only the exceedance days stand, and V4 says so. A window of fewer than 250 days has no Basel light, and V3 says so. The views do
+not approve or reject a model: the gates and the champion are the rule's output on the evidence, the cases are authored on public
+data and generators, and no figure describes a real bank.
+
 ## Technology and versions
 
 Every pinned dependency of the offline lane (`data-pipeline/requirements.txt`, the optional
@@ -481,7 +510,7 @@ the ones the dossiers and `docs/frameworks/` record.
 | tests | pytest | 9.1.1 | the pipeline, contract, guard and adversarial tests | none recorded |
 | lint | ruff | 0.15.18 | lint of data-pipeline, tests, scripts and app | none recorded (0.17.0 is current and was not adopted) |
 | contracts | jsonschema | 4.26.0 | validates every document against its schema file | none recorded |
-| shell | @fasl-work/caos-app-shell | 0.19.12 | the shared app shell, pinned exactly (ADR-0078); since 0.19.0 it draws every chart with Tier A and the C07 and C18 waterfalls, bridge and grouped bars; 0.19.1 lets a filling card flow on a phone (data-caos-flow) and names Spanish dates; 0.19.2 corrects the gate's sticky-header reading (G5); 0.19.3 writes its own labels in Spanish (D16-21); 0.19.4 wraps the rail's lane badge and judges a drawing by its visible part (G6); 0.19.5 gives a case whole notes at 1280 px (`noteFit`, C04); 0.19.6 marks the footer licence translate=no; 0.19.7 to 0.19.12 fix the shell and its gate (plot captions wrap in their card, the instrument marked outside Focus, document framing, whole scrollable documents measured, an interrupted JSON read re-fetched), no product change | a hand-rolled shell, forbidden by ADR-0078 |
+| shell | @fasl-work/caos-app-shell | 0.25.0 | the shared app shell, pinned exactly (ADR-0078); since 0.19.0 it draws every chart with Tier A and the C07 and C18 waterfalls, bridge and grouped bars; 0.19.1 lets a filling card flow on a phone (data-caos-flow) and names Spanish dates; 0.19.2 corrects the gate's sticky-header reading (G5); 0.19.3 writes its own labels in Spanish (D16-21); 0.19.4 wraps the rail's lane badge and judges a drawing by its visible part (G6); 0.19.5 gives a case whole notes at 1280 px (`noteFit`, C04); 0.19.6 marks the footer licence translate=no; 0.19.7 to 0.19.12 fix the shell and its gate (plot captions wrap in their card, the instrument marked outside Focus, document framing, whole scrollable documents measured, an interrupted JSON read re-fetched), no product change; 0.20.0 to 0.23.0 add the ADR-0082 showcase primitives (the story frame, linked selection, shared cursor), the 60% App drawing floor and 80% Focus floor of the gate, immersive routes, `railWidth`, compact tab density and `StoryFrame.mobileStageMinHeight`; 0.23.1 and 0.23.2 measure a long document through what the reader can scroll to and keep the story's step row whole; 0.24.0 writes a callout's state, measures the callouts at every size, theme and language (G21) and measures the header band the cards take (`onLayout`, `--caos-callout-band`), which the story reads; 0.25.0 adds `VariantBar` `layout: 'select'` and a chart readout that ignores the pointer events a scroll re-dispatches | a hand-rolled shell, forbidden by ADR-0078 |
 | web | react | 19.3.0 | the UI | none: the shell requires it |
 | web | react-dom | 19.3.0 | the UI renderer | none: the shell requires it |
 | web | react-router | 8.4.0 | the six routes | none: the shell requires it |
@@ -607,10 +636,10 @@ are the methods Contraste proposes (the plan `plans/contraste/method-tiers-sdd-p
 | BS-10 | beyond | Test construction: The batch 3 test corrections, with the error rate each one removes measured on planted data | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-10 |
 | BS-11 | beyond | Method-adjacent: reverse stress rule: Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-11 |
 | BS-12 | beyond | Measurement: The instability of the operational-risk capital, measured on independent histories of known truth | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-12 |
-| BS-13 | beyond | Proposed method: a scale-and-level complement to the FRTB PLA test (C13) | at a size of at most 1 %, the stale-volatility model flagged in at least 30 % of replications; refuted below 10 % | `tests/c13/`; engine `market` tests |
-| BS-14 | beyond | Proposed method: an anchored tipping-point PD under informative rating withdrawals (C04) | the anchored interval covers the true PD in at least 90 % of 200 repetitions at k = 9, the existing treatments under 50 %; refuted if not better or if the anchored k is unstable | `tests/test_c04.py`; engine `transitions` tests |
-| BS-15 | beyond | Proposed method: e-process sequential monitors for calibration and back-tests (C22, C11, C03) | size held at 5 % under optional stopping where the repeated Kupiec rule exceeds it, median delay below the 250-day window at severity 3 or more, power cost under 10 points; refuted if the delay is not lower | `tests/test_c22.py`, `tests/c11/`; engine `validation.sequential` tests |
-| BS-16 | beyond | Proposed method: adaptive conformal recalibration of VaR against the 17-model ladder (C11) | HS-250, GARCH-t and FHS wrapped pass in at least one more stress window without worsening FZ0 by more than 5 %; refuted if the wrapper fails independence in 2007-09 | `tests/c11/`; engine `market` tests |
+| BS-13 | beyond | Proposed method: a scale-and-level complement to the FRTB PLA test (C13) | at a size of at most 1 %, the stale-volatility model flagged in at least 30 % of replications; refuted below 10 %. Outcome: held, 99.9 % at a held-out false-alarm rate of 0.9 %; the paper's size-transfer prediction failed | `tests/c13/`; engine `market` tests |
+| BS-14 | beyond | Proposed method: an anchored tipping-point PD under informative rating withdrawals (C04) | the anchored interval covers the true PD in at least 90 % of 200 repetitions at k = 9, the existing treatments under 50 %; refuted if not better or if the anchored k is unstable. Outcome: refuted (the anchored k is unstable across years, and the anchored interval is not better than Manski's band), coverage 98.5 to 100 % | `tests/test_c04.py`; engine `transitions` tests |
+| BS-15 | beyond | Proposed method: e-process sequential monitors for calibration and back-tests (C22, C11, C03) | size held at 5 % under optional stopping where the repeated Kupiec rule exceeds it, median delay below the 250-day window at severity 3 or more, power cost under 10 points; refuted if the delay is not lower. Outcome: size held; delay and power cost fail at severity 3 over 20 seeds (251 days, 12.4 points) and hold at severity 4 | `tests/test_c22.py`, `tests/c11/`; engine `validation.sequential` tests |
+| BS-16 | beyond | Proposed method: adaptive conformal recalibration of VaR against the 18-model ladder (C11) | HS-250, GARCH-t and FHS wrapped pass in at least one more stress window without worsening FZ0 by more than 5 %; refuted if the wrapper fails independence in 2007-09. Outcome: held as written (6 of 6 cells), 5 of 6 on coverage alone, with the pass counts inflated by the update | `tests/c11/`; engine `market` tests |
 
 ## Cases
 
@@ -778,11 +807,11 @@ no claim is stated before its demonstration exists. Each claim is stated only as
 - **BS-1** The measured size and power of the validation tests on planted defects.
   What it adds: for each of the 21 tests with a p-value, its rejection rate under its null at 5% and 1% (its size), and for 17 of
   them its rejection rate against defects of known severity (its power); the four transition tests (time homogeneity, Markov order,
-  matrix against a reference, downward momentum) have a size and no power. The measurement is 231 simulations and 551,000 seeded
-  repetitions in eight families, every one of its 476 rates with its Monte Carlo standard error (Morris, White and Crowther 2019,
+  matrix against a reference, downward momentum) have a size and no power. The measurement is 256 simulations and 651,000 seeded
+  repetitions in eight families, every one of its 537 rates with its Monte Carlo standard error (Morris, White and Crowther 2019,
   https://doi.org/10.1002/sim.8086) and its Wilson interval (Brown, Cai and DasGupta 2001, https://doi.org/10.1214/ss/1009213286),
-  an exact rejection probability beside 47 of the rows, on 123 generators whose truth is known and reproduces from the committed
-  configuration. Demonstrated by `notebooks/en/14-validating-the-validator/08-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb`
+  an exact rejection probability beside 47 of the rows, on 148 generators whose truth is known and reproduces from the committed
+  configuration. Demonstrated by `notebooks/en/14-validating-the-validator/09-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb`
   and its Spanish counterpart.
   Evidence: `data/derived/C22/null.json`, `data/derived/C22/miscalibration.json`, `data/derived/C22/clustering.json`,
   `data/derived/C22/drift.json`, `data/derived/C22/discrimination-decay.json`, `data/derived/C22/leakage.json`,
@@ -797,18 +826,31 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   Not claimed: the power of the four transition tests; that a rate holds outside the generator and the severity ladder it was
   measured on (the ladders are design choices of Contraste, and power against them is not a probability of detecting a real bank's
   problem); any regulatory threshold implied by a size or a power.
+  Outcome (the size-and-power manuscript, `manuscripts/size-and-power-of-validation-tests/`, sections 7 and 12; P1 to P5 and P8 restate the acceptance
+  criteria of this measurement and are checked on the committed record): the count of credit-family tests that hold their size depends on the
+  measure, and every statement says which. By the paper's definition (a test holds its size unless its exact rejection probability, or the lower
+  Wilson limit of its rate, lies above the level at 5% or 1%) 12 of the 21 hold on 200,000 null repetitions each and 9 do not, 10 of the 12 at one
+  configuration of a composite null; on the committed cells of 4,000 repetitions 18 hold by the definition and 19 pass the product's screen (the level
+  plus 3.09 standard errors). The two tests the committed cells flag are Jeffreys (exact 1.38% at 1%) and the normal test over five years (8.38% at 5%);
+  six more are shown above their level only by the pool, by 0.05 to 0.29 points, which a cell of 4,000 repetitions cannot resolve. Of the 17 power
+  curves, 4 do not reach 80% on their ladder. Three predictions are refuted: P2 (all 21 hold), P7 (one cell and the pool judge every test alike) and
+  P8 (every power curve reaches 80%).
 
 - **BS-2** The reconciliations against reference engines that exist today.
   What it adds: the engine's tests and estimators are held to independent implementations and to the printed digits of the papers,
   and the gap is reported. The reconciliations that exist are the ones claimed:
-  - the printed tables and papers recomputed beside their prints (413 printed numbers of five papers in the ratings and calibration
-    cases, 296 reproduced to the printed digit, every other one listed with its cell and its explanation);
+  - the printed tables and papers recomputed beside their prints (438 printed numbers of five papers in the ratings and calibration
+    cases, 313 reproduced to the printed digit, every other one listed with its cell; 413 and 296 are the counts of the same tally
+    without Tasche's Tables 8 and 9, which is how this item carried them before the reconciliation paper recomputed them);
   - the p-values of the Jeffreys and binomial tests against two recomputations that call neither of the engine's SciPy functions (a
-    quadrature of the Beta density and an exact rational sum of the binomial terms), equal within 1e-9 on a grid of 36 cases;
+    quadrature of the Beta density and an exact rational sum of the binomial terms), equal within 1e-9 on a grid of 36 cases (72 of 72
+    comparisons);
   - the Hull-White exposure of the single swap and of the four-swap netting set against ORE 1.8.17.0, within two combined Monte Carlo
     standard errors at all 33 report dates, with the EEPE and the CVA;
-  - the Hull-White closed forms against QuantLib 1.44 to a relative 1e-6;
-  - the wrong-way calibration against the printed values of the Appendix of Hull and White (2012).
+  - the Hull-White closed forms against QuantLib 1.44 to a relative 1e-6 on the four rows the documents commit (on the extended grid of
+    the reconciliation paper 296 of 297 cases are within 1e-6, and the one beyond is at 1.6e-6);
+  - the wrong-way calibration against the printed values of the Appendix of Hull and White (2012): 8 of its 9 printed numbers agree to
+    the digit, and the second calibration constant is 1.32 units of its last digit from the print.
 
   Reported as gaps and not claimed: the collateralised variants (CSA with 10 and with 20 days) and the initial-margin variant against
   ORE, with the largest EE gaps of 9.9, 7.1 and 11.7 combined standard errors, CVA gaps of 15.9 and 9.9 in the two CSA variants, and a
@@ -825,6 +867,22 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   Demonstrated by: `notebooks/en/03-ratings-and-calibration/11-the-reconciliations-against-printed-answers.ipynb` and
   `notebooks/en/08-counterparty-and-regulatory-calculators/08-exposure-reconciled-to-a-reference-engine.ipynb`, with their
   Spanish counterparts.
+  Outcome (the reconciliation manuscript, `manuscripts/reconciliation-against-reference-engines/`, sections 7 and 12; its six hypotheses
+  quote this item and restate evidence committed before the experiments were designed, so they test whether committed claims reproduce
+  and are not pre-registered predictions; the five predictions about the repeated runs against ORE were written before the first
+  replicate, R2 after a pilot): three of the six held and three are not met as stated. Not met: the counts of printed numbers (438 and
+  313 in the full tally, 413 and 296 only without Tasche's Tables 8 and 9; of the 125 numbers that miss, 25 have an explanation the
+  experiments test, 93 an explanation recorded in the committed documents and not retested, and 7 none); the closed forms against
+  QuantLib (held on the four committed cases, 296 of 297 on the extended grid); and the Appendix of Hull and White (8 of 9 to the digit,
+  1.32 units on the second constant, which the engine's own test accepts only at an absolute tolerance of 2e-4 that is not this item's
+  rule). Held: the independent routes (72 of 72 within 1e-9, and 1,200 of 1,200 on a seeded draw) and the gaps of the collateralised and
+  initial-margin variants (9.9, 7.1 and 11.7 combined standard errors, the 10-day variant failing on 8 of 8 new seeds). The single swap
+  and the netting set pass against ORE on the product's draws (largest |z| 0.78 and 0.72, equivalent within 1.9% and 2.1% of the EEPE),
+  and on 22 of 24 new seeds each. The acceptance rule itself is lenient and not exact: the standard errors of the engine overstate
+  the error of antithetic means (by a factor that grows to 2.5), and the rule of two combined standard errors on the 35 comparisons
+  rejects two runs of one model in 12.5% of repetitions (9.6 to 16.1%, against 5% nominal) and detects a volatility 2% too high in
+  75.0%; pair-aware errors with a family-wise bound of 3.18 give 3.8% and 76.5%, and a maximum-T bound 4.8% and 81.2%. One synthetic
+  book is covered.
 
 - **BS-3** The leakage-safe protocol per case, with gates.
   What it adds: a split declared per case (a locked stratified holdout for C01 and C02, out-of-time cohorts read at their 5-year mark
@@ -841,19 +899,34 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   Beyond: the research dossier 04 states the leakage rules, and dossier 07 names the single-split evaluation of an open toolkit as the
   counter-example; neither gives a protocol declared per case with a gate that fails when it is broken. Not claimed: a calibration
   before the test window (the drafted text names it for a later case) and any leak by time beyond what the gate CT-103 perturbs.
+  Outcome (the leakage-safe-protocol manuscript, `manuscripts/leakage-safe-validation-protocol/`; its nine predictions were written in the table script with the
+  outputs that decide them, between 4 and 7 November 2026, and none was registered before the runs): on planted data the AUC bias under the protocol is
+  0.000 with a 95% interval coverage of 95.3%, and a weight of evidence with holdout labels adds +0.018 and a fit on every row +0.025; at least one gate
+  fails for each of 15 leaks planted in the fitting path in all 100 draws and none fails on the protocol; a development-only leak is seen by the AUC against
+  development in 99.0% of repetitions at a shift of 0.5 standard deviations and by the stability index in 14.2% at a shift of one. Three of the nine
+  predictions did not hold: H2 (a step that reads holdout labels inflates the AUC in every data set and model: 3 of 5 on one data set), H8 (a random split
+  reports a level gap under 1 point while the out-of-time gap is at least 2: 8 of 10 cells) and H9 (preprocessing before the folds inflates the
+  cross-validated AUC and inside the folds does not: 5 of 6 pairs). The gates do not detect a feature built from information dated after the observation date.
 
 - **BS-4** The default definition as part of the PD, informative withdrawals and thin grades.
   What it adds: the same agency's long-run PD of the CCC to C grade is 26.64% under the CEREP default page and 8.61% under the
   transition page, and the IRB risk weight of the cohort mix moves from 58.0% to 47.5% with the definition; informative
   withdrawals and thin grades are measured on rating paths of known truth (with withdrawals ten times as likely in the year before
-  default, removing them understates the PD of B by 34% and following them as EBA paragraph 76 asks by 15%, and no matrix test sees
-  it; with 50 obligors per grade the Wald interval contains the PD of AAA in 0.33% of the samples).
+  default, removing them understates the PD of B by 34% and following them as EBA paragraph 76 asks by 15%, and the time-homogeneity and last-matrix tests reject
+  5.8% and 1.4% of repetitions at the 5% level, the last-matrix test seeing it only at withdrawal twenty times as likely, 16.3%; with 50 obligors per grade the Wald interval contains the PD of AAA in 0.33% of the samples).
   Evidence: `data/derived/C04/sp.json`, `data/derived/C04/withdrawals.json`, `data/derived/C04/thin.json`,
   `docs/design/features/c04-transitions/requirements.md`.
   Beyond: the ESMA CEREP publication (https://registers.esma.europa.eu/cerep-publication/) states no deterministic definition of a
   default event, and cohort and duration estimators take the agencies' tables as given.
   Demonstrated by: `notebooks/en/03-ratings-and-calibration/10-the-default-definition-withdrawals-and-thin-grades.ipynb` and
   its Spanish counterpart.
+  Outcome (the default-definition manuscript, `manuscripts/default-definition-withdrawals-thin-grades/`; the item above was written after the committed
+  documents were baked, so its point values are reproductions that no outcome could have refuted, and only the bootstrap interval, the 1,000-repetition
+  extension and the further tests decide): the definition gap holds (gap index 0.323, interval 0.259 to 0.391; the risk weight falls 10.5 points, interval
+  8.3 to 13.1); with k = 9 removing the withdrawn ratings, following them and a duration estimator understate the PD of B by 35.1%, 15.6% and 37.2% (each
+  plus or minus 0.3); the first-order conjecture of the theory is refuted for CCC to C (z of 3.02, 3.31 and 6.32 at k = 2, 5 and 19); "no matrix test sees it"
+  is held for the two tests at k = 9 and not as a statement, because the last-matrix test rejects 16.3% at k = 19; thin-grade coverage reproduces (Wald 0.33%).
+  The protocol measures these biases and repairs none.
 
 - **BS-5** Provisions reconciliation identities as gates, overlays apart, three regimes on one portfolio.
   What it adds: the IFRS 7 roll-forward closes as a gate on the engine's tolerance basis, one millionth of the gross carrying amount
@@ -868,9 +941,31 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   regimes on one portfolio, which is UNVERIFIED beyond the searches those dossiers record. The C07 bank is synthetic and labelled so.
   Not claimed: that any regime is right or any engine figure compliant; that the weighted ECL is above the mean-path ECL on every
   date (the committed C06 ECL-level index of 2010-12 is below zero); a tolerance of 1e-6 in units of money (the basis is relative).
+  Outcome (the provisions-reconciliation manuscript, `manuscripts/provisions-reconciliation-identities/`, sections 6, 7 and 12; the four
+  acceptance criteria of this item were first in this document on 5 October 2026, commit 4aa4efae, a week before the first bake of the C06
+  and C07 documents on 12 October, so the closing of the identities and the reference example are reproductions that the bake was built to
+  meet and could not fail, while the convex regime and the overlays as separate lines were tested on new draws): of 27 predictions, 24
+  held and 3 were refuted; of 4 reproductions, 3 were reproduced and 1 was contradicted. The twelve identities on a tolerance of one
+  millionth of the gross carrying amount name a planted defect from that size in 4,200 of 4,200 cases of seven classes (the stage
+  arithmetic and a pooled row name 1,800 of them); no identity sees an amount booked under another line or an overlay merged into the
+  model loss (0 of 18); an absolute tolerance of 1e-6 units flags 4 of the six clean tables; the choice of that tolerance is a policy value
+  and not a numerical necessity. Rounding every stored number to millions flags 97.8% of the books (96.8 to 98.5%), not the more than 99%
+  predicted (refuted), and 71.6% at 100,000 units. Two further predictions about the signed map of the identities were refuted: the one
+  entry seen by no identity (the model ECL of the POCI stage) is seen, and the largest group of entries that no failing pattern
+  distinguishes has 8 entries, not 11 or more. Overlays kept as separate lines leave the model estimate unchanged in 6,000 random sets.
+  The weighted PD is never below the PD at the mean factor in 16,906 convex draws and is below it in 796 of 2,046 mixed draws, and a
+  three-scenario set at one standard deviation understates the expected PD by a median of 4.56%. The weighted ECL exceeds the mean-path ECL
+  on five of the six committed dates and not on 2010-12, which the item lists as not claimed. One synthetic bank has an IFRS 9 total of
+  0.621 of the B-1 total in the base scenario over 10 seeds (95% interval 0.606 to 0.635) and above it in the combined severe scenario
+  in every seed; the bridge closes within 3.8e-5 currency units in all 60 runs, by construction up to the agreement of two aggregations,
+  and the ratios depend on the size of the book (0.464 at 3,430 accounts against 0.642 at full size).
 
 - **BS-6** Engines and test catalogues no open toolkit provides.
-  What it adds: the ECB 2019 IRB validation-reporting tests as specified, a copula and CreditRisk+ portfolio engine and a bank IRRBB
+  What it adds: five of the 17 statistics of the ECB 2019 IRB validation-reporting instructions as specified (the Jeffreys test, the
+  area against its development value, the matrix weighted bandwidth, the migration z-tests and the concentration test), with the
+  paired t-test of the loss given default in a related, two-sided form; 11 of the 17 are not implemented (the qualitative tools, the
+  generalised area of the loss and conversion factor, the expected-loss, conversion factor and exposure back-tests and the slotting
+  statistics). It adds as well a copula and CreditRisk+ portfolio engine and a bank IRRBB
   engine, with golden values reproduced from the primary sources. It is an absence claim: on 2026-10-04 a search of GitHub and PyPI
   found no toolkit that implements these tests as specified. Topic 06 (portfolio capital) demonstrates the portfolio engine: the
   closed forms and the published test vector it is held to, the committed Gaussian copula rung regenerated bit for bit by the
@@ -886,16 +981,45 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   about maintained, permissively licensed implementations on those dates and is UNVERIFIED beyond them. Not claimed: equality with a
   reference engine (the research found none), freedom from defects (the anchors are necessary conditions), and the Student t
   importance sampler, which the engine records as a rung that did not run.
+  Outcome (the engines-and-test-catalogues manuscript, `manuscripts/engines-and-test-catalogues/`, sections 7 and 12; its hypotheses were not
+  pre-registered, and the absence claim is checked there only against 37 package names queried on 2026-11-06, of which 34 exist on PyPI,
+  and the 106 installed distributions): the registry holds 134 tests in 18 families. H1 (first part), H2, H3, H4 and H6 held, H8 held, and H7
+  (the absence claim) was not refuted by that survey, which does not prove it. The second part of H1 and H5 did not hold: 11 of the 17 ECB
+  statistics are not implemented, and the maximum-likelihood interval of the asset correlation covers below its nominal level in 16 of the
+  24 cells of the simulator (outside the binomial band in 1, which does not survive a Bonferroni correction). The five ECB statistics agree
+  with an independent transcription of the instructions on 500 random inputs each, and the Jeffreys test differs from the exact binomial
+  test in 1 of 70 grade cells at the 5% level and in none at 1%; the portfolio engine matches four analytic anchors, an independent
+  simulator (largest |z| below one in 10 runs of 200,000 scenarios), an independent recursion and its committed one-million-scenario rung;
+  the IRRBB engine matches QuantLib in 72 leg and shock pairs. Two of the references (the IRB formula and the QuantLib discount factor)
+  share the engine's arithmetic. Of 12 planted defects, 10 change a result, 10 of these are found by at least one of five verification
+  layers and 8 by one layer only. The checks are a necessary condition for the correctness of an engine, not a sufficient one.
 
 - **BS-7** The UF as its own currency in IRRBB.
-  What it adds: the reajustabilidad risk of CMF RAN 21-13 Annex 1 as a separate currency (the UR) with its own curve, its own shock sizes (200/250/150 bp for the EVE and 300 bp for the NII, against 300/400/200 bp and 300 bp for the peso), its own floor (-2 percent, against 0 for the peso), the indexation charge (2.5% of the absolute net UF position) and the 50% offset of the gain leg against the loss leg. On the committed Banco Andino variants the charge is 55.9% of the delta NII of the short-UF variant, and a single-currency treatment of the same flows (peso curve, peso sizes, zero floor, no charge) gives a delta NII 6.8 to 8.8 times smaller and a delta EVE 10 to 27% smaller in the three variants whose net UF position is 30% of Tier 1.
+  What it adds: the reajustabilidad risk of CMF RAN 21-13 Annex 1 as a separate currency (the UR) with its own curve, its own shock sizes (200/250/150 bp for the EVE and 300 bp for the NII, against 300/400/200 bp and 300 bp for the peso), its own floor (-2 percent, against 0 for the peso), the indexation charge (2.5% of the absolute net UF position) and the 50% offset of the gain leg against the loss leg. On the committed Banco Andino variants the charge is 55.9% of the delta NII of the short-UF variant, and a single-currency treatment of the same flows (peso curve, peso sizes, zero floor, no charge) gives a delta NII 6.8 to 8.8 times smaller and a delta EVE 10 to 27% smaller in the three variants whose net UF position is 30% of Tier 1; those ranges hold for the committed book (one seed) only.
   Evidence: `data/derived/C15/long-uf.json`, `data/derived/C15/short-uf.json`, `data/derived/C15/floors-active.json`, `data/derived/C15/offset-on-off.json`, `docs/design/features/c15/requirements.md`, `notebooks/en/09-irrbb/08-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-the-uf-and-the-breach-test.ipynb`.
   Beyond: the BCBS standard (https://www.bis.org/basel_framework/chapter/SRP/31.htm, with the 2016 calibration https://www.bis.org/bcbs/publ/d368.htm and the 2024 recalibration https://www.bis.org/publications/202407-standards-recalibration-shocks-interest-rate-risk-banking-book.pdf) has 21 currencies in its shock table, neither the peso nor a UF-like unit; the Chilean treatment is the Annex 1 of chapter 21-13 of the CMF (https://www.cmfchile.cl/portal/principal/623/articles-29808_doc_pdf.pdf). The claim is regional: no public implementation of Annex 1 was found, which is UNVERIFIED beyond the dossier's search. Limits: the floors are implemented and tested but none binds on the committed curves (the closest post-shock rate is 20.48 bp from its floor in every variant), so their effect on a number is not demonstrated; there is no second implementation to reconcile with; the bank is synthetic.
+  Outcome (the UF manuscript, `manuscripts/uf-as-its-own-currency-in-irrbb/`, abstract, sections 6 and 7 and the conclusions; the four
+  statements R1 to R4 of this item, which entered after the numbers of the committed case were known, are reproduced and could not
+  have failed, and are not tests; H2 and H5 and the decision rule of H4 were written into the headers of the experiment scripts, the rule of H4
+  after the runs, an order that the repository history cannot show; H1 was revised after its result; H3 was written after the
+  reproduction run had printed a value that already contradicts one of its clauses): the ranges 6.8 to 8.8 times and 10 to 27% hold
+  for the committed book. Over 30 synthetic books per variant, with a net UF position of 30% of level 1 capital, treating the UF as
+  pesos gives a delta NII 4.9, 5.5 and 5.7 times smaller (ratio of the mean measures; bootstrap intervals within 4.5 to 6.6; the mean
+  of the per-book ratios is 5.8, 6.9 and 7.5, heavy-tailed) and a delta EVE 5.7, 15.4 and 24.2% smaller. The indexation charge
+  supplies 52 to 53% of the delta NII; for the delta EVE the own curve and the own sizes nearly cancel. H1 (the pair rule lies between
+  the sum of the legs and the positive parts) held in 2,880 comparisons. Refuted: H2 (the pair rule does not have the largest
+  Shapley value for the delta EVE; the own curve does, in all three variants); H3 in its CLP steepener clause (Annex 1 is below the
+  positive parts in 30 of 30 books, and the clause was written after a contradicting value); H5 (a binding UR floor raised the delta
+  NII in 208 of 960 comparisons, none of the delta EVE). H4 held at 110% of Tier 1 only (17 of 20 books flagged by Annex 1 against
+  0 by the single-currency treatment, the delta EVE test only); the treatments classify more than half of the books differently only
+  at 110 to 150% (the top of the range tested), and single books from 80%. The numbers are those of a synthetic bank over the curves
+  of one day.
 
 - **BS-8** A test that flags a behavioural assumption changed at a limit breach.
-  What it adds: `irrbb.behavioural_change_at_breach` turns the Federal Reserve's finding on Silicon Valley Bank into a test: it counts the dates at which a behavioural parameter changed while a limit was breached. On the committed C14 balance sheet it is not evaluated at 2021-Q4 (one date), red at 2022-Q2 with "1 change(s) coincide with a breach" and red at 2022-Q4 with two. The parameter it flags is the weighted average maturity of the fitted replicating portfolio; the core share and the core maturity that Contraste states are held fixed and are not flagged. On constructed histories it is green for a parameter held through a breach, for a change with no breach and for a change before the breach, and red for a change at the breach; the committed series with the breach flags set to false is green.
+  What it adds: `irrbb.behavioural_change_at_breach` turns the Federal Reserve's finding on Silicon Valley Bank into a test: it counts the dates at which a behavioural parameter changed while a limit was breached. On the committed C14 balance sheet it is not evaluated at 2021-Q4 (one date), red at 2022-Q2 with "1 change(s) coincide with a breach" and red at 2022-Q4 with two. The parameter the committed rows flag is the weighted average maturity of the fitted replicating portfolio: the field `fit.nmd_parameter_changes` of the model document records that parameter and the core share and the core maturity that Contraste states, which are held fixed and are not flagged, and no other. Run on every fitted scalar of the same model the test also flags the margin volatility and the deposit beta for rising rates, which the field does not record, because all the fitted parameters are re-estimated at each date. On constructed histories it is green for a parameter held through a breach, for a change with no breach and for a change before the breach, and red for a change at the breach; the committed series with the breach flags set to false is green.
   Evidence: `data/derived/C14/vd-2021-q4.json`, `data/derived/C14/vd-2022-q2.json`, `data/derived/C14/vd-2022-q4.json`, `data/derived/C14/models-svb-2021-2022.json`, `docs/design/features/c14/requirements.md`, `notebooks/en/09-irrbb/08-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-the-uf-and-the-breach-test.ipynb`.
   Beyond: the supervisor's review (https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf) states the practice as a finding and the research dossier 05 proposes the test; it cites no tool that implements it, which is UNVERIFIED beyond the dossier's search. The bank of C14 is real in aggregate and synthetic in behaviour, and its outlier test is breached at the three dates, so the breach flag does not vary and the flagged parameter is a fitted one, re-estimated at each date: the red rows show that the test operates on those parameters, not that the bank did it in these numbers.
+  Outcome (the behavioural-assumption manuscript, `manuscripts/behavioural-assumption-test-at-a-limit-breach/`, nine predictions; H1 to H5 were fixed before any experiment and H6 to H9 after a first run of the re-estimated experiment had been inspected): the specification holds (H1, H2: the stored rows and the constructed histories reproduce, 0 disagreements in 22,728 histories). On a stated parameter the test flags 100.0% of histories with a change at a breach date (H3 held) and 34.8% of those with unrelated changes, as the closed form predicts (H4 held), but 17.0 to 66.3% of those in every cell, so the prediction that the false-flag rate is at most 5% is refuted (H5). On a re-estimated parameter it flags 82.2% of null banks and ranks a 2-year lengthening at an ROC area of 0.579, under the predicted 0.70 (H6 refuted); a tolerance calibrated at 5% holds 3.9% false flags and detects 99.5% of 4-year lengthenings (H7 held, 18.0% of 2-year ones), and its size at another breach prevalence reaches 5.5% (H8 refuted). The bank's behaviour is synthetic: no result concerns what it did.
 
 - **BS-9** The dependence band shown with every aggregate.
   What it adds: every aggregate capital figure of C18 is shown with the band of aggregation methods over the same marginals, one
@@ -922,12 +1046,23 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   aggregate is UNVERIFIED beyond the dossier's own search. The committed band rests on marginals that the pipeline simulates; the documents commit
   their EL, VaR, ES and EC and, since c18-models 3.0.0, each marginal's quantile function on a named grid (the simulated samples
   themselves are not committed), and Banco Andino is synthetic.
+  Outcome (the dependence-band manuscript, `manuscripts/dependence-band-with-every-aggregate/`, abstract, section 7 and conclusions; the nine
+  predictions were set by the author for that study, the design record of this item stating no acceptance criteria, and are stated in a file the
+  experiment scripts read; the order is attested only by file times): seven of the nine held and two were refuted. Held: the six committed
+  aggregates satisfy the band's structure (H1, 6 of 6); the engine rebuilds the committed rows from the committed marginal grids within
+  0.0075% (H2); the band of Banco Andino runs from CLP 118.5 to 823.3 billion against a headline of CLP 658.0 billion, 205 Monte Carlo
+  standard errors wide, with the Gaussian row at CLP 492.0 billion (H3); the sharp range contains all ten planted dependence structures of
+  known capital, at a median width of 1.26 times the capital (H4a), and the Gaussian row alone is within 5% for 2 of the ten (H4c); the
+  bounds do not move with the matrix while the Gaussian row moves 12.1% (H5); a level mismatch changes the sum by 17.9% and the test is
+  red (H6). Refuted: H4b, the interior rows of the base matrix contain 2 of the ten planted capitals (8 with the rows of the stressed
+  matrix), against the 75% predicted; and H7 in its second clause, 6 of the 9 tests still run on the Gaussian row alone, against at most
+  half predicted. The band exposes the dependence uncertainty and does not reduce it, and it is conditional on the marginals.
 
 - **BS-10** The batch 3 test corrections, with the error rate each one removes measured on planted data.
   What it adds: the split-conformal coverage test reads the Beta-Binomial law of the covered count given the calibration size (the coverage of
   the set is Beta(k, n_cal + 1 - k) distributed) instead of the binomial the dossier names, and keeps the binomial p-value beside it; the
   shift-resilience light reads an exact permutation reference built from the development rows (199 draws by default) instead of a fixed AUC
-  drop; the situation-testing amber cut is 0.20, set on a measured size and power. The level 4 notebooks measure, with the engine's own
+  drop; the situation-testing amber cut is 0.20, the value a size-and-power rule selects on one of the four designs measured (it costs power at small gaps and its size depends on the number of applicants; see the Outcome). The level 4 notebooks measure, with the engine's own
   functions on seeded plants and with the standard error of every rate, the rejection rate each correction changes: the binomial coverage
   test rejects 0.1587 and 0.3893 of exchangeable replications at test-to-calibration ratios of 1 and 4 against about 0.044 for the
   Beta-Binomial one, a fixed drop of 0.05 or 0.10 AUC points fires on 0.2000 and 0.0833 of no-shift replications against 0.0667 for the
@@ -937,11 +1072,13 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   side with `n_cal` and `k`; the resilience row carries its 199 draws and the null summary), `data/derived/C21/pair-2018-19.json` (the
   situation-testing row with its cut point), `docs/design/features/c20/requirements.md` (CT-2009), `tests/c20/test_c20_documents.py`.
   Beyond: the dossier prescribes "a binomial test on coverage indicators" (dossier 06 C.7 l.1025-1026) and PiML's worst-subsample resilience
-  (l.1013-1015) without their error rates; Angelopoulos and Bates (https://arxiv.org/abs/2107.07511) give the coverage guarantee, not the size
-  of a validation test built on a finite calibration window. Not claimed: the sizes measured in the engine's review (0.1055 for the
+  (l.1013-1015) without their error rates; Angelopoulos and Bates (https://arxiv.org/abs/2107.07511, section 3.3 and appendix C) give the coverage guarantee
+  and the Beta-Binomial law of the empirical coverage on a validation window, as a diagnostic, but neither a test built on
+  it nor its size on a finite calibration window. Not claimed: the sizes measured in the engine's review (0.1055 for the
   worst-subsample rule, the size and power page of the engine) live in the coordination and engine repositories and are not reproduced by the
   notebook, whose simulations are smaller (1,500, 60 and 200 replications); the measurement shows the direction and the order of magnitude,
   not those figures.
+  Outcome (the measured-corrections manuscript, `manuscripts/measured-corrections-of-validation-tests/`; its ten predictions were not registered before the experiments: H1a, H1b, H2a, H2b and H3a restate bounds from the notebook's small designs and H2c and H3b to H3e were formulated with the experiments): at equal calibration and test windows the binomial coverage test rejects an exchangeable window in 0.157 of replications against 0.051 for the Beta-Binomial test, whose exact size never exceeds 0.0499, and a binomial test with its cut calibrated to the exact size has the same power within 0.019 (H1a, H1b held). With 500 evaluation rows a fixed drop of 0.05 raises a false alarm in 0.175 of shift-free replications against 0.062 for the permutation reference, which detects a shift of two standard deviations in 0.680 against 0.925 (H2a to H2c held). With 400 applicants the cut 0.20 raises a false alarm in 0.014 against 0.114 for the cut 0.10 (H3a held, H3b held). Three predictions are refuted: the cut 0.20 costs power at small gaps (0.410 against 0.743 at a gap of 0.2, H3c), and its size depends on the number of applicants and on the data process (0.114 at 400 applicants and 0.018 at 1,000 for the cut 0.10, H3d; 0.014 and 0.035 for the cut 0.20 on a second design, H3e).
 
 - **BS-11** Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run.
   What it adds: the multiplier on the daily run-off rates of every segment at which the survival period first falls to a target of 30
@@ -958,15 +1095,28 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   scenarios first and reports the survival period they give; the research found no tool that implements the multiplier, which is
   UNVERIFIED beyond the dossier's search. The bank is real in aggregate and synthetic in behaviour and deposits: the multipliers show
   the method on those parameters, not the headroom of the bank.
+  Outcome (the reverse-liquidity-stress manuscript, `manuscripts/reverse-liquidity-stress-with-a-refusal-rule/`, abstract, section 7 and
+  conclusions; the values above were written into the committed C16 documents on 19 October 2026 and into this document on 21 October, after
+  the documents existed, so R1 to R5 are reproductions that no outcome could have refuted; the twelve predictions H1 to H12 were written into a
+  file of the experiment folder before the corpus, theory and sensitivity runs, an order attested only by file times): nine of the twelve held
+  and three failed. Held: on 20,000 seeded instances the engine agrees with an independent oracle on every outcome and returns a threshold
+  on every solved one; a scan of the multiplier grid of the case design answers 93.5% (93.0 to 93.9%) of the refused instances and
+  overshoots the threshold by a median of 21.7%; the round trip is exact. Failed: H6 (the hyperbolic rule, the survival period of the unscaled base over the target, is within
+  10% of the threshold in 42.7% of the flat-capacity instances against at least 80% predicted, though within 2.4% and 1.2% on the two LiST
+  bases of the committed bank), H8 (the Adverse multiplier moves by 49.8% over the joint
+  band of case conventions, against under 25% predicted: under the slow monetisation schedule it is refused at the central haircut and
+  falls to 1.063646 at the low haircut) and H10 (the modelled loss of the two days of the March 2023 run is 0.1708 of the deposits against
+  0.85 observed, a ratio of 0.201, below the amber bar of 0.5; the multiplier that reproduces the run is 12.22 times the calibrated rate).
+  The 2023 fast-run base is refused at the 30-day target. The deposit behaviour is synthetic.
 
 - **BS-12** The instability of the operational-risk capital, measured on independent histories of known truth.
   What it adds: for four tail indices (0.6, 0.8, 0.96 and 1.1), two history lengths (5 and 10 years) and two collection thresholds
   (EUR 10,000 and 20,000), 1,000 independent simulated histories per cell on disjoint seed ranges (16,000 histories). For each rung
-  of a six-rung estimation ladder and for the standardised approach it records the 99.9% capital against the true annual-loss
+  of the ten-rung estimation ladder (the six rungs of the first bake and the four robust rungs added in the re-bake of 1 November 2026) and for the standardised approach it records the 99.9% capital against the true annual-loss
   quantile of the generator, as the median over the truth, the interquartile range over the truth, the share of histories that
   underestimate and the number of histories on which the rung is defined, and the share of histories whose fitted tail index
   reaches 1, that is, that would conclude an infinite mean. On the committed grid the interquartile range of the splice rung is
-  1.35 to 3.30 times the truth, all 92 `oprisk.capital_stability` rows are red against stated internal gates, 27% to 34% of the
+  1.35 to 3.30 times the truth, all 156 `oprisk.capital_stability` rows of the committed documents (ten rungs in 12 of the 16 cells, nine in the four cells of tail index 1.1) are red against stated internal gates, 27% to 34% of the
   histories of the variant with tail index 0.96 conclude an infinite mean that does not exist, and 9% to 27% of those of the
   variant with tail index 1.1 conclude a finite one.
   Evidence: `data/derived/C17/xi-0-6.json`, `data/derived/C17/xi-0-8.json`, `data/derived/C17/xi-0-96.json`,
@@ -979,6 +1129,7 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   known truth over independent histories; that absence is UNVERIFIED beyond the dossier's search. The claim is about a synthetic
   bank whose severity is drawn from the family the tail estimators assume (which favours them) and whose lights use Contraste's
   internal gates; it says nothing about the capital of any real bank.
+  Outcome (the instability manuscript, `manuscripts/instability-of-operational-risk-capital/`): the four statements of the paragraph above (the interquartile range of 1.35 to 3.30, every capital stability row red, 27% to 34% and 9% to 27%) were written into this document on 21 October 2026, after the bake of 14 October, so the paper reproduces them and they are not tests that could have failed: 1.3536 to 3.3038 (bootstrap interval of the smallest cell 1.13 to 1.61), every stability row red (92 of 92 on the six-rung ladder of the first bake that the item first counted; 156 of 156 in the committed documents with the four robust rungs, and 144 of 144 over the nine rungs the paper counts), and 26.8 to 34.4% and 8.8 to 26.8%. The robust fits are the one hypothesis written before they were run (29 October, before the re-bake of 1 November 2026): that the Cramer-von Mises and bias-robust fits beat the splice in spread and bias in at least 75% of the cells is inconclusive over the 16 cells (smaller spread in 16 of 16, median nearer to 1 in 8 and 9 of 16) and refuted at tail indices 0.96 and 1.1, where part of the narrowing is selection. The theory holds: the delta-method dispersion is within 4.7% of the measured one and the predicted share of histories with a fitted tail index of 1 or more within 4.1 points in every cell.
 
 
 - **BS-13** A scale-and-level complement to the FRTB P&L attribution test (C13).
@@ -987,25 +1138,56 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   of intercept 0 and slope 1, and the Spearman correlation of |HPL| and |RTPL| and of their 20-day rolling means, with thresholds set to the
   PLA's own size. Hypothesis: at a size of at most 1 %, the stale-volatility model is flagged in at least 30 % of replications; refuted below
   10 %. Evaluation: the six C13 variants from the committed generator, a lag ladder of 5, 10, 20 and 40 days, the size cross-checked on C22.
-  Beyond: the regulatory PLA (BCBS MAR32) has no statistic of scale or of volatility timing. Evidence: written with the result.
+  Beyond: the regulatory PLA (BCBS MAR32) has no statistic of scale or of volatility timing.
+  Evidence: `data/derived/C13/` (the six variants, the lag ladder and the thresholds), `docs/cases/C13.md`, `tests/c13/`, `manuscripts/scale-and-level-complement-to-the-pla-test/`.
+  Outcome (the scale-and-level manuscript; only H1, the criterion above, and H2 were fixed in writing before the evaluation, H3 to H5 were not recorded before the runs):
+  held. At a family size of 1% the complement flags the stale-volatility model in 99.9% of 1,000 replications (Wilson interval 99.4 to 100.0%) with a held-out false-alarm
+  rate of 0.9% (0.5 to 1.7%), where the regulatory zone flags 0.0%. The rest of the paper's predictions: H2 (the Wald test flags the wrong-correlation and
+  missing-basis variants at least as often as the Kolmogorov-Smirnov distance alone) failed, 0.9% against 86.7% for the missing basis; H3 (a false-alarm rate
+  of at most 1% on desks that differ from the calibration null) failed, 4.0% at a volatility persistence of 0.995, 6.2% at a dispersion of 0.50 and 99.0% with a
+  pricing noise of 30%, so the size does not transfer and each desk needs the null of its own; H4 (the rolling statistic's flag rate rises with the age of the
+  volatility) held, 57.6% at 5 days to 100.0% at 40; H5 (a constant mis-scale the zone does not see) held. The rolling statistic is weak against a wrong
+  correlation (4.5%) and a one-day misalignment (42.3%); the union with the zone flags every planted variant.
 - **BS-14** An anchored tipping-point PD under informative rating withdrawals (C04).
   Problem: removing, keeping or following withdrawals understates the B-grade PD by 15 to 38 % when withdrawal is informative (`docs/cases/C04.md`).
   Method: the PD by grade as a function of the odds k of withdrawal in the year of default (k = 1 the usual estimate, k large the Manski
   bound, Manski 1989, https://doi.org/10.2307/145818), the tipping k at which a decision flips, k anchored where two sources count defaults
   differently. Hypothesis: the anchored interval covers the true PD in at least 90 % of 200 repetitions at k = 9, the existing treatments
-  under 50 %; refuted if coverage is not better or the anchored k is unstable across years. Evidence: written with the result.
+  under 50 %; refuted if coverage is not better or the anchored k is unstable across years.
+  Evidence: `data/derived/C04/withdrawals.json`, `sp.json` and `fitch.json`, `docs/cases/C04.md`, `tests/test_c04.py`, `manuscripts/anchored-pd-under-informative-withdrawals/`.
+  Outcome (the anchored-PD manuscript; the prediction above was fixed before any run, and its thresholds were fixed in the product's code on 29 October 2026): refuted. Coverage holds
+  where it was stated: the anchored interval covers the true PD of grade B (1.17%) in 98.5% to 100% of 1,000 repetitions per cell at informativeness 1, 3 and 9, against
+  13.9% for the removed estimate in the pooled design; the removed and kept treatments fall under 50% at informativeness 9 only in the pooled and ten-fold designs
+  (they cover 87% in the first-year cohort), and the followed oracle stays above 50%. The prediction fails on two clauses: against Manski's worst-case band, a published
+  treatment that the product's criterion left out, the anchored interval is not better (+0.0, -0.8 and +0.0 points over the best other treatment at k = 9, the band
+  covering as often or more often at 3.8 to 9.3 times the width), and the anchored k is unstable across years: under 80% of the annual cohorts hold the pooled k for
+  S&P's B (0.68) and CCC to C (pooled k 36.3, 0.64) and for Fitch's B. The pooled anchored k of CCC to C is above 1 (H5 held).
 - **BS-15** E-process sequential monitors for calibration and back-tests (C22, C11, C03).
   Problem: the fixed-window tests are read once per window. Method: betting e-processes for VaR hits, for defaults against predicted PD by
   grade and for a battery, rejecting when the process exceeds 20 (Ville's inequality: an anytime-valid size of 5 %; Ramdas et al.,
   https://arxiv.org/abs/2210.01948). Hypothesis: the size holds at 5 % under optional stopping where the repeated Kupiec rule exceeds it, and
   the median detection delay is below the 250-day window at severity 3 or more, at a power cost under 10 points; refuted if the delay is not
-  lower than the traffic light's. Evidence: written with the result.
-- **BS-16** Adaptive conformal recalibration of VaR against the 17-model ladder (C11).
+  lower than the traffic light's.
+  Evidence: `data/derived/C22/other-families.json` (the sequential block), `data/derived/C03/`, `data/derived/C11/`, `tests/c22_sequential/`, `manuscripts/e-process-sequential-monitors/`.
+  Outcome (the e-process manuscript; H1 to H3 and the refutation clause were written in the design of the study before the monitors were evaluated on any stream): does not hold as
+  stated. Size holds (H1: 2.4% in the paper's main run, 1.8% in the committed document, against the bound of 6.5%, where Kupiec on the last 250 days rejects 65.7%). The delay
+  and power-cost hypotheses, judged first on one seed (C22 documents H2 as held there: 244 days), fail at three times the nominal hit rate over 20 independent seeds of 2,000
+  streams (pooled median 251 days, interval 247 to 255, 45% of the seeds below 250; power cost 12.4 +/- 0.2 points) and hold at four times (128 days, 8.5 +/- 0.2 points);
+  the refutation clause does not fire on the real windows (median day 24 against 250 on the equity crisis of 2007 to 2009). An upper-side variant chosen after these results
+  meets both (228 days, 6.7 points) and needs a prospective test. The monitor for the defaults of a grade rejects a correct PD in 91.0% of histories at an asset correlation of
+  0.03, and a chi-square rule read every year, given the monitor's size, detects a 5% PD error more often (23.2% against 2.9%).
+- **BS-16** Adaptive conformal recalibration of VaR against the 18-model ladder (C11).
   Method: adaptive conformal inference on each model's level (Gibbs and Candes, https://arxiv.org/abs/2106.00170), wrapped against unwrapped
   on Kupiec, conditional coverage, Acerbi-Szekely Z2 and FZ0 in the stress windows. Hypothesis: HS-250, GARCH-t and FHS wrapped pass in at
   least one more stress window without worsening FZ0 by more than 5 %; refuted if the wrapper fails independence in 2007-09. The French
-  equity series is derived-only: the recalibration runs on the device's data root and only its outputs are committed. Evidence: written
-  with the result.
+  equity series is derived-only: the recalibration runs on the device's data root and only its outputs are committed.
+  Evidence: `data/derived/C11/` (the wrapped runs), `docs/cases/C11.md`, `tests/c11/`, `manuscripts/adaptive-conformal-recalibration-of-var/`.
+  Outcome (the adaptive-conformal manuscript; the hypothesis was written in the design document before any wrapped run on a stress window): holds as written, with the engine's
+  Kupiec and conditional coverage tests as the pass rule, and the counts are inflated. HS-250, GARCH-t and FHS gain a stress window in all 6 cells, the worst FZ0 change is +3.4%,
+  and no wrapped model fails independence in 2007 to 2009 (p 0.275 to 0.703). The update makes the hit count less variable than a binomial one, so a correct wrapped model passes in
+  99.8% of simulated runs against 92.6% unwrapped at 1%; with each count tested against its own null the prediction holds in 5 of its 6 cells (FHS at 1% falls) and the ten wrapped
+  models pass 35 cells of 60 against 12 (45 against 17 by the engine's tests). The mean distance of the hit rate from its target falls from 4.02 to 1.83 points, the delta-normal model
+  gains no window at 1%, and the expected shortfall stays understated.
 
 ## Deploy driver
 
@@ -1031,6 +1213,35 @@ site.
 | Licence contamination | `scripts/check_licences.py` fails on AGPL, GPL or BSL in the default install |
 | A committed file carries rows a licence forbids | `scripts/check_data_classes.py` fails the build |
 | The site looks right and is not (a blank chart, a dead control, a broken deep link) | the measured gate (`npm run gate`) fails before a deploy |
+
+## Template 0.15.006 and shell 0.25.0 adoption
+
+Contraste moved from template 0.15.000 and shell 0.23.2 to template 0.15.006 and shell 0.25.0 before release 1.00.000, with
+`tools/git/template_adopt.py` of CAOS_MANAGE. What it changed here:
+
+- The shell is pinned exactly at 0.25.0 (ADR-0078). The story reserved a fixed header band (86 px, 130 px on a phone) sized for the
+  0.23 callout cards; 0.24.0's cards write their state and are taller. The stage now pads its drawing by the band the cards
+  measure (`SceneCallouts` `onLayout`) and the phone stage floor follows that band (`frontend/src/story/band.ts`, requirement
+  CT-973); the fixed band holds only the first frame. The variants stay chips (`VariantBar` `layout: 'select'`, 0.25.0, is for a long
+  or long-named list): the full gate shows none cut.
+- The story's routes are declared once, in `product.json` (`showcase.story_routes`, the five steps); the gate runner
+  and the static build read the declaration. `frontend/scripts/check_story_mode.mjs` is the template's and checks only what every
+  story owes (the frame with the step numbered, a stepper that links every declared step, playback paused by reader input, the exit to
+  the App); what Contraste's story shows (its five views, the artifacts' numbers, the linked selection, the shared day, the window
+  selector, the exit state, the phone geometry) moved to `frontend/scripts/check_story_contraste.mjs` (`npm run story:check`).
+- The base scripts and their tests are the template's: `gate.mjs`, `materialize-routes.mjs`, `copy-data.mjs` (the optional product hook
+  `copy-data.product.mjs` is not used: Contraste copies only the declared files), `declared.mjs`, `check_readiness.py`, `workflow.py`,
+  `check_internal_names.py`, `check_notebooks.py`, `check_sdd.py`, `check_doc_paths.py`, `scripts/run_notebooks.py` (unchanged) and the
+  base tests under `frontend/src` and `tests/`. The product keeps its readiness engine (`compute` and `to_bytes` of
+  `data-pipeline/pipeline/core/readiness.py`) and its own feature requirements; the template's base feature rows (CT-039 to CT-042,
+  WB-020, ND-004 and ND-005 as reworded) describe guards whose plants are among the product's adversarial tests and are not
+  carried as product rows, as the base rows of the earlier releases are not.
+- Taken from the template's review list: `docs/design/features/method-tiers/` (the method-tier rules MT-001 to MT-012 with the plants
+  that Contraste's tests already hold; MT-004, whose gate is a test of the template's own tree, is left out) and
+  `docs/design/features/notebooks/content-depth.md` (the notebook depth rules ND-001 to ND-008, gated by
+  `tests/adversarial/test_check_notebook_depth.py`). Not taken: the template's `workbench` feature folder, which states the
+  example's own workbench (the example's rows and its parity tests); Contraste states its workbench in `docs/design/features/web/`
+  and in one folder per case.
 
 ## ADR fit
 

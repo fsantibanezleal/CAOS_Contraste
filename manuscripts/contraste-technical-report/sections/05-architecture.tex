@@ -2,4 +2,35 @@
 \section{System architecture}
 \label{sec:architecture}
 
-% TEXT
+Contraste is built so that every number a reader sees can be traced to a command, a pinned dependency and a committed artifact. The product repository holds the offline pipeline, the static web companion, the contracts, the notebooks and the manuscripts, and it declares no package of its own. It consumes two separate repositories: the engine package \texttt{riskvalidation}, which holds the validation tests, the regulatory calculators and the reference
+engines, and the shared application shell, which draws the web pages. The design fixes the boundaries between them as a contract
+catalog of 14 boundaries before any unit of code is written, so that units can be built in parallel against fixed rows (\cref{fig:architecture-flow}).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{results-architecture}
+\caption{Data flow of the system: the source registry and the fetcher feed the ingestion contract and the licence manifest, the offline pipeline calls the engine and writes the committed artifacts of the second contract, and the web reads those artifacts in a replay lane and recomputes only the functions that a measured parity test admits in the live lane.}
+\label{fig:architecture-flow}
+\end{figure}
+
+\paragraph{The offline pipeline.} The only lane that writes artifacts is the offline pipeline, which runs on a workstation and never in continuous integration. Its entry points are \texttt{data-pipeline/fetch.py}, which downloads the sources
+and writes the licence manifest, and \texttt{data-pipeline/run.py}, which exports the ingestion contracts and bakes the cases. A bake runs the stages in order: ingest and validate against contract 1, preprocess and split, fit or calibrate each method, infer
+on every applicable variant, evaluate with the engine's tests, export the artifacts of contract 2 and validate them against their schemas. The models are thin pinned wrappers over the libraries named in \cref{tab:repro-versions}; the pipeline contains no
+statistic that the engine could provide, a rule that the design makes explicit so that a test is reviewed once, in the engine, against a published worked example or an independent reference. Every bake pins its thread counts so that
+the summation order of the numerical libraries, and therefore the bytes written, do not depend on the machine, with the one stated exception of the wall-clock time of the counterparty reconciliation with the reference engine.
+
+\paragraph{The engine.} The package \texttt{riskvalidation}, version \rsEngineRv{}, is published on PyPI under the MIT licence, and its core depends only on NumPy and SciPy. Every test returns one result object with the test identifier, the statistic, the p-value or the metric, the null
+hypothesis, the primary source that defines the test, the version of the policy that classified it, a fingerprint of its inputs and a light. Thresholds live in versioned policy files and are presented as policy, never as regulation. The package also
+carries the regulatory calculators (the internal-ratings-based functions under the final Basel III text, the European regulation and the Chilean standard, the standardised approaches for counterparty credit risk, the credit valuation adjustment, operational risk, the output floor, the liquidity ratios and the sensitivities-based method), the reference
+estimators and generators of known truth, and the model-governance module that builds the findings register. Sections~\ref{sec:credit-scoring} to~\ref{sec:proposed} state what each module computes.
+
+\paragraph{The contracts.} Contract 1 is the set of eight ingestion families of \cref{sec:data-ingestion}. Contract 2 is the artifact that the pipeline hands to the web: a case index, one manifest for each case, and one document for each variant, each with the model, the outputs, the
+test results, the impact, the findings, the provenance and the lane that served it. The catalog lists \rsContracts{} contracts that the report covers, one row for each boundary and for each model slot of a case, with its version, its schema file, its producer and consumer tests, its behaviour when data are missing and its status; the schemas are JSON Schema files from which the web types are generated, and a change
+to a contract bumps its row and updates both sides together. The fields, types, units and ranges of every contract are in Appendix~\ref{sec:contracts}. A digest of every schema is locked and checked, so that a drift fails the build instead of reaching a reader.
+
+\paragraph{The lanes and the web companion.} The web has three lanes. The replay lane reads the committed artifacts for the first paint and for every value marked precomputed; the scores of gradient-boosted models are always replayed because the browser runtime has no tree-ensemble kernel. The live lane recomputes a function in the browser, namely the re-run of a
+validation test with the thresholds, segments and windows the visitor sets, the regulatory calculators, the recomputation of expected credit loss with the visitor's scenario weights, the interest-rate shocks on a balance sheet, small simulations and the additive scorecard scoring. It admits a function only when a measured acceptance criterion on cold start, run time and payload is met and a parity test reproduces the committed
+value, with a tolerance of $10^{-9}$ for deterministic functions and the Monte Carlo error bound for simulations; the functions that fail the measurement run as TypeScript ports with their own parity tests. The application programming interface is dormant, because no server state, private data or request-time computation requires a backend. The companion has six routes on the shared shell, in English and Spanish and in light and dark themes: the case workbench, the introduction, the methodology, the implementation, the experiments and the benchmark. The workbench groups each case
+under the questions of a validator, namely the model, the validation battery, the impact, the findings, the variants and the context, and every view carries the label of the lane that produced it. A measured browser check walks every route, tab and case at five sizes in both themes and both languages before any deploy; the site is published on GitHub Pages after continuous integration passes.
+
+\paragraph{What the architecture does not provide.} The report documents the offline lane and the engine; it does not measure the web. The page and payload budgets, the cold start of the live lane and the browser check belong to the release of the product and are not results of the validation. A reader who needs to rebuild a number needs the pipeline, the engine and the pinned versions of Section~\ref{sec:reproducibility}, not the web.

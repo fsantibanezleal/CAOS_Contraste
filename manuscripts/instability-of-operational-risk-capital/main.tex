@@ -3,17 +3,17 @@
 % The four macros of the header standard; tools/zenodo/publish_revision.py patches them when it reserves the DOI.
 \newcommand{\doctype}{Preprint}
 \newcommand{\docversion}{v1.00.000}
-\newcommand{\docdate}{4 November 2026}
-\newcommand{\versiondoi}{10.5281/zenodo.0}
-\newcommand{\conceptdoi}{10.5281/zenodo.0}
+\newcommand{\docdate}{8 November 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.24053184}
+\newcommand{\conceptdoi}{10.5281/zenodo.24053183}
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
 \input{../_shared/preamble}
-\makeatletter
-\def\input@path{{sections/}}
-\makeatother
+% The number macros written by tables/make_tables.py from experiments/results.json (definitions only, no conditional).
+\input{tables/numbers}
+\newtheorem{conjecture}{Conjecture}
 
-\title{The instability of operational-risk capital measured on independent histories of known truth}
+\title{The instability of loss-distribution-approach operational-risk capital measured on independent synthetic histories of known truth}
 \author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
 \small CAOS open-research programme, Santiago, Chile\\
 \small \texttt{fsantibanez@gmail.com}}
@@ -24,68 +24,31 @@
 \headerblock
 
 \begin{abstract}
-% ABSTRACT
+A bank that estimates its 99.9 percent operational-risk capital from five or ten years of internal losses cannot say how far it is
+from the true quantile, which is never observed. We measure that distance on a generator with a known annual loss distribution:
+a compound Poisson sum of generalised Pareto losses calibrated to the 2008 Loss Data Collection Exercise, at four tail indices (0.6 to 1.1),
+two history lengths and two collection thresholds, with \nPer{} independent histories in each of \nCells{} cells. Ten estimation rungs (nine counted below) and
+the standardised approach are run by one engine on the same histories and divided by the true quantile. The interquartile range of the
+splice capital is \spIqrMin{} (95 percent interval \spMinLo{} to \spMinHi{}) to \spIqrMax{} (\spMaxLo{} to \spMaxHi{}) times the
+truth; the capital stability test is red in all \redTotal{} rung-by-cell rows; and \infLo{} to \infHi{} percent of the histories at tail index 0.96
+conclude an infinite mean that does not exist, while \finLo{} to \finHi{} percent at 1.1 conclude a finite one. The hypothesis written
+before the robust fits were run, that they beat the splice in spread and in bias, is inconclusive over the 16 cells and refuted at tail
+indices 0.96 and 1.1. A delta-method theory predicts the dispersion of the single loss approximation within \thSdMaxErr{} percent and puts the
+history needed for the stability limit at \yrsMin{} to \yrsMax{} years. The synthetic severity belongs to the family the estimators assume, which favours them.
 \end{abstract}
 
-\section{Introduction}
-\label{sec:introduction}
-
-% TEXT
-
-\section{Related work}
-\label{sec:related-work}
-
-% TEXT
-
-\section{Problem formulation}
-\label{sec:problem}
-
-% TEXT
-
-\section{Proposed method}
-\label{sec:proposed-method}
-
-% TEXT
-
-\section{Theory}
-\label{sec:theory}
-
-% TEXT
-
-\section{Experimental design}
-\label{sec:experimental-design}
-
-% TEXT
-
-\section{Results}
-\label{sec:results}
-
-% TEXT
-
-\section{Ablation}
-\label{sec:ablation}
-
-% TEXT
-
-\section{Discussion}
-\label{sec:discussion}
-
-% TEXT
-
-\section{Limitations}
-\label{sec:limitations}
-
-% TEXT
-
-\section{Reproducibility}
-\label{sec:reproducibility}
-
-% TEXT
-
-\section{Conclusions}
-\label{sec:conclusions}
-
-% TEXT
+\input{sections/01-introduction}
+\input{sections/02-related-work}
+\input{sections/03-problem}
+\input{sections/04-proposed-method}
+\input{sections/05-theory}
+\input{sections/06-experimental-design}
+\input{sections/07-results}
+\input{sections/08-ablation}
+\input{sections/09-discussion}
+\input{sections/10-limitations}
+\input{sections/11-reproducibility}
+\input{sections/12-conclusions}
 
 \bibliographystyle{plainnat}
 \bibliography{references}

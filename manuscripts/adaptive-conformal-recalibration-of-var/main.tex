@@ -3,17 +3,19 @@
 % The four macros of the header standard; tools/zenodo/publish_revision.py patches them when it reserves the DOI.
 \newcommand{\doctype}{Preprint}
 \newcommand{\docversion}{v1.00.000}
-\newcommand{\docdate}{4 November 2026}
-\newcommand{\versiondoi}{10.5281/zenodo.0}
-\newcommand{\conceptdoi}{10.5281/zenodo.0}
+\newcommand{\docdate}{8 November 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.24053156}
+\newcommand{\conceptdoi}{10.5281/zenodo.24053155}
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
 \input{../_shared/preamble}
-\makeatletter
-\def\input@path{{sections/}}
-\makeatother
+\usepackage{adjustbox}
+\setlength{\emergencystretch}{3em}
 
-\title{Adaptive conformal recalibration of value at risk against a ladder of seventeen models}
+% Every number quoted in the text is a macro generated from the experiment outputs (make_numbers.py).
+\input{tables/numbers}
+
+\title{Adaptive conformal recalibration of value at risk in market stress windows: hit rates move towards the target on ten models, and the back-tests accept the wrapped runs too easily}
 \author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
 \small CAOS open-research programme, Santiago, Chile\\
 \small \texttt{fsantibanez@gmail.com}}
@@ -24,68 +26,27 @@
 \headerblock
 
 \begin{abstract}
-% ABSTRACT
+None of the eighteen value-at-risk models of a market-risk ladder passes the Kupiec and conditional coverage tests in the 2007 to 2009 window at the 1\% or the 2.5\% level.
+We test a wrapper that leaves the model untouched and moves its working tail level each day by a fixed step times the gap between the target and the exceedance indicator, inside a band.
+On ten models in three stress windows the mean distance of the hit rate from its target falls from \tenHitDevUnw{} to \tenHitDevAci{} points, the score changes by at most \tenWorstFz\%, and the wrapped models pass \tenPassAci{} of \tenRuns{} cells against \tenPassUnw{}.
+These counts are inflated: the update makes the hit count less variable than a binomial count, so a correct wrapped model passes in \dispBOneOneAciPass\% of simulated runs against \dispBOneOneUnwPass\% unwrapped at the 1\% level. With each count tested against its own null the wrapped models pass \dispCWrapCal{} cells against \dispCUnwExact{}, and the prediction stated for three models holds in \dispCHoneGainCal{} of its \hypCells{} cells, not all of them.
+On known-truth generators the wrapped hit rate is closer to the target in every shifted cell.
+The coverage guarantee is vacuous at the length of a stress window, and the band limits the repairable scale error (a ratio of \thCCmaxOne{} at 1\% for a Student-$t$ model).
+The expected shortfall stays understated, the delta-normal model gains no window at 1\%, and a rolling split-conformal scale passes as many cells with \cmpRollTenFzOver{} over the score tolerance.
 \end{abstract}
 
-\section{Introduction}
-\label{sec:introduction}
-
-% TEXT
-
-\section{Related work}
-\label{sec:related-work}
-
-% TEXT
-
-\section{Problem formulation}
-\label{sec:problem}
-
-% TEXT
-
-\section{Proposed method}
-\label{sec:proposed-method}
-
-% TEXT
-
-\section{Theory}
-\label{sec:theory}
-
-% TEXT
-
-\section{Experimental design}
-\label{sec:experimental-design}
-
-% TEXT
-
-\section{Results}
-\label{sec:results}
-
-% TEXT
-
-\section{Ablation}
-\label{sec:ablation}
-
-% TEXT
-
-\section{Discussion}
-\label{sec:discussion}
-
-% TEXT
-
-\section{Limitations}
-\label{sec:limitations}
-
-% TEXT
-
-\section{Reproducibility}
-\label{sec:reproducibility}
-
-% TEXT
-
-\section{Conclusions}
-\label{sec:conclusions}
-
-% TEXT
+\input{sections/01-introduction}
+\input{sections/02-related-work}
+\input{sections/03-problem}
+\input{sections/04-proposed-method}
+\input{sections/05-theory}
+\input{sections/06-experimental-design}
+\input{sections/07-results}
+\input{sections/08-ablation}
+\input{sections/09-discussion}
+\input{sections/10-limitations}
+\input{sections/11-reproducibility}
+\input{sections/12-conclusions}
 
 \bibliographystyle{plainnat}
 \bibliography{references}

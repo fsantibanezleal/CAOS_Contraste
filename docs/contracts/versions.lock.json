@@ -75,9 +75,9 @@
     "sha256": "6fa37bbe589a031456581bd0335aabb9d8cd7c68315603447d472f13b853acc1"
   },
   "c22-variant": {
-    "version": "3.0.0",
+    "version": "4.0.0",
     "schema": "docs/contracts/schemas/c22/variant.schema.json",
-    "sha256": "f270f99f14cc4873d3bfb42c38d4a14244bcd758feea2fa14b554c4ebe701b75"
+    "sha256": "7f1e92d82ce27110ad8d6720d4255758d6637e37f7d00e59c402383855259e33"
   },
   "c22-models": {
     "version": "2.0.0",
@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "34.0.0",
+    "version": "35.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "d4aaa9fcef01cd7f7b38f215a59215cde8b8314c73b7c9fb0c431550657af38a"
+    "sha256": "fa3b08a1dccc654e43a0a1a9f61ed2244458500f172b848a377d3a36a2e76b07"
   },
   "readiness": {
     "version": "1.0.1",
@@ -425,8 +425,8 @@
     "sha256": "680130edb702d5e248314c9fc553780c02594231bdd49384346cff7a40001e80"
   },
   "engine-governance-api": {
-    "version": "1.1.2",
+    "version": "1.1.3",
     "schema": "docs/contracts/engine/governance-api.md",
-    "sha256": "1d320dd2c00e795f05455304614118ef71c376a96edb565c8435dcd87b036915"
+    "sha256": "eb88dfa9100627b2e3a7fed7db31188ef9a3e572a9dae9fbe46833a0339e5dd2"
   }
 }

@@ -95,11 +95,13 @@ describe('the C13 instrument', () => {
     }
   });
 
-  it('every view of the variant names the known deficiency, its mechanism and the synthetic label', () => {
+  it('every view of the variant names the known deficiency, its mechanism and the synthetic label (the Findings view keeps the label only: the rail names the variant)', () => {
     for (const [name, View] of VIEWS) {
       const markup = html(<View sel={sel} />);
-      expect(markup, `${name}: the known deficiency`).toContain(`data-known-deficiency="${o.known_deficiency.deficiency_id}"`);
-      expect(markup, `${name}: the mechanism`).toContain(escapeHtml(o.known_deficiency.mechanism.en));
+      if (name !== 'Findings') {
+        expect(markup, `${name}: the known deficiency`).toContain(`data-known-deficiency="${o.known_deficiency.deficiency_id}"`);
+        expect(markup, `${name}: the mechanism`).toContain(escapeHtml(o.known_deficiency.mechanism.en));
+      }
       expect(markup, `${name}: the synthetic label`).toContain('data-synthetic="true"');
       expect(markup, name).not.toMatch(/NaN|undefined|Infinity/);
     }
@@ -234,6 +236,17 @@ describe('the zones, the detection and the desk back-test', () => {
     const markup = html(<C13FindingsView sel={sel} />);
     expect(markup).toContain('data-fixture="true"');
     expect(markup).toContain(escapeHtml(variant.findings[0].title.en));
+  });
+
+  it('the findings keep the synthetic notice inside their card and repeat no variant note above it (the rail states it; gate G6, 60 % on the App)', () => {
+    const markup = html(<C13FindingsView sel={sel} />);
+    const card = markup.indexOf('<figure');
+    expect(card).toBeGreaterThanOrEqual(0);
+    expect(markup).not.toContain('data-known-deficiency');
+    expect(markup).not.toContain('Known deficiency');
+    const notice = markup.indexOf('data-synthetic="true"');
+    expect(notice).toBeGreaterThan(card);
+    expect(markup).toContain(escapeHtml(o.generator.notice.en));
   });
 
   it('is written in Spanish in the Spanish interface', () => {

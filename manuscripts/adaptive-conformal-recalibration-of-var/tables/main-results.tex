@@ -1,0 +1,32 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{Unwrapped (U) and wrapped (W) value at risk of three ladder models in the three stress windows of C11, at tail levels 1\% and 2.5\%: hits, the hit rate of the wrapped model with its 95\% Wilson interval, the p-values of the Kupiec and conditional coverage (CC) tests, the Christoffersen independence p-value of the wrapped model and the relative change of the mean FZ0 score with a 95\% moving-block bootstrap interval (positive is worse). The windows hold 504, 104 and 249 forecast days.}
+\label{tab:main-results}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{llrrlllll}
+\toprule
+Window & Model & Level (\%) & Hits U & Hits W (rate \%; 95\% Wilson) & Kupiec $p$ U / W & CC $p$ U / W & Indep. $p$ W & FZ0 change [95\% CI] \\
+\midrule
+Equity 2007--09 & HS-250 & 1 & 19 & 11 (2.2; 1.2--3.9) & $<0.001$ / 0.021 & $<0.001$ / 0.055 & 0.483 & \relax -17.2\% [-59.9\%, -1.3\%] \\
+Equity 2007--09 & HS-250 & 2.5 & 36 & 17 (3.4; 2.1--5.3) & $<0.001$ / 0.233 & $<0.001$ / 0.271 & 0.275 & \relax -14.3\% [-40.3\%, -1.8\%] \\
+Equity 2007--09 & GARCH-t & 1 & 16 & 6 (1.2; 0.5--2.6) & $<0.001$ / 0.677 & $<0.001$ / 0.853 & 0.703 & \relax -4.2\% [-12.4\%, +1.8\%] \\
+Equity 2007--09 & GARCH-t & 2.5 & 31 & 14 (2.8; 1.7--4.6) & $<0.001$ / 0.695 & $<0.001$ / 0.620 & 0.371 & \relax -3.6\% [-10.5\%, +1.5\%] \\
+Equity 2007--09 & FHS & 1 & 13 & 7 (1.4; 0.7--2.8) & 0.003 / 0.407 & 0.009 / 0.643 & 0.657 & \relax -3.2\% [-10.8\%, +1.7\%] \\
+Equity 2007--09 & FHS & 2.5 & 24 & 14 (2.8; 1.7--4.6) & 0.004 / 0.695 & 0.005 / 0.620 & 0.371 & \relax -1.7\% [-6.5\%, +2.1\%] \\
+Equity 2020 & HS-250 & 1 & 8 & 6 (5.8; 2.7--12.0) & $<0.001$ / 0.001 & $<0.001$ / 0.002 & 0.327 & \relax -168.7\% [-1274.5\%, +13.0\%] \\
+Equity 2020 & HS-250 & 2.5 & 13 & 7 (6.7; 3.3--13.2) & $<0.001$ / 0.022 & $<0.001$ / 0.055 & 0.468 & \relax -631.7\% [-2271.3\%, +17.5\%] \\
+Equity 2020 & GARCH-t & 1 & 3 & 2 (1.9; 0.5--6.7) & 0.116 / 0.401 & 0.265 / 0.676 & 0.778 & \relax +3.0\% [-3.4\%, +28.2\%] \\
+Equity 2020 & GARCH-t & 2.5 & 6 & 5 (4.8; 2.1--10.8) & 0.067 / 0.180 & 0.116 / 0.185 & 0.209 & \relax -2.2\% [-24.6\%, +5.8\%] \\
+Equity 2020 & FHS & 1 & 2 & 2 (1.9; 0.5--6.7) & 0.401 / 0.401 & 0.676 / 0.676 & 0.778 & \relax +3.4\% [+1.1\%, +10.3\%] \\
+Equity 2020 & FHS & 2.5 & 5 & 4 (3.8; 1.5--9.5) & 0.180 / 0.415 & 0.316 / 0.610 & 0.570 & \relax +1.5\% [-0.2\%, +4.5\%] \\
+Rates 2022 & HS-250 & 1 & 8 & 4 (1.6; 0.6--4.1) & 0.005 / 0.377 & 0.016 / 0.644 & 0.754 & \relax -5.8\% [-24.9\%, +3.5\%] \\
+Rates 2022 & HS-250 & 2.5 & 14 & 8 (3.2; 1.6--6.2) & 0.007 / 0.490 & 0.011 / 0.624 & 0.495 & \relax -3.3\% [-10.5\%, +1.3\%] \\
+Rates 2022 & GARCH-t & 1 & 6 & 4 (1.6; 0.6--4.1) & 0.058 / 0.377 & 0.147 / 0.644 & 0.754 & \relax -0.2\% [-7.5\%, +4.5\%] \\
+Rates 2022 & GARCH-t & 2.5 & 14 & 8 (3.2; 1.6--6.2) & 0.007 / 0.490 & 0.011 / 0.624 & 0.495 & \relax -0.3\% [-3.0\%, +1.6\%] \\
+Rates 2022 & FHS & 1 & 5 & 5 (2.0; 0.9--4.6) & 0.160 / 0.160 & 0.343 / 0.343 & 0.685 & \relax +0.9\% [-3.4\%, +3.9\%] \\
+Rates 2022 & FHS & 2.5 & 12 & 7 (2.8; 1.4--5.7) & 0.037 / 0.758 & 0.065 / 0.801 & 0.555 & \relax -0.3\% [-3.0\%, +1.4\%] \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table*}

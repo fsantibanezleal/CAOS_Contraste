@@ -66,6 +66,6 @@ Between R minus 12 months and R each loan is continuing, repaid, charged off or 
 ## Decisions taken without the owner (to confirm)
 
 - No management overlay is invented for the public portfolio (the overlays array is empty).
-- Probation is 0 months: the file has no cure dates and the reporting dates are a year apart.
+- Probation is 0 months: the file has no cure dates.
 - The scenario weights (0.60, 0.30, 0.10), the asset correlation 0.12, the lifetime cap (120 months) and the model's policy constants
   are policy parameters, listed on the case page.

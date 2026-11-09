@@ -1,0 +1,26 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{A model facing returns $c$ times larger in scale than it assumes (Student-$t$ with five degrees of freedom): the fixed point of the working level, the mean and standard deviation of the level simulated over 50 replications of 5,000 days, the standard deviation predicted by the linearisation, the long-run hit rate with its 95\% interval and the share of updates cut by the band $[0.1\%, 25\%]$.}
+\label{tab:scale-sweep}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{rrrlrrrlr}
+\toprule
+Level (\%) & Scale ratio $c$ & Fixed point $a^*$ (\%) & $a^*$ in band & Simulated mean level (\%) & Simulated sd (\%) & Predicted sd (\%) & Hit rate (\%, 95\% CI) & Clipped days (\%) \\
+\midrule
+1 & 1 & 1.000 & yes & 1.006 & 0.462 & 0.497 & \relax 1.02 $\pm$ 0.01 & 0.1 \\
+1 & 1.25 & 0.422 & yes & 0.526 & 0.287 & 0.339 & \relax 1.22 $\pm$ 0.02 & 0.5 \\
+1 & 1.5 & 0.197 & yes & 0.355 & 0.196 & 0.239 & \relax 1.61 $\pm$ 0.03 & 1.2 \\
+1 & 1.75 & 0.100 & yes & 0.277 & 0.146 & 0.174 & \relax 2.18 $\pm$ 0.04 & 2.0 \\
+1 & 2 & 0.055 & no & 0.231 & 0.111 & -- & \relax 2.89 $\pm$ 0.05 & 2.8 \\
+1 & 3 & 0.008 & no & 0.160 & 0.056 & -- & \relax 6.71 $\pm$ 0.10 & 6.7 \\
+2.5 & 1 & 2.500 & yes & 2.505 & 0.740 & 0.781 & \relax 2.51 $\pm$ 0.02 & 0.0 \\
+2.5 & 1.25 & 1.182 & yes & 1.222 & 0.547 & 0.575 & \relax 2.54 $\pm$ 0.01 & 0.1 \\
+2.5 & 1.5 & 0.596 & yes & 0.699 & 0.379 & 0.427 & \relax 2.77 $\pm$ 0.02 & 0.7 \\
+2.5 & 1.75 & 0.320 & yes & 0.481 & 0.277 & 0.322 & \relax 3.24 $\pm$ 0.03 & 1.7 \\
+2.5 & 2 & 0.182 & yes & 0.374 & 0.218 & 0.248 & \relax 3.92 $\pm$ 0.06 & 2.8 \\
+2.5 & 3 & 0.029 & no & 0.223 & 0.113 & -- & \relax 7.82 $\pm$ 0.11 & 7.6 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table*}

@@ -1,0 +1,25 @@
+\section{Conclusions}
+\label{sec:conclusions}
+
+A rule that reports every aggregate capital figure with a band of eight rows over the same marginals, one horizon and one level,
+with one headline and seven rows labelled information, can be implemented, checked and reproduced: the six committed aggregates of
+the case satisfy it, the engine rebuilds the committed rows from the committed marginal grids to within \bdMaxRelDiff{} percent,
+and the band of Banco Andino runs from CLP \bdLower{} to \bdWorst{} billion against a headline of CLP \bdHeadline{} billion, which
+is \bdWidthOverSe{} Monte Carlo standard errors wide.
+
+On ten planted dependence structures of known capital, the sharp range contains all of them, at a median width of
+$\bdAblFullWidth$ times the capital, which is a property of the bounds and not of the structures. The interior rows of the base
+matrix contain $\bdCovInterior$ of the ten, against the 75 percent that was predicted, and $\bdCovInteriorStress$ when the rows of the
+stressed matrix are added: the matrix is the component that decides what the interior rows cover. The Gaussian copula row alone is
+within 5 percent of the capital of $\bdGaussWithin$ structures, with a median error of $\bdGaussMedErr$ percent, and two
+single-figure estimators calibrated on the structure itself are within 5 percent in $\bdAblHybridPoint$ of the ten. The tail dependence
+that a correlation matrix does not carry is the reason, and the band shows it. The Euler allocation adds up to
+the aggregate by construction, and the tests that need rows beyond the Gaussian one are the three that measure the dependence
+uncertainty.
+
+The next steps are three. The band should be evaluated on aggregates whose marginals are not simulated by the same producer, so
+that the effect of a marginal error on the rows can be separated from the dependence uncertainty. The interior of the band should
+be enriched with families that carry tail dependence in the loss direction, such as the Clayton and Gumbel copulas that the study
+planted, to test whether the coverage of the interior rows then reaches the level that was predicted. And the intervals that
+use additional information, such as a constraint on the variance of the sum, should be run on the same marginals and compared with
+the band at equal coverage, which is the comparison that the present study did not make.
