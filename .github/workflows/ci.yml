@@ -97,7 +97,8 @@ jobs:
 
   product-plants:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # the base guards plant their defects in copies of the whole product tree: about 25 minutes on Contraste, not the 10 of the template example
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
