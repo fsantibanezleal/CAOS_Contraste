@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Ablation of the twelve identities by family: share of the 600 cases of each defect class (defect of ten times the limit) that the remaining identities still flag when one family is left out; the last column counts the classes that no remaining identity detects.}
+\label{tab:ablation}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{p{4.6cm}rrrrrrrr}
+\toprule
+Identity family left out & Alw. mov. & Alw. clos. & Realloc. & GCA mov. & WF line & WF clos. & Stage ECL & Classes lost \\
+\midrule
+Allowance roll-forward by stage & all & all & all & all & all & all & all & 0 \\
+Gross amount roll-forward by stage & all & all & all & 0 & all & all & all & 1 \\
+Waterfall closes & all & all & all & all & all & all & all & 0 \\
+Waterfall equals stage closings & all & all & all & all & all & all & all & 0 \\
+Waterfall lines equal stage movements & all & all & all & all & all & all & all & 0 \\
+Stage closing equals ECL plus overlays & all & all & 0 & all & all & all & 0 & 2 \\
+None left out (twelve identities) & all & all & all & all & all & all & all & 0 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

@@ -1,0 +1,2980 @@
+{
+ "meta": {
+  "seed": 20261104,
+  "reps": 2000,
+  "horizon": 1000,
+  "alpha": 0.01,
+  "window": 250,
+  "level": 0.05,
+  "first_look": 50,
+  "calibration_reps": 20000,
+  "critical_values": {
+   "kupiec_cumulative": 7.618154576954099,
+   "cusum_m3": 4.703657203686394
+  },
+  "engine_version": "1.1.0",
+  "bootstrap_resamples": 2000,
+  "script": "experiments/exp_hits.py",
+  "traffic_light_first_non_green_count": 5
+ },
+ "scenarios": {
+  "null": {
+   "kind": "null",
+   "params": {},
+   "tag": 0,
+   "mean_hits": 10.012,
+   "methods": {
+    "e_rate": {
+     "n": 2000,
+     "ever": 0.024,
+     "ever_ci": [
+      0.018149556663450077,
+      0.031675472377038716
+     ],
+     "by": 0.0115,
+     "by_ci": [
+      0.0076752272620238165,
+      0.01719772796125092
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 273.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.0835,
+      "se": 0.006464113812711828
+     }
+    },
+    "e_rate_upper": {
+     "n": 2000,
+     "ever": 0.0255,
+     "ever_ci": [
+      0.019447915782887765,
+      0.03337136211566671
+     ],
+     "by": 0.0175,
+     "by_ci": [
+      0.012609752927205314,
+      0.02424019772833217
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 182.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.0775,
+      "se": 0.006577880301026107
+     }
+    },
+    "e_cluster": {
+     "n": 2000,
+     "ever": 0.005,
+     "ever_ci": [
+      0.0027181808458108104,
+      0.009179695992512617
+     ],
+     "by": 0.001,
+     "by_ci": [
+      0.00027427891518738375,
+      0.0036389343016275475
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 466.5
+    },
+    "e_battery": {
+     "n": 2000,
+     "ever": 0.012,
+     "ever_ci": [
+      0.008077154251085943,
+      0.017793883924877355
+     ],
+     "by": 0.0045,
+     "by_ci": [
+      0.0023692806253596066,
+      0.00853051326027526
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 359.5
+    },
+    "e_sprt3": {
+     "n": 2000,
+     "ever": 0.036,
+     "ever_ci": [
+      0.028684606671435086,
+      0.045094413233579184
+     ],
+     "by": 0.0235,
+     "by_ci": [
+      0.017718224322382813,
+      0.031108721765417416
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 197.5
+    },
+    "e_wwz": {
+     "n": 2000,
+     "ever": 0.004,
+     "ever_ci": [
+      0.002028246596492413,
+      0.007873464336453893
+     ],
+     "by": 0.0005,
+     "by_ci": [
+      8.82677297307957e-05,
+      0.002826862534395573
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 566.5,
+     "power_cost_vs_one_shot": {
+      "mean": 0.0945,
+      "se": 0.0065426506967030985
+     }
+    },
+    "e_beta": {
+     "n": 2000,
+     "ever": 0.008,
+     "ever_ci": [
+      0.004930296834729117,
+      0.012956077719725685
+     ],
+     "by": 0.0075,
+     "by_ci": [
+      0.004550377418218274,
+      0.012337914183547963
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 1.0
+    },
+    "kupiec_trailing": {
+     "n": 2000,
+     "ever": 0.657,
+     "ever_ci": [
+      0.6359120296699075,
+      0.6774860174743011
+     ],
+     "by": 0.095,
+     "by_ci": [
+      0.08291479671795908,
+      0.10863801160430554
+     ],
+     "median_day": 718.5,
+     "median_ci": [
+      683.5,
+      750.5
+     ],
+     "median_day_among_detected": 484.0
+    },
+    "kupiec_cumulative": {
+     "n": 2000,
+     "ever": 0.319,
+     "ever_ci": [
+      0.29893674695940914,
+      0.3397572241673314
+     ],
+     "by": 0.2235,
+     "by_ci": [
+      0.2057823181059618,
+      0.2422778090572633
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 192.0
+    },
+    "kupiec_sidak": {
+     "n": 2000,
+     "ever": 0.0005,
+     "ever_ci": [
+      8.82677297307957e-05,
+      0.002826862534395573
+     ],
+     "by": 0.0,
+     "by_ci": [
+      1.0842021724855044e-19,
+      0.001917047311437806
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 640.0
+    },
+    "kupiec_calibrated": {
+     "n": 2000,
+     "ever": 0.053,
+     "ever_ci": [
+      0.04401045714118383,
+      0.06370338315524156
+     ],
+     "by": 0.0135,
+     "by_ci": [
+      0.00929449397056005,
+      0.019570793063468934
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 380.0
+    },
+    "cusum_calibrated": {
+     "n": 2000,
+     "ever": 0.058,
+     "ever_ci": [
+      0.04857807138595776,
+      0.06911659843735327
+     ],
+     "by": 0.0095,
+     "by_ci": [
+      0.006090240207568303,
+      0.014790383204952184
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 597.5
+    },
+    "traffic_light": {
+     "n": 2000,
+     "ever": 0.588,
+     "ever_ci": [
+      0.5662803213617118,
+      0.6093822783114751
+     ],
+     "by": 0.107,
+     "by_ci": [
+      0.09419820138007033,
+      0.12130859780671978
+     ],
+     "median_day": 812.0,
+     "median_ci": [
+      768.9875,
+      858.0124999999999
+     ],
+     "median_day_among_detected": 455.5
+    },
+    "independence_trailing": {
+     "n": 2000,
+     "ever": 0.079,
+     "ever_ci": [
+      0.06796926383948217,
+      0.09164488999674845
+     ],
+     "by": 0.019,
+     "by_ci": [
+      0.013873784884096723,
+      0.025970414629506448
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 397.0
+    },
+    "kupiec_one_shot": {
+     "n": 2000,
+     "ever": 0.095,
+     "ever_ci": [
+      0.08291479671795908,
+      0.10863801160430554
+     ]
+    }
+   }
+  },
+  "rate-x1.5": {
+   "kind": "rate",
+   "params": {
+    "rate_factor": 1.5
+   },
+   "tag": 1,
+   "mean_hits": 15.162,
+   "methods": {
+    "e_rate": {
+     "n": 2000,
+     "ever": 0.1865,
+     "ever_ci": [
+      0.17003608006566043,
+      0.20416590859861103
+     ],
+     "by": 0.071,
+     "by_ci": [
+      0.06054753470543954,
+      0.08309729188777408
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 372.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.0415,
+      "se": 0.0061974251943464195
+     }
+    },
+    "e_rate_upper": {
+     "n": 2000,
+     "ever": 0.216,
+     "ever_ci": [
+      0.19851843587820428,
+      0.23457044699469237
+     ],
+     "by": 0.0855,
+     "by_ci": [
+      0.07402575859317294,
+      0.098563473628009
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 352.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.027,
+      "se": 0.006012784445528892
+     }
+    },
+    "e_cluster": {
+     "n": 2000,
+     "ever": 0.0095,
+     "ever_ci": [
+      0.006090240207568303,
+      0.014790383204952184
+     ],
+     "by": 0.002,
+     "by_ci": [
+      0.0007780273016502527,
+      0.005131351820541802
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 374.0
+    },
+    "e_battery": {
+     "n": 2000,
+     "ever": 0.1315,
+     "ever_ci": [
+      0.11739290074954689,
+      0.14701996311898274
+     ],
+     "by": 0.041,
+     "by_ci": [
+      0.03315349069372972,
+      0.05060635873817018
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 408.0
+    },
+    "e_sprt3": {
+     "n": 2000,
+     "ever": 0.2625,
+     "ever_ci": [
+      0.2436852267363911,
+      0.2822253707365419
+     ],
+     "by": 0.1155,
+     "by_ci": [
+      0.10222324022064168,
+      0.13025096916185402
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 288.0
+    },
+    "e_wwz": {
+     "n": 2000,
+     "ever": 0.1085,
+     "ever_ci": [
+      0.09561252712452645,
+      0.12288852092032934
+     ],
+     "by": 0.0065,
+     "by_ci": [
+      0.003802596478352303,
+      0.011089529218036812
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 665.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.106,
+      "se": 0.006885179943285847
+     }
+    },
+    "e_beta": {
+     "n": 2000,
+     "ever": 0.062,
+     "ever_ci": [
+      0.052247554390646114,
+      0.0734317790541734
+     ],
+     "by": 0.0375,
+     "by_ci": [
+      0.030021256510592544,
+      0.04675201225248742
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 96.0
+    },
+    "kupiec_trailing": {
+     "n": 2000,
+     "ever": 0.7035,
+     "ever_ci": [
+      0.6831092614249579,
+      0.723110500319287
+     ],
+     "by": 0.1125,
+     "by_ci": [
+      0.09938800010350163,
+      0.12709771156286268
+     ],
+     "median_day": 649.0,
+     "median_ci": [
+      617.5,
+      683.0
+     ],
+     "median_day_among_detected": 455.0
+    },
+    "kupiec_cumulative": {
+     "n": 2000,
+     "ever": 0.5925,
+     "ever_ci": [
+      0.570807782079998,
+      0.613837564167386
+     ],
+     "by": 0.307,
+     "by_ci": [
+      0.2871712123152885,
+      0.32756876794692646
+     ],
+     "median_day": 688.0,
+     "median_ci": [
+      616.0,
+      749.5
+     ],
+     "median_day_among_detected": 232.0
+    },
+    "kupiec_sidak": {
+     "n": 2000,
+     "ever": 0.018,
+     "ever_ci": [
+      0.013029991411288699,
+      0.024818042196937343
+     ],
+     "by": 0.0035,
+     "by_ci": [
+      0.0016964316877482637,
+      0.007207196292509477
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 579.0
+    },
+    "kupiec_calibrated": {
+     "n": 2000,
+     "ever": 0.245,
+     "ever_ci": [
+      0.2266515224697297,
+      0.26432617165910355
+     ],
+     "by": 0.0755,
+     "by_ci": [
+      0.06471759446386058,
+      0.0879099787035501
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 425.5
+    },
+    "cusum_calibrated": {
+     "n": 2000,
+     "ever": 0.3315,
+     "ever_ci": [
+      0.3112090251679927,
+      0.3524370197759619
+     ],
+     "by": 0.051,
+     "by_ci": [
+      0.04218996985412967,
+      0.061531538631541476
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 526.0
+    },
+    "traffic_light": {
+     "n": 2000,
+     "ever": 0.934,
+     "ever_ci": [
+      0.9222654015005225,
+      0.9440706014331495
+     ],
+     "by": 0.326,
+     "by_ci": [
+      0.30580717907103544,
+      0.3468599533933449
+     ],
+     "median_day": 345.0,
+     "median_ci": [
+      326.0,
+      359.0
+     ],
+     "median_day_among_detected": 321.0
+    },
+    "independence_trailing": {
+     "n": 2000,
+     "ever": 0.1235,
+     "ever_ci": [
+      0.10979828026013913,
+      0.13864525636537353
+     ],
+     "by": 0.0175,
+     "by_ci": [
+      0.012609752927205314,
+      0.02424019772833217
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 570.0
+    },
+    "kupiec_one_shot": {
+     "n": 2000,
+     "ever": 0.1125,
+     "ever_ci": [
+      0.09938800010350163,
+      0.12709771156286268
+     ]
+    }
+   }
+  },
+  "rate-x2": {
+   "kind": "rate",
+   "params": {
+    "rate_factor": 2.0
+   },
+   "tag": 2,
+   "mean_hits": 20.0195,
+   "methods": {
+    "e_rate": {
+     "n": 2000,
+     "ever": 0.563,
+     "ever_ci": [
+      0.5411613151291774,
+      0.5845971369095813
+     ],
+     "by": 0.15,
+     "by_ci": [
+      0.13502252483685015,
+      0.1663194082811563
+     ],
+     "median_day": 862.5,
+     "median_ci": [
+      830.0,
+      920.0
+     ],
+     "median_day_among_detected": 470.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.08,
+      "se": 0.007336682728367662
+     }
+    },
+    "e_rate_upper": {
+     "n": 2000,
+     "ever": 0.602,
+     "ever_ci": [
+      0.5803718900950643,
+      0.6232370322534024
+     ],
+     "by": 0.178,
+     "by_ci": [
+      0.1618579413824393,
+      0.19537663708612657
+     ],
+     "median_day": 759.0,
+     "median_ci": [
+      729.0,
+      819.0249999999999
+     ],
+     "median_day_among_detected": 450.5,
+     "power_cost_vs_one_shot": {
+      "mean": 0.052,
+      "se": 0.007083296304918468
+     }
+    },
+    "e_cluster": {
+     "n": 2000,
+     "ever": 0.0325,
+     "ever_ci": [
+      0.025580698777942966,
+      0.041211740458251385
+     ],
+     "by": 0.009,
+     "by_ci": [
+      0.0057004997083668595,
+      0.014182040751465064
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 354.0
+    },
+    "e_battery": {
+     "n": 2000,
+     "ever": 0.474,
+     "ever_ci": [
+      0.4521873550774532,
+      0.4959123313827415
+     ],
+     "by": 0.102,
+     "by_ci": [
+      0.08948985364740172,
+      0.11603611601250274
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 518.0
+    },
+    "e_sprt3": {
+     "n": 2000,
+     "ever": 0.6325,
+     "ever_ci": [
+      0.6111350891554673,
+      0.6533568933070016
+     ],
+     "by": 0.2305,
+     "by_ci": [
+      0.21256960861731786,
+      0.2494636798835471
+     ],
+     "median_day": 617.0,
+     "median_ci": [
+      586.0,
+      658.0249999999999
+     ],
+     "median_day_among_detected": 342.0
+    },
+    "e_wwz": {
+     "n": 2000,
+     "ever": 0.457,
+     "ever_ci": [
+      0.4352713348826306,
+      0.4788935311861531
+     ],
+     "by": 0.0345,
+     "by_ci": [
+      0.027351694097690574,
+      0.043433076949258034
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 632.5,
+     "power_cost_vs_one_shot": {
+      "mean": 0.1955,
+      "se": 0.008870130472958312
+     }
+    },
+    "e_beta": {
+     "n": 2000,
+     "ever": 0.2885,
+     "ever_ci": [
+      0.2690642765487055,
+      0.30874663446403267
+     ],
+     "by": 0.0845,
+     "by_ci": [
+      0.0730925679898663,
+      0.09750049832593852
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 488.0
+    },
+    "kupiec_trailing": {
+     "n": 2000,
+     "ever": 0.895,
+     "ever_ci": [
+      0.8807992576944136,
+      0.9076862749295506
+     ],
+     "by": 0.23,
+     "by_ci": [
+      0.21208456201876572,
+      0.24895064352941068
+     ],
+     "median_day": 400.0,
+     "median_ci": [
+      384.0,
+      419.5
+     ],
+     "median_day_among_detected": 363.0
+    },
+    "kupiec_cumulative": {
+     "n": 2000,
+     "ever": 0.8835,
+     "ever_ci": [
+      0.8686986164495065,
+      0.8968310082626205
+     ],
+     "by": 0.4505,
+     "by_ci": [
+      0.42881018389374764,
+      0.47237960379008476
+     ],
+     "median_day": 292.0,
+     "median_ci": [
+      277.9875,
+      306.5
+     ],
+     "median_day_among_detected": 237.0
+    },
+    "kupiec_sidak": {
+     "n": 2000,
+     "ever": 0.186,
+     "ever_ci": [
+      0.169554636985499,
+      0.2036492687260839
+     ],
+     "by": 0.016,
+     "by_ci": [
+      0.011356235319609694,
+      0.022499466477862107
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 693.0
+    },
+    "kupiec_calibrated": {
+     "n": 2000,
+     "ever": 0.6485,
+     "ever_ci": [
+      0.627309155151994,
+      0.6691214817965088
+     ],
+     "by": 0.165,
+     "by_ci": [
+      0.1493777210599671,
+      0.18190670063869618
+     ],
+     "median_day": 717.0,
+     "median_ci": [
+      672.0,
+      769.5
+     ],
+     "median_day_among_detected": 468.0
+    },
+    "cusum_calibrated": {
+     "n": 2000,
+     "ever": 0.6935,
+     "ever_ci": [
+      0.6729394286130697,
+      0.713318674077404
+     ],
+     "by": 0.13,
+     "by_ci": [
+      0.11596749051882915,
+      0.14545112449163478
+     ],
+     "median_day": 647.5,
+     "median_ci": [
+      615.975,
+      673.0
+     ],
+     "median_day_among_detected": 462.0
+    },
+    "traffic_light": {
+     "n": 2000,
+     "ever": 0.9855,
+     "ever_ci": [
+      0.9792532243789042,
+      0.9898853226816898
+     ],
+     "by": 0.5535,
+     "by_ci": [
+      0.531630828720668,
+      0.5751640472170082
+     ],
+     "median_day": 250.0,
+     "median_ci": [
+      250.0,
+      250.0
+     ],
+     "median_day_among_detected": 250.0
+    },
+    "independence_trailing": {
+     "n": 2000,
+     "ever": 0.144,
+     "ever_ci": [
+      0.12929517916864525,
+      0.16006975851709843
+     ],
+     "by": 0.0165,
+     "by_ci": [
+      0.011772823576138425,
+      0.023080961174021933
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 575.5
+    },
+    "kupiec_one_shot": {
+     "n": 2000,
+     "ever": 0.23,
+     "ever_ci": [
+      0.21208456201876572,
+      0.24895064352941068
+     ]
+    }
+   }
+  },
+  "rate-x3": {
+   "kind": "rate",
+   "params": {
+    "rate_factor": 3.0
+   },
+   "tag": 3,
+   "mean_hits": 29.8835,
+   "methods": {
+    "e_rate": {
+     "n": 2000,
+     "ever": 0.9745,
+     "ever_ci": [
+      0.9666286378843334,
+      0.9805520842171123
+     ],
+     "by": 0.4865,
+     "by_ci": [
+      0.46464179652141485,
+      0.508409963755994
+     ],
+     "median_day": 259.0,
+     "median_ci": [
+      237.0,
+      273.0
+     ],
+     "median_day_among_detected": 252.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.137,
+      "se": 0.008669087410925624
+     }
+    },
+    "e_rate_upper": {
+     "n": 2000,
+     "ever": 0.979,
+     "ever_ci": [
+      0.9717369894649217,
+      0.9844264792107209
+     ],
+     "by": 0.5535,
+     "by_ci": [
+      0.531630828720668,
+      0.5751640472170082
+     ],
+     "median_day": 232.5,
+     "median_ci": [
+      221.0,
+      240.0
+     ],
+     "median_day_among_detected": 227.5,
+     "power_cost_vs_one_shot": {
+      "mean": 0.07,
+      "se": 0.0076209605378692175
+     }
+    },
+    "e_cluster": {
+     "n": 2000,
+     "ever": 0.089,
+     "ever_ci": [
+      0.07729578590723234,
+      0.10228002698276951
+     ],
+     "by": 0.022,
+     "by_ci": [
+      0.01642890807665307,
+      0.029403789153081474
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 452.0
+    },
+    "e_battery": {
+     "n": 2000,
+     "ever": 0.9585,
+     "ever_ci": [
+      0.9488444507448196,
+      0.966397616870592
+     ],
+     "by": 0.396,
+     "by_ci": [
+      0.3747852001906219,
+      0.4176135456501572
+     ],
+     "median_day": 319.5,
+     "median_ci": [
+      301.0,
+      332.5
+     ],
+     "median_day_among_detected": 302.0
+    },
+    "e_sprt3": {
+     "n": 2000,
+     "ever": 0.9805,
+     "ever_ci": [
+      0.9734549738476003,
+      0.985702743686108
+     ],
+     "by": 0.6255,
+     "by_ci": [
+      0.6040668237283361,
+      0.646451997396493
+     ],
+     "median_day": 182.0,
+     "median_ci": [
+      176.0,
+      202.5
+     ],
+     "median_day_among_detected": 180.0
+    },
+    "e_wwz": {
+     "n": 2000,
+     "ever": 0.9585,
+     "ever_ci": [
+      0.9488444507448196,
+      0.966397616870592
+     ],
+     "by": 0.224,
+     "by_ci": [
+      0.20626688219145667,
+      0.24279132792445696
+     ],
+     "median_day": 408.0,
+     "median_ci": [
+      395.4875,
+      422.0
+     ],
+     "median_day_among_detected": 396.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.3995,
+      "se": 0.010954902096320624
+     }
+    },
+    "e_beta": {
+     "n": 2000,
+     "ever": 0.8915,
+     "ever_ci": [
+      0.8771114790796706,
+      0.9043874728754735
+     ],
+     "by": 0.298,
+     "by_ci": [
+      0.2783575509248226,
+      0.31841693618899825
+     ],
+     "median_day": 433.0,
+     "median_ci": [
+      416.4875,
+      461.5
+     ],
+     "median_day_among_detected": 383.0
+    },
+    "kupiec_trailing": {
+     "n": 2000,
+     "ever": 0.9965,
+     "ever_ci": [
+      0.9927928037074906,
+      0.9983035683122518
+     ],
+     "by": 0.6235,
+     "by_ci": [
+      0.6020481887745753,
+      0.6444783005394997
+     ],
+     "median_day": 250.0,
+     "median_ci": [
+      250.0,
+      250.0
+     ],
+     "median_day_among_detected": 250.0
+    },
+    "kupiec_cumulative": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.7895,
+     "by_ci": [
+      0.771087197971639,
+      0.8068028316350383
+     ],
+     "median_day": 117.0,
+     "median_ci": [
+      110.0,
+      121.0
+     ],
+     "median_day_among_detected": 117.0
+    },
+    "kupiec_sidak": {
+     "n": 2000,
+     "ever": 0.8495,
+     "ever_ci": [
+      0.8331601824484864,
+      0.8644998014808185
+     ],
+     "by": 0.148,
+     "by_ci": [
+      0.13311243085641347,
+      0.16423717045083872
+     ],
+     "median_day": 567.0,
+     "median_ci": [
+      549.0,
+      581.0
+     ],
+     "median_day_among_detected": 504.0
+    },
+    "kupiec_calibrated": {
+     "n": 2000,
+     "ever": 0.984,
+     "ever_ci": [
+      0.9775005335221378,
+      0.9886437646803903
+     ],
+     "by": 0.5395,
+     "by_ci": [
+      0.5176005168996496,
+      0.5612480363627468
+     ],
+     "median_day": 239.0,
+     "median_ci": [
+      230.0,
+      245.0
+     ],
+     "median_day_among_detected": 236.0
+    },
+    "cusum_calibrated": {
+     "n": 2000,
+     "ever": 0.987,
+     "ever_ci": [
+      0.9810196914270056,
+      0.9911131044916538
+     ],
+     "by": 0.46,
+     "by_ci": [
+      0.4382546647475238,
+      0.4818986990373913
+     ],
+     "median_day": 265.0,
+     "median_ci": [
+      256.5,
+      274.0
+     ],
+     "median_day_among_detected": 263.5
+    },
+    "traffic_light": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.87,
+     "by_ci": [
+      0.8545488755083652,
+      0.8840325094811707
+     ],
+     "median_day": 250.0,
+     "median_ci": [
+      250.0,
+      250.0
+     ],
+     "median_day_among_detected": 250.0
+    },
+    "independence_trailing": {
+     "n": 2000,
+     "ever": 0.166,
+     "ever_ci": [
+      0.15033650055818887,
+      0.18294408704585158
+     ],
+     "by": 0.0115,
+     "by_ci": [
+      0.0076752272620238165,
+      0.01719772796125092
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 562.0
+    },
+    "kupiec_one_shot": {
+     "n": 2000,
+     "ever": 0.6235,
+     "ever_ci": [
+      0.6020481887745753,
+      0.6444783005394997
+     ]
+    }
+   }
+  },
+  "rate-x4": {
+   "kind": "rate",
+   "params": {
+    "rate_factor": 4.0
+   },
+   "tag": 4,
+   "mean_hits": 39.6765,
+   "methods": {
+    "e_rate": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.7785,
+     "by_ci": [
+      0.7597766446145151,
+      0.7961555600330139
+     ],
+     "median_day": 130.5,
+     "median_ci": [
+      125.0,
+      134.0
+     ],
+     "median_day_among_detected": 130.5,
+     "power_cost_vs_one_shot": {
+      "mean": 0.0925,
+      "se": 0.006891706814092261
+     }
+    },
+    "e_rate_upper": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.825,
+     "by_ci": [
+      0.8077287799965913,
+      0.841025139250974
+     ],
+     "median_day": 119.0,
+     "median_ci": [
+      107.5,
+      128.51249999999993
+     ],
+     "median_day_among_detected": 119.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.046,
+      "se": 0.005784352112785177
+     }
+    },
+    "e_cluster": {
+     "n": 2000,
+     "ever": 0.1825,
+     "ever_ci": [
+      0.1661858392526193,
+      0.20003148579014365
+     ],
+     "by": 0.0585,
+     "by_ci": [
+      0.04903604149781765,
+      0.06965671127818193
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 471.0
+    },
+    "e_battery": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.73,
+     "by_ci": [
+      0.7101157142781918,
+      0.7490024439585468
+     ],
+     "median_day": 157.5,
+     "median_ci": [
+      151.0,
+      161.0
+     ],
+     "median_day_among_detected": 157.5
+    },
+    "e_sprt3": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.8605,
+     "by_ci": [
+      0.8446234017172711,
+      0.8749944071711824
+     ],
+     "median_day": 114.0,
+     "median_ci": [
+      111.0,
+      118.51249999999993
+     ],
+     "median_day_among_detected": 114.0
+    },
+    "e_wwz": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.5375,
+     "by_ci": [
+      0.5155976011544555,
+      0.5592586202971866
+     ],
+     "median_day": 237.0,
+     "median_ci": [
+      231.0,
+      246.0
+     ],
+     "median_day_among_detected": 237.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.3335,
+      "se": 0.010544878957869458
+     }
+    },
+    "e_beta": {
+     "n": 2000,
+     "ever": 0.9985,
+     "ever_ci": [
+      0.9955989674101707,
+      0.9994897364203258
+     ],
+     "by": 0.6165,
+     "by_ci": [
+      0.5949859838332543,
+      0.6375673441431808
+     ],
+     "median_day": 200.0,
+     "median_ci": [
+      192.0,
+      206.0
+     ],
+     "median_day_among_detected": 200.0
+    },
+    "kupiec_trailing": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.871,
+     "by_ci": [
+      0.8555951251443501,
+      0.884982425750563
+     ],
+     "median_day": 250.0,
+     "median_ci": [
+      250.0,
+      250.0
+     ],
+     "median_day_among_detected": 250.0
+    },
+    "kupiec_cumulative": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.9415,
+     "by_ci": [
+      0.930343288721818,
+      0.9509639585021824
+     ],
+     "median_day": 68.0,
+     "median_ci": [
+      66.0,
+      70.0
+     ],
+     "median_day_among_detected": 68.0
+    },
+    "kupiec_sidak": {
+     "n": 2000,
+     "ever": 0.9965,
+     "ever_ci": [
+      0.9927928037074906,
+      0.9983035683122518
+     ],
+     "by": 0.413,
+     "by_ci": [
+      0.39160803748080836,
+      0.43472552875138176
+     ],
+     "median_day": 286.0,
+     "median_ci": [
+      279.0,
+      302.0
+     ],
+     "median_day_among_detected": 285.0
+    },
+    "kupiec_calibrated": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.8145,
+     "by_ci": [
+      0.7968674174212965,
+      0.830926759819809
+     ],
+     "median_day": 130.0,
+     "median_ci": [
+      124.0,
+      135.0
+     ],
+     "median_day_among_detected": 130.0
+    },
+    "cusum_calibrated": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.765,
+     "by_ci": [
+      0.7459206265014151,
+      0.7830633384235228
+     ],
+     "median_day": 165.0,
+     "median_ci": [
+      159.0,
+      172.0
+     ],
+     "median_day_among_detected": 165.0
+    },
+    "traffic_light": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.972,
+     "by_ci": [
+      0.9638155172418977,
+      0.978374790096105
+     ],
+     "median_day": 250.0,
+     "median_ci": [
+      250.0,
+      250.0
+     ],
+     "median_day_among_detected": 250.0
+    },
+    "independence_trailing": {
+     "n": 2000,
+     "ever": 0.1715,
+     "ever_ci": [
+      0.15561353000691724,
+      0.18864597007669737
+     ],
+     "by": 0.017,
+     "by_ci": [
+      0.012190680490094124,
+      0.023661187212754797
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 576.0
+    },
+    "kupiec_one_shot": {
+     "n": 2000,
+     "ever": 0.871,
+     "ever_ci": [
+      0.8555951251443501,
+      0.884982425750563
+     ]
+    }
+   }
+  },
+  "rate-x6": {
+   "kind": "rate",
+   "params": {
+    "rate_factor": 6.0
+   },
+   "tag": 5,
+   "mean_hits": 60.139,
+   "methods": {
+    "e_rate": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.9825,
+     "by_ci": [
+      0.9757598022716678,
+      0.9873902470727947
+     ],
+     "median_day": 60.0,
+     "median_ci": [
+      58.0,
+      62.0
+     ],
+     "median_day_among_detected": 60.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.0115,
+      "se": 0.002384684121467576
+     }
+    },
+    "e_rate_upper": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.9875,
+     "by_ci": [
+      0.9816119602342488,
+      0.9915189186370994
+     ],
+     "median_day": 58.0,
+     "median_ci": [
+      56.0,
+      60.0
+     ],
+     "median_day_among_detected": 58.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.0065,
+      "se": 0.0019315124566476635
+     }
+    },
+    "e_cluster": {
+     "n": 2000,
+     "ever": 0.528,
+     "ever_ci": [
+      0.506088561032731,
+      0.5498040843178285
+     ],
+     "by": 0.1655,
+     "by_ci": [
+      0.14985708426384262,
+      0.18242542038750928
+     ],
+     "median_day": 929.5,
+     "median_ci": [
+      876.0,
+      980.0
+     ],
+     "median_day_among_detected": 438.5
+    },
+    "e_battery": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.9755,
+     "by_ci": [
+      0.9677585182485842,
+      0.9814183697582386
+     ],
+     "median_day": 74.0,
+     "median_ci": [
+      72.0,
+      77.0
+     ],
+     "median_day_among_detected": 74.0
+    },
+    "e_sprt3": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.993,
+     "by_ci": [
+      0.9882841373901734,
+      0.9958256539607488
+     ],
+     "median_day": 62.0,
+     "median_ci": [
+      60.0,
+      64.0
+     ],
+     "median_day_among_detected": 62.0
+    },
+    "e_wwz": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.9395,
+     "by_ci": [
+      0.9281849046541709,
+      0.9491300107590753
+     ],
+     "median_day": 129.0,
+     "median_ci": [
+      126.0,
+      131.0
+     ],
+     "median_day_among_detected": 129.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.0545,
+      "se": 0.005077180702116181
+     }
+    },
+    "e_beta": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.9575,
+     "by_ci": [
+      0.9477470813633823,
+      0.9654988203466522
+     ],
+     "median_day": 79.0,
+     "median_ci": [
+      70.0,
+      85.0
+     ],
+     "median_day_among_detected": 79.0
+    },
+    "kupiec_trailing": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.994,
+     "by_ci": [
+      0.9895415516184916,
+      0.9965644056378078
+     ],
+     "median_day": 250.0,
+     "median_ci": [
+      250.0,
+      250.0
+     ],
+     "median_day_among_detected": 250.0
+    },
+    "kupiec_cumulative": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.997,
+     "by_ci": [
+      0.9934700848880005,
+      0.9986243700844304
+     ],
+     "median_day": 50.0,
+     "median_ci": [
+      50.0,
+      50.0
+     ],
+     "median_day_among_detected": 50.0
+    },
+    "kupiec_sidak": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.88,
+     "by_ci": [
+      0.8650247372527042,
+      0.893518306790603
+     ],
+     "median_day": 132.0,
+     "median_ci": [
+      126.0,
+      140.0
+     ],
+     "median_day_among_detected": 132.0
+    },
+    "kupiec_calibrated": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.987,
+     "by_ci": [
+      0.9810196914270056,
+      0.9911131044916538
+     ],
+     "median_day": 62.5,
+     "median_ci": [
+      61.0,
+      64.0
+     ],
+     "median_day_among_detected": 62.5
+    },
+    "cusum_calibrated": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 0.9775,
+     "by_ci": [
+      0.970027095263359,
+      0.983142124554218
+     ],
+     "median_day": 94.0,
+     "median_ci": [
+      93.0,
+      97.0
+     ],
+     "median_day_among_detected": 94.0
+    },
+    "traffic_light": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 1.0,
+     "by_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "median_day": 250.0,
+     "median_ci": [
+      250.0,
+      250.0
+     ],
+     "median_day_among_detected": 250.0
+    },
+    "independence_trailing": {
+     "n": 2000,
+     "ever": 0.3145,
+     "ever_ci": [
+      0.2945228256816585,
+      0.335188398870885
+     ],
+     "by": 0.025,
+     "by_ci": [
+      0.019014423463091817,
+      0.0328067714827741
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 571.0
+    },
+    "kupiec_one_shot": {
+     "n": 2000,
+     "ever": 0.994,
+     "ever_ci": [
+      0.9895415516184916,
+      0.9965644056378078
+     ]
+    }
+   }
+  },
+  "rate-x10": {
+   "kind": "rate",
+   "params": {
+    "rate_factor": 10.0
+   },
+   "tag": 6,
+   "mean_hits": 99.573,
+   "methods": {
+    "e_rate": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 1.0,
+     "by_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "median_day": 27.0,
+     "median_ci": [
+      26.0,
+      28.0
+     ],
+     "median_day_among_detected": 27.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.0,
+      "se": 0.0
+     }
+    },
+    "e_rate_upper": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 1.0,
+     "by_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "median_day": 27.0,
+     "median_ci": [
+      26.0,
+      28.0
+     ],
+     "median_day_among_detected": 27.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.0,
+      "se": 0.0
+     }
+    },
+    "e_cluster": {
+     "n": 2000,
+     "ever": 0.965,
+     "ever_ci": [
+      0.9560127151061829,
+      0.9722044308941798
+     ],
+     "by": 0.4905,
+     "by_ci": [
+      0.4686301068232789,
+      0.5124063170756384
+     ],
+     "median_day": 257.0,
+     "median_ci": [
+      245.0,
+      267.5
+     ],
+     "median_day_among_detected": 247.0
+    },
+    "e_battery": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 1.0,
+     "by_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "median_day": 34.0,
+     "median_ci": [
+      33.0,
+      36.0
+     ],
+     "median_day_among_detected": 34.0
+    },
+    "e_sprt3": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 1.0,
+     "by_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "median_day": 36.0,
+     "median_ci": [
+      35.0,
+      37.5
+     ],
+     "median_day_among_detected": 36.0
+    },
+    "e_wwz": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 1.0,
+     "by_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "median_day": 67.0,
+     "median_ci": [
+      66.0,
+      69.0
+     ],
+     "median_day_among_detected": 67.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.0,
+      "se": 0.0
+     }
+    },
+    "e_beta": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 1.0,
+     "by_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "median_day": 25.0,
+     "median_ci": [
+      23.0,
+      28.0
+     ],
+     "median_day_among_detected": 25.0
+    },
+    "kupiec_trailing": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 1.0,
+     "by_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "median_day": 250.0,
+     "median_ci": [
+      250.0,
+      250.0
+     ],
+     "median_day_among_detected": 250.0
+    },
+    "kupiec_cumulative": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 1.0,
+     "by_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "median_day": 50.0,
+     "median_ci": [
+      50.0,
+      50.0
+     ],
+     "median_day_among_detected": 50.0
+    },
+    "kupiec_sidak": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 1.0,
+     "by_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "median_day": 57.0,
+     "median_ci": [
+      56.0,
+      59.0
+     ],
+     "median_day_among_detected": 57.0
+    },
+    "kupiec_calibrated": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 1.0,
+     "by_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "median_day": 50.0,
+     "median_ci": [
+      50.0,
+      50.0
+     ],
+     "median_day_among_detected": 50.0
+    },
+    "cusum_calibrated": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 1.0,
+     "by_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "median_day": 49.0,
+     "median_ci": [
+      47.0,
+      50.0
+     ],
+     "median_day_among_detected": 49.0
+    },
+    "traffic_light": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "by": 1.0,
+     "by_ci": [
+      0.9980829526885622,
+      1.0
+     ],
+     "median_day": 250.0,
+     "median_ci": [
+      250.0,
+      250.0
+     ],
+     "median_day_among_detected": 250.0
+    },
+    "independence_trailing": {
+     "n": 2000,
+     "ever": 0.6975,
+     "ever_ci": [
+      0.6770060071495067,
+      0.7172367591624754
+     ],
+     "by": 0.0745,
+     "by_ci": [
+      0.06378984985459471,
+      0.08684155740743885
+     ],
+     "median_day": 667.0,
+     "median_ci": [
+      640.5,
+      702.0
+     ],
+     "median_day_among_detected": 489.0
+    },
+    "kupiec_one_shot": {
+     "n": 2000,
+     "ever": 1.0,
+     "ever_ci": [
+      0.9980829526885622,
+      1.0
+     ]
+    }
+   }
+  },
+  "cluster-0.1": {
+   "kind": "cluster",
+   "params": {
+    "cluster": 0.1
+   },
+   "tag": 7,
+   "mean_hits": 10.1605,
+   "methods": {
+    "e_rate": {
+     "n": 2000,
+     "ever": 0.0485,
+     "ever_ci": [
+      0.03992009338151942,
+      0.05881100034070892
+     ],
+     "by": 0.0305,
+     "by_ci": [
+      0.02381739544380345,
+      0.03898271198163664
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 100.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.0965,
+      "se": 0.0077216375752441075
+     }
+    },
+    "e_rate_upper": {
+     "n": 2000,
+     "ever": 0.052,
+     "ever_ci": [
+      0.043099720145654614,
+      0.06261795424539364
+     ],
+     "by": 0.0365,
+     "by_ci": [
+      0.029129752228693392,
+      0.045647350629009445
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 95.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.0905,
+      "se": 0.007854025583032529
+     }
+    },
+    "e_cluster": {
+     "n": 2000,
+     "ever": 0.2545,
+     "ever_ci": [
+      0.23589336055728863,
+      0.2740479096726274
+     ],
+     "by": 0.036,
+     "by_ci": [
+      0.028684606671435086,
+      0.045094413233579184
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 569.0
+    },
+    "e_battery": {
+     "n": 2000,
+     "ever": 0.228,
+     "ever_ci": [
+      0.2101447424984472,
+      0.24689813123897494
+     ],
+     "by": 0.047,
+     "by_ci": [
+      0.038561402304932525,
+      0.05717544255923012
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 516.0
+    },
+    "e_sprt3": {
+     "n": 2000,
+     "ever": 0.063,
+     "ever_ci": [
+      0.05316689945781889,
+      0.07450859989237776
+     ],
+     "by": 0.0425,
+     "by_ci": [
+      0.03450117965334778,
+      0.052252918636617816
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 169.5
+    },
+    "e_wwz": {
+     "n": 2000,
+     "ever": 0.012,
+     "ever_ci": [
+      0.008077154251085943,
+      0.017793883924877355
+     ],
+     "by": 0.0025,
+     "by_ci": [
+      0.0010683087216490366,
+      0.005839153353231581
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 466.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.1245,
+      "se": 0.007384249357198377
+     }
+    },
+    "e_beta": {
+     "n": 2000,
+     "ever": 0.028,
+     "ever_ci": [
+      0.021625209903895083,
+      0.0361844827581022
+     ],
+     "by": 0.0255,
+     "by_ci": [
+      0.019447915782887765,
+      0.03337136211566671
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 7.0
+    },
+    "kupiec_trailing": {
+     "n": 2000,
+     "ever": 0.7545,
+     "ever_ci": [
+      0.7351618533850374,
+      0.7728623695334406
+     ],
+     "by": 0.127,
+     "by_ci": [
+      0.11311861177351555,
+      0.14231150552081703
+     ],
+     "median_day": 583.0,
+     "median_ci": [
+      558.0,
+      613.5
+     ],
+     "median_day_among_detected": 459.0
+    },
+    "kupiec_cumulative": {
+     "n": 2000,
+     "ever": 0.4205,
+     "ever_ci": [
+      0.39903831640808307,
+      0.4422664941144355
+     ],
+     "by": 0.276,
+     "by_ci": [
+      0.25685248159799495,
+      0.29600635559752925
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 192.0
+    },
+    "kupiec_sidak": {
+     "n": 2000,
+     "ever": 0.004,
+     "ever_ci": [
+      0.002028246596492413,
+      0.007873464336453893
+     ],
+     "by": 0.0025,
+     "by_ci": [
+      0.0010683087216490366,
+      0.005839153353231581
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 140.5
+    },
+    "kupiec_calibrated": {
+     "n": 2000,
+     "ever": 0.09,
+     "ever_ci": [
+      0.07823115151980208,
+      0.1033408272755769
+     ],
+     "by": 0.0285,
+     "by_ci": [
+      0.02206251601008832,
+      0.03674525960459753
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 380.0
+    },
+    "cusum_calibrated": {
+     "n": 2000,
+     "ever": 0.1135,
+     "ever_ci": [
+      0.10033274057744598,
+      0.12814913699429545
+     ],
+     "by": 0.0185,
+     "by_ci": [
+      0.013451349780506838,
+      0.02539476678040777
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 550.0
+    },
+    "traffic_light": {
+     "n": 2000,
+     "ever": 0.6285,
+     "ever_ci": [
+      0.6070954991254006,
+      0.6494118197155597
+     ],
+     "by": 0.1335,
+     "by_ci": [
+      0.11929443352088881,
+      0.14911076215839508
+     ],
+     "median_day": 729.0,
+     "median_ci": [
+      689.9875,
+      771.0
+     ],
+     "median_day_among_detected": 436.0
+    },
+    "independence_trailing": {
+     "n": 2000,
+     "ever": 0.5745,
+     "ever_ci": [
+      0.5527090360923088,
+      0.596005323858287
+     ],
+     "by": 0.1445,
+     "by_ci": [
+      0.1297721181932005,
+      0.16059090244523172
+     ],
+     "median_day": 816.0,
+     "median_ci": [
+      764.4875,
+      868.0
+     ],
+     "median_day_among_detected": 414.0
+    },
+    "kupiec_one_shot": {
+     "n": 2000,
+     "ever": 0.127,
+     "ever_ci": [
+      0.11311861177351555,
+      0.14231150552081703
+     ]
+    }
+   }
+  },
+  "cluster-0.2": {
+   "kind": "cluster",
+   "params": {
+    "cluster": 0.2
+   },
+   "tag": 8,
+   "mean_hits": 9.9575,
+   "methods": {
+    "e_rate": {
+     "n": 2000,
+     "ever": 0.069,
+     "ever_ci": [
+      0.05869826972271476,
+      0.08095422505974463
+     ],
+     "by": 0.042,
+     "by_ci": [
+      0.03405161468570378,
+      0.05170440065157325
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 170.5,
+     "power_cost_vs_one_shot": {
+      "mean": 0.117,
+      "se": 0.008437481587996142
+     }
+    },
+    "e_rate_upper": {
+     "n": 2000,
+     "ever": 0.074,
+     "ever_ci": [
+      0.06332620145703995,
+      0.08630712285230506
+     ],
+     "by": 0.054,
+     "by_ci": [
+      0.044922154810504406,
+      0.06478785139129811
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 119.5,
+     "power_cost_vs_one_shot": {
+      "mean": 0.105,
+      "se": 0.00863277257786805
+     }
+    },
+    "e_cluster": {
+     "n": 2000,
+     "ever": 0.538,
+     "ever_ci": [
+      0.516098297025052,
+      0.5597560073792787
+     ],
+     "by": 0.121,
+     "by_ci": [
+      0.1074288993815465,
+      0.13602422248052337
+     ],
+     "median_day": 915.5,
+     "median_ci": [
+      882.9625,
+      966.5124999999999
+     ],
+     "median_day_among_detected": 507.0
+    },
+    "e_battery": {
+     "n": 2000,
+     "ever": 0.516,
+     "ever_ci": [
+      0.49408846792338007,
+      0.537850186562654
+     ],
+     "by": 0.127,
+     "by_ci": [
+      0.11311861177351555,
+      0.14231150552081703
+     ],
+     "median_day": 956.0,
+     "median_ci": [
+      909.5,
+      null
+     ],
+     "median_day_among_detected": 480.0
+    },
+    "e_sprt3": {
+     "n": 2000,
+     "ever": 0.0835,
+     "ever_ci": [
+      0.07215988191574532,
+      0.09643701849468236
+     ],
+     "by": 0.058,
+     "by_ci": [
+      0.04857807138595776,
+      0.06911659843735327
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 171.0
+    },
+    "e_wwz": {
+     "n": 2000,
+     "ever": 0.017,
+     "ever_ci": [
+      0.012190680490094124,
+      0.023661187212754797
+     ],
+     "by": 0.005,
+     "by_ci": [
+      0.0027181808458108104,
+      0.009179695992512617
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 377.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.154,
+      "se": 0.008073077931845252
+     }
+    },
+    "e_beta": {
+     "n": 2000,
+     "ever": 0.036,
+     "ever_ci": [
+      0.028684606671435086,
+      0.045094413233579184
+     ],
+     "by": 0.031,
+     "by_ci": [
+      0.024257462094805032,
+      0.039540728283323626
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 18.0
+    },
+    "kupiec_trailing": {
+     "n": 2000,
+     "ever": 0.833,
+     "ever_ci": [
+      0.8160187381443558,
+      0.8487045083462266
+     ],
+     "by": 0.159,
+     "by_ci": [
+      0.14362957539356916,
+      0.17567785087283141
+     ],
+     "median_day": 510.5,
+     "median_ci": [
+      487.0,
+      530.0
+     ],
+     "median_day_among_detected": 432.0
+    },
+    "kupiec_cumulative": {
+     "n": 2000,
+     "ever": 0.5035,
+     "ever_ci": [
+      0.4816017762467663,
+      0.5253848044220535
+     ],
+     "by": 0.3425,
+     "by_ci": [
+      0.3220221794740425,
+      0.36358169042906047
+     ],
+     "median_day": 939.0,
+     "median_ci": [
+      776.0,
+      null
+     ],
+     "median_day_among_detected": 192.0
+    },
+    "kupiec_sidak": {
+     "n": 2000,
+     "ever": 0.0075,
+     "ever_ci": [
+      0.004550377418218274,
+      0.012337914183547963
+     ],
+     "by": 0.0035,
+     "by_ci": [
+      0.0016964316877482637,
+      0.007207196292509477
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 306.0
+    },
+    "kupiec_calibrated": {
+     "n": 2000,
+     "ever": 0.1335,
+     "ever_ci": [
+      0.11929443352088881,
+      0.14911076215839508
+     ],
+     "by": 0.0405,
+     "by_ci": [
+      0.03270494325926558,
+      0.050056823219945756
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 380.0
+    },
+    "cusum_calibrated": {
+     "n": 2000,
+     "ever": 0.182,
+     "ever_ci": [
+      0.16570477045841067,
+      0.19951447163166372
+     ],
+     "by": 0.036,
+     "by_ci": [
+      0.028684606671435086,
+      0.045094413233579184
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 518.5
+    },
+    "traffic_light": {
+     "n": 2000,
+     "ever": 0.624,
+     "ever_ci": [
+      0.6025528114515051,
+      0.6449717608152583
+     ],
+     "by": 0.141,
+     "by_ci": [
+      0.12643487608710546,
+      0.1569415638825068
+     ],
+     "median_day": 747.5,
+     "median_ci": [
+      704.5,
+      789.0249999999999
+     ],
+     "median_day_among_detected": 433.0
+    },
+    "independence_trailing": {
+     "n": 2000,
+     "ever": 0.786,
+     "ever_ci": [
+      0.7674863234984229,
+      0.8034171254394348
+     ],
+     "by": 0.2825,
+     "by_ci": [
+      0.26320028052753475,
+      0.3026336350529406
+     ],
+     "median_day": 479.5,
+     "median_ci": [
+      453.5,
+      509.0
+     ],
+     "median_day_among_detected": 356.0
+    },
+    "kupiec_one_shot": {
+     "n": 2000,
+     "ever": 0.159,
+     "ever_ci": [
+      0.14362957539356916,
+      0.17567785087283141
+     ]
+    }
+   }
+  },
+  "cluster-0.4": {
+   "kind": "cluster",
+   "params": {
+    "cluster": 0.4
+   },
+   "tag": 9,
+   "mean_hits": 10.0755,
+   "methods": {
+    "e_rate": {
+     "n": 2000,
+     "ever": 0.1855,
+     "ever_ci": [
+      0.16907324018019093,
+      0.20313258257870342
+     ],
+     "by": 0.1065,
+     "by_ci": [
+      0.09372694280706892,
+      0.12078177342703261
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 184.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.193,
+      "se": 0.010974320838162582
+     }
+    },
+    "e_rate_upper": {
+     "n": 2000,
+     "ever": 0.167,
+     "ever_ci": [
+      0.15129549165377335,
+      0.1839812618556442
+     ],
+     "by": 0.118,
+     "by_ci": [
+      0.1045882356818641,
+      0.13287638846407437
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 119.5,
+     "power_cost_vs_one_shot": {
+      "mean": 0.1815,
+      "se": 0.011150831606779888
+     }
+    },
+    "e_cluster": {
+     "n": 2000,
+     "ever": 0.782,
+     "ever_ci": [
+      0.7633734087545351,
+      0.799545376561814
+     ],
+     "by": 0.265,
+     "by_ci": [
+      0.24612187849365583,
+      0.2847791337427199
+     ],
+     "median_day": 502.0,
+     "median_ci": [
+      476.0,
+      525.5
+     ],
+     "median_day_among_detected": 379.0
+    },
+    "e_battery": {
+     "n": 2000,
+     "ever": 0.7985,
+     "ever_ci": [
+      0.7803557365626509,
+      0.8154997861924208
+     ],
+     "by": 0.2655,
+     "by_ci": [
+      0.246609304318363,
+      0.28528979087070144
+     ],
+     "median_day": 501.5,
+     "median_ci": [
+      474.0,
+      524.5
+     ],
+     "median_day_among_detected": 387.0
+    },
+    "e_sprt3": {
+     "n": 2000,
+     "ever": 0.1885,
+     "ever_ci": [
+      0.1719623122888599,
+      0.20623200818616583
+     ],
+     "by": 0.1255,
+     "by_ci": [
+      0.11169516269510663,
+      0.14074070574116024
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 166.0
+    },
+    "e_wwz": {
+     "n": 2000,
+     "ever": 0.07,
+     "ever_ci": [
+      0.05962257599513407,
+      0.08202608469270245
+     ],
+     "by": 0.0285,
+     "by_ci": [
+      0.02206251601008832,
+      0.03674525960459753
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 314.0,
+     "power_cost_vs_one_shot": {
+      "mean": 0.271,
+      "se": 0.009991467094844162
+     }
+    },
+    "e_beta": {
+     "n": 2000,
+     "ever": 0.1045,
+     "ever_ci": [
+      0.0918428404245469,
+      0.1186735439988004
+     ],
+     "by": 0.085,
+     "by_ci": [
+      0.07355910072851175,
+      0.09803204853998164
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 47.0
+    },
+    "kupiec_trailing": {
+     "n": 2000,
+     "ever": 0.949,
+     "ever_ci": [
+      0.9384684613684584,
+      0.9578100301458703
+     ],
+     "by": 0.2995,
+     "by_ci": [
+      0.2798258589330141,
+      0.3199428770388724
+     ],
+     "median_day": 357.0,
+     "median_ci": [
+      342.0,
+      372.0
+     ],
+     "median_day_among_detected": 340.0
+    },
+    "kupiec_cumulative": {
+     "n": 2000,
+     "ever": 0.708,
+     "ever_ci": [
+      0.6876894061479754,
+      0.7275131021704665
+     ],
+     "by": 0.506,
+     "by_ci": [
+      0.4840980215573364,
+      0.5278789738749264
+     ],
+     "median_day": 236.0,
+     "median_ci": [
+      192.0,
+      315.5
+     ],
+     "median_day_among_detected": 192.0
+    },
+    "kupiec_sidak": {
+     "n": 2000,
+     "ever": 0.045,
+     "ever_ci": [
+      0.036753816986003295,
+      0.05499069606740511
+     ],
+     "by": 0.024,
+     "by_ci": [
+      0.018149556663450077,
+      0.031675472377038716
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 237.0
+    },
+    "kupiec_calibrated": {
+     "n": 2000,
+     "ever": 0.3125,
+     "ever_ci": [
+      0.29256179047149905,
+      0.3331571022702901
+     ],
+     "by": 0.1045,
+     "by_ci": [
+      0.0918428404245469,
+      0.1186735439988004
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 380.0
+    },
+    "cusum_calibrated": {
+     "n": 2000,
+     "ever": 0.386,
+     "ever_ci": [
+      0.36490198545806674,
+      0.4075351013289411
+     ],
+     "by": 0.1085,
+     "by_ci": [
+      0.09561252712452645,
+      0.12288852092032934
+     ],
+     "median_day": null,
+     "median_ci": [
+      null,
+      null
+     ],
+     "median_day_among_detected": 424.5
+    },
+    "traffic_light": {
+     "n": 2000,
+     "ever": 0.683,
+     "ever_ci": [
+      0.6622730937481798,
+      0.7030252669358341
+     ],
+     "by": 0.186,
+     "by_ci": [
+      0.169554636985499,
+      0.2036492687260839
+     ],
+     "median_day": 621.5,
+     "median_ci": [
+      586.5,
+      660.5
+     ],
+     "median_day_among_detected": 408.0
+    },
+    "independence_trailing": {
+     "n": 2000,
+     "ever": 0.916,
+     "ever_ci": [
+      0.9030311780167277,
+      0.927373838620156
+     ],
+     "by": 0.4355,
+     "by_ci": [
+      0.4139141649654984,
+      0.45733313413767707
+     ],
+     "median_day": 303.0,
+     "median_ci": [
+      281.9875,
+      319.01249999999993
+     ],
+     "median_day_among_detected": 266.5
+    },
+    "kupiec_one_shot": {
+     "n": 2000,
+     "ever": 0.2995,
+     "ever_ci": [
+      0.2798258589330141,
+      0.3199428770388724
+     ]
+    }
+   }
+  }
+ }
+}

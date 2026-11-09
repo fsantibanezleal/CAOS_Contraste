@@ -73,9 +73,9 @@ def fit_width() -> None:
     """Wrap the tabular of every generated table in a box that shrinks it to the text width when it is wider."""
     for f in HERE.glob("ccr-t-*.tex"):
         s = f.read_text(encoding="utf-8")
-        if "\\resizebox" in s:
+        if "\\resizebox" in s or "\\fitwidth" in s:
             continue
-        s = s.replace("\\begin{tabular}", "\\resizebox{\\ifdim\\width>\\textwidth\\textwidth\\else\\width\\fi}{!}{%\n\\begin{tabular}", 1)
+        s = s.replace("\\begin{tabular}", "\\fitwidth{%\n\\begin{tabular}", 1)
         s = s.replace("\\end{tabular}", "\\end{tabular}}", 1)
         f.write_text(s, encoding="utf-8", newline="\n")
 
@@ -278,6 +278,12 @@ def table_regulatory() -> None:
     macro("RcCsa", n0(c10["sa_ccr"]["rc"]["amount"]))
     macro("EadCsaImDiff", n0(c10["sa_ccr"]["ead"]["amount"] - im["sa_ccr"]["ead"]["amount"]))
     macro("AlphaRcCsa", n0(1.4 * c10["sa_ccr"]["rc"]["amount"]))
+    # with initial margin: C is the variation margin plus the NICA (CRE52.10, CRE52.17), so the multiplier falls below 1
+    macro("MultIm", f"{im['sa_ccr']['multiplier']:.4f}")
+    macro("CIm", n0(im["sa_ccr"]["c"]["amount"]))
+    macro("RcIm", n0(im["sa_ccr"]["rc"]["amount"]))
+    macro("EadMultDiff", n0(c10["sa_ccr"]["ead"]["amount"] - im["sa_ccr"]["ead"]["amount"]
+                            - 1.4 * (c10["sa_ccr"]["rc"]["amount"] - im["sa_ccr"]["rc"]["amount"])))
     mf = {t["trade_id"]: t["maturity_factor"] for t in c10["sa_ccr"]["trades"]}
     macro("MaturityFactorCsa", f"{next(iter(mf.values())):.4f}")
 

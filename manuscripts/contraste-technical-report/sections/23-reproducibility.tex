@@ -1,5 +1,17 @@
-% Written by unit TR-13.
+% Written by unit TR-13. Numbers: tables/make_results.py (results-numbers.tex, results-versions.tex).
 \section{Reproducibility}
 \label{sec:reproducibility}
 
-% TEXT
+The source code, the committed artifacts and the scripts that rebuild every table and figure are in the repository \url{https://github.com/fsantibanezleal/CAOS_Contraste}, at release \rsProductVersion{}; the engine is
+\url{https://github.com/fsantibanezleal/CAOS_RiskValidation}, published on PyPI as \texttt{riskvalidation} \rsEngineRv{}, and the pipeline version recorded in every artifact is \rsEnginePipeline{}.
+
+\paragraph{Commands.} From the repository root, with the pipeline environment installed from the pinned requirements (\cref{tab:repro-versions}), the sources are fetched with
+\texttt{python data-pipeline/fetch.py <source ids> --data-root <data root>} and a case is baked with \texttt{python data-pipeline/run.py <case> --seed N --output <sandbox> --data-root <data root>}; without \texttt{--output} the committed artifacts of \texttt{data/derived} are rewritten, and the same seed
+writes the same bytes on any device. The tables and macros of this report are rebuilt by \texttt{tables/make\_<section>.py}, one script for each section of the methods and \texttt{tables/make\_results.py} for the framing sections, and the figures by \texttt{figures/make\_<section>.py}, all run from the
+repository root and all reading \texttt{data/derived}; the document is built with \texttt{pdflatex}, \texttt{bibtex} and two further passes of \texttt{pdflatex} from \texttt{manuscripts/contraste-technical-report}. The tests are \texttt{pytest tests} for the Python side and \texttt{npm test} in \texttt{frontend/} for the web.
+
+\paragraph{Versions and seeds.} The runtimes are Python \rsPythonDev{} on the workstation and \rsPythonCi{} in continuous integration, and Node \rsNodeDev{} on the workstation and \rsNodeCi{} in continuous integration. \Cref{tab:repro-versions} lists the pinned versions of the packages that produce the artifacts; a repository check fails when a pin and the technology matrix of the design disagree. The seed is \rsSeedDefault{} for \rsSeedDefaultCases{} of the \rsCasesResult{} cases (\cref{tab:protocol-cases}), the repetitions of a simulation draw independent random streams, and the thread counts of the numerical libraries are pinned to four so that the summation order does not depend on the machine.
+
+\input{tables/results-versions}
+
+\paragraph{Data and artifacts.} The raw data go to the device's data root, named by the environment variable \texttt{CONTRASTE\_DATA} or the argument \texttt{--data-root}, and never into the repository; the sources, their licence classes and their digests are in \cref{tab:data-sources} and in the licence manifest. The artifacts that the report reads are committed under \texttt{data/derived}. The governance folder carries a checksum file with \rsShaEntries{} entries, and \rsShaMatching{} of them match the files at the time the tables were built; the SHA-256 digest of the findings register is \texttt{\rsShaFindings{}}, which \rsShaFindingsMatch{} the digest listed in the file. The bakes ran on the device described in Section~\ref{sec:protocol}, with the run times of \cref{tab:protocol-resources}.

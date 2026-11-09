@@ -1,0 +1,288 @@
+{
+  "source": "BCBS, Basel Framework CRE99.2 to CRE99.3, Table 1 'Illustrative IRB risk weights for UL', in force 2023-01-01, published 2020-03-27, https://www.bis.org/committees/bcbs/basel-framework/standard/cre/99/inforce/2023-01-01/published/2020-03-27",
+  "retrieved": "2026-10-05",
+  "note": "Risk weights for unexpected loss, RW = 12.5 K, in percent, at M = 2.5 where a maturity adjustment applies. The column assumptions (LGD, sales) were established by recomputing every cell with the CRE31 functions; the page's own labels are images and a text extraction garbled them.",
+  "columns": [
+    {
+      "id": "corp_s50",
+      "asset_class": "corporate",
+      "lgd": 0.4,
+      "sales_eur_m": 50,
+      "maturity": 2.5
+    },
+    {
+      "id": "corp_s5",
+      "asset_class": "corporate",
+      "lgd": 0.4,
+      "sales_eur_m": 5,
+      "maturity": 2.5
+    },
+    {
+      "id": "mortgage_45",
+      "asset_class": "residential_mortgage",
+      "lgd": 0.45
+    },
+    {
+      "id": "mortgage_25",
+      "asset_class": "residential_mortgage",
+      "lgd": 0.25
+    },
+    {
+      "id": "other_45",
+      "asset_class": "other_retail",
+      "lgd": 0.45
+    },
+    {
+      "id": "other_85",
+      "asset_class": "other_retail",
+      "lgd": 0.85
+    },
+    {
+      "id": "qrre_50",
+      "asset_class": "qrre",
+      "lgd": 0.5
+    },
+    {
+      "id": "qrre_85",
+      "asset_class": "qrre",
+      "lgd": 0.85
+    }
+  ],
+  "rows": [
+    {
+      "pd": 0.0005,
+      "rw_pct": [
+        17.47,
+        13.69,
+        6.23,
+        3.46,
+        6.63,
+        12.52,
+        1.68,
+        2.86
+      ]
+    },
+    {
+      "pd": 0.001,
+      "rw_pct": [
+        26.36,
+        20.71,
+        10.69,
+        5.94,
+        11.16,
+        21.08,
+        3.01,
+        5.12
+      ]
+    },
+    {
+      "pd": 0.0025,
+      "rw_pct": [
+        43.97,
+        34.68,
+        21.3,
+        11.83,
+        21.15,
+        39.96,
+        6.4,
+        10.88
+      ]
+    },
+    {
+      "pd": 0.004,
+      "rw_pct": [
+        55.75,
+        43.99,
+        29.94,
+        16.64,
+        28.42,
+        53.69,
+        9.34,
+        15.88
+      ]
+    },
+    {
+      "pd": 0.005,
+      "rw_pct": [
+        61.88,
+        48.81,
+        35.08,
+        19.49,
+        32.36,
+        61.13,
+        11.16,
+        18.97
+      ]
+    },
+    {
+      "pd": 0.0075,
+      "rw_pct": [
+        73.58,
+        57.91,
+        46.46,
+        25.81,
+        40.1,
+        75.74,
+        15.33,
+        26.06
+      ]
+    },
+    {
+      "pd": 0.01,
+      "rw_pct": [
+        82.06,
+        64.35,
+        56.4,
+        31.33,
+        45.77,
+        86.46,
+        19.14,
+        32.53
+      ]
+    },
+    {
+      "pd": 0.013,
+      "rw_pct": [
+        89.73,
+        70.02,
+        67.0,
+        37.22,
+        50.8,
+        95.95,
+        23.35,
+        39.7
+      ]
+    },
+    {
+      "pd": 0.015,
+      "rw_pct": [
+        93.86,
+        72.99,
+        73.45,
+        40.8,
+        53.37,
+        100.81,
+        25.99,
+        44.19
+      ]
+    },
+    {
+      "pd": 0.02,
+      "rw_pct": [
+        102.09,
+        78.71,
+        87.94,
+        48.85,
+        57.99,
+        109.53,
+        32.14,
+        54.63
+      ]
+    },
+    {
+      "pd": 0.025,
+      "rw_pct": [
+        108.58,
+        83.05,
+        100.64,
+        55.91,
+        60.9,
+        115.03,
+        37.75,
+        64.18
+      ]
+    },
+    {
+      "pd": 0.03,
+      "rw_pct": [
+        114.17,
+        86.74,
+        111.99,
+        62.22,
+        62.79,
+        118.61,
+        42.96,
+        73.03
+      ]
+    },
+    {
+      "pd": 0.04,
+      "rw_pct": [
+        124.07,
+        93.37,
+        131.63,
+        73.13,
+        65.01,
+        122.8,
+        52.4,
+        89.08
+      ]
+    },
+    {
+      "pd": 0.05,
+      "rw_pct": [
+        133.2,
+        99.79,
+        148.22,
+        82.35,
+        66.42,
+        125.45,
+        60.83,
+        103.41
+      ]
+    },
+    {
+      "pd": 0.06,
+      "rw_pct": [
+        141.88,
+        106.21,
+        162.52,
+        90.29,
+        67.73,
+        127.94,
+        68.45,
+        116.37
+      ]
+    },
+    {
+      "pd": 0.1,
+      "rw_pct": [
+        171.63,
+        130.23,
+        204.41,
+        113.56,
+        75.54,
+        142.69,
+        93.21,
+        158.47
+      ]
+    },
+    {
+      "pd": 0.15,
+      "rw_pct": [
+        196.92,
+        152.81,
+        235.72,
+        130.96,
+        88.6,
+        167.36,
+        115.43,
+        196.23
+      ]
+    },
+    {
+      "pd": 0.2,
+      "rw_pct": [
+        211.76,
+        167.48,
+        253.12,
+        140.62,
+        100.28,
+        189.41,
+        131.09,
+        222.86
+      ]
+    }
+  ],
+  "reproduction": "Recomputed with the CRE31 functions on 2026-10-05: 141 of the 144 cells reproduce to the printed two decimals; three differ by one unit in the last place (PD 0.10% other retail LGD 85%: 21.0855, printed 21.08; PD 1.30% other retail LGD 45%: 50.7945, printed 50.80; PD 1.50% mortgage LGD 45%: 73.4441, printed 73.45). The acceptance tolerance is therefore one unit of the printed precision, 0.01 percentage points."
+}

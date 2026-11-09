@@ -1,0 +1,75 @@
+\section{Related work}
+\label{sec:related-work}
+
+The work sits between three literatures: the loss distribution approach to operational risk, the statistics of extreme quantiles, and the design of simulation studies.
+We group the published methods by what they estimate and state what each assumes, what it gives and where it fails, then say where the protocol stands.
+
+\subsection{Aggregation of the annual loss}
+\label{sec:rw-aggregation}
+
+The loss distribution approach models the annual loss of a unit of measure as a random sum of a frequency and a severity, and takes its 99.9 percent quantile as capital \citep{shevchenko2010,cruz2015}.
+The compound distribution has no closed form for the severities used in practice, and three computations approximate it. Monte Carlo simulation draws the count and the severities, and its
+error at the level 0.999 decays as the inverse square root of the number of simulated years. The recursion of \citet{panjer1981} computes the probabilities of a compound sum exactly on a discretised
+severity for counts of the Poisson, binomial and negative binomial families, at a cost quadratic in the number of grid points. The Fourier computation applies the generating function of the count to the transform of
+the discretised severity and costs a log-linear number of operations \citep{shevchenko2010}. All three assume independent and identically distributed severities, independent of the count, and a grid that reaches the quantile.
+They return the quantile of a fitted model; none says how far the fitted model is from the process that produced the losses, which is the question of this work. The single loss approximation
+replaces the aggregation by the tail of the severity scaled by the expected count and is accurate for subexponential severities as the level tends to one \citep{embrechts1997,degen2010}; its study as a function of the tail index
+locates a problematic zone near an index of one \citep{degen2010}.
+
+\subsection{Severity models and heavy tails}
+\label{sec:rw-severity}
+
+Operational losses are heavy tailed, and the standard severity families are the lognormal, the Weibull and a body-tail splice in which a generalised Pareto distribution carries the excesses over a threshold.
+The generalised Pareto distribution is the limit law of the excesses over high thresholds \citep{balkema1974,pickands1975}, which is why it carries the tail in the construction of \citet{chavez2006}. The same
+authors, and \citet{neslehova2006}, show that when the tail index reaches one the severity has no mean, that the aggregate loss then has no mean, and that quantities based on the mean, and the usual
+subadditivity of the capital, fail. The generalised Pareto tail is also the family of the generator of this work, so the estimators are fitted on a model that is correct for them; that choice favours the estimators and bounds the
+measurement from below. The textbook account of the limit theory and of its use in finance and insurance is \citet{embrechts1997}; the survey of \citet{embrechts1999} presents extreme value theory as a risk management tool,
+and \citet{embrechts2014} review statistics and quantitative risk management for banking and insurance.
+
+\subsection{Estimation of the tail index and of extreme quantiles}
+\label{sec:rw-estimation}
+
+The capital depends on the tail through two parameters, the index and the scale. The index has been estimated from the largest order statistics by the estimator of \citet{hill1975}, which assumes a Pareto-type tail and is biased
+when the tail departs from it, and by that of \citet{pickands1975}, which uses three order statistics and has a large variance. Estimation of the generalised Pareto parameters by maximum likelihood on the excesses over a threshold was studied by
+\citet{smith1987}, who derives its large-sample behaviour, and by \citet{davison1990}, who treat the choice of the threshold and covariates; \citet{drees2004} study the asymptotics of the maximum likelihood estimator of the extreme value index
+under second-order conditions, and \citet{dehaan2006} give the theory of extreme quantile estimation from which the dependence of the error on the level follows. In samples of operational-loss size the maximum likelihood estimator has known difficulties.
+\citet{hosking1987} compare moment, probability weighted moment and maximum likelihood estimators of the parameters and quantiles of the generalised Pareto distribution in small samples; \citet{grimshaw1993} gives an algorithm that
+computes the maximum likelihood estimates reliably, which is the reduction used by the engine of this work; and \citet{zhang2009} propose an estimator that is efficient in small samples. These studies measure the error of the parameters
+or of a quantile at a level inside or near the sample. The capital of this work is a quantile at the level 0.999 of the annual loss, an extrapolation of the order of $1/\lambda(1-\alpha)$ times beyond the typical loss, and its error is the
+object of the theory of \cref{sec:theory}.
+
+\subsection{Truncation, robust estimation and expert information}
+\label{sec:rw-truncation}
+
+A bank records only the losses above a collection threshold. \citet{mignola2007} show that fitting the recorded losses as if they were complete biases the capital, and \citet{cope2009} describe the challenges and pitfalls of measuring operational
+risk from loss data, including the threshold; the remedy is the truncated likelihood with a rescaled frequency. \citet{opdyke2012} argue that the maximum likelihood estimator of a truncated severity is hazardous and recommend robust
+estimators, in the sense of bounded influence \citep{hampel1986,huber2009}: the minimum distance estimator of the Cram\'er-von Mises statistic and the optimally bias-robust estimator, with an adjusted single loss approximation. A
+second remedy is to bring information that the losses do not hold. \citet{shevchenko2006} combine the loss data with expert scenarios by Bayesian credibility, with the expert's severity quantiles as the prior of the Pareto shape, and \citet{shevchenko2011}
+develops the approach at book length. These methods assume a correctly specified family; robustness protects against gross losses and recording errors, not against the sampling variation of an extreme quantile, and the credibility tail is only as good as the prior.
+All of them are ladders of the estimation in this work, and the measurement says how much each one contributes against a known truth.
+
+\subsection{Regulatory context and the standardised approach}
+\label{sec:rw-regulatory}
+
+The Basel Committee consulted in 2016 on a standardised measurement approach to replace the advanced approach, because of its complexity and the lack of comparability of the internal modelling practices \citep{bcbsd355}; the final text is in the
+reforms of 2017 and in the standardised approach of the Basel Framework, a product of a business indicator component and an internal loss multiplier \citep{bcbsd424,ope25}. The supervisory guidelines for the advanced approaches set the expectations that internal models had to meet \citep{bcbs196},
+and the Loss Data Collection Exercise of 2008 reported the loss statistics of the 119 banks that submitted losses \citep{bcbs160}. \citet{peters2016} ask whether the advanced approach should be replaced by the standardised approach and argue that the latter is less risk sensitive and can be unstable,
+and \citet{mignola2016} comment on the proposal. Both argue from analysis and from examples; neither runs the estimators of the loss distribution approach on independent histories of a known truth. \citet{danielsson2002} discuss the limits to risk modelling in general terms,
+which is the setting of a number that cannot be checked against what it estimates.
+
+\subsection{Simulation studies and the uncertainty of the measurement}
+\label{sec:rw-simulation}
+
+A measurement on simulated histories is a simulation study and inherits its requirements: the aims, the data-generating mechanism, the estimands, the methods and the performance measures should be stated, and the Monte Carlo error of the performance measures reported \citep{morris2019}. We follow
+that structure in \cref{sec:experimental-design}. The performance measures are sample quantiles, whose definition matters at the level of the interquartile range \citep{hyndman1996}; the uncertainty of each statistic is a percentile bootstrap interval over the histories \citep{efron1979,diciccio1996}, and the uncertainty of a share is a Wilson score interval \citep{wilson1927}.
+
+The choice of the estimand matters in such a study. Here it is a quantile of a known distribution, so the bias of an estimator is defined, and the error has no reference problem of the kind that a study on real data faces, where the target must itself be estimated. Monte Carlo error is the other requirement: the performance measures of this work are computed over 1{,}000 histories per cell, and the sampling error of the interquartile range is reported as a relative standard deviation over subsets, so that a reader can see whether a difference between two rungs exceeds the noise of the measurement.
+
+\subsection{Where the protocol stands}
+\label{sec:rw-position}
+
+The published methods give estimators and approximations and, in the extreme value literature, the large-sample theory of their error. The studies of operational risk argue instability from analysis and from calibrations of single cases. The proposed protocol adds a measurement to that body of work:
+the same engine runs every estimator on the same independent histories of a generator whose annual loss quantile is known, divides each capital by the truth, and reports the dispersion, the bias, the failures and the false conclusions about the mean with their uncertainty. It is a measurement, not a new estimator, and the theory of \cref{sec:theory}
+connects it to the large-sample results above by showing that the dispersion it measures is the one the delta method predicts.
+
+Three differences from the studies above follow. The comparison is run and not quoted: every estimator is executed on the same histories. The unit of evidence is a distribution over many histories and not a single calibration. And the measurement is paired with a theory that predicts it, so that the number of histories needed for a stability limit can be computed for a bank without repeating the simulation.

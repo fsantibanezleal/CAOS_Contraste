@@ -21,7 +21,7 @@ The union flags the missing-basis, wrong-correlation, omitted-factor and time-mi
 The components are not interchangeable.
 The rolling-mean statistic flags the wrong-correlation variant in 4.5\% and the time-misalignment variant in 42.3\%, and the absolute-value statistic flags the wrong correlation in 8.7\%; the Wald test flags the missing-basis variant in 0.9\% and the omitted-factor variant in 0.6\%, at its false-alarm rate, as Corollary~\ref{cor:noise} predicts for a basis independent of RTPL.
 On the desk with no deficiency the false-alarm rates are 0.9\% (0.5 to 1.7\%) for the union, 1.2\% for the rolling-mean statistic, 1.6\% (1.0 to 2.6\%) for the absolute-value statistic and 0.8\% for the Wald test; with 1,000 held-out desk-years the sampling standard deviation of a rate near 1\% is 0.31 percentage points, so the interval of the absolute-value statistic is compatible with its 1\% size.
-Figure~\ref{fig:detection-map} shows the table as a map: the three proposed statistics cover, jointly, the columns that each of them leaves pale.
+Figure~\ref{fig:detection-map} shows the table as a map: the three proposed statistics cover, jointly, the rows (variants) that each of them leaves pale.
 
 \begin{figure}[htbp]
 \centering
@@ -106,7 +106,8 @@ Table~\ref{tab:mis-scale} tests H5 on the no-deficiency desk with a constant def
 A mis-scale of 10\% in either direction gives a mean fitted slope of 1.111 or 0.909, the values $1/c$ of Proposition~\ref{prop:invariance}, and the Wald test flags 100.0\% of the replications; the regulatory zone flags 0.0\%, and the two rank statistics keep their false-alarm rates of 1.6\% and 1.2\%, unchanged by the rescaling.
 A mis-scale of 20 or 25\% is flagged by the zone in 16.2\% and 8.4\%, and by the Wald test in 100.0\%.
 A level error is seen by the rank statistics only when large: a shift of 0.1 standard deviations of the HPL is flagged by the Wald test in 100.0\%, by the zone in 18.2\%, by the absolute-value statistic in 26.0\% and by the rolling-mean statistic in 7.9\%, and a shift of 0.2 standard deviations by the zone in 97.3\% and by the rolling-mean statistic in 39.4\%.
-H5 holds, and the table shows the role of the regression component: the two regression components, with either covariance, are the only detectors with full power against a constant mis-scale of 10\%.
+H5 holds, and the table shows the role of the regression component: among the detectors run on these desks (all those of Table~\ref{tab:main-results}, with the Wald test on the squared series, the Ljung--Box statistic and the recalibrated regulatory statistics among them), the regressions have full power against a constant mis-scale of 10\%, the Wald test of HPL on RTPL with the HC3 covariance, the same test with the ordinary covariance and the Wald test on the squared series (100.0\% each), whereas the Kolmogorov--Smirnov distance with its threshold moved to the 1\% size flags 34.9\% of the 0.90 mis-scale and 12.1\% of the 1.10, the Ljung--Box statistic 11.3 and 11.4\%, and the other comparators at most 1.6\%.
+The squared-series regression is blind to a level error (2.8\% and 13.6\% for the two shifts), where the two regressions of the levels flag 100.0\%; and the recalibrated distance flags the mis-scales of 20 and 25\% in 100.0\%, so a constant mis-scale is not invisible to every statistic that is not a regression, only to the rank statistics.
 
 \input{tables/mis-scale}
 
@@ -116,7 +117,7 @@ H5 holds, and the table shows the role of the regression component: the two regr
 Table~\ref{tab:alt-nulls} tests H3.
 With the thresholds of the calibration null unchanged, the false-alarm rate of the union is 0.2\% when the volatility is less persistent (0.90) and 0.7\% when it is less dispersed (0.20), both at or below the stated size, and 0.3\% when the pricing noise is smaller.
 It exceeds the stated size when the volatility is more persistent or more dispersed: 4.0\% (3.0 to 5.4\%) at a persistence of 0.995 and 6.2\% (4.9 to 7.9\%) at a dispersion of 0.50, where the absolute-value statistic alone has 8.5\% (6.9 to 10.4\%).
-When the pricing noise is 30\% of the factor profit and loss the union flags 99.0\% (98.2 to 99.5\%) of desks with no deficiency, the absolute-value statistic 99.7\% and the rolling-mean statistic 63.5\%, while the Wald statistic with the HC3 covariance stays between 1.1 and 1.7\% and the Ljung--Box statistic at 1.1\% in every row.
+When the pricing noise is 30\% of the factor profit and loss the union flags 99.0\% (98.2 to 99.5\%) of desks with no deficiency, the absolute-value statistic 99.7\% and the rolling-mean statistic 63.5\%, while the Wald statistic with the HC3 covariance stays between 1.1 and 1.7\%; the Ljung--Box statistic shows 1.1\% in every row, which is not a finding about its robustness (Section~\ref{sec:discussion-reading}).
 H3 fails.
 The rank statistics read the agreement of two scales, and a larger pricing noise is a real, if benign, loss of agreement between the pricing and the risk models; the calibration null has to be the desk's own, with its own noise, as Proposition~\ref{prop:size} requires through exchangeability.
 Figure~\ref{fig:alt-null} gives the rates on a logarithmic scale.
@@ -135,8 +136,9 @@ Figure~\ref{fig:alt-null} gives the rates on a logarithmic scale.
 
 Table~\ref{tab:hypotheses} gives the outcome of each prediction.
 H1 holds by a wide margin: the union flags the stale desk in 99.9\% of replications at a held-out false-alarm rate of 0.9\%, against the criterion of 30\% at a size of at most 1\% and a refutation bound of 10\%; the lower end of its interval, 99.4\%, is far above the criterion, and the size is not above 1\% beyond its sampling interval (0.5 to 1.7\%).
-H2 holds in part.
+H2 fails.
 The Wald statistic flags the wrong-correlation variant in 100.0\% of replications, as often as the Kolmogorov--Smirnov distance alone, and the desk with no deficiency at 0.8\%; it does not flag the missing-basis variant (0.9\% against 86.7\% for the distance), for the reason of Corollary~\ref{cor:noise}.
+H2 is a conjunction of three clauses and the missing-basis clause fails by a wide margin, so the prediction as stated fails, while its wrong-correlation and no-deficiency clauses hold; Corollary~\ref{cor:noise} shows that the missing-basis clause could not hold for any regression of HPL on RTPL, so the prediction was wrongly framed for that variant.
 H3 fails, H4 holds and H5 holds, as shown above.
 
 \input{tables/hypotheses}

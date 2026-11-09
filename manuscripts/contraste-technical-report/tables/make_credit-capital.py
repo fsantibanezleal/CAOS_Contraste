@@ -206,6 +206,11 @@ def parameter_macros(D: dict) -> None:
         mocov = [e["coverage"] for c in cells for e in c["estimators"] if e["estimator"] == "moments"]
         mac(f"CovMlMin{nm}", f(min(mlcov), 3), f"{SRC}/grid-{n}.json min coverage ML")
         mac(f"CovMlMax{nm}", f(max(mlcov), 3), f"{SRC}/grid-{n}.json max coverage ML")
+        low = min(((e["coverage"], c["known_rho"], c["n_replications"]) for c in cells for e in c["estimators"]
+                   if e["estimator"] == "maximum-likelihood"), key=lambda t: t[0])
+        mac(f"CovMlMinRho{nm}", f(low[1], 2), f"{SRC}/grid-{n}.json known_rho of the minimum ML coverage")
+        mac(f"CovMlMinSe{nm}", f((0.95 - low[0]) / math.sqrt(0.95 * 0.05 / low[2]), 1),
+            f"{SRC}/grid-{n}.json shortfall of the minimum ML coverage below 0.95 in Monte Carlo standard errors")
         mac(f"CovMoMin{nm}", f(min(mocov), 3), f"{SRC}/grid-{n}.json min coverage moments")
         mac(f"CovMoMax{nm}", f(max(mocov), 3), f"{SRC}/grid-{n}.json max coverage moments")
         biasml = [e["bias"] for c in cells for e in c["estimators"] if e["estimator"] == "maximum-likelihood"]
@@ -419,16 +424,36 @@ def t_fit(D: dict) -> None:
         label="tab:cc-fit", align=P(2.6) + R(0.9) + P(3.0) + P(3.3) + P(3.3), digits=3)
 
 
+def commercial_real_estate_corporate(D: dict):
+    """The IRB capital of the commercial real estate series under the corporate curve (general, income-producing commercial real
+    estate; the reference of the case is the high-volatility class, a stricter subset) at the fitted default probability, and the
+    ratio of the large-portfolio capital at the fitted correlation to it. Registers the macros the text quotes."""
+    from riskvalidation.regulatory import irb
+
+    i = D["commercial-real-estate"]["outputs"]["irb_reference"]
+    res = irb.capital_requirement("corporate", i["pd"], i["lgd"], maturity=i["maturity"], regime=i["regime"])
+    ratio = i["ec_lhp_fitted"] / res.k
+    mac("RhoIrbCreCorp", f(res.correlation, 3), "engine irb.capital_requirement corporate at the commercial real estate fitted PD (table script)")
+    mac("RatioCreCorp", f(ratio, 2), "ec_lhp_fitted over K_IRB of the corporate curve (table script)")
+    mac("KIrbCreCorp", pct(res.k, 2), "engine irb.capital_requirement corporate at the commercial real estate fitted PD x 100 (table script)")
+    return res, ratio
+
+
 def t_irb(D: dict) -> None:
     rows = []
     for lid, _, name in LOANS:
         i = D[lid]["outputs"]["irb_reference"]
         rows.append([name, i["asset_class"].replace("_", " "), f(i["irb_correlation"], 3), f(i["fitted_correlation"], 3),
                      pct(i["k_irb"], 2), pct(i["ec_lhp_fitted"], 2), f(i["ratio_fitted_to_irb"], 2)])
+    cre, ratio_corp = commercial_real_estate_corporate(D)
+    rows.append(["Commercial real estate (corporate curve)", "corporate", f(cre.correlation, 3), f(D["commercial-real-estate"]["outputs"]["irb_reference"]["fitted_correlation"], 3),
+                 pct(cre.k, 2), pct(D["commercial-real-estate"]["outputs"]["irb_reference"]["ec_lhp_fitted"], 2), f(ratio_corp, 2)])
     tbl("irb", ["Loan type", "IRB class", "$\\rho_{\\mathrm{IRB}}$", "$\\hat\\rho$", "$K_{\\mathrm{IRB}}$ (\\%)", "$K_{\\mathrm{LHP}}$ (\\%)", "Ratio"], rows,
         caption="Capital per unit of exposure at the 99.9\\% level with an expected loss given default of 0.45: the IRB capital requirement "
                 "at the regulatory correlation, the capital of the large homogeneous portfolio at the fitted correlation (both with the same "
-                "maturity treatment), and their ratio, which isolates the effect of the correlation; the default probability is the fitted one.",
+                "maturity treatment), and their ratio, which isolates the effect of the correlation; the default probability is the fitted one. The last row repeats "
+                "commercial real estate under the corporate curve, the class of general income-producing real estate, beside the "
+                "high-volatility class of the row above.",
         label="tab:cc-irb", align=P(2.8) + P(2.4) + R(1.5) * 5, digits=3)
 
 
@@ -720,13 +745,51 @@ def t_regimes(D: dict) -> None:
         row.append(f"{vals['basel2'] / vals['basel3']:.3f}")
         ratios.append(vals["basel2"] / vals["basel3"])
         rows.append(row)
+        if lid == "commercial-real-estate":
+            row = ["Commercial real estate (corporate curve)", "corporate"]
+            vals = {}
+            for reg in ("basel3", "crr3", "basel2", "cl_ran21_6"):
+                r = irb.capital_requirement("corporate", i["pd"], 0.45, regime=reg, maturity=2.5)
+                vals[reg] = 100.0 * r.risk_weight
+                row.append(f"{vals[reg]:.1f}")
+            row.append(f"{vals['basel2'] / vals['basel3']:.3f}")
+            rows.append(row)
     tbl("regimes", ["Loan type", "IRB class", "Basel III", "CRR3", "Basel II", "Chile 21-6", "II / III"], rows,
         caption="Risk weight $12.5K$ in percent (columns Basel III, EU CRR3, Basel II and the Chilean RAN 21-6; the last column is Basel II over Basel III) for each loan type's IRB class at its fitted default probability, loss given default 0.45 and, "
                 "for the non-retail classes, a maturity of 2.5 years, under the four regimes of the engine. Basel II carries the 1.06 scaling "
-                "factor and a lower default probability floor; a dash marks a combination the engine refuses because the Chilean regime fixes "
+                "factor and a lower default probability floor; the last row of commercial real estate uses the corporate curve instead of the high-volatility class; a dash marks a combination the engine refuses because the Chilean regime fixes "
                 "the loss given default of the consumer portfolio at 61.3\\%.",
         label="tab:cc-regimes", align=P(2.8) + P(2.4) + R(1.45) * 5, digits=1)
     mac("RegScale", f"{sum(ratios) / len(ratios):.3f}", "mean of Basel II over Basel III risk weights, five loan types (table script)")
+
+
+def cre99_agreement() -> None:
+    """The cells of the Basel Committee's illustrative IRB risk weights (CRE99 Table 1) that the engine reproduces within half a
+    printed unit, and those it does not, from ``cre99_table1.json`` (the transcription of the table that the engine test
+    ``tests/test_irb.py::test_cre99_table1`` reads; copied here from the engine checkout, whose file carries the source)."""
+    from riskvalidation.regulatory import irb
+
+    table = json.loads((HERE / "cre99_table1.json").read_text(encoding="utf-8"))
+    cls = {"mortgage": "residential mortgages", "other": "other retail"}
+    n, off = 0, []
+    worst = 0.0
+    for row in table["rows"]:
+        for col, printed in zip(table["columns"], row["rw_pct"], strict=True):
+            r = irb.capital_requirement(col["asset_class"], row["pd"], col["lgd"], maturity=col.get("maturity", 2.5),
+                                        sales_eur_m=col.get("sales_eur_m"))
+            got = 100.0 * r.risk_weight
+            n += 1
+            worst = max(worst, abs(got - printed))
+            if abs(got - printed) > 0.005 + 1e-9:
+                off.append((row["pd"], col, got, printed))
+    src = "cre99_table1.json against engine irb.capital_requirement (table script)"
+    mac("AnchorCells", str(n), src)
+    mac("AnchorHalfOk", str(n - len(off)), src)
+    mac("AnchorOff", str(len(off)), src)
+    mac("AnchorWorst", f"{worst:.4f}", src)
+    items = [f"{cls[c['id'].split('_')[0]]} at a loss given default of {c['lgd']:.2f} and a default probability of {100 * pd_:.1f} percent "
+             f"(engine {g:.4f}, printed {pr:.2f})" for pd_, c, g, pr in off]
+    mac("AnchorOffList", "; ".join(items), src)
 
 
 def run(out_dir: pathlib.Path, registry: pathlib.Path | None) -> None:
@@ -738,6 +801,7 @@ def run(out_dir: pathlib.Path, registry: pathlib.Path | None) -> None:
     for fn in (t_cases, t_fit, t_irb, t_tail, t_var, t_es, t_mcerr, t_ga, t_ga_n, t_euler, t_battery, t_crp, t_sizepower, t_estacc):
         fn(D)
     t_anchors()
+    cre99_agreement()
     t_regimes(D)
     write_macros(out_dir / "credit-capital-numbers.tex")
     if registry:

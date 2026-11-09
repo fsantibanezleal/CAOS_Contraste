@@ -1,0 +1,120 @@
+\section{Related work}
+\label{sec:related-work}
+
+The published work that bears on the aggregation of capital across risk types falls into five groups: the additive and the
+square-root rules together with the supervisory view of them, the copula models of the dependence between risk types, the sharp
+bounds that hold whatever the dependence, the theory of subadditivity that explains why the bounds are not where intuition puts
+them, and the measures of model risk. The proposed protocol uses one or more members of each group, and the last subsection says
+what none of them does on its own.
+
+\subsection{Additive and square-root aggregation, and the supervisory view}
+\label{sec:rw-additive}
+
+The additive rule sums the stand-alone capital of each risk type and so assumes that the worst outcomes of the types coincide.
+The square-root rule, also called the variance-covariance formula, combines the stand-alone figures through a matrix of
+correlations; it is exact for elliptical losses and is otherwise a convention. Kuritzkes, Schuermann and Weiner built up the risk profile of a typical
+banking-insurance conglomerate to ask how far the risk of the whole is less than the sum of its parts, and used the result to frame
+the regulation of its solvency \citep{kuritzkes2003}. Alexander and Pezier aggregate market and credit risks through risk factors
+that are common to many business activities, compare the economic capital of the model with the data of several major banks, and
+show that controlling capital independently by business unit can be sub-optimal \citep{alexander2004}. Rosenberg and Schuermann built an integrated model of market, credit and operational risk in
+which each marginal is skewed and fat-tailed and the dependence is a copula; they report that the additive approximation
+typically overestimates risk by about 30 to 40 percent, that total risk is more sensitive to the business mix and the risk weights
+than to the inter-risk correlations, and that the choice between a normal and a Student $t$ copula has a more modest effect on risk
+\citep{rosenberg2006}. Dimakos and Aas, and Aas, Dimakos and \O ksendal, described the building of a total
+economic capital figure from the loss distributions of the risk types by simulation with a stated dependence between them
+\citep{dimakos2004,aas2007}. Brockmann and Kalkbrener propose a framework for aggregating economic capital across risk types in a single period, present the
+aggregation model of Deutsche Bank with its calibration of the correlations, and extend it to several periods for risk types with
+different liquidity profiles \citep{brockmann2010}.
+
+The supervisory literature is cautious about all of these. The Basel Committee reviewed the range of practices and the issues in
+economic capital frameworks \citep{bcbs2009}, and the Joint Forum found that supervisors generally do not rely on the aggregation
+models of firms, which it described as a work in progress \citep{jointforum2010}. The common finding of this group is that the
+aggregate depends on a choice, the rule or the matrix, that the data seldom settle. None of these works prescribes that the
+dependence of the aggregate be displayed as a set of figures next to the one figure that is used.
+
+\subsection{Copula models of the dependence between risk types}
+\label{sec:rw-copulas}
+
+A copula separates the marginal distribution of each risk from the dependence between them, which is the structure the aggregation
+needs: the marginals come from the models of the risk types and the copula is the one added assumption. Embrechts, McNeil and
+Straumann set out the properties and the pitfalls of the linear correlation as a measure of dependence, among them that the
+marginals and the correlation matrix do not determine the joint law and that the value at risk of a sum need not be subadditive
+\citep{ems2002}; Embrechts, Lindskog and McNeil give the copula framework with its applications in risk management
+\citep{elm2003}. Li introduced the Gaussian copula in credit risk \citep{li2000}, and Demarta and McNeil describe the $t$ copula
+and its relatives, in particular the tail dependence that the $t$ copula has and the Gaussian copula lacks \citep{demarta2005}.
+Frey and McNeil analyse the dependence between default events in portfolio credit risk models, use non-Gaussian copulas to extend
+the standard industry models, and show that the latent variable models can be mapped into equivalent mixture models; the
+work matters for the credit marginal of the aggregate, and it stops at the credit portfolio: it says nothing about the aggregation
+with the other risk types \citep{frey2003}. Lindskog, McNeil and Schmock show that Kendall's rank
+correlation of an elliptical copula is a function of its correlation parameter and does not depend on the degrees of freedom
+\citep{lindskog2003}; the consequence, used in Section~\ref{sec:theory}, is that a Gaussian and a $t$ copula with one matrix
+cannot be told apart by a rank correlation. Aas, Czado, Frigessi and Bakken build multivariate dependence from bivariate blocks, a
+route to families richer than the elliptical ones \citep{aas2009}.
+
+These works give the families that fill the interior of the band. They do not say which one a bank should use for four risk types
+of different nature, and for the pairs of risk types the matrix is a convention, as Section~\ref{sec:problem} states.
+
+\subsection{Sharp bounds under dependence uncertainty}
+\label{sec:rw-bounds}
+
+When the marginals are known and the dependence is not, the value at risk of the sum lies between two sharp bounds. Makarov and
+R\"uschendorf obtained the bounds on the distribution of a sum of two variables with fixed marginals \citep{makarov1981,
+ruschendorf1982}. Embrechts, H\"oing and Puccetti studied the worst value at risk scenarios \citep{worstvar2005}, Puccetti and
+R\"uschendorf proposed the rearrangement algorithm that computes the bounds for several risks \citep{puccetti2012}, and Embrechts,
+Puccetti and R\"uschendorf applied it to the aggregation of risks and to the model uncertainty that the bounds measure
+\citep{epr2013}. Hofert, Memartoluie, Saunders and Wirjanto improved the algorithm and examined its numerical challenges
+\citep{hofert2015}, and Hofert describes the implementation of the algorithm as an example of computational risk management, from a basic version to a fast and reliable one \citep{hofert2020}. Wang, Peng and Yang
+give bounds for monotone marginal densities \citep{wpy2013}, Puccetti, Wang and Wang relate the worst value at risk to the
+expected shortfall \citep{pww2013}, Bernard, Jiang and Wang study the aggregation of risks with known marginals and unspecified dependence through a class of
+admissible risks, with bounds on the value at risk and numerical illustrations \citep{bjw2014}, and Bernard, R\"uschendorf and Vanduffel narrow the bounds with a constraint on the variance of the sum
+\citep{brv2015}. R\"uschendorf's monograph collects the theory \citep{ruschendorf2013}. Embrechts and co-authors use the bounds to
+argue that small changes of a model can change the aggregate by a large amount \citep{academic2014}.
+
+All of these deliver the two end points. They stop short of the use that the proposed protocol makes of them, which is to place the
+end points on the same display as the copula figures that a bank actually reports and to test that the display is complete.
+
+\subsection{Subadditivity, coherence and allocation}
+\label{sec:rw-subadditivity}
+
+Artzner, Delbaen, Eber and Heath fixed the axioms of a coherent risk measure, of which subadditivity is the one that expresses
+diversification \citep{artzner1999}; Acerbi and Tasche showed that the expected shortfall is coherent \citep{acerbi2002}. The value
+at risk is not, so the comonotonic sum is not an upper bound on it. Embrechts, Lambrigger and W\"uthrich use multivariate extreme value theory to decide when quantile-based measures such as the
+value at risk are sub- or superadditive, with examples and counter-examples \citep{elw2008}, Danielsson and co-authors show that the value
+at risk is subadditive in the tail for fat tails with a finite mean \citep{danielsson2013}, and Embrechts, Wang and Wang define a qualitative notion of
+aggregation-robustness, how sensitive a risk measure is to the uncertainty about dependence when risks are aggregated, and find
+that coherent measures such as the expected shortfall are more robust than the value at risk \citep{ewang2015}. For the allocation of an aggregate to its components,
+Tasche derives the Euler principle, under which the contribution of a component is the derivative of the aggregate risk with
+respect to its weight \citep{tasche2008}.
+
+The result used in what follows is the pair of facts that the value at risk of the sum can exceed the sum of the values at risk and
+that the expected shortfall cannot, so that the expected shortfall of the stand-alone risks is an analytic ceiling for the value at
+risk of the sum under any dependence (Section~\ref{sec:theory}).
+
+\subsection{Model risk measures}
+\label{sec:rw-modelrisk}
+
+The uncertainty of the aggregate under alternative models has been given numbers. Cont proposed two measures of the model uncertainty of derivative prices, one from a coherent and one from a convex risk
+measure, which give a premium for model uncertainty \citep{cont2006}; Kerkhof, Melenberg and Schumacher build model risk into the
+capital reserves, separating estimation risk from misspecification risk and adding identification risk, and illustrate it on equity
+and exchange rate data \citep{kerkhof2010}; Barrieu and Scandolo define an absolute and a relative measure of model risk over a set of models
+\citep{barrieu2015}; Glasserman and Xu measure the worst case of a quantity over the alternatives within a budget of relative
+entropy \citep{glasserman2014}; and Boucher, Danielsson, Kouontchou and Maillet adjust imperfect risk forecasts with the outcomes of backtesting to obtain risk
+measures that are robust to model risk \citep{boucher2014}. The measures of Cont, of Barrieu and Scandolo, and of Glasserman and Xu share one feature: each takes a set of alternative models as given and reports the spread of a
+risk figure over it, so the number it returns is bounded by the set. A set built from one family of models gives a small number,
+and a set that includes the sharp bounds gives the largest number that the marginals allow. The choice of the set is therefore the
+substantive decision, and the band of the proposed protocol fixes it by rule: the set of models is the eight rows. The protocol
+labels the measures information, as it labels every row but the headline.
+
+\subsection{Where the proposed protocol stands}
+\label{sec:rw-position}
+
+Every ingredient of the protocol is published: the copula families, the sharp bounds, the subadditivity result, the Euler
+allocation and the model-risk measures. The studies of Embrechts, Puccetti and R\"uschendorf, and of Bernard, Jiang and Wang
+report the sensitivity of the aggregate to the dependence as a result of a study, Rosenberg and Schuermann report the overestimate
+of the additive rule and a modest effect of the copula choice, and the supervisory documents report the
+reluctance to rely on aggregation models. What this paper adds is a rule that composes the ingredients, one band on one set of
+marginals at one horizon and one confidence level, with a single labelled headline, with the allocation and the model-risk
+measures labelled alike, and with nine tests that accompany the band; and a measurement of what the band
+contains when the dependence structure is known because it was planted. The claim is limited to what the protocol does and what
+the measurement shows: that no maintained toolkit or published practice ships the band beside every aggregate was not established
+by a search beyond the sources cited here.

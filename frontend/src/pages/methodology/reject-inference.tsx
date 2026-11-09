@@ -5,12 +5,14 @@
 // (notebooks/en/02-credit-scoring/06-challengers-against-the-scorecard.ipynb, whose population drawn in the notebook has a known
 // logistic law, 1,000 applicants, 40 repetitions per policy, seed 20261030), from the pipeline module that runs it
 // (data-pipeline/pipeline/cases/c01_reject.py: the rung definitions, the policy, the reduction) and from the ladder of the SDD
-// (docs/design/SDD.md, the reject-inference row). Every display equation carries a caption that defines its symbols. The registry
+// (docs/design/SDD.md, the reject-inference row). Every display equation carries a caption that defines its symbols. The second
+// equation is the legacy policy of that module (legacy_acceptance) and the figure draws the bias table beside it. The registry
 // mounts it as one tab of the models group.
-import { Callout, Cite, DocSection } from '@fasl-work/caos-app-shell';
+import { Callout, Cite, DocSection, Figure } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { GroupedBars } from '../MethodFigures';
 
 const NB = 'https://github.com/fsantibanezleal/CAOS_Contraste/blob/main/notebooks';
 const NB_PATH = '02-credit-scoring/06-challengers-against-the-scorecard.ipynb';
@@ -44,6 +46,7 @@ function Body() {
   return (
     <DocSection
       area="method"
+      kind="classical"
       title={{ en: 'Reject inference on a known rejected population', es: 'Inferencia de rechazados sobre una población rechazada conocida' }}
       refs={['banasikcrook2007', 'handhenley1993', 'crookbanasik2004', 'siddiqi2017']}
     >
@@ -58,6 +61,10 @@ function Body() {
       <Equation
         tex={String.raw`b_r = \overline{\hat p}_r - \overline{y}, \qquad R_r = 1 - \frac{|\,b_r\,|}{|\,b_0\,|}, \qquad w_i = \frac{1}{\max(p_i,\ 0.05)}, \qquad \tilde y_j \sim \mathrm{Bernoulli}\big(\min(1,\ f\,\pi_{g(j)})\big)`}
         caption={<T en={<>The measures and two of the treatments. On the accept-all population, b<sub>r</sub> is the bias of treatment r, the mean predicted default rate of r minus the observed default rate ȳ, and b<sub>0</sub> that of the accepted-only model; R<sub>r</sub> is the reduction of the bias, 1 when r removes it, 0 when it does nothing and negative when it makes it larger, reported with a percentile interval over the repetitions. Augmentation: w<sub>i</sub> the weight of accepted applicant i and p<sub>i</sub> its acceptance probability. Parcelling: ỹ<sub>j</sub> the outcome given to rejected applicant j, π<sub>g(j)</sub> the bad rate of the accepted in the score band g(j) of j (the model&apos;s mean PD where a band has fewer than ten accepted applicants), and f the prudence factor (1 for plain parcelling, 2 for the prudent one).</>} es={<>Las medidas y dos de los tratamientos. Sobre la población de aceptación total, b<sub>r</sub> es el sesgo del tratamiento r, la tasa de incumplimiento predicha media de r menos la tasa de incumplimiento observada ȳ, y b<sub>0</sub> el del modelo de solo aceptados; R<sub>r</sub> es la reducción del sesgo, 1 cuando r lo elimina, 0 cuando no hace nada y negativa cuando lo agranda, informada con un intervalo percentil sobre las repeticiones. Aumentación: w<sub>i</sub> el peso del aceptado i y p<sub>i</sub> su probabilidad de aceptación. Parcelación: ỹ<sub>j</sub> el resultado dado al rechazado j, π<sub>g(j)</sub> la tasa de malos de los aceptados en el tramo de puntaje g(j) de j (la PD media del modelo donde un tramo tiene menos de diez aceptados), y f el factor de prudencia (1 para la parcelación simple, 2 para la prudente).</>} />}
+      />
+      <Equation
+        tex={String.raw`u_i = z_i + \kappa\,\frac{y_i - \bar y}{s_y} + \varepsilon_i, \qquad \varepsilon_i \sim \mathcal{N}(0,1), \qquad a_i = \mathbb{1}\{\mathrm{rank}(u_i) \le \lfloor 0.6\,n \rceil\}`}
+        caption={<T en={<>The legacy policy simulated on the labelled population: z<sub>i</sub> the standardised logit of a model fitted on every development outcome, the policy&apos;s view of the inputs; y<sub>i</sub> the outcome of applicant i (1 for a default) with mean ȳ and standard deviation s<sub>y</sub>, so the second term is the underwriter&apos;s private signal of strength κ (0, 0.25, 0.5 or 1); ε<sub>i</sub> the noise, drawn first so two policies with one seed share it; a<sub>i</sub> equal to 1 when the applicant is among the n·0.6 lowest scores u<sub>i</sub>, rounded to the nearest whole number, that is, the best 60% are accepted (<Ref>data-pipeline/pipeline/cases/c01_reject.py</Ref>, <Ref>legacy_acceptance</Ref>).</>} es={<>La política heredada simulada sobre la población etiquetada: z<sub>i</sub> el logit estandarizado de un modelo ajustado con todos los resultados de desarrollo, la visión de la política sobre las entradas; y<sub>i</sub> el resultado del solicitante i (1 si incumple) con media ȳ y desviación estándar s<sub>y</sub>, de modo que el segundo término es la señal privada del analista de intensidad κ (0; 0,25; 0,5 o 1); ε<sub>i</sub> el ruido, sorteado primero para que dos políticas con una semilla lo compartan; a<sub>i</sub> igual a 1 cuando el solicitante está entre los n·0,6 puntajes u<sub>i</sub> más bajos, redondeado al entero más cercano, es decir, se acepta al mejor 60 % (<Ref>data-pipeline/pipeline/cases/c01_reject.py</Ref>, <Ref>legacy_acceptance</Ref>).</>} />}
       />
       <h3>{t('What it is compared against and what it measured', 'Con qué se compara y qué midió')}</h3>
       <P
@@ -78,6 +85,28 @@ function Body() {
         en={<>The default rate of the population is 0.190 under every policy, as it should be: the policy changes who is accepted, not who defaults. With the private signal the accepted book shrinks to a population with almost no defaulters, and the accepted-only model carries that rate to everyone. Under the moderate policy on the drawn population the reductions of the bias are -0.010 for augmentation, +0.006 for the hard cut-off, -0.001 for parcelling, 0.000 for fuzzy augmentation and +0.180 (interval 0.150 to 0.211) for prudent parcelling, whose AUC against the accepted-only model is +0.0513 while the others change it by -0.0441, -0.0222, -0.0201 and 0.0000. On the German Credit applicants the moderate policy gives an accepted book with 8.9% defaulters against 30% in the population, and the accepted-only model understates the default rate by 17.2 points (95% interval 16.7 to 17.7); augmentation, the hard cut-off, parcelling and fuzzy augmentation cut that bias by 0% to 2% and rank worse than accepted only, and prudent parcelling cuts it by 44% (41% to 48%) with +0.021 of AUC. H1 holds in both; H2 holds for prudent parcelling alone on the German data (0.443) and does not hold on the drawn population (0.180); H3 does not hold in either, since the gain of prudent parcelling is above 0.01 of AUC.</>}
         es={<>La tasa de incumplimiento de la población es 0,190 bajo toda política, como debe ser: la política cambia quién es aceptado, no quién incumple. Con la señal privada la cartera aceptada se reduce a una población casi sin incumplidores, y el modelo de solo aceptados lleva esa tasa a todos. Bajo la política moderada en la población sorteada las reducciones del sesgo son -0,010 para la aumentación, +0,006 para el corte duro, -0,001 para la parcelación, 0,000 para la aumentación difusa y +0,180 (intervalo de 0,150 a 0,211) para la parcelación prudente, cuyo AUC frente al modelo de solo aceptados es +0,0513 mientras los demás lo cambian en -0,0441, -0,0222, -0,0201 y 0,0000. En los solicitantes de German Credit la política moderada da una cartera aceptada con 8,9 % de incumplidores contra 30 % en la población, y el modelo de solo aceptados subestima la tasa de incumplimiento en 17,2 puntos (intervalo de 95 % de 16,7 a 17,7); la aumentación, el corte duro, la parcelación y la aumentación difusa reducen ese sesgo entre 0 % y 2 % y ordenan peor que solo aceptados, y la parcelación prudente lo reduce en 44 % (41 % a 48 %) con +0,021 de AUC. H1 se cumple en ambas; H2 se cumple solo para la parcelación prudente en los datos alemanes (0,443) y no se cumple en la población sorteada (0,180); H3 no se cumple en ninguna, pues la ganancia de la parcelación prudente supera 0,01 de AUC.</>}
       />
+      <Figure
+        caption={t(
+          'The bias of the predicted default rate, in points, on the accept-all population drawn in the notebook, by strength of the private signal of the underwriter (the table above): the accepted-only model understates the rate more as the signal grows, from 0.76 to 17.94 points; prudent parcelling cuts the understatement at weak and moderate signals, overstates the rate by 9.69 points under the blind policy and barely moves it at the strongest signal.',
+          'El sesgo de la tasa de incumplimiento predicha, en puntos, en la población sin rechazo sorteada en el notebook, según la intensidad de la señal privada del analista (la tabla de arriba): el modelo de solo aceptados subestima la tasa más cuanto mayor es la señal, de 0,76 a 17,94 puntos; la parcelación prudente reduce la subestimación con señales débiles y moderadas, sobrestima la tasa en 9,69 puntos con la política ciega y casi no la mueve con la señal más fuerte.',
+        )}
+      >
+        <GroupedBars
+          groups={[
+            { en: 'κ = 0|(blind)', es: 'κ = 0|(ciega)' },
+            { en: 'κ = 0.25', es: 'κ = 0,25' },
+            { en: 'κ = 0.5', es: 'κ = 0,5' },
+            { en: 'κ = 1', es: 'κ = 1' },
+          ]}
+          series={[
+            { id: 'oracle', label: { en: 'Oracle', es: 'Oráculo' }, token: '--color-good', values: [-0.09, -0.09, -0.09, -0.09] },
+            { id: 'accepted-only', label: { en: 'Accepted only', es: 'Solo aceptados' }, token: '--color-accent', values: [-0.76, -7.65, -13, -17.94] },
+            { id: 'parcelling-prudent', label: { en: 'Prudent parcelling', es: 'Parcelación prudente' }, token: '--color-magenta', values: [9.69, -2.1, -10.66, -17.84] },
+          ]}
+          axis={{ min: -20, max: 20, decimals: 2, tickDecimals: 0, title: { en: 'Bias, points', es: 'Sesgo, puntos' } }}
+          label={{ en: 'Grouped bars of the bias of the predicted default rate of the oracle, the accepted-only model and prudent parcelling at four strengths of the private signal', es: 'Barras agrupadas del sesgo de la tasa de incumplimiento predicha del oráculo, del modelo de solo aceptados y de la parcelación prudente en cuatro intensidades de la señal privada' }}
+        />
+      </Figure>
       <h3>{t('Where it fails', 'Dónde falla')}</h3>
       <Callout variant="honest" title={t('Reject inference repairs a selection only through an assumption about the rejected', 'La inferencia de rechazados repara una selección solo mediante un supuesto sobre los rechazados')}>
         <T

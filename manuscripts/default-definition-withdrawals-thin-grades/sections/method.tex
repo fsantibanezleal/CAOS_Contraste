@@ -1,0 +1,112 @@
+\subsection{The idea}
+\label{sec:method-idea}
+
+The protocol rests on one observation: a PD by grade is a function of the data and of three conventions, the page that defines a default, the treatment of the ratings withdrawn during the year, and the number of obligors in the grade. A report that gives the PD without the conventions gives a number whose error is not bounded by its confidence interval, because the interval conditions on the conventions. The protocol therefore measures the PD as a function of the conventions. It has four components, each a measurement with its own estimand and its own uncertainty: the definition-explicit PD with its capital (Section~\ref{sec:method-definitions}), the treatments of withdrawn ratings on paths of known truth (Section~\ref{sec:method-withdrawals}), the matrix tests as a screen (Section~\ref{sec:method-tests}) and the exact coverage of the interval estimators (Section~\ref{sec:method-coverage}). Section~\ref{sec:method-algorithm} gives the procedure as an algorithm. The components are independent: each can be removed and the others still run, which is what the ablation of Section~\ref{sec:ablation} exploits. % voice-ok: withdrawn rating, the domain term of the study
+
+\subsection{Component 1: the definition-explicit PD and its capital}
+\label{sec:method-definitions}
+
+For each agency and each grade the protocol computes the long-run averages $\bar p^{\Dtwo}_g$, $\bar p^{\Dthree}_g$, $\bar p^{\Dfour}_g$ and $\bar p^{\Dkeep}_g$ of Equations~\eqref{eq:definitions} and~\eqref{eq:lra}, and the gap index
+\begin{equation}
+\rho_g=\frac{\bar p^{\Dfour}_g}{\bar p^{\Dtwo}_g},
+\label{eq:gap-index}
+\end{equation}
+the ratio of the transition page's average to the default page's. A value near one means the pages agree for the grade; a value of one third means a reader of the transition page sees a third of the PD that a reader of the default page sees. The index is undefined where the default page's average is zero.
+
+The sampling uncertainty of $\rho_g$ is the variation between cohort years, which the pooled counts do not show: the years are the units, and the rates of the years differ by an order of magnitude in the speculative grades. The protocol resamples the cohort years with replacement $B=\bootB$ times, with the same resample for every definition so that the pairing of the pages within a year is kept, recomputes every average and every index on each resample, and reports the 2.5th and 97.5th percentiles.
+
+The difference between definitions matters to a bank through capital. The protocol takes the grade mix $\pi_g$ of the agency's mean cohort and computes the risk weight of the portfolio under each definition,
+\begin{equation}
+\RW^{\cdot}=\sum_{g=1}^{G}\pi_g\,\RW\bigl(\bar p^{\,\cdot}_g\bigr),
+\label{eq:portfolio-rw}
+\end{equation}
+with $\RW(p)=12.5\,K(p)$ the risk weight of the Basel III function for a corporate exposure \citep{BCBS_CRE31}, in which the capital requirement is
+\begin{equation}
+K(p)=\Bigl[\mathrm{LGD}\;\Phi\!\Bigl(\frac{\Phi^{-1}(p)+\sqrt{R(p)}\,\Phi^{-1}(0.999)}{\sqrt{1-R(p)}}\Bigr)-p\,\mathrm{LGD}\Bigr]\frac{1+(M - 2.5)\,b(p)}{1-1.5\,b(p)},
+\label{eq:irb-k}
+\end{equation}
+\begin{equation}
+R(p)=0.12\,\frac{1-e^{-50p}}{1-e^{-50}}+0.24\Bigl(1-\frac{1-e^{-50p}}{1-e^{-50}}\Bigr),\qquad
+b(p)=\bigl(0.11852-0.05478\ln p\bigr)^{2},
+\label{eq:irb-r}
+\end{equation}
+where $\Phi$ is the standard normal distribution function, $\mathrm{LGD}=0.45$ and $M=2.5$ years are the values of the foundation approach, and the PD is floored at $0.05\%$ before it enters. The function is the one-factor model of Gordy \citep{Gordy_2003} as the Basel Framework states it. The protocol applies Equation~\eqref{eq:portfolio-rw} to every resample, so that the difference $\RW^{\Dtwo}-\RW^{\Dfour}$ carries the same bootstrap interval as the PD.
+
+\subsection{Component 2: the treatments of withdrawn ratings on paths of known truth} % voice-ok: withdrawn rating, the domain term of the study
+\label{sec:method-withdrawals}
+
+The second component generates the truth that real data lack. The latent chain of Section~\ref{sec:problem-truth} is simulated exactly for the obligors of a cohort sized like the agency's, with five annual snapshots. For each repetition $r$ two datasets are drawn from the same random stream: the latent paths, and the observed paths, which are the latent paths cut at a withdrawal drawn from the hazard of Equation~\eqref{eq:withdrawal-hazard}. The pairing is checked, not assumed: every observed path is verified to equal its latent path truncated at its withdrawal time. Four estimators of the one-year PD of grade $g$ then read the same draw, each as the Anderson and Goodman pooled cohort estimator over the five annual cohorts \citep{Anderson_1957}, with counts summed over the years before the division:
+\begin{equation}
+\hat p^{\mathrm{rem}}_g=\frac{\sum_t D_{g,t}}{\sum_t\bigl(D_{g,t}+S_{g,t}\bigr)},\qquad
+\hat p^{\mathrm{kept}}_g=\frac{\sum_t D_{g,t}}{\sum_t N_{g,t}},\qquad
+\hat p^{\mathrm{fol}}_g=\frac{\sum_t D^{\mathrm{lat}}_{g,t}}{\sum_t N_{g,t}},\qquad
+\hat p^{\mathrm{lat}}_g=\frac{\sum_t D^{\circ}_{g,t}}{\sum_t N^{\circ}_{g,t}}.
+\label{eq:estimators}
+\end{equation}
+The first removes the withdrawn ratings, as the transition page does. The second keeps them in the denominator without following them. The third reads, for the ratings outstanding at the start of each year, the state at the end of the year on the latent path, which is the reading of paragraphs 73 and 76 of the guidelines at the one-year level: a rating withdrawn within the year that defaults by its end counts as a default; $D^{\mathrm{lat}}_{g,t}$ is that count. The fourth, the no-withdrawal reference, follows every obligor every year on the latent paths, with the counts $D^{\circ}_{g,t}$ and $N^{\circ}_{g,t}$ of the latent dataset. The performance measures are those that Morris, White and Crowther recommend \citep{Morris_2019}. The relative bias of treatment $\tau$ at level $k$, and its Monte Carlo standard error over $R$ repetitions, are % voice-ok: withdrawn rating, the domain term of the study
+\begin{equation}
+\hat\beta_g(\tau,k)=\frac{\bar{\hat p}^{\tau}_g}{p_g}-1,\qquad
+\operatorname{se}\bigl(\hat\beta_g\bigr)=\frac{1}{p_g}\sqrt{\frac{1}{R(R-1)}\sum_{r=1}^{R}\bigl(\hat p^{\tau}_{g,r}-\bar{\hat p}^{\tau}_g\bigr)^{2}},
+\label{eq:rel-bias}
+\end{equation}
+where $\bar{\hat p}^{\tau}_g$ is the mean over the repetitions. The consequence for capital is the error of the risk weight of the cohort mix, again with its Monte Carlo standard error,
+\begin{equation}
+\Delta\RW^{\tau}=\frac1R\sum_{r=1}^{R}\sum_{g}\pi_g\,\RW\bigl(\hat p^{\tau}_{g,r}\bigr)-\sum_{g}\pi_g\,\RW(p_g).
+\label{eq:rw-error}
+\end{equation}
+The pairing of the observed and latent draws serves the contrast between a treatment and the reference, $\hat p^{\tau}_{g,r}-\hat p^{\mathrm{lat}}_{g,r}$, whose variance is smaller than that of the two terms taken independently because both read the same obligors.
+
+\subsection{Component 3: the matrix tests as a screen}
+\label{sec:method-tests}
+
+A validator who suspects the withdrawals can look for them only through what the standard tests of a migration matrix see. The protocol runs two on the paired draws of the withdrawal generator at selected levels of $k$: the chi-square test of time homogeneity across the five annual matrices, and the test of the last annual matrix against the matrix exponential of the generator, which is the true one-year matrix; the engine's tests of the Markov order, of rating momentum and of the monotonicity of the migration matrix are run on the same draws, so that the screen is not limited to two tests. The measure is the rejection rate at level $\alpha$ over $R$ repetitions, $\hat r_\alpha=R^{-1}\sum_r\mathbf 1\{P_r<\alpha\}$, with the Wilson interval
+\begin{equation}
+\frac{\hat r+\dfrac{z^{2}}{2R}\;\pm\;z\sqrt{\dfrac{\hat r(1-\hat r)}{R}+\dfrac{z^{2}}{4R^{2}}}}{1+\dfrac{z^{2}}{R}},\qquad z=\Phi^{-1}(0.975),
+\label{eq:wilson}
+\end{equation}
+which behaves for a rate near zero where the Wald interval degenerates \citep{Wilson_1927}. A rejection rate near $\alpha$ at a level of $k$ at which the treatments are far from the truth means that the test cannot serve as a screen for withdrawals. The first two tests compare transition counts with a reference, a chi-square comparison in the manner of Anderson and Goodman \citep{Anderson_1957}. These two are sensitive to what the removal treatment does to the rows of the matrix, since the row sums exclude the withdrawn ratings, but the counts they read contain no information on the relation of a withdrawal to a later default, so a test can detect informative withdrawal only through its second-order effects on the matrix. % voice-ok: withdrawn rating, the domain term of the study
+
+\subsection{Component 4: exact coverage of the interval estimators}
+\label{sec:method-coverage}
+
+A confidence interval $I(x,n)$ for a PD $p$, given $x$ defaults among $n$ obligors, has coverage at $p$ equal to the probability that it contains $p$. For a binomial count the probability can be computed exactly,
+\begin{equation}
+c(n,p)=\sum_{x=0}^{n}\binom{n}{x}p^{x}(1-p)^{n-x}\,\mathbf 1\{p\in I(x,n)\},
+\label{eq:coverage}
+\end{equation}
+by enumerating the $n+1$ counts, so that no simulation and no Monte Carlo error is involved. The Wald interval is $\hat p\pm z\sqrt{\hat p(1-\hat p)/n}$ with $\hat p=x/n$, bounded to $[0,1]$. The Agresti-Coull interval applies the same form to the centre $(x+z^{2}/2)/(n+z^{2})$ with $n+z^{2}$ in place of $n$ \citep{Agresti_1998}. The Jeffreys interval is equal-tailed, from the $2.5\%$ and $97.5\%$ quantiles of the Beta distribution with parameters $x+1/2$ and $n-x+1/2$, with lower end $0$ at $x=0$ and upper end $1$ at $x=n$ \citep{Brown_2001}. The protocol evaluates it for the Wald, Agresti-Coull and Jeffreys intervals at the true PD of every grade of the generator and for a grid of cohort sizes. The same enumeration gives the probability that the intervals of adjacent grades $g$ and $g+1$ overlap, $\sum_{x,y}f(x;n,p_g)\,f(y;n,p_{g+1})\,\mathbf 1\{I(x,n)\cap I(y,n)\neq\emptyset\}$ with $f$ the binomial mass, which answers whether the grades can be told apart at a cohort size.
+
+\subsection{Parameters and how they are chosen}
+\label{sec:method-parameters}
+
+The protocol has few parameters, and each has a reason. The baseline withdrawal rate $w=\wRate\%$ a year is close to the share of ratings that S\&P's cohorts lose to withdrawal in a year: pooled over the $\spCohorts$ annual cohorts, $\spWdShareAll\%$ of the ratings of the initial cohorts are withdrawn by the year end. It lies between the share of AAA, $\spWdShareAaa\%$, and those of B and CCC to C, $\spWdShareB\%$ and $\spWdShareCcc\%$, which include ratings withdrawn after a default, so a single rate for all grades is a simplification that Section~\ref{sec:limitations} states among the limitations. The window $\omega$ of one year is the length of the cohort year, so that a rating about to default within the year is exposed to the elevated hazard for the whole of its life in the cohort. The ladder of informativeness starts at $k=0$, where withdrawal is independent of default and the first-order biases of Section~\ref{sec:theory} reduce to $\pm w/2$; its levels $k=1,2,3,5$ cover first-order biases of the removal treatment from $\foRemkOne\%$ to $\foRemkFive\%$ and of the keeping treatment from $\foKeptkOne\%$ to $\foKeptkFive\%$; $k=9$ is withdrawal ten times as likely in the year before default, the level at which the committed computation of the case is reported; and $k=19$ is the strongest level, at which removal loses more than half of the PD of a grade. The cohorts have the sizes of S\&P's mean cohort so that the sampling noise of each grade is that of the data. The number of repetitions, $R=\repsNew$, is chosen so that the Monte Carlo standard error of the relative bias of grade B is below one percentage point at every level, which the results confirm; the number of resamples $B=\bootB$ is such that a second set of resamples with another seed moves the limits of the interval of the CCC to C gap index by at most $\bootSeedRatio$ and those of the risk-weight difference by at most $\bootSeedRw$ points, for S\&P and Fitch. None of the parameters is estimated from data on the informativeness of real withdrawals, because the data do not contain it. % voice-ok: withdrawn rating, the domain term of the study
+
+\subsection{Algorithm, complexity and implementation}
+\label{sec:method-algorithm}
+
+\begin{algorithm}[htbp]
+\caption{The measurement protocol. Inputs: the counts of the cohorts of each agency; a generator $Q$ with cohort sizes; a ladder of informativeness; a base seed. Outputs: the gap indices and risk weights with their intervals, the biases of the treatments with their standard errors, the rejection rates, and the exact coverages.}
+\label{alg:protocol}
+\begin{algorithmic}[1]
+\Require counts $(A,E,D,S,W,N^{\ast})_{g,t}$ per agency; $Q$, cohort sizes, $w$, $\omega$; ladder $\mathcal K$; repetitions $R$; resamples $B$; seed
+\State compute $p^{\Dtwo},p^{\Dthree},p^{\Dfour},p^{\Dkeep}$ and the averages $\bar p$ \Comment{Equations~\eqref{eq:definitions}, \eqref{eq:lra}}
+\For{$b=1,\dots,B$}
+  \State draw cohort years with replacement; recompute $\bar p^{(b)}$, $\rho_g^{(b)}$ and $\RW^{\cdot(b)}$ \Comment{Equations~\eqref{eq:gap-index}, \eqref{eq:portfolio-rw}}
+\EndFor
+\State report the percentile intervals of $\rho_g$ and of $\RW^{\Dtwo}-\RW^{\Dfour}$
+\State set the truth $p_g\gets[\exp(Q)]_{g,D}$ \Comment{Equation~\eqref{eq:truth}}
+\For{each $k\in\mathcal K$}
+  \For{$r=1,\dots,R$}
+    \State draw latent and observed paths from one random stream; verify that observed $=$ latent cut at withdrawal
+    \State compute the four estimators and the risk weight under each \Comment{Equations~\eqref{eq:estimators}, \eqref{eq:rw-error}}
+  \EndFor
+  \State report $\hat\beta_g(\tau,k)$ and $\Delta\RW^{\tau}$ with their standard errors \Comment{Equations~\eqref{eq:rel-bias}, \eqref{eq:rw-error}}
+  \State run the transition tests on $R$ further draws; report $\hat r_\alpha$ with the Wilson interval \Comment{Equation~\eqref{eq:wilson}}
+\EndFor
+\For{each cohort size $n$ and each grade $g$}
+  \State compute $c(n,p_g)$ for the three intervals by enumeration \Comment{Equation~\eqref{eq:coverage}}
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+Algorithm~\ref{alg:protocol} lists the steps. The bootstrap costs $O(BTG)$ operations for $T$ cohort years and $G$ grades. A repetition of the known-truth component costs $O(N)$ path events for a cohort of $N$ obligors over five years, since the simulation is exact and vectorised over obligors. The enumeration of Equation~\eqref{eq:coverage} costs $O(n)$ interval evaluations per grade and size. The implementation uses the open engine \texttt{riskvalidation} in release 1.1.0: the class \texttt{RatingPaths} of its generators for the latent and observed paths, the pooled cohort estimator of its transitions module for Equation~\eqref{eq:estimators}, its interval module for the Wald, Agresti-Coull and Jeffreys intervals and for the exact coverage and overlap, its regulatory module for the risk weight, and its harness for the repetitions with one random stream per repetition spawned from a base seed. The seed of every rung is a pure function of the case seed 42 and the rung's key, so that any rung can be rerun alone and gives the same numbers. The parameters are the withdrawal rate $w=6\%$ a year, the window $\omega=1$ year, the ladder $k\in\{0,1,2,3,5,9,19\}$, $R=\repsNew$ repetitions per level, five annual snapshots, and $B=\bootB$ resamples.

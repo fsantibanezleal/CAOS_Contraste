@@ -1,0 +1,180 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{Size under daily reading}
+\label{sec:results-size}
+
+\Cref{fig:paths} shows the mechanism on the generator. On a correct model the log of the e-process drifts down by a small amount on every day without a hit, because the bet loses a little each day, and jumps up on a hit; it rarely approaches the threshold $\log 20$. When the hit rate is three or four times the
+nominal the jumps outweigh the drift and the paths cross the threshold, at very different days from stream to stream.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{paths}
+\caption{Twelve sample paths of $\log E_t$ of the rate e-process on streams of 1,000 days at a VaR level of 1\,\%: a correct model (left), a hit rate three times the nominal (middle) and four times (right). The dashed line is the rejection threshold $\log 20$ and the dotted line marks day 250, the first day a rule on the last 250 days can speak.}
+\label{fig:paths}
+\end{figure}
+
+\Cref{tab:main-results} gives the size of every rule when it is read every day over 1,000 days. The rate e-process rejects a correct model in \nNullSizeE\,\% of the \nReps\ series (95\,\% interval \nNullSizeELo\ to \nNullSizeEHi\,\%) and the upper-side variant in \nNullSizeEUp\,\%, both under the acceptance bound of \nBound\,\%; the battery of the rate and clustering monitors in
+\nNullSizeBattery\,\% and the clustering monitor alone in \nNullSizeCluster\,\%. The single-alternative likelihood ratio, which has a larger size because it is not spread over alternatives, is at \nNullSizeSprt\,\%, still under 5\,\%. The published e-backtest and the uniform-prior Bayes factor are at \nNullSizeWwz\ and \nNullSizeBeta\,\%. The proposed monitors are conservative, as a mixture
+of martingales that starts at one and moves little on correct data should be: the observed size is well below the 5\,\% that \cref{prop:validity} allows. By contrast, the Kupiec test on the last 250 days rejects a correct model in \nNullSizeKupTrail\,\% of the series, the same test on all days so far in \nNullSizeKupCum\,\%, the traffic light leaves its green zone in \nNullSizeLight\,\%,
+and the independence test on the last 250 days in \nNullSizeIndep\,\%. The Sidak-corrected Kupiec test controls size at the cost of power (\nNullSizeKupSidak\,\%), and the Kupiec test and the CUSUM with simulated thresholds are at \nNullSizeKupCal\ and \nNullSizeCusum\,\%, at the calibrated size, which the 20,000 calibration streams reproduce to within the
+Monte Carlo error of $2{,}000$ streams (a standard error of about 0.5 points).
+
+\input{tables/main-results}
+
+\Cref{fig:size-horizon} follows the share of correct models rejected as the horizon grows to \nHorizonDays\ days. It shows what \cref{tab:main-results} does not: that the size of a repeated rule is not a number but a function of the horizon. The Kupiec test on the last 250 days and the traffic light rise to \nHorizonEndKupTrail\,\% and \nHorizonEndLight\,\% and the Kupiec test on all days so far to \nHorizonEndKupCum\,\%,
+as \cref{prop:repeated} says. The e-process reaches \nHorizonEndE\,\%, the e-backtest \nHorizonEndWwz\,\% and the Bayes factor \nHorizonEndBeta\,\% by day \nHorizonDays, under 5\,\% at every horizon, which is the guarantee that holds at any stopping time. The two rules calibrated to a size of 5\,\% over 1,000 days show the limit of a calibration: they are at
+\nHorizonThousandKupCal\ and \nHorizonThousandCusum\,\% at day 1,000 and at \nHorizonEndKupCal\ and \nHorizonEndCusum\,\% at day \nHorizonDays. The figure does not say what a monitor detects; that is the subject of the next two subsections.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{size-horizon}
+\caption{Share of correct VaR models rejected by each rule as a function of the number of days read, from 2,000 streams of 5,000 days at a level of 1\,\% (left, full scale; right, the same curves with the vertical axis cut at 12\,\%). The dashed line is 5\,\% and the dotted line marks the 1,000-day horizon for which two of the rules were calibrated.}
+\label{fig:size-horizon}
+\end{figure}
+
+\subsection{Detection delay}
+\label{sec:results-delay}
+
+\Cref{fig:delay-severity} plots the median first-rejection day and the power by day 250 against the hit-rate multiplier. All rules speed up as the departure grows, and the ranking at each severity is stable. At a hit rate four times the nominal the median day is \nMedFourE\ for the two-sided rate e-process (interval \nMedFourELo\ to \nMedFourEHi) and \nMedFourEUp\ for the upper-side
+one, against \nMedFourSprt\ for the single alternative that knows the severity, \nMedFourKupCal\ for the Kupiec test with a simulated constant critical value, \nMedFourKupCum\ for the Kupiec test on all days so far (which has no size guarantee), and \nMedFourLight\ for the traffic light and for the Kupiec test on the last 250 days, which cannot speak before day 250. The published e-backtest
+needs \nMedFourWwz\ days and the uniform-prior Bayes factor \nMedFourBeta. The mixture is therefore \nGapFourWwz\ days faster than the e-backtest at that severity (\nMedFourE\ against \nMedFourWwz) and \nGapThreeWwz\ days faster at three times the nominal (\nMedThreeE\ against \nMedThreeWwz), and about as fast as a simulation-calibrated boundary at four times the nominal, where the boundary has a size guarantee for 1,000 days only.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{delay-severity}
+\caption{Median first-rejection day (left, logarithmic axes; a point at 1,000 means the median is beyond the horizon) and share of streams rejected by day 250 (right) of the rate e-processes, the single-alternative e-process, the e-backtest and the repeated and calibrated fixed-window rules against the multiplier of the hit rate, 2,000 streams per point; the dashed line is the 250-day window.}
+\label{fig:delay-severity}
+\end{figure}
+
+At a hit rate three times the nominal, the delay is on the edge of the window. In the main run the two-sided e-process has a median of \nMedThreeE\ days (interval \nMedThreeELo\ to \nMedThreeEHi). The committed document of the product, run with another seed, gives \nCommittedMedThree. \Cref{tab:x3-seeds} settles the question on \nSeedsCount\ independent seeds: the median of the pooled \nSeedsPooledN\ streams is \nSeedsThreeMed\ days (interval \nSeedsThreeMedLo\ to \nSeedsThreeMedHi), the median of single seeds has a mean of \nSeedsThreeSeedMean\ and a standard deviation of \nSeedsThreeSeedSd, and \nSeedsThreeBelow\,\% of the seeds
+have a median below 250. The median delay of the two-sided monitor at a hit rate three times the nominal is therefore not distinguishable from the window, and it is not below the traffic light's median of \nSeedsThreeLight. At four times the nominal the pooled median is \nSeedsFourMed\ (interval \nSeedsFourMedLo\ to \nSeedsFourMedHi) and every seed is below 250. The upper-side monitor is below 250 at both severities, \nSeedsUpThreeMed\ days at three times (interval \nSeedsUpThreeMedLo\ to \nSeedsUpThreeMedHi) and \nSeedsUpFourMed\ at four.
+
+\input{tables/x3-seeds}
+
+The reading of the delay needs one caution, which the traffic light makes concrete. Its median of 250 is its first possible day: at three times the nominal it has flagged \nByThreeLight\,\% of the streams by day 250, and the e-process only \nByThreeE\,\%. A median below the window is a statement about the half of the streams detected earliest, not about the share detected by the end of the window.
+
+\subsection{Power by day 250 and its cost}
+\label{sec:results-power}
+
+The power of the monitors by day 250 is the cost side of the guarantee. At a hit rate three times the nominal, the two-sided e-process rejects \nByThreeE\,\% of the streams by day 250 (the upper-side one \nByThreeEUp\,\%) against \nShotThree\,\% for one Kupiec reading at day 250 in the same streams; at four times the nominal, \nByFourE\,\% (\nByFourEUp\,\%) against \nShotFour\,\%.
+The pooled power cost of the two-sided monitor is \nSeedsThreeCost\ $\pm$ \nSeedsThreeCostSe\ points at three times the nominal and \nSeedsFourCost\ $\pm$ \nSeedsFourCostSe\ points at four times, and that of the upper-side monitor \nSeedsUpThreeCost\ $\pm$ \nSeedsUpThreeCostSe\ and \nSeedsUpFourCost\ $\pm$ \nSeedsUpFourCostSe\ points (\cref{tab:x3-seeds}). The cost is below 10 points at four times the nominal for both monitors and at three times for the upper-side monitor only.
+
+\Cref{tab:size-matched} and \cref{fig:power-size} put the cost in context. The Kupiec test at 250 days and a level of 1\,\% has an expected count of 2.5, so its two-sided size is \nExactKupSize\,\%, of which only \nExactKupUpperSize\,\% lies in the upper tail that rejects an understated VaR (it rejects from \nExactKupMinCount\ exceptions); the large lower-tail share is the probability of no exception in 250 days. The comparison of the monitor with the upper tail of the Kupiec test is therefore a comparison at a similar size, and
+at three times the nominal the upper tail has a power of \nExactThreeKupUp\,\%. The most powerful test of the size the e-process spends by day 250 (\nExactESize\,\%) has a power of \nExactThreeNpE\,\% at three times the nominal: no rule with that spending can exceed it (\cref{prop:power}), and the two-sided e-process attains
+\nByThreeE\,\% of the \nExactThreeNpE\,\% possible. The upper-side e-process spends more by day 250 (\nExactEUpSize\,\%), so its own bound is higher, \nExactThreeNpEUp\,\%, and it attains \nByThreeEUp\,\%. The cost of the guarantee is largely the cost of spending size over the later days: the mixture gives up power at day 250 to keep the size at every later day.
+
+\input{tables/size-matched}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{power-size}
+\caption{Power by day 250 against the multiplier of the hit rate at a level of 1\,\%: the exact power of the upper tail of one Kupiec reading, the exact power of the most powerful test at the size the rate e-process spends by day 250, and the measured power of the two-sided and the upper-side rate e-process and of the e-backtest with 95\,\% Wilson intervals, 2,000 streams per point.}
+\label{fig:power-size}
+\end{figure}
+
+The first-order times of \cref{prop:growth} are compared with the measurements in \cref{tab:theory-delay} and \cref{fig:delay-theory}. The comparison needs the single alternative whose alternative is the true hit rate (the matched bet) at each factor, and the main run measured one single alternative only, the one at three times the nominal level, which is matched at that factor alone. The factors of the table were therefore run again with the matched single alternative on the same streams (an experiment of its own, \texttt{exp\_matched.py}). The matched likelihood ratio reaches the threshold in about \nKlSprtThree\ days at three times the nominal level and \nKlSprtFour\ at four, the mixture of eight alternatives in about \nKlMixThree\ and \nKlMixFour\ days; the measured medians are \nMatchedThreeMed\ and \nMatchedFourMed\ for the matched single alternative and \nMedThreeE\ and \nMedFourE\ for the mixture, all below the first-order times. At every factor from 2 to 10 the matched alternative is faster than the mixture (\nMatchedSixMed\ against \nMedSixE\ days at six times the nominal level and \nMatchedTenMed\ against \nMedTenE\ at ten times), the order of a matched and an unmatched bet that the theory predicts; the single alternative at three times the nominal level, which is matched at that factor only, is slower than the mixture at six and ten times (\nMedSixSprt\ and \nMedTenSprt\ days). The figure shows that the time grows as the inverse of the divergence, so the delay at a hit rate of 1.5 or 2 times the nominal is of the order of years: the mixture has a median of \nMedTwoE\ days at twice the nominal, and at 1.5 times more than half of the streams are not rejected within the 1,000 days (a median \nMedOneFiveE).
+
+\input{tables/theory-delay}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{delay-theory}
+\caption{First-order times to reach the threshold $\log 20$ from \cref{prop:growth} (the matched likelihood ratio and the mixture of eight alternatives) and the measured median first-rejection days of the single-alternative and of the mixture e-process against the hit-rate multiplier at a level of 1\,\%; a point at 1,000 means a median beyond the horizon, and the dashed line is the 250-day window.}
+\label{fig:delay-theory}
+\end{figure}
+
+\subsection{Hit clustering}
+\label{sec:results-cluster}
+
+A VaR with the right rate and clustered hits is the second departure. \Cref{tab:clustering} and \cref{fig:clustering} give the share of streams rejected. When hits follow hits with probability $0.4$ (forty times the unconditional rate), the clustering e-process rejects \nCluFourTenthCluster\,\% of the streams within 1,000 days (median \nCluMedFourTenthCluster\ days) and the battery of the two monitors \nCluFourTenthBattery\,\%, while the rate monitor alone rejects \nCluFourTenthE\,\%, more than its size of \nNullSizeE\,\%, because hits that follow hits break the conditional null of the rate monitor even when the rate is right. The Christoffersen test on the last 250 days reads the same departure faster, with a median of \nCluMedFourTenthIndep\ days and \nCluFourTenthIndep\,\% of streams, at a size of \nNullSizeIndep\,\% when it is read every day.
+At $q=0.2$ the clustering e-process rejects \nCluTwoTenthCluster\,\% and at $q=0.1$ \nCluOneTenthCluster\,\%, so it is weak against mild clustering, with a median beyond the horizon at $0.1$. The traffic light and the Kupiec test on the last 250 days flag \nCluFourTenthLight\ and \nCluFourTenthKupTrail\,\% of the clustered streams, but they flag \nNullSizeLight\ and \nNullSizeKupTrail\,\% of the correct ones, so their rejection is no evidence of clustering. The Kupiec test with a simulated critical value rejects \nCluFourTenthKupCal\,\% of the clustered streams, because clustering at the right rate changes the count of hits in a window only through its variance.
+
+\input{tables/clustering}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{clustering}
+\caption{Share of streams of 1,000 days rejected at some day when the hit rate is right and a hit follows a hit with probability $q$, for the clustering and the rate e-processes, their average, the independence test and the Kupiec test on the last 250 days, the traffic light, each read every day, 2,000 streams per group; the first group is a correct model and the dashed line is 5\,\%.}
+\label{fig:clustering}
+\end{figure}
+
+\subsection{Defaults against the PD of each grade}
+\label{sec:results-pd}
+
+\Cref{tab:pd-results} and \cref{fig:pd-books} (left) read the PD monitor on five grades over ten years. When the PD is right the product combination rejects \nPdOneProd\,\% and the average \nPdOneAvg\,\% of \nPdReps\ histories, while the chi-square test across grades read every year rejects \nPdOneChiEvery\,\%. When every PD is $1.1$ times the predicted one, the product rejects \nPdOneOneProd\,\%, the average \nPdOneOneAvg\,\% and the upper-side average \nPdOneOneAvgUp\,\% of the histories within ten years, while the chi-square test detects \nPdOneOneChiOne\,\% at year 10;
+the median year of detection is \nPdMedYearOneOne\ for the upper-side average at that factor. At $1.05$ the monitors detect almost nothing (\nPdOneZeroFiveAvg\,\% for the average) against \nPdOneZeroFiveChiOne\,\% for the chi-square test at year 10. From $1.25$ every rule detects every history, the monitors at a median year of \nPdMedYearOneTwoFive. The size is held where the chi-square test read every year with its nominal critical value inflates it, but that is a property of the critical value and not of reading every year (a simulated critical value restores the size of the chi-square test and detects more, \cref{tab:pd-equal-size}), and the power cost for a small miscalibration is large: a ten-year cohort with a 5\,\% relative error in every grade is detected in \nPdOneZeroFiveChiOne\,\% of the histories by the chi-square test at year 10 and in \nPdOneZeroFiveAvgUp\,\% by the upper-side average e-process. The average detects more than the product at $1.1$ (\nPdOneOneAvg\ against \nPdOneOneProd\,\%), the reverse of what the independence assumed by the product would suggest;
+\cref{sec:discussion} reads the difference through the growth-rate bound. When only the 10\,\% grade drifts (by $1.3$) every combination detects at least \nPdGradeProdUp\,\% of the histories (\cref{tab:ablation-pd}), so the average does not lose to the product where one grade carries the signal.
+
+\input{tables/pd-results}
+
+\Cref{tab:pd-correlation} and \cref{fig:pd-books} (right) show the effect \cref{prop:overdispersion} predicts. When the predicted PD is exactly right and the defaults of a year share a systematic factor, the two-sided e-processes reject \nRhoZeroThreeProd\,\% (product) and \nRhoZeroThreeAvg\,\% (average) of the histories at an asset correlation of $0.03$ and \nRhoOneTwoProd\ to \nRhoOneTwoAvg\,\% at $0.12$; the upper-side average rejects \nRhoZeroThreeAvgUp\,\% at $0.03$ and \nRhoTwoFourAvgUp\,\% at $0.24$. The chi-square test is not spared: it rejects \nRhoZeroThreeChiOne\,\% at year 10 and \nRhoZeroThreeChiEvery\,\% when read every year at $0.03$. At zero
+correlation the sizes are those of \cref{tab:pd-results}. The loss is the loss of the binomial null that all these tests share, and the sequential construction inherits it and compounds it: the process grows by a factor above one in expectation at every year.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{pd-books}
+\caption{Share of ten-year histories of five rating grades rejected at some year. Left: every true PD is the predicted one multiplied by the factor on the horizontal axis, 1,000 histories per point, for seven rules: the product and the average of the grade e-processes, the upper-side average, the upper-side average with a coarse grid, the chi-square test across grades at year 10 and read every year (both against the nominal critical value), and the chi-square test read every year against a simulated critical value of size 5\,\% (\cref{tab:pd-equal-size}). Right: the predicted PD is right and the defaults of each year share a systematic factor of asset correlation $\rho$, 2,000 histories per point, for the product, the average, the upper-side average, the two chi-square readings of the left panel with the nominal critical value, and the Vasicek-corrected binomial test of the engine at the true correlation and at an assumed correlation of 0.12; the dashed line is 5\,\%. The same line style marks the same rule in both panels.}
+\label{fig:pd-books}
+\end{figure}
+
+\input{tables/pd-correlation}
+
+\Cref{tab:pd-comparators} runs the PD tests of the engine on the same histories. The exact binomial and the Jeffreys tests of each grade, read every year with a Bonferroni split, hold a size of \nPdcZeroBinEvery\ and \nPdcZeroJefEvery\,\% without correlation and reject \nPdcZeroThreeBinEvery\ and \nPdcZeroThreeJefEvery\,\% of the histories at an asset correlation of $0.03$, so they share the failure of the e-processes. The binomial test under the Vasicek one-factor mixture, which the engine carries as the remedy for correlated defaults, keeps its size when it is given the correlation that generated the histories: \nPdcZeroThreeVasTrueEvery\,\% at $0.03$, \nPdcOneTwoVasTrueEvery\,\% at $0.12$ and \nPdcTwoFourVasTrueEvery\,\% at $0.24$ (read once at year 10, \nPdcZeroThreeVasTrueOnce, \nPdcOneTwoVasTrueOnce\ and \nPdcTwoFourVasTrueOnce\,\%). With a correlation of \nPdcAssumedRho\ assumed it never rejects below that correlation (\nPdcZeroThreeVasAssumedEvery\,\% at $0.03$) and loses its size where the assumption is too low: \nPdcTwoFourVasAssumedEvery\,\% at $0.24$ (\nPdcTwoFourVasAssumedOnce\,\% read once). A comparator that holds its size under correlated defaults therefore exists, and the loss of size of the e-processes is not a consequence of reading every year; it is the consequence of a null without a correlation. The remedy holds only where the correlation is known: with a correlation assumed above the true one the test keeps its size by having no power (it rejects \nPdcOneTwoFiveVasAssumedEvery\,\% of the histories of a PD that is $25\,\%$ too low, \cref{tab:pd-equal-size}), and the power of the test with the true correlation under a miscalibrated PD is not measured in this study, which runs the miscalibrated histories without a systematic factor. The Vasicek test reads one year at a time and so does not pool the years as the e-process does; whether a monitor built on the same mixture would keep both the size and the pooling is the open step of \cref{sec:conclusions}.
+
+\input{tables/pd-comparators}
+
+The question the study asks of the PD monitor, whether the defaults of five grades are detected earlier than by the chi-square test read every year at an equal size, is answered by \cref{tab:pd-equal-size}. The chi-square test across grades is read every year against one constant critical value set by simulation on \nPdcCalReps\ correct histories, once to a size of 5\,\% over the ten years (a size of \nPdcOneChiSim\,\% on the histories of the table, against \nPdOneAvg\,\% for the average e-process, so that this rule is not at an equal size) and once to the size the average e-process measured, \nPdcMatchedSize\,\%. For a PD that is $5\,\%$ too low it rejects \nPdcOneZeroFiveChiSim\,\% of the histories within ten years (a median year of \nPdcOneZeroFiveChiSimYear) at the size of 5\,\% and \nPdcOneZeroFiveChiMatched\,\% at the size of the e-process, where the average e-process rejects \nPdOneZeroFiveAvg\,\%. For a PD that is $10\,\%$ too low the two chi-square rules reject \nPdcOneOneChiSim\,\% and \nPdcOneOneChiMatched\,\%, and \nPdcOneOneChiSimBy\ and \nPdcOneOneChiMatchedBy\,\% by year 3, against \nPdOneOneAvg\,\% and \nPdcOneOneAvgBy\,\% for the average e-process. From $1.25$ every rule except the Vasicek test with a correlation of \nPdcAssumedRho\ assumed rejects every history, the e-process at a median year of \nPdcOneTwoFiveAvgYear\ and the chi-square rules at \nPdcOneTwoFiveChiSimYear. That Vasicek test rejects \nPdcOneZeroFiveVasAssumedEvery\,\% of the histories at $1.05$, \nPdcOneOneVasAssumedEvery\,\% at $1.1$, \nPdcOneTwoFiveVasAssumedEvery\,\% at $1.25$ and \nPdcGradeVasAssumedEvery\,\% for the drift of the 10\,\% grade by $1.3$, where the histories have no systematic factor: with a correlation assumed above the true one it keeps its size by having no power, so the remedy of the previous table holds only when the correlation is known. At the size the e-process measured (\nPdcMatchedSize\,\%, a 95\,\% Wilson interval of \nPdcMatchedSizeLo\ to \nPdcMatchedSizeHi\,\%, \nPdcMatchedSizeCount\ of \nPdcMatchedSizeN\ histories) the defaults of the five grades are therefore not detected earlier by the e-process: on binomial defaults the chi-square rule detects a small miscalibration in more histories, \nPdcOneZeroFiveChiMatched\,\% against \nPdOneZeroFiveAvg\,\% at $1.05$ with intervals that do not overlap (\cref{tab:pd-equal-size}), and the e-process keeps what a simulated critical value lacks, a guarantee that does not depend on the horizon. The engine's per-grade binomial test, read every year with the Bonferroni split, detects \nPdcOneZeroFiveBinEvery\,\% at $1.05$ and \nPdcOneOneBinEvery\,\% at $1.1$.
+
+\input{tables/pd-equal-size}
+
+\subsection{Real exceedances}
+\label{sec:results-c11}
+
+\Cref{tab:c11} reads the 18 models of the market-risk case at the 99\,\% level in the six windows. In the equity crisis of 2007 to 2009 every rule flags every model; the e-process flags them at a median day of \nCElevenEquityNinetyEMed, the Kupiec test on all days so far at \nCElevenEquityNinetyKupCumMed, and the traffic light at \nCElevenEquityNinetyLightMed (its first possible day). In the 2008 foreign-exchange window the e-process flags \nCElevenFxNinetyEFlag\ models at a median day of \nCElevenFxNinetyEMed, the traffic light \nCElevenFxNinetyLightFlag\ at day \nCElevenFxNinetyLightMed,
+and the Kupiec test once at the end of the window \nCElevenFxNinetyKupEndFlag. Among the models the traffic light flags, the e-process misses \nCElevenFxNinetyLightMissedByE\ and flags the rest at a median day of \nCElevenFxNinetyLightE; it flags \nCElevenFxNinetyEOnlyVsKupiecEnd\ models that the end-of-window Kupiec test does not. In the window of 2020, with 104 days, the e-process flags \nCElevenCovidNinetyEFlag\ models at a median day of \nCElevenCovidNinetyEMed, and the traffic light cannot read the window at all; in 2022 (249 days), \nCElevenRatesNinetyEFlag\ at a median day of \nCElevenRatesNinetyEMed. In the 64 days of 2023 no rule flags any model.
+
+\input{tables/c11}
+
+The calm window of 2004 to 2006 is the control: a quiet market in which the models should not be rejected systematically. The e-process flags \nCElevenCalmNinetyEFlag\ of the 18 models, the Kupiec test once at the end of the 750 days \nCElevenCalmNinetyKupEndFlag, and the e-backtest \nCElevenCalmNinetyWwzFlag; the rules read every day flag more: the Kupiec test on all days so far \nCElevenCalmNinetyKupCumFlag, the traffic light \nCElevenCalmNinetyLightFlag\ and the Kupiec test on the last 250 days \nCElevenCalmNinetyKupTrailFlag\ models. The 750 days give each of those rules
+about three chances of an independent window, and the surplus of flags over the one-shot test is the repeated-reading inflation of \cref{prop:repeated} on real series, with the expected count of exceptions at the level in each model.
+\Cref{fig:c11-days} compares the first flag of the e-process with that of the Kupiec test on all days so far for each model. In the crisis windows almost every model is flagged earlier by the e-process than the end of the window, and the Kupiec test on all days so far flags at the first look, day 50, in many models; in the calm window the points are few.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{c11-days}
+\caption{First day flagged by the rate e-process (vertical) against the first day flagged by the Kupiec test on all days so far (horizontal) for each of the 18 models at the 99\,\% level in three windows: the equity crisis, the foreign-exchange window of 2008 and the calm control window. Triangles on the right margin are models only the e-process flags and squares at the top are models only the Kupiec test flags; grey lines mark day 250.}
+\label{fig:c11-days}
+\end{figure}
+
+At the 97.5\,\% level (\cref{tab:c11-975}) the e-process flags more models than the end-of-window Kupiec test in the windows of 2020 (\nCElevenCovidSeventyEFlag\ against \nCElevenCovidSeventyKupEndFlag), 2022 (\nCElevenRatesSeventyEFlag\ against \nCElevenRatesSeventyKupEndFlag) and 2008 (\nCElevenFxSeventyEFlag\ against \nCElevenFxSeventyKupEndFlag); in the calm window it flags fewer (\nCElevenCalmSeventyEFlag\ against \nCElevenCalmSeventyKupEndFlag). The comparison with the traffic light is
+structurally in favour of the monitor, since the light cannot speak before day 250 and no rule of the set has a truth to be right against in these windows. The windows show when the rules fire, not which of them is right.
+
+\input{tables/c11-975}
+
+\subsection{Real defaults by vintage}
+\label{sec:results-c03}
+
+\Cref{tab:c03} and \cref{fig:c03-paths} read the PD monitor on the five cohorts of small-business loans. The monitor looks for a vintage that defaults more than the predicted cumulative curve, with the vintages of a cohort as its grades and the ages as its steps, combined by average and by product. For the cohort of 2006 and 2007 and the cohort of 2008 to 2010 the monitor rejects at the first age, 12 months, with the largest value of $\log E$ of the average at \nCThreeMaxA\ and \nCThreeMaxB. The 2006 vintage has \nCThreeDTwoZeroZeroSix\ charge-offs against \nCThreePTwoZeroZeroSix\ predicted over the observed ages, the 2007 vintage \nCThreeDTwoZeroZeroSeven\ against \nCThreePTwoZeroZeroSeven. The binomial light read once at the five-year mark is red for these two vintages as well, 48 months later; the 2008 and 2009 vintages are red at the mark and rejected at 12 months, and the 2010 vintage is rejected at 24 months although its light is green and its charge-offs end below the predicted total (\nCThreeDTwoZeroOneZero\ against \nCThreePTwoZeroOneZero), a departure in the timing of the curve that a single reading at the mark does not see. No cohort from 2011 to 2020 is rejected as a cohort (the largest $\log E$ of an average is \nCThreeMaxE, below $\log 20=\nLogTwenty$): the model over-predicts, with for example \nCThreeDTwoZeroOneTwo\ charge-offs against \nCThreePTwoZeroOneTwo\ predicted in 2012, and a monitor of under-prediction has little to say. The 2018 vintage alone is rejected, at \nCThreeRejTwoZeroOneEight\ months ($\log E=\nCThreeVTwoZeroOneEight$), although its charge-offs end below the predicted total (\nCThreeDTwoZeroOneEight\ against \nCThreePTwoZeroOneEight); it is the same early-timing departure as the 2010 vintage, and the average over the three vintages of its cohort dilutes it. The values are the engine's output on the committed curves, recomputed here from the vintage curves with the product's builder and equal to the committed values for \nCThreeRebuilt\ of the five cohorts. Two to four vintages per cohort are few, and the binomial null has no asset correlation (\cref{prop:overdispersion}); the table illustrates the monitor on real curves and measures no power.
+
+\input{tables/c03}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{c03-paths}
+\caption{Left: the log of the PD e-process averaged over the vintages of each cohort at the ages 12 to 60 months (symmetric logarithmic axis); the dashed line is the rejection threshold $\log 20$. Right: for each vintage, the charge-offs over the observed ages relative to the charge-offs of the predicted curve, in percent.}
+\label{fig:c03-paths}
+\end{figure}
+
+\subsection{Agreement with the committed run and the outcome of the hypotheses}
+\label{sec:results-agreement}
+
+\Cref{tab:agreement} compares this study with the committed document of the product, which holds the same experiment from another seed. The shares ever rejected agree to within about one point (the Monte Carlo error of two runs of $2{,}000$ streams), and the median days agree to within the intervals of \cref{tab:main-results}, except the traffic light under clustering at $q=0.4$ (a median of \nCluMedFourTenthLight\ days in this run against \nCommittedCluMedFourTenthLight\ in the committed run); the committed medians at three and four times the nominal are \nCommittedMedThree\ and \nCommittedMedFour\ days, the power cost \nCommittedCostThree\ and \nCommittedCostFour\ points.
+The committed document is also the product's own judgement of the hypotheses, and on one point this study reverses it. The document judges the delay hypothesis held at three times the nominal rate on one seed (a median of \nCommittedMedThree\ days against 250) and finds only the power cost failed (its outcome is that H3 failed and H1 and H2 held). On \nSeedsCount\ seeds the pooled median is \nSeedsThreeMed\ days (interval \nSeedsThreeMedLo\ to \nSeedsThreeMedHi), so that judgement of the delay does not survive replication; the spread of the median at three times the nominal in \cref{tab:x3-seeds} (a standard deviation of \nSeedsThreeSeedSd\ days between seeds) is of the size of the difference between the committed value and this run.
+
+\input{tables/agreement}
+
+\Cref{tab:hypotheses} gives the outcome of each hypothesis. H1 holds: the size is held and the repeated Kupiec rule exceeds it. H2 holds at four times the nominal and above and does not hold at three times for the two-sided monitor, whose pooled median is \nSeedsThreeMed\ days (interval \nSeedsThreeMedLo\ to \nSeedsThreeMedHi) against the 250 of the window and of the traffic light. H3 holds at four times the nominal and
+fails at three times for the two-sided monitor (\nSeedsThreeCost\ points). The refutation clause, as the design states it on the equity and foreign-exchange windows, does not fire: the median day of the e-process among the models the traffic light flags is \nCElevenEquityNinetyLightE\ against \nCElevenEquityNinetyLightDay\ and \nCElevenFxNinetyLightE\ against \nCElevenFxNinetyLightDay. The same comparison on the generator, which this study adds to the clause, is the delay criterion of H2 and is reported there: at three times the nominal rate the pooled median, \nSeedsThreeMed, is not below the traffic light's \nSeedsThreeLight. The hypotheses as stated therefore do not hold as a whole: the delay and the power cost fail at three times the nominal rate and hold at four. The PD prediction is confirmed (\cref{sec:results-pd}). Two results were not pre-stated. The upper-side variant, which was chosen after the two-sided results, meets the delay and the power criteria at both severities on the same \nSeedsPooledN\ streams per factor; the choice is a finding that a prospective test would confirm, not a result of the pre-stated design. The PD question, whether the defaults of five grades are detected earlier than by the chi-square test at an equal size, was run after the other results and is answered no (\cref{sec:results-pd}).
+
+\input{tables/hypotheses}

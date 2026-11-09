@@ -1,0 +1,31 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Share of 100 data draws of 1,500 rows in which each gate fails, so that the leak is detected: G1 moves the inputs outside the training slice, G2 requires disjoint slices and a calibration map unchanged when the holdout labels are flipped, G3 perturbs the holdout inputs and labels (one perturbation draw) and requires every fitted parameter unchanged. The first row of each model is the proposed protocol, where a failure is a false alarm.}
+\label{tab:gates}
+\fitwidth{%
+\begin{tabular}{llrrrr}
+\toprule
+Model & Leak planted in the fitting path & G1 & G2 & G3 & Any gate \\
+\midrule
+WoE scorecard & none (false alarm rate) & 0 & 0 & 0 & 0 \\
+ & imputation on all rows & 100 & 0 & 100 & 100 \\
+ & bin edges on all rows & 100 & 0 & 100 & 100 \\
+ & WoE with holdout labels & 100 & 100 & 100 & 100 \\
+ & screen with holdout labels & 100 & 100 & 100 & 100 \\
+ & everything fitted on training and holdout & 100 & 100 & 100 & 100 \\
+ & configuration chosen on the holdout & 92 & 100 & 91 & 100 \\
+ & calibration map fitted on the holdout & 0 & 100 & 100 & 100 \\
+ & calibration slice overlapping the holdout & 0 & 100 & 100 & 100 \\
+standardised logit & none (false alarm rate) & 0 & 0 & 0 & 0 \\
+ & imputation on all rows & 100 & 0 & 100 & 100 \\
+ & scaling on all rows & 100 & 0 & 100 & 100 \\
+ & screen with holdout labels & 100 & 100 & 100 & 100 \\
+ & everything fitted on training and holdout & 100 & 100 & 100 & 100 \\
+ & configuration chosen on the holdout & 50 & 99 & 48 & 100 \\
+ & calibration map fitted on the holdout & 0 & 100 & 100 & 100 \\
+ & calibration slice overlapping the holdout & 0 & 100 & 100 & 100 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

@@ -1,0 +1,149 @@
+\section{Proposed method}
+\label{sec:proposed-method}
+
+\subsection{The protocol in outline}
+\label{sec:method-outline}
+
+The proposed protocol has five parts, each a test with a stated limit and a stated blind spot, and each run on the same data as its comparator.
+The first part judges the reconciliation identities of a book on a tolerance that is relative to the book and measures, by planting defects, the size of the smallest defect each entry can hide.
+The second part keeps overlays as separate lines and tests that they move only the total allowance, and that their booking is consistent across the stage tables and the waterfall.
+The third part states the non-linearity of the probability-weighted PD for the region of the factor in which it is a theorem, and measures it outside.
+The fourth part compares short scenario sets with the full distribution of the factor.
+The fifth part provisions one synthetic book under three regimes and checks a bridge from the B-1 total to the IFRS 9 total in every run.
+\Cref{alg:protocol} lists the steps; the sections that follow derive each of them.
+
+\begin{algorithm}[htbp]
+\caption{The acceptance protocol for one reporting date. The input is a book $x$ of tables, the overlays, the scenario factors with weights and the totals of the three regimes; every threshold is stated before the run.}
+\label{alg:protocol}
+\begin{algorithmic}[1]
+\Require book $x$ with $\gross>0$; tolerance $\tol$; planted-defect classes $\mathcal{D}$; overlays $\{\OVL_k\}$; $(p,\rho)$, factors $z_k$, weights $w_k$; totals $T_B,T_I,T_A$ and bridge steps $b_j$
+\State $\tlim \gets \tol\max(1,\gross)$ \Comment{engine tolerance basis}
+\State $r \gets Ax$; \textbf{if} $\max_i|r_i|>\tlim$ \textbf{then} report the failing identities and stop
+\For{each class $d\in\mathcal{D}$ and each random location $j$}
+  \State bisect $\delta$ in $[0,\,1000\,\tlim]$ for 60 steps to the smallest $\delta^{*}$ with $\max_i|r_i(x+\delta e_j)|>\tlim$
+  \State record $\delta^{*}/\tlim$ and the identities that fail at $10\tlim$
+\EndFor
+\State resample clean books; round every entry to each unit $u$; record the share flagged on $\tlim$
+\State evaluate $\LA$ for two overlay sets; \textbf{require} $M$ and $E_s$ unchanged and $\LA=M+\sum_k\OVL_k$
+\For{each booking of an overlay (correct and five wrong)}
+  \State record whether the twelve identities, the stage arithmetic and the pooled row flag it
+\EndFor
+\State $z^{*}\gets\Norm^{-1}(p)/\sqrt{\rho}$; class the scenario set as convex, concave or mixed; compute $\nu$
+\State compare each scenario set with $P^{*}$ by Gauss--Hermite quadrature; record $\varepsilon_d$
+\State \textbf{require} $\big|\sum_j b_j-(T_I-T_B)\big|\le 1$ currency unit; report $T_I/T_B$ and $T_A/T_B$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{The identities and the tolerance basis}
+\label{sec:method-identities}
+
+The tolerance basis is one definition for every identity of the book:
+\begin{equation}
+\tlim=\tol\,\max(1,\gross),\qquad \gross=\sum_{s}\big|C^{G}_{s}\big|,\qquad \tol=10^{-6}.
+\label{eq:limit}
+\end{equation}
+It is relative to the gross carrying amount of the book, not to a unit of money, because the entries of a book of tens of billions are floating-point numbers whose cancellation noise is about $10^{-5}$ of a unit; a tolerance of $10^{-6}$ units would flag clean books, as Section~\ref{sec:results} measures.
+The two roll-forwards of each stage give
+\begin{equation}
+r^{A}_{s}=C^{A}_{s}-O^{A}_{s}-\sum_{\ell}m^{A}_{s,\ell},\qquad r^{G}_{s}=C^{G}_{s}-O^{G}_{s}-\sum_{\ell}m^{G}_{s,\ell}.
+\label{eq:rollforward}
+\end{equation}
+The waterfall, which is the total-allowance view of the same movements, gives three identities: it closes, its closing equals the sum of the stage closings, and each of its lines equals the sum of the stage movements on that line, judged by the largest difference over the lines:
+\begin{align}
+r^{W}&=w_0+\sum_{\ell}w_\ell-w_C, &
+r^{C}&=\sum_{s}C^{A}_{s}-w_C, &
+r^{L}&=\max_{\ell}\Big|w_\ell-\sum_{s}m^{A}_{s,\ell}\Big|.
+\label{eq:waterfall}
+\end{align}
+The last family ties the allowance of a stage to the measurement that produced it:
+\begin{equation}
+r^{T}_{s}=C^{A}_{s}-\big(E_{s}+K_{s}\big),\qquad K_{s}=\sum_{k:\,s(k)=s}\OVL_{k}.
+\label{eq:tie}
+\end{equation}
+The twelve identities of a three-stage book are the six of \eqref{eq:rollforward}, the three of \eqref{eq:waterfall} and the three of \eqref{eq:tie}.
+The decision rule of the acceptance test is
+\begin{equation}
+\mathrm{flag}(x)=\mathbf{1}\Big[\max_{i}\,|r_i(x)|>\tlim\Big],\qquad r=Ax,
+\label{eq:decision}
+\end{equation}
+and the test reports the names of the failing identities, which is the only localization it has.
+A residual is the difference itself, never clipped or adjusted, and an identity that cannot be evaluated (a waterfall without an opening line, a stage without a stage ECL) is reported as not evaluated and never as an infinite residual.
+
+\subsection{Planted defects and the detection limit}
+\label{sec:method-defects}
+
+A test is worth its power to detect.
+The protocol plants a defect of size $\delta$ at entry $j$ of a clean book and defines the detection limit of that entry by
+\begin{equation}
+\delta^{*}_{j}=\inf\big\{\delta>0:\ \mathrm{flag}(x+\delta e_j)=1\big\},
+\label{eq:limit-entry}
+\end{equation}
+found by bisection over $[0,1000\,\tlim]$ in 60 steps.
+Eight classes of defect are planted: an allowance movement with the closing left as it was; an allowance closing with the movements left as they were; an amount of allowance booked in one stage that belongs to another, with both rows still closing (the stage reallocation); a movement of the gross carrying amount; a waterfall movement line; the waterfall closing; the model ECL of a stage; and an amount booked under another movement line, consistently in the stage row and in the waterfall (the misclassification).
+The last class is the negative control: it leaves every sum unchanged, so no identity can see it, and a test that flagged it would be flagging something else.
+Each class is planted at a random location, and its size is a multiple of the limit of the date, so that the rates of detection at different sizes are over the same cases.
+The comparators are the practices the disclosure itself describes: the stage arithmetic, the six roll-forwards alone (\eqref{eq:rollforward}), and the pooled row, one allowance row and one gross-amount row for the whole book.
+Both are judged on the same limit \eqref{eq:limit}.
+
+\subsection{Overlays as separate lines}
+\label{sec:method-overlays}
+
+The total allowance is the model ECL plus the overlays,
+\begin{equation}
+\LA=M+\sum_{k}\OVL_{k},\qquad M=\sum_{s}E_{s},
+\label{eq:allowance}
+\end{equation}
+and each overlay has an identifier, a rationale, a method, a target parameter, a stage or portfolio level, a signed amount, a staging effect and a review date.
+Two properties are tested.
+The invariance is that for two overlay sets $\mathcal{O},\mathcal{O}'$ on the same stage ECLs the model figures $M$ and $(E_s)_s$ are identical and $\LA$ differs by $\sum_{k\in\mathcal{O}'}\OVL_k-\sum_{k\in\mathcal{O}}\OVL_k$.
+The placement is that an overlay carried in stage $s$ raises $C^{A}_{s}$ by its amount, is a movement of that row, is a line of the waterfall, and raises $w_C$; the identities \eqref{eq:rollforward} to \eqref{eq:tie} close if and only if the overlay is where \eqref{eq:tie} says it is, which is the sense in which the identities tie an overlay to its stage and refuse to accept it as a plug.
+Five wrong bookings are planted: in the waterfall only; in a stage row with a waterfall line that names another stage; in two stage rows and once in the waterfall; in a stage row with no waterfall line; and merged into the model ECL under the remeasurement line.
+The five wrong bookings are chosen to cover the ways the three views of an overlay can disagree: the waterfall, the stage rows and the stage closing against the stage ECL.
+A sixth, the correct booking, is run beside them so that a test that flags everything cannot pass.
+The shares of the allowance, 2\%, 10\% and 25\%, span a negligible overlay, the committed overlay of the synthetic bank rounded up, and the share the supervisory sample found.
+
+\subsection{The non-linearity statement and its region}
+\label{sec:method-nonlinearity}
+
+With the one-factor conditional PD
+\begin{equation}
+\mathrm{PD}(z)=\Norm\!\left(\frac{\Norm^{-1}(p)-\sqrt{\rho}\,z}{\sqrt{1-\rho}}\right),\qquad z^{*}=\frac{\Norm^{-1}(p)}{\sqrt{\rho}},
+\label{eq:pd}
+\end{equation}
+the index of the weighted PD is
+\begin{equation}
+\nu=\frac{\sum_k w_k\,\mathrm{PD}(z_k)}{\mathrm{PD}(\bar z)}-1,\qquad \bar z=\sum_k w_kz_k.
+\label{eq:index}
+\end{equation}
+The statement of the protocol is not that $\nu\ge0$ but that $\nu\ge0$ when every scenario factor satisfies $z_k\ge z^{*}$, that $\nu\le0$ when every factor satisfies $z_k\le z^{*}$, and that either sign can occur otherwise; Section~\ref{sec:theory} proves it.
+Each draw of a sweep is classed by the position of its factors against $z^{*}$ and the sign of $\nu$ is tabulated by class.
+A scenario set $d$ is compared with the expected PD under a normal forecast factor, $P^{*}=\mathbb{E}\big[\mathrm{PD}(\mu+\sigma\xi)\big]$ with $\xi$ standard normal, computed by 64-node Gauss--Hermite quadrature, through the relative error $\varepsilon_d=(P_d-P^{*})/P^{*}$.
+Five sets are compared: the base scenario alone; three scenarios at $\mu-\sigma,\mu,\mu+\sigma$ with weights $1/4,1/2,1/4$; three scenarios at the means of the tertiles of the factor with weights $1/3$; and the three-point and five-point Gauss--Hermite rules.
+The region qualifier is part of the statement, not a hedge: it names the set of inputs on which the inequality is a theorem, and the sweep tests the theorem on draws that include the inputs on which it is false, so that a defect of the engine in the convex region would show as a negative index there.
+The quadrature check of the engine, which compares the expectation of the conditional PD over a standard normal factor with the through-the-cycle PD, is reported with every draw.
+Three details make the non-linearity test usable on a book.
+The factors are the means of the scenario paths over the first four quarters, the weights are those of the scenarios, and the through-the-cycle PD is the mean of the annualised segment default rates; the product states each and the paper reuses them.
+The test is applied at the PD level because the conditional PD is the quantity for which the region is known in closed form, and the allowance-level index is reported beside it without a region claim.
+
+\subsection{The bridge between regimes}
+\label{sec:method-bridge}
+
+The B-1 total is the sum over the segments of the engine's B-1 provision plus the top-up to the minimum of 0.50\% on the individually assessed normal portfolio, which is its own line; the IFRS 9 total is the probability-weighted, discounted model ECL plus the overlays; the Annex 9 total is the sum of the coverage by category.
+Let $a$ be the IFRS 9 ECL of every account at the central scenario over twelve months and undiscounted (defaulted accounts at their stage 3 amount), $b$ the same with stage 2 at its lifetime, $c$ the probability-weighted $b$, $d$ the discounted $c$ (the model ECL), and $B$ the sum of the B-1 segment provisions.
+The bridge is the ladder
+\begin{equation}
+T_I-T_B=\underbrace{(a-B)}_{b_1}+\underbrace{(b-a)}_{b_2}+\underbrace{(c-b)}_{b_3}+\underbrace{(d-c)}_{b_4}\ \underbrace{-\,\text{top-up}}_{b_5}\ +\ \underbrace{\textstyle\sum_k\OVL_k}_{b_6},
+\label{eq:bridge}
+\end{equation}
+and the protocol requires that the first step, which the product computes as the remainder of the gap, equal the independently computed difference $a-B$ to within one currency unit.
+The steps are named by what changes: the measurement basis, the lifetime horizon of stage 2, the probability weighting, the discounting at the original effective rate, the B-1 minimum, and the overlays.
+The bridge is judged in every run of every seed and scenario, not on the committed documents alone, and the product's own bake refuses a document whose first step differs from the independent difference by more than one unit.
+The closure is a statement about aggregation, which Section~\ref{sec:theory-bridge} makes precise, and the protocol reports the sizes of the steps beside it so that a reader sees what each text adds.
+
+\subsection{Parameters, complexity and implementation}
+\label{sec:method-implementation}
+
+The parameters are the tolerance $\tol=10^{-6}$ of the engine, the 60 bisection steps, the multiples of the limit $0.25,0.5,0.9,0.99,1.01,1.1,2,10,100$, the rounding units of 1 to $10^{6}$, the 64 Gauss--Hermite nodes, and the number of repetitions of each experiment, all stated in the header of its script.
+Evaluating the identities of a book costs $O(n)$ operations, so a bisection costs $60\,O(n)$ per defect and the whole of the first experiment is about $10^{5}$ evaluations of $n=\esixEntries{}$ entries, which ran in \eoneSeconds{} seconds.
+The sweeps cost one evaluation of the conditional PD per scenario per draw.
+The implementation uses the engine \texttt{riskvalidation} 1.1.0: the functions \texttt{identity\_residuals} and \texttt{check\_identities} of the reconciliation module, the overlay and allowance functions of the provisions package, the test rows of its IFRS 9 validation family, and its CMF B-1 and Annex 9 modules; the product contributes the planted defects, the resampling of books, the generator of the synthetic bank and the scripts, and defines no engine function.

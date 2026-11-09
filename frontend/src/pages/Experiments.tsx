@@ -14,6 +14,7 @@ import { CHAMPION, test, value } from '../workbench/model';
 import { C04Experiments } from './C04Sections';
 import { C05ExperimentsSection } from './C05Sections';
 import { C22ExperimentsSection } from './C22Sections';
+import { familyOf } from './experiments/families';
 import { DESIGN_GROUP_LABEL, governanceTabs } from './experiments/governanceTabs';
 import { U6ExperimentsSection, U6_CASES } from './U6Sections';
 import { W2ExperimentsSection, W2_CASES } from './Wave2Sections';
@@ -225,26 +226,11 @@ function Metrics() {
   );
 }
 
-/** The question families the case tabs are grouped by (ADR-0071 rule 5: at most six peer tabs, then group by the question), keyed by the category of the coverage registry; a category without a family keeps its own title. */
-const FAMILY: Record<string, { id: string; label: BiText }> = {
-  'credit-scoring': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Calificación crediticia y PD' } },
-  'ratings-calibration': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Calificación crediticia y PD' } },
-  provisions: { id: 'credit-losses', label: { en: 'Credit losses: provisions, severity and exposure', es: 'Pérdidas de crédito: provisiones, severidad y exposición' } },
-  'lgd-ead': { id: 'credit-losses', label: { en: 'Credit losses: provisions, severity and exposure', es: 'Pérdidas de crédito: provisiones, severidad y exposición' } },
-  'portfolio-capital': { id: 'capital', label: { en: 'Capital, aggregation and stress', es: 'Capital, agregación y estrés' } },
-  operational: { id: 'capital', label: { en: 'Capital, aggregation and stress', es: 'Capital, agregación y estrés' } },
-  'capital-stress': { id: 'capital', label: { en: 'Capital, aggregation and stress', es: 'Capital, agregación y estrés' } },
-  'ml-ai-risk': { id: 'ml-ai-risk', label: { en: 'ML and AI risk', es: 'Riesgo de ML e IA' } },
-  'market-ccr': { id: 'market-balance', label: { en: 'Market and balance-sheet risk', es: 'Riesgo de mercado y de balance' } },
-  'balance-sheet': { id: 'market-balance', label: { en: 'Market and balance-sheet risk', es: 'Riesgo de mercado y de balance' } },
-};
-
 /** The case tabs grouped by the question family of their category; the order of the families is the order of the first case. */
 export function groupCases(tabs: Array<{ id: string; label: string; content: ReactNode }>): Array<{ id: string; label: BiText; tabs: Array<{ id: string; label: string; content: ReactNode }> }> {
   const groups: Array<{ id: string; label: BiText; tabs: Array<{ id: string; label: string; content: ReactNode }> }> = [];
   for (const tab of tabs) {
-    const category = CASES.find((c) => c.id.toLowerCase() === tab.id)?.category ?? 'other';
-    const fam = FAMILY[category] ?? { id: category, label: CATEGORY_TITLES[category] ?? { en: 'Other cases', es: 'Otros casos' } };
+    const fam = familyOf(tab.id);
     const g = groups.find((x) => x.id === fam.id);
     if (g) g.tabs.push(tab);
     else groups.push({ id: fam.id, label: fam.label, tabs: [tab] });

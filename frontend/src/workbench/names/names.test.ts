@@ -6,8 +6,8 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-// @ts-expect-error the generator is plain JavaScript, run by node (scripts/gen-names.mjs)
-import { collectModelNames, serialise } from '../../../scripts/gen-names.mjs';
+// @ts-expect-error the generator is plain JavaScript, run by node (scripts/gen-names.product.mjs)
+import { collectModelNames, serialise } from '../../../scripts/gen-names.product.mjs';
 import { TEST_NAMES, entryName, evidenceLabel, modelName, segmentName, testName, type NameContext } from './index';
 import committed from './models.gen.json';
 import registry from './registry.json';
@@ -124,7 +124,7 @@ describe('the names gate: every id a reader can meet has a name', () => {
     expect([...bad].slice(0, 40)).toEqual([]);
   });
 
-  it('keeps models.gen.json equal to what the documents say (node scripts/gen-names.mjs)', () => {
+  it('keeps models.gen.json equal to what the documents say (node scripts/gen-names.product.mjs)', () => {
     expect(serialise(committed)).toBe(serialise(collectModelNames(derived)));
   });
 });

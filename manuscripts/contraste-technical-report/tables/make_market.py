@@ -745,6 +745,18 @@ def extra_numbers(D: dict) -> None:
     put("SizeMin", min(sizes), "data/derived/C22/other-families.json simulations[arm=null] (percent)", 1)
     put("SizeMax", max(sizes), "data/derived/C22/other-families.json simulations[arm=null] (percent)", 1)
     put("NStudies", len(pairs), "data/derived/C22/other-families.json simulations[market.*]")
+    nulls = {p["test"]: p["null"] for p in pairs if p["test"] != "market.dynamic_quantile_test"}
+    for tid, stem in (("market.christoffersen_independence", "Ind"), ("market.christoffersen_conditional_coverage", "Cc")):
+        r = nulls[tid]["rates"][nulls[tid]["study"]["rule_label"]]
+        put(f"SizeOver{stem}", 100 * r["rate"], f"data/derived/C22/other-families.json {tid} null (percent)", 1)
+        put(f"SizeOver{stem}Lo", 100 * r["wilson_low"], f"data/derived/C22/other-families.json {tid} null Wilson low (percent)", 1)
+        put(f"SizeOver{stem}Hi", 100 * r["wilson_high"], f"data/derived/C22/other-families.json {tid} null Wilson high (percent)", 1)
+    wil = [(p["null"]["study"]["label"]["en"], p["null"]["rates"][p["null"]["study"]["rule_label"]]) for p in pairs]
+    put("SizeAboveFive", sum(r["wilson_low"] > 0.05 for _, r in wil), "data/derived/C22/other-families.json null arms whose Wilson interval lies above 5 percent")
+    put("SizeEdge", sum(r["wilson_low"] <= 0.05 < r["wilson_low"] + 0.001 for _, r in wil), "null arms whose Wilson low bound is within 0.1 point of 5 percent")
+    # GJR roughness outside the pandemic window and the network's minimum, for the threshold sentence
+    r_out = [roughness(level(models(D, w)["gjr-t"], 0.01)["var"]) for w in WINDOWS if w != "equity-2020"]
+    put("RoughMaxGjrOut", max(r_out), "data/derived/C11/<window>.json gjr-t by_level[0].var, windows other than equity-2020 (script)", 3)
 
     def power(tid: str, label: str | None = None) -> float:
         for p in pairs:

@@ -1,0 +1,136 @@
+{
+ "valuation_date": "2026-09-03",
+ "seeds": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25,
+  26,
+  27,
+  28,
+  29,
+  30
+ ],
+ "resamples": 10000,
+ "bootstrap_seed": 20261108,
+ "variants": {
+  "long-uf": {
+   "books_skipped_nonpositive_single": 0,
+   "ratio_of_means": 4.936377197109744,
+   "ratio_of_means_ci": [
+    4.470289011155104,
+    5.545152087334006
+   ],
+   "per_book_median": 5.085913622519014,
+   "per_book_q1": 4.062910793661691,
+   "per_book_q3": 5.910234607318111,
+   "per_book_mean": 5.767499033056759,
+   "per_book_min": 3.2303709925439845,
+   "per_book_max": 14.89982886787131,
+   "mean_annex_nii": 11906.976398064708,
+   "mean_single_nii": 2412.088039997482
+  },
+  "short-uf": {
+   "books_skipped_nonpositive_single": 0,
+   "ratio_of_means": 5.4945486499467275,
+   "ratio_of_means_ci": [
+    4.8962562761988755,
+    6.324298167525
+   ],
+   "per_book_median": 5.809130979779746,
+   "per_book_q1": 4.380817182399046,
+   "per_book_q3": 6.874273146567676,
+   "per_book_mean": 6.895419622780034,
+   "per_book_min": 3.421713261152759,
+   "per_book_max": 22.536112677958098,
+   "mean_annex_nii": 11772.193579834446,
+   "mean_single_nii": 2142.522403536928
+  },
+  "cpi-surprise": {
+   "books_skipped_nonpositive_single": 0,
+   "ratio_of_means": 4.936377197109744,
+   "ratio_of_means_ci": [
+    4.464539597289414,
+    5.537907340410776
+   ],
+   "per_book_median": 5.085913622519014,
+   "per_book_q1": 4.062910793661691,
+   "per_book_q3": 5.910234607318111,
+   "per_book_mean": 5.767499033056759,
+   "per_book_min": 3.2303709925439845,
+   "per_book_max": 14.89982886787131,
+   "mean_annex_nii": 11906.976398064708,
+   "mean_single_nii": 2412.088039997482
+  },
+  "clp-steepener": {
+   "books_skipped_nonpositive_single": 0,
+   "ratio_of_means": 1.9032806939531939,
+   "ratio_of_means_ci": [
+    1.816135232147226,
+    2.0014284331773604
+   ],
+   "per_book_median": 1.9194599051974754,
+   "per_book_q1": 1.7708818366666783,
+   "per_book_q3": 2.04893191541381,
+   "per_book_mean": 1.9619325492301827,
+   "per_book_min": 1.478509101087578,
+   "per_book_max": 2.70588391338003,
+   "mean_annex_nii": 7526.960798683096,
+   "mean_single_nii": 3954.7297582519386
+  },
+  "offset-on-off": {
+   "books_skipped_nonpositive_single": 0,
+   "ratio_of_means": 5.723087430100649,
+   "ratio_of_means_ci": [
+    5.069863576254293,
+    6.618767217270491
+   ],
+   "per_book_median": 6.1268797713608985,
+   "per_book_q1": 4.504795508336967,
+   "per_book_q3": 7.240560276023661,
+   "per_book_mean": 7.47658807050404,
+   "per_book_min": 3.492299229587629,
+   "per_book_max": 27.519089859684826,
+   "mean_annex_nii": 11725.320014810904,
+   "mean_single_nii": 2048.775273489872
+  },
+  "floors-active": {
+   "books_skipped_nonpositive_single": 0,
+   "ratio_of_means": 1.2613126315996794,
+   "ratio_of_means_ci": [
+    1.237478170589755,
+    1.2892740581019535
+   ],
+   "per_book_median": 1.2615085474213847,
+   "per_book_q1": 1.2141545207417184,
+   "per_book_q3": 1.2997656032021416,
+   "per_book_mean": 1.2725673497802779,
+   "per_book_min": 1.129039269122206,
+   "per_book_max": 1.5155282742627871,
+   "mean_annex_nii": 7154.4545907948805,
+   "mean_single_nii": 5672.229399400473
+  }
+ },
+ "seconds": 1.05773020000197
+}

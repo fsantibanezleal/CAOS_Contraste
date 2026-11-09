@@ -1,0 +1,63 @@
+\section{Experimental design}
+\label{sec:experimental-design}
+
+\subsection{Hypotheses, stated before the experiments}
+\label{sec:design-hypotheses}
+
+The hypotheses were written in the design of the study before the monitors were evaluated on any stream. For the monitors of VaR hits at a level of 1\,\% they are the following; the wording is the one of the design, except that the comparison with the traffic light on the generator, which the design states under H2 and not in the refutation clause, is reported under H2.
+\begin{description}
+\item[H1, size.] The size of the e-process monitor is held at 5\,\% under optional stopping, where the repeated Kupiec rule exceeds it. Read every day over 1,000 days, the monitor rejects a correct model in at most 5\,\% plus three Monte Carlo standard errors of the streams, and the Kupiec test read every day on a sliding or a growing window rejects more.
+\item[H2, delay.] The median detection delay is below the 250-day window at a hit rate three or more times the nominal, and below the delay of the traffic light, which cannot speak before day 250.
+\item[H3, power cost.] The power cost is under 10 points: the power of one Kupiec reading at day 250 exceeds the power of the monitor by day 250 by less than 10 points, at a hit rate three and at four times the nominal.
+\item[R, refutation.] The hypothesis is refuted if the delay is not lower than the delay of the traffic light on the market-risk windows of the equity crisis of 2007 to 2009 and the foreign-exchange window of 2008.
+\end{description}
+For the PD monitor the design states a prediction instead of a numerical criterion: from the documentation of the engine, that the monitor over-rejects a correct PD when the
+defaults of a year are correlated, because its null is binomial. The study also asks whether the defaults of five grades are detected earlier than by the chi-square test read every year at an equal size; that comparison was designed and run after the other results were known, and \cref{tab:hypotheses} lists it with the results that were not pre-stated. A hypothesis that fails is reported as failed in \cref{tab:hypotheses}, in the abstract and in the conclusions alike; the monitors were not retuned after any run.
+
+\subsection{Data and their provenance}
+\label{sec:design-data}
+
+\paragraph{Generators of known truth.}
+The hit streams come from the generator \texttt{VarHits} of the engine release 1.1.0: $T=1{,}000$ days at $\alpha=0.01$, a hit rate multiplied by 1.5, 2, 3, 4, 6 or 10 (the severity ladder of the hypotheses is judged at 3 and 4), or the right rate with hits that follow hits with probability $q=0.1,0.2,0.4$. The defaults come from the generator \texttt{DefaultCounts} of the same release:
+five grades with predicted PD $0.5$, $1$, $2$, $5$ and $10\,\%$, $2{,}000$ obligors per grade and year, ten years, every true PD scaled by a factor of 1, 1.05, 1.1 or 1.25, or only the 10\,\% grade by 1.3, and, for the correlation experiment, a one-factor Vasicek model with asset correlation $\rho\in\{0,0.03,0.12,0.24\}$ and one factor per year common to the grades. The generators draw from a numpy
+\texttt{SeedSequence} per scenario, so a scenario does not depend on the others, and the engine verifies their moments against the closed forms.
+
+\paragraph{Real exceedances: market-risk back-tests.}
+The case on market risk forecasts the 99\,\% and 97.5\,\% VaR one day ahead, strictly on the returns before the day, for 18 models (seventeen forecasting models of the case's ladder and one neural quantile network) in six windows of public series: a calm window 2004--2006 of 750 days on a mixed book, the equity crisis 2007--2009 (504 days),
+the euro against the dollar in 2008--2009 (251 days), the equity crash of 2020 (104 days), the rates cycle of 2022 (249 days) and the bank turmoil of 2023 (64 days). The returns are the daily US equity market return of the Kenneth French data library \citep{french2025}, the 10-year par yield of the US Treasury and the dollars per euro of the Federal Reserve H.10 release; the committed documents hold forecasts and exceedance days, never the returns of the derived-only series.
+No truth is known in these windows.
+
+\paragraph{Real defaults: vintages of small-business loans.}
+The case on small-business credit holds the 7(a) loans of the US Small Business Administration \citep{sba2026} in five cohorts of fiscal-year vintages (2006--07, 2008--10, 2011--14, 2015--17, 2018--20). For each vintage the committed document holds the predicted and the observed cumulative default curves at 12, 24, 36, 48 and 60 months. The
+loans are guaranteed loans of a federal programme, not the small-business book of a bank, and the study reads them as a real default history of a PD curve.
+
+\subsection{Methods compared}
+\label{sec:design-methods}
+
+Every method is run on the same streams. The engine supplies the proposed monitors (the two-sided and the upper-side rate monitor, the single-alternative likelihood ratio at three times the nominal level, the clustering monitor, their average), the Basel traffic-light zone function, and the Kupiec statistic against which the experiment code is tested. The experiment code (\texttt{experiments/common.py}) adds:
+the Kupiec test on all days so far read every day from day 50 and on the last 250 days read every day from day 250; the traffic light, as the first day on which the exception count of the last 250 days is outside the green zone (five exceptions at 99\,\% over 250 days); the independence test of \citet{christoffersen1998} on the last 250 days; the chi-square test across grades on the cumulative defaults;
+the Kupiec test with the Sidak level of its 951 looks; the Kupiec test with a constant critical value, and Page's CUSUM against a hit rate of three times the nominal, both with thresholds set by simulation on 20,000 independent null streams (the Kupiec critical value on the statistic, the CUSUM threshold, each to a size of 5\,\% over 1,000 days); the e-backtest of \citet{wang2022} for VaR with their growth-rate betting process; and the Bayes factor of a uniform prior on the hit rate against the null, a test martingale \citep{shafer2011}.
+For the PD comparison the engine also supplies the exact one-sided binomial test of each grade, the Jeffreys test \citep{jeffreys1946} of each grade and the binomial test under the Vasicek one-factor mixture \citep{gordy2003}, the published remedy for correlated defaults. They are read per grade and year with a Bonferroni split of 5\,\% over the 50 grade-years (read every year) or over the 5 grades on the defaults of year 10 alone (read once), which is valid whatever the dependence of the grades and the years; the Vasicek test is given the asset correlation that generated the history (the correlation is right) and, separately, a correlation of \nPdcAssumedRho\ assumed (a value inside the Basel range, the case of a validator who does not know the correlation). The experiment code adds the chi-square test across grades read every year against a constant critical value set by simulation on \nPdcCalReps\ correct histories without correlation, to a size of 5\,\% over the ten years and to the size the average PD e-process measured, which is the comparison at an equal size. The Hosmer--Lemeshow test of the engine \citep{hosmer1980} tests the fit of a logistic model to individual obligors, and the generator holds counts by grade, so it is not run. The group-sequential boundaries of \citet{pocock1977}, \citet{obrien1979} and \citet{lan1983} are not run as such; the Sidak level and the simulated constant boundary stand in for them, and the constant boundary is the Pocock shape.
+
+\subsection{Metrics}
+\label{sec:design-metrics}
+
+A rule $R$ applied to stream $i$ of $N$ rejects at a first day $\tau_R^{(i)}\in\{1,\dots,T\}\cup\{\infty\}$. The size over the horizon on correct streams and the power by day $n$ on streams with a departure are
+\begin{equation}
+\hat s_R(T)=\frac1N\sum_{i=1}^N\indic\{\tau_R^{(i)}\le T\},\qquad \hat\pi_R(n)=\frac1N\sum_{i=1}^N\indic\{\tau_R^{(i)}\le n\},
+\label{eq:size-power}
+\end{equation}
+with $n=250$ for the comparison with the window of the traffic light. Each share carries the 95\,\% Wilson interval, $\bigl[\hat p+z^2/2N\pm z\sqrt{\hat p(1-\hat p)/N+z^2/4N^2}\bigr]/(1+z^2/N)$ with $z=1.96$.
+The detection delay is the median of $\tau_R$ over all streams, taken as infinity for a stream that is never rejected, so that it is reported as beyond the horizon when more than half of the streams are missed; its 95\,\% interval is the percentile interval of 2,000 bootstrap resamples. The power cost of a monitor $E$ against one reading of the Kupiec test $K$ at day $n$ is the paired difference
+\begin{equation}
+\hat\Delta=\hat\pi_K(n)-\hat\pi_E(n)=\frac1N\sum_{i}\bigl(\indic\{K_i\text{ rejects at }n\}-\indic\{\tau_E^{(i)}\le n\}\bigr),\qquad \widehat{\mathrm{se}}=\sqrt{\widehat{\Var}(\delta_i)/N},
+\label{eq:cost}
+\end{equation}
+where $\delta_i$ is the paired difference of stream $i$. The acceptance bound for the size of an anytime-valid monitor is $0.05+3\sqrt{0.05\cdot0.95/N}$, which is $\nBound\,\%$ for $N=\nReps$ streams; it is the criterion of the size hypothesis, and a rule whose measured size is above it is judged not to hold its size. The quantities of \cref{eq:size-power,eq:cost} are read for every rule on every stream, so that two rules are always compared on the same data and the paired difference carries the correlation between them.
+
+\subsection{Protocol, repetitions and statistics}
+\label{sec:design-protocol}
+
+The main experiment draws $\nReps$ streams per scenario with the seed sequence $[\nSeed,\text{scenario}]$ and reads every rule every day over 1,000 days; the calibration of the two simulated boundaries uses $\nCalibrationReps$ null streams drawn with a sequence of their own. The delay and the power cost at the severities of the hypotheses are repeated on \nSeedsCount\ independent seed sequences of $2{,}000$ streams ($\nSeedsPooledN$ streams per factor),
+because the median at a hit rate three times the nominal sits near 250 and one run cannot place it on either side. The share of correct streams rejected is followed for 5,000 days on $\nHorizonReps$ further null streams to show how the size of each rule grows with the horizon. The ablations vary one component at a time on the same generators: the mixture grid of the rate monitor, the combination of the two VaR monitors, and the
+combination, the direction and the grid of the PD monitor on $\nPdReps$ histories per scenario. The correlation experiment draws $\nRhoReps$ ten-year histories per correlation, and the PD comparators read the same histories again, regenerated from the same seed sequences. The real windows are read with the same rules and the results are tabulated per model; a count of models flagged is a count, not a power. The engine release is 1.1.0, and every number of the paper is regenerated by the scripts of \cref{sec:reproducibility}.

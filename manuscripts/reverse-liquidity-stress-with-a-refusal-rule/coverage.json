@@ -1,7 +1,9 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:main-results",
+    "tab:ablation",
+    "tab:labelled-run"
   ],
   "claims": {
     "BS-11": "sec:proposed-method"

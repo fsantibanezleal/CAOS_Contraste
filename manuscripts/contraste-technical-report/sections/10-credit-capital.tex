@@ -5,7 +5,7 @@
 \providecommand*{\input@path}{}
 \g@addto@macro\input@path{{tables/}}
 \makeatother
-\input{../tables/credit-capital-numbers}
+\input{tables/credit-capital-numbers}
 \emergencystretch=3em
 \providecommand{\EL}{\mathrm{EL}}
 \providecommand{\ccfn}[1]{\nolinkurl{#1}}
@@ -19,19 +19,19 @@ it covers the distance between the expected loss and a high quantile of the loss
 set less by the average quality of the loans than by how strongly their defaults move together. A book of independent borrowers has a
 narrow loss distribution; a book whose borrowers share one economic cycle has a long upper tail. The quantity that carries the
 co-movement, the asset correlation, is also the hardest to observe, because a bank sees one default rate per year while the tail that
-decides the capital is a one-in-a-thousand-year event \citep{credit-capital:vasicek2002,credit-capital:gordy2003}.
+decides the capital is a one-in-a-thousand-year event \citep{ratings:vasicek2002,ratings:gordy2003}.
 
 The regulation that governs the capital of a bank with supervisory approval is the internal ratings-based (IRB) approach of the Basel
 Framework. For each exposure class it fixes a risk-weight function that turns the bank's estimates of the default probability and of
 the loss given default into a capital requirement per unit of exposure at the 99.9 percent confidence level, with a correlation fixed
 by the class \citep{credit-capital:basel-cre31,credit-capital:basel-cre32}. The function is the one-factor model of Vasicek
-evaluated for an infinitely large portfolio \citep{credit-capital:basel2005}, and its justification as a portfolio-invariant capital
-rule is the asymptotic single risk factor model of Gordy \citep{credit-capital:gordy2003}. The chapters in force from 1 January 2023
+evaluated for an infinitely large portfolio \citep{ratings:bcbs2005}, and its justification as a portfolio-invariant capital
+rule is the asymptotic single risk factor model of Gordy \citep{ratings:gordy2003}. The chapters in force from 1 January 2023
 follow the final Basel III reforms \citep{credit-capital:basel-d424}; the European Union applies them through Article 153 of Regulation
 (EU) 2024/1623 from 1 January 2025 \citep{credit-capital:crr3}; and the Basel II text, which multiplied the IRB risk-weighted assets by
 1.06, remains the reference of older figures \citep{credit-capital:basel-cre30}. In Chile the Comisi\'on para el Mercado Financiero sets
-the rules for internal methodologies in chapter 21-6 of its Recopilaci\'on Actualizada de Normas, with correlations of its own
-\citep{credit-capital:cmf-ran21-6}, and its normative report of August 2026 states that no Chilean bank uses them for capital
+the rules for internal methodologies in chapter 21-6 of its Recopilaci\'on Actualizada de Normas, with correlation curves that coincide with
+the Basel ones for most classes (\cref{sec:m16}) \citep{credit-capital:cmf-ran21-6}, and its normative report of August 2026 states that no Chilean bank uses them for capital
 \citep{credit-capital:cmf-informe2026}.
 
 A portfolio-invariant formula cannot see the size distribution of the exposures, the concentration of the book in sectors, or the
@@ -60,7 +60,7 @@ states the models of a finite portfolio, the measures they share, the validation
 capital to the names. The results of all methods on all loan types follow in \cref{sec:results-credit-capital}, and
 \cref{tab:cc-cases} lists the five loan types with their series, their IRB class and the shape of their portfolio.
 
-\input{../tables/credit-capital-cases}
+\input{tables/credit-capital-cases}
 
 \subsection{The Vasicek loss distribution and the IRB capital requirement}
 \label{sec:m16}
@@ -68,7 +68,7 @@ capital to the names. The results of all methods on all loan types follow in \cr
 \subsubsection{The single-factor model and the large homogeneous portfolio}
 
 Let $\Phi$ be the standard normal distribution function and $\Phi^{-1}$ its inverse. In the model of
-\citet{credit-capital:vasicek2002} (the notes are collected in \citealp{credit-capital:vasicek1987,credit-capital:vasicek1991}) the
+\citet{ratings:vasicek2002} (the notes are collected in \citealp{credit-capital:vasicek1987,ratings:vasicek1991}) the
 latent asset return of obligor $i$ is
 \begin{equation}
 A_i=\sqrt{\rho}\,Z+\sqrt{1-\rho}\,\varepsilon_i,\qquad Z,\varepsilon_i\ \text{independent standard normal},
@@ -91,7 +91,7 @@ event $\{p(Z)\le x\}$ equals $\{Z\ge z_x\}$ with $z_x=\big(\Phi^{-1}(\PD)-\sqrt{
 \end{aligned}
 \label{eq:cc-lhp}
 \end{equation}
-the second expression being the inverse of the first at $x=\VaR_q$ \citep{credit-capital:vasicek2002}. Differentiating the first with
+the second expression being the inverse of the first at $x=\VaR_q$ \citep{ratings:vasicek2002}. Differentiating the first with
 $\mathrm{d}\Phi^{-1}(x)/\mathrm{d}x=1/\varphi(\Phi^{-1}(x))$, with $\varphi$ the standard normal density, gives the density of the default
 fraction
 \begin{equation}
@@ -108,7 +108,7 @@ is $\EAD\cdot\LGD\cdot L_\infty$, the expected loss is $\EL=\EAD\cdot\LGD\cdot\P
 \end{equation}
 where the expected shortfall integrates the conditional default probability over the worst $1-q$ of the factor, and the economic
 capital $\mathrm{EC}_q$ is the unexpected loss, the same concept as the IRB capital requirement
-\citep{credit-capital:basel2005,credit-capital:acerbitasche2002}.
+\citep{ratings:bcbs2005,credit-capital:acerbitasche2002}.
 
 \subsubsection{The IRB capital requirement}
 
@@ -122,7 +122,7 @@ b&=\big(0.11852-0.05478\ln\PD\big)^2,
 \end{aligned}
 \label{eq:cc-irb}
 \end{equation}
-with $M$ the effective maturity in years and $\mathrm{RWA}=12.5\,K\cdot\EAD$ \citep{credit-capital:basel2005,credit-capital:basel-cre31}.
+with $M$ the effective maturity in years and $\mathrm{RWA}=12.5\,K\cdot\EAD$ \citep{ratings:bcbs2005,credit-capital:basel-cre31}.
 Writing the argument of $\Phi$ as $\big(\Phi^{-1}(\PD)+\sqrt{R}\,\Phi^{-1}(0.999)\big)/\sqrt{1-R}$ shows that the bracket is
 $\LGD\,(\VaR_{0.999}-\PD)$ of \cref{eq:cc-lhp} with $\rho=R$: the IRB formula is the unexpected loss of the large homogeneous portfolio
 at the regulatory correlation, times the maturity adjustment. The correlation depends on the class. With
@@ -140,8 +140,9 @@ the retail classes carry no maturity adjustment (CRE31.5 to CRE31.16; \citealp{c
 is floored by the regime (0.05 percent in the Basel III chapters, \citealp{credit-capital:basel-cre32}), and the regimes of the engine
 differ in what they fix: Basel II multiplies the risk-weighted assets by 1.06 and floors the default probability at 0.03 percent
 \citep{credit-capital:basel-cre30}, the European regulation applies the Basel III formula without the scaling \citep{credit-capital:crr3},
-and the Chilean regulation uses the same risk function with correlations of its own and fixes the loss given default of the consumer
-portfolio at 61.3 percent \citep{credit-capital:cmf-ran21-6}. \Cref{fig:cc-irb} draws the capital requirement of the five classes
+and the Chilean regulation uses the same risk function; its correlation curves (numeral 4.4.2) coincide with the Basel curves for the corporate,
+high-volatility commercial real estate, residential mortgage and other retail classes and differ for small and medium enterprises (0.08 to 0.20); it has no
+qualifying revolving class and fixes the loss given default of the consumer portfolio at 61.3 percent \citep{credit-capital:cmf-ran21-6}. \Cref{fig:cc-irb} draws the capital requirement of the five classes
 against the default probability, and \cref{tab:cc-regimes} gives the risk weights under the four regimes at the fitted default
 probabilities.
 
@@ -155,7 +156,7 @@ of the large homogeneous portfolio at the fitted correlation, with the same matu
 \label{fig:cc-irb}
 \end{figure}
 
-\input{../tables/credit-capital-regimes}
+\input{tables/credit-capital-regimes}
 
 \subsubsection{Calibration from yearly loss rates and the tail back-test}
 
@@ -181,7 +182,7 @@ $\ell_P(\rho)=\max_{\PD}\ell(\PD,\rho)$,
 \label{eq:cc-profile}
 \end{equation}
 and that of the moments estimate is a parametric-bootstrap interval of \ccBoot{} series of the same length drawn from the fitted model
-\citep{credit-capital:vasicek2002}. \Cref{alg:cc-profile} states the procedure. The factor of a year implied by the fit is
+\citep{ratings:vasicek2002}. \Cref{alg:cc-profile} states the procedure. The factor of a year implied by the fit is
 \begin{equation}
 \hat z_t=\frac{\Phi^{-1}(\PD)-\sqrt{1-\rho}\,\Phi^{-1}(r_t)}{\sqrt{\rho}},
 \label{eq:cc-implied}
@@ -216,9 +217,9 @@ The test has little power with $n=\ccEvYears$ years and the $p$-value is therefo
 \paragraph{Assumptions.} The model assumes one Gaussian systematic factor; an infinitely granular and homogeneous portfolio; a loss given
 default that is constant and independent of default; losses from default only, over a horizon of one year; and yearly loss rates that are
 independent draws of $p(Z)$ from a stationary distribution. The charge-off rate stands for the portfolio's yearly loss rate, which it
-only approximates: it is net of recoveries and is a rate of charge-offs, not of defaults. The IRB class is the nearest class of the
-Basel Framework and not a claim that the Board's series is that class; the Board's commercial real estate series is not the
-high-volatility class, which is a stricter subset.
+only approximates: it is net of recoveries and is a rate of charge-offs, not of defaults. The IRB class is the class used for the comparison and not a claim that the Board's series is that class; the Board's commercial real estate series is not the
+high-volatility class, which is a stricter subset, and the case therefore reports it under both the high-volatility curve and the corporate curve of general
+income-producing commercial real estate (\cref{tab:cc-irb}).
 
 \paragraph{Parameters in the case.} The confidence levels are 99 and 99.9 percent; the expected loss given default is \ccLgd{} for every
 name, a choice that isolates the effect of correlation, concentration and tail dependence; the maturity of the non-retail classes is 2.5
@@ -243,18 +244,19 @@ tail back-test in \ccfn{riskvalidation.validation.portfolio.tail_backtest} and t
 (\ccfn{data-pipeline/pipeline/cases/c10/documents.py}) orders the engine's results and computes none of them.
 
 \paragraph{Comparison and acceptance.} The large-portfolio capital at the fitted correlation is compared with the IRB capital of the
-nearest class at the same default probability and with the same maturity treatment, so that their ratio isolates the correlation
-(\cref{tab:cc-irb}). The acceptance criteria are those of the published tables. The engine reproduces the Basel Committee's illustrative
-risk weights of CRE99 (eight exposure types at 18 default probabilities, 144 cells; \citealp{credit-capital:basel-cre99}): 141 cells agree
-with the printed two decimals and three differ by one unit in the last place, so the test applies a tolerance of one printed unit, 0.01
-percentage points, which is looser than the half-unit (0.005 percentage points) that an exact reproduction would meet. The Basel II regime
+class used at the same default probability and with the same maturity treatment, so that their ratio isolates the correlation
+(\cref{tab:cc-irb}). The acceptance criteria are those of the published tables. The specification requires the Basel Committee's illustrative
+risk weights of CRE99 (eight exposure types at 18 default probabilities, \ccAnchorCells{} cells; \citealp{credit-capital:basel-cre99}) to be reproduced within 0.005
+percentage points, half of the last printed unit. The engine meets that criterion in \ccAnchorHalfOk{} cells; the other \ccAnchorOff{} differ from the printed value by one
+unit in the last place, the largest difference being \ccAnchorWorst{} percentage points: \ccAnchorOffList{}. The engine test therefore applies a tolerance of one printed unit, 0.01 percentage points, and
+the three cells are recorded here as a finding on the specification's criterion, not as agreement. The Basel II regime
 carries the 1.06 scaling and the 0.03 percent floor and is tested to equal 1.06 times the Basel III value on every cell, the European
 regime to equal it, and the Chilean regime to use the correlations of its numeral 4.4.2. The loss quantities of the large portfolio
 reproduce closed forms to the printed digits (\cref{tab:cc-anchors}): for a default probability of 0.02 and a correlation of 0.15 the
 99.9 percent value at risk is \ccAnchorVar{}, the expected shortfall \ccAnchorEs{}, and $0.45\,(\ccAnchorVar{}-0.02)=\ccAnchorK{}$ is the
 IRB capital of the mortgage class.
 
-\input{../tables/credit-capital-anchors}
+\input{tables/credit-capital-anchors}
 
 \subsection{Portfolio loss models, measures, granularity and allocation}
 \label{sec:m17}
@@ -430,8 +432,7 @@ w=\exp\Big(-\theta L+\sum_i\ln\big(1+p_i\,(e^{\theta c_i}-1)\big)\Big)\exp\Big(-
 \end{equation}
 which is exact whatever $\theta(z)\ge0$ and $\mu$ are, so that $\E_Q[w]=1$ and $\E_Q[wL]=\EL$. The default shift maximises
 $-\theta(z)\,x+\ln M(\theta(z),z)-z^{\top}z/2$ ($M$ the moment generating function of the twisted loss) by Nelder--Mead from $z=0$, a
-deterministic search. The transcription of the twist and of the mean shift was not checked against the paper, which is behind a paywall,
-so the engine accepts the estimator by one criterion: it must be unbiased against plain Monte Carlo (the weights average one, the weighted
+deterministic search. The twist and the likelihood ratio are derived above, and the engine accepts the estimator by one criterion: it must be unbiased against plain Monte Carlo (the weights average one, the weighted
 loss averages the expected loss, and the weighted tail probability, value at risk and expected shortfall agree with the plain sample within
 four combined standard errors). The weighted quantile is the smallest loss whose weighted upper tail $\sum_iw_i\mathbf 1\{L_i>x\}/S$ is at
 most $1-q$, normalised by the scenario count $S$ and never by the realised sum of the weights, which is far from $S$ for a threshold deep in
@@ -537,7 +538,7 @@ correlation estimators on the simulator.
 
 \subsubsection{The fitted correlation and the IRB capital}
 
-\input{../tables/credit-capital-fit}
+\input{tables/credit-capital-fit}
 
 \Cref{tab:cc-fit} gives the maximum-likelihood fit with its profile interval and the moments fit with its bootstrap interval. The fitted
 asset correlations are low for four of the five series: \ccRhoMlRes{} for residential real estate (95 percent interval \ccRhoMlLoRes{} to
@@ -570,17 +571,19 @@ maximum, and the interval of each loan type is the stretch of its curve above th
 \label{fig:cc-profile}
 \end{figure}
 
-\input{../tables/credit-capital-irb}
+\input{tables/credit-capital-irb}
 
 \Cref{tab:cc-irb} puts the fitted correlation next to the IRB class. The IRB correlations are \ccRhoIrbRes{} for residential mortgages,
 \ccRhoIrbCard{} for qualifying revolving exposures, \ccRhoIrbOth{} for other retail at the fitted default probability, \ccRhoIrbCi{} for
 corporates and \ccRhoIrbCre{} for the commercial real estate class, and the capital of the large portfolio at the fitted correlation is
 between \ccRatioMin{} and \ccRatioMax{} of the IRB capital: \ccRatioCre{} for commercial real estate, \ccRatioCard{} for credit cards,
-\ccRatioCi{} for commercial and industrial loans, \ccRatioOth{} for other consumer and \ccRatioRes{} for residential real estate. Only the
-commercial real estate fit is close to the regulatory value. The ratio is a ratio of two capital figures that differ only in the
+\ccRatioCi{} for commercial and industrial loans, \ccRatioOth{} for other consumer and \ccRatioRes{} for residential real estate. Under the high-volatility curve
+only the commercial real estate fit is close to the regulatory value; under the corporate curve of general commercial real estate (correlation \ccRhoIrbCreCorp{} at
+the fitted default probability, capital \ccKIrbCreCorp{} percent) the ratio is \ccRatioCreCorp{}, so the fit exceeds the regulatory value, and which reading holds
+depends on which class the Board's series is taken to be. The ratio is a ratio of two capital figures that differ only in the
 correlation, so it measures how much of the IRB capital the loss history of the fit window supports, and says nothing yet about
 2007 to 2012, which the next subsection tests. The regimes of \cref{tab:cc-regimes} change the capital by the Basel II scaling of
-\ccRegScale{} and, for the Chilean regime, leave the risk weight of every class it accepts unchanged.
+\ccRegScale{} and, for the Chilean regime, leave the risk weight of every class it accepts unchanged, because its curves for these classes are the Basel ones.
 
 \subsubsection{The out-of-sample tail}
 
@@ -593,7 +596,7 @@ open squares for the evaluation window 2007 to 2012; the vertical line marks the
 \label{fig:cc-tail}
 \end{figure}
 
-\input{../tables/credit-capital-tail}
+\input{tables/credit-capital-tail}
 
 \Cref{fig:cc-tail} and \cref{tab:cc-tail} place the evaluation years in the distribution fitted before them. Under the fit, the expected
 number of years above the 95, 99 and 99.9 percent quantiles out of \ccEvYears{} is \ccExpNF{}, \ccExpNN{} and \ccExpNNN{}. For residential real
@@ -612,7 +615,7 @@ is wrong.
 
 \subsubsection{The models compared on the illustrative portfolios}
 
-\input{../tables/credit-capital-var}
+\input{tables/credit-capital-var}
 
 \Cref{tab:cc-var} gives the 99.9 percent value at risk of each loan type's portfolio under each model, \cref{tab:cc-es} the expected shortfall,
 and \cref{fig:cc-ladder} the value at risk relative to the large-portfolio value. The one-factor Gaussian copula is above the large
@@ -638,7 +641,7 @@ analytic models carry none. The Student-t copula with 5 degrees of freedom lies 
 \label{fig:cc-ladder}
 \end{figure}
 
-\input{../tables/credit-capital-es}
+\input{tables/credit-capital-es}
 
 \begin{figure}[htbp]
 \centering
@@ -652,19 +655,20 @@ below $10^{-5}$.}
 
 \Cref{fig:cc-exceedance} shows why: the Gaussian curves and the large-portfolio curve are close, while the Student-t curve crosses the 0.001
 line at a loss several times larger. Importance sampling reproduces the plain Monte Carlo value at risk (ratio \ccIsOverGoneMin{} to
-\ccIsOverGoneMax{} of the plain value across the five loan types, within one smallest-name loss on the lattice of the portfolio) with a variance
-ratio of \ccIsVarRatioMin{} to \ccIsVarRatioMax{} for the value at risk and \ccIsEsRatioMin{} to \ccIsEsRatioMax{} for the expected shortfall
-(\cref{tab:cc-mcerr}). The effective sample share of the weights is small, from \ccIsEssCard{} percent for credit cards to \ccIsEssRes{} percent for
-residential real estate, so a few scenarios carry most of the weight: the variance ratio is a statement about the batch-means error and must be read
-with that share, and the number of scenarios is raised rather than trusted to the mean of the weights.
+\ccIsOverGoneMax{} of the plain value across the five loan types, within one smallest-name loss on the lattice of the portfolio). The effective sample share of the
+weights is small, from \ccIsEssCard{} percent for credit cards and \ccIsEssOth{} percent for other consumer to \ccIsEssRes{} percent for
+residential real estate, so a few scenarios carry most of the weight, and the batch-means error behind a variance ratio is unreliable where the share is that low. The
+variance ratio against plain Monte Carlo (\cref{tab:cc-mcerr}) is therefore given only for residential real estate, the one loan type whose share supports it:
+\ccIsVarRatioRes{} for the value at risk and \ccIsEsRatioRes{} for the expected shortfall; the ratios of the other four loan types, from \ccIsVarRatioMin{} to
+\ccIsVarRatioMax{} for the value at risk, are in the table and are not read as gains. The number of scenarios is raised rather than trusted to the mean of the weights.
 
-\input{../tables/credit-capital-mcerr}
+\input{tables/credit-capital-mcerr}
 
-\input{../tables/credit-capital-crp}
+\input{tables/credit-capital-crp}
 
 \subsubsection{Granularity and allocation}
 
-\input{../tables/credit-capital-ga}
+\input{tables/credit-capital-ga}
 
 \Cref{tab:cc-ga} gives the adjustment: \ccGaTopRes{} percent of the exposure for residential real estate, \ccGaTopCard{} for credit cards,
 \ccGaTopOth{} for other consumer, \ccGaTopCi{} for commercial and industrial and \ccGaTopCre{} for commercial real estate at the 99.9 percent
@@ -681,7 +685,7 @@ and falls as $1/n$, as it must. The reference includes no variance of the loss g
 it moves in whole-name steps (the reference of the other-consumer mix is the same for 10 and 20 names). The table does not show that the
 adjustment is accurate for a real portfolio, whose names are not identical.
 
-\input{../tables/credit-capital-ga-n}
+\input{tables/credit-capital-ga-n}
 
 \begin{figure}[htbp]
 \centering
@@ -692,7 +696,7 @@ model, for the credit-card mix (left) and the other-consumer mix (right).}
 \label{fig:cc-granularity}
 \end{figure}
 
-\input{../tables/credit-capital-euler}
+\input{tables/credit-capital-euler}
 
 \Cref{tab:cc-euler} allocates the 99.9 percent capital of the one-factor Gaussian copula to the three groups. The expected-shortfall
 contributions sum to the total to a relative error of at most \ccEulerEsWorst{} over the \ccEulerRows{} additivity checks of the five
@@ -707,7 +711,7 @@ and Student-t rungs have no closed-form anchor.
 
 \subsubsection{The validation tests}
 
-\input{../tables/credit-capital-battery}
+\input{tables/credit-capital-battery}
 
 \Cref{tab:cc-battery} reports the tests on each portfolio. The Monte Carlo value at risk of 5,000 identical names agrees with the
 large-portfolio quantile for commercial and industrial ($z=\ccMcZCi$, $p=\ccMcPCi$), commercial real estate ($z=\ccMcZCre$, $p=\ccMcPCre$)
@@ -721,7 +725,7 @@ these tests validates the choice of the model, the portfolio or the dependence a
 
 \subsubsection{Size and power of the correlation estimators}
 
-\input{../tables/credit-capital-sizepower}
+\input{tables/credit-capital-sizepower}
 
 \begin{figure}[htbp]
 \centering
@@ -746,11 +750,11 @@ correlation of 0.04 and \ccPowMlShortEight{} at 0.08 with 22 years, against \ccP
 downward (the most negative bias is $\ccBiasMoWorstShort$ with 22 years, against $\ccBiasMlWorstShort$ for maximum likelihood) and more dispersed
 (\cref{tab:cc-estacc}), so its interval keeps containing the null correlation when the true one lies above it.
 
-\input{../tables/credit-capital-estacc}
+\input{tables/credit-capital-estacc}
 
 \Cref{tab:cc-estacc} shows the accuracy behind those rates. The maximum-likelihood interval has an empirical coverage between \ccCovMlMinShort{} and
-\ccCovMlMaxShort{} with 22 years and between \ccCovMlMinLong{} and \ccCovMlMaxLong{} with 40 years, around the nominal 0.95 with a Monte Carlo standard
-error of about 0.011, while the bootstrap interval of the moments estimator covers only \ccCovMoMinShort{} to \ccCovMoMaxShort{} and \ccCovMoMinLong{} to
+\ccCovMlMaxShort{} with 22 years and between \ccCovMlMinLong{} and \ccCovMlMaxLong{} with 40 years, against the nominal 0.95 with a Monte Carlo standard
+error of about 0.011. The lowest cell with 22 years, a correlation of \ccCovMlMinRhoShort{}, is \ccCovMlMinSeShort{} standard errors below the nominal level, and the lowest with 40 years (a correlation of \ccCovMlMinRhoLong{}) is \ccCovMlMinSeLong{}, so the intervals are close to nominal but not at it for the smallest correlations. The bootstrap interval of the moments estimator covers only \ccCovMoMinShort{} to \ccCovMoMaxShort{} and \ccCovMoMinLong{} to
 \ccCovMoMaxLong{}. Two consequences follow for the fits above. The maximum-likelihood intervals of \cref{tab:cc-fit} can be read at close to their nominal
 level, when the simulator's assumptions (independent years, a known default probability, no regime change) hold; the moments intervals are too narrow, so
 the agreement of the two estimators in \cref{fig:cc-correlation} is weaker evidence than the overlap suggests. The simulator does not show what happens when

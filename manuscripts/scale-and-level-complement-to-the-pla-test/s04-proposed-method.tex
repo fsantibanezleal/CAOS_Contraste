@@ -79,7 +79,7 @@ The decision on a desk-year with statistics $(W,\rho_{\mathrm{abs}},\rho_{\mathr
 \text{flag}=\indic[W>c_W]\ \vee\ \indic[\rho_{\mathrm{abs}}<c_{\mathrm{abs}}]\ \vee\ \indic[\rho_{\mathrm{roll}}<c_{\mathrm{roll}}].
 \label{eq:decision}
 \end{equation}
-With the Bonferroni split of \citet{dunn1961} each statistic is calibrated at $p=\alpha/3$, so that the union of the three flags has a size of at most $\alpha$ by the union bound; the engine's default is $\alpha=0.01$ and a calibration without the split is available.
+With the Bonferroni split of \citet{dunn1961} each statistic is calibrated at $p=\alpha/3$, so that, in the calibration sample itself, the union of the three flags covers at most a share $\alpha$ of the null desk-years by the union bound; out of sample the size of the union is at most $3(k+1)/(N+1)$ (Proposition~\ref{prop:size}(d)), which is 1.02\% for $N=10{,}000$ and $\alpha=1\%$; the engine's default is $\alpha=0.01$ and a calibration without the split is available.
 The resulting size is not exactly $p$: Proposition~\ref{prop:size} gives it, and the experiments of Section~\ref{sec:results} measure it on held-out null desk-years.
 Algorithm~\ref{alg:complement} states the whole procedure.
 
@@ -105,7 +105,7 @@ Algorithm~\ref{alg:complement} states the whole procedure.
 
 The method has four parameters, all fixed before the evaluation and none tuned on its results: the window $w=20$ days, the family size $\alpha=0.01$, the Bonferroni split over three statistics, and the null size $N=10{,}000$ desk-years, which resolves a per-statistic size of $0.01/3$ with $k=33$.
 The null size trades the cost of simulating against the Monte Carlo spread of the critical values, which Proposition~\ref{prop:size} quantifies: the conditional size of a critical value read from $N=10{,}000$ values at $p=0.01$ has a standard deviation of 0.10 percentage points.
-Computing the three statistics on one desk-year costs $O(n\log n)$ for the ranks and $O(n)$ for the regression and the rolling means, so the calibration costs $O(Nn\log n)$ and the decision on a desk-year $O(n\log n)$; on the hardware of Section~\ref{sec:reproducibility} one desk-year takes about 10 ms including its generation.
+Computing the three statistics on one desk-year costs $O(n\log n)$ for the ranks and $O(n)$ for the regression and the rolling means, so the calibration costs $O(Nn\log n)$ and the decision on a desk-year $O(n\log n)$; on the hardware of Section~\ref{sec:reproducibility} one desk-year takes about 30 ms of one worker process including its generation (the 63,000 desk-years of the study took 79 seconds on 24 workers).
 The method is implemented in the module \texttt{riskvalidation.market.pla\_complement} of the open-source engine \texttt{riskvalidation} 1.1.0, with the functions \texttt{pla\_mz\_wald}, \texttt{pla\_abs\_spearman}, \texttt{pla\_rolling\_abs\_spearman}, \texttt{pla\_complement\_statistics}, \texttt{pla\_complement\_calibrate}, \texttt{pla\_complement\_decide} and \texttt{pla\_complement}.
 Missing or degenerate input raises an error as the engine's regulatory statistics do: anything other than 250 finite observations per series, a series without spread, a constant absolute series, or a window out of range.
 The functions draw no random number; the calibration null is simulated by the caller from the caller's own generator, and the engine states in its documentation that the thresholds are specific to the generator that produced them.

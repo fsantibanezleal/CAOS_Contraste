@@ -1,10 +1,11 @@
 \section{Ablation}
 \label{sec:ablation}
 
-Table~\ref{tab:ablation} gives, for each configuration, the held-out false-alarm rate and the detection rate on the stale desk at four lags and on the four other variants, with every configuration calibrated on the same 10,000 null desk-years at a family size of 1\%.
+Tables~\ref{tab:ablation} and~\ref{tab:ablation-variants} give, for each configuration, the held-out false-alarm rate and the detection rate on the stale desk at four lags and on the four other variants, with every configuration calibrated on the same 10,000 null desk-years at a family size of 1\%.
 Each row changes one thing from the full complement.
 
 \input{tables/ablation}
+\input{tables/ablation-variants}
 
 \subsection{What each component contributes}
 \label{sec:ablation-components}
@@ -13,17 +14,17 @@ Removing the rolling-mean statistic costs the stale-volatility detection: from 3
 It is the component that carries the result, and it carries it alone: the rolling-mean statistic on its own flags 57.6, 97.5, 99.9 and 100.0\% at its own 1\% size.
 Removing the absolute-value statistic costs little on the six variants (the stale detection is unchanged within 0.1 points at 20 days, and the omitted-factor detection falls from 100.0 to 97.3\%), because the rolling-mean statistic and the Wald statistic cover most of what it sees; its single-statistic row shows what it sees alone: 76.7\% at a lag of 20 days, 100.0\% of the missing-basis variant, which the Wald statistic cannot see, and 100.0\% of the omitted-factor variant.
 Removing the Wald statistic drops the wrong-correlation detection from 100.0 to 7.4\%, and the only other change is the gain at short lags that the smaller multiplicity split brings (44.5 against 37.3\% at 5 days and 96.3 against 94.0\% at 10); the Wald statistic alone flags the wrong correlation and the time misalignment (100.0\% each) and is blind to the missing basis (0.9\%) and the omitted factor (0.6\%), as the theory predicts.
-The regulatory zone flags the wrong correlation and the time misalignment in 100.0\% of replications, so on these six variants the Wald statistic adds nothing that the zone does not already provide; its unique contribution is the constant mis-scale of Table~\ref{tab:mis-scale}, which neither the zone nor the rank statistics see.
+The regulatory zone flags the wrong correlation and the time misalignment in 100.0\% of replications, so on these six variants the Wald statistic adds nothing that the zone does not already provide; its unique contribution is the constant mis-scale of 10 to 25\% of Table~\ref{tab:mis-scale}, which neither the zone nor the rank statistics see.
 Adding the regulatory zone to the union changes no rate in the table, since the zone flags none of the stale desks.
 The multiplicity split has a price: with three statistics each at 0.333\% the detection at a lag of 5 days is 37.3\%, and with two statistics (the rows without the Wald or the absolute-value statistic) it is 44.5 and 44.4\%.
 
 \subsection{The window}
 \label{sec:ablation-window}
 
-The rolling window was fixed at 20 days before the evaluation, and Table~\ref{tab:ablation} and Figure~\ref{fig:window-ablation} show how the rate depends on it.
+The rolling window was fixed at 20 days before the evaluation, and Tables~\ref{tab:ablation} and~\ref{tab:ablation-variants} and Figure~\ref{fig:window-ablation} show how the rate depends on it.
 At equal size (between 1.0 and 1.2\% held out for every window) shorter windows detect more of the short lags: at a lag of 5 days the rate is 91.1\% for a window of 5 days, 82.9\% for 10, 57.6\% for 20, 24.2\% for 40 and 15.4\% for 60; at a lag of 10 days it is 99.8, 99.8, 97.5, 83.4 and 61.9\%.
 Shorter windows also hold the time-misalignment detection (100.0\% at 5 days and 94.5\% at 10, against 42.3\% at 20 and 5.3\% at 60), because a one-day shift of the series is visible in a rolling mean only when the mean is short.
-No window helps against the wrong correlation (2.6 to 8.9\%), which is a defect of the cross-sectional aggregation and not of the scale.
+No window helps against the wrong correlation (2.6 to 8.9\%), which on this desk acts as a near-constant mis-scale of RTPL (mean slope 1.615) that no rank statistic can see.
 Combining four windows (5, 10, 20 and 40 days) by a Bonferroni split over four statistics gives 76.7\% at a lag of 5 days and 99.5\% at 10, at a held-out size of 0.5\% (0.2 to 1.2\%), between the best single window and the default.
 The window of 20 days is therefore not the best of the windows tested on these desks.
 It is kept as the method's default because it was fixed in advance and because this table was computed on the same committed seeds as the main results: choosing the best window from it would select on the evaluation data, and a change of the default needs an evaluation on desks that this table has not seen.

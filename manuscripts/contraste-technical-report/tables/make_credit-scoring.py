@@ -62,7 +62,15 @@ def f4(x: float) -> str:
     return f"{x:.4f}"
 
 
+def tiny(x: float) -> str:
+    """A non-zero number that rounds to zero at the printed digits, as a signed power of ten (math mode)."""
+    mant, exp = f"{x:.1e}".split("e")
+    return f"${mant}\\times10^{{{int(exp)}}}$"
+
+
 def signed(x: float, d: int = 3) -> str:
+    if x != 0 and round(x, d) == 0:
+        return tiny(x)
     if round(x, d) == 0:
         return f"{0:.{d}f}"
     return f"{x:+.{d}f}".replace("-", "$-$") if x < 0 else f"{x:+.{d}f}"
@@ -242,6 +250,7 @@ def _fit_summary(models: dict) -> dict:
         out["xg_mono"] = by["P4-xgboost"]["details"]["monotonicity"]["monotone"]
     if "P5-tabpfn" in by:
         out["tp"] = by["P5-tabpfn"]["details"]
+        out["tp_version"] = by["P5-tabpfn"]["engine_version"]
     return out
 
 
@@ -323,7 +332,8 @@ def build_macros(D: dict) -> Macros:
                 if key in r and r[key] is not None:
                     M.add(p + nm, fn(r[key]))
             if "dl_diff" in r:
-                M.add(p + "DlDiff", f"{r['dl_diff']:+.4f}".replace("-", "$-$"))
+                M.add(p + "DlDiff", tiny(r["dl_diff"]) if r["dl_diff"] != 0 and round(r["dl_diff"], 4) == 0
+                      else f"{r['dl_diff']:+.4f}".replace("-", "$-$"))
                 M.add(p + "DlP", pfmt(r["dl_p"]))
             if "hl_p" in r:
                 M.add(p + "HlP", pfmt(r["hl_p"]))
@@ -349,6 +359,12 @@ def build_macros(D: dict) -> Macros:
             n = sum(b["n"] for b in bins)
             ece = sum(b["n"] * abs(b["dr"] - b["pd"]) for b in bins) / n
             M.add(f"HoEce{CODE[rid]}{tag}", f4(ece))
+    # the same before and after the map for TabPFN on the German twin
+    gt_tp = D["raw_c01"]["german-twin"]["outputs"]["rungs"]["P5-tabpfn"]
+    for key, tag in (("reliability_raw", "Raw"), ("reliability", "Cal")):
+        bins = gt_tp[key]
+        n = sum(b["n"] for b in bins)
+        M.add(f"GtEceTp{tag}", f4(sum(b["n"] * abs(b["dr"] - b["pd"]) for b in bins) / n))
     # --- fits
     for fit, code in (("taiwan", "Tw"), ("german", "Ge"), ("taiwan-small", "Sm")):
         F = D["fit"][fit]
@@ -420,6 +436,8 @@ def build_macros(D: dict) -> Macros:
     M.add("EbmPairs", str(D["ebm"]["pairs"]))
     ge = D["fit"]["german"]
     M.add("TpEstimators", str(ge["tp"]["n_estimators"]))
+    M.add("TpVersion", ge["tp_version"])
+    M.add("TpWeights", ge["tp"]["model_path"].replace("_", "\\_"))
     # --- C02
     for h in HORIZONS:
         H = D["c02"][h]
@@ -602,8 +620,8 @@ def table_c01_variants(D: dict) -> None:
         rows.append(cells)
     tbl(OUT / "credit-scoring-c01-variants.tex",
                  ["Variant", "Scorecard", "L1", "PLTR", "EBM", "LightGBM", "TabPFN"], rows,
-                 caption="AUC of the ladder on each evaluation population of the Taiwan sample and on the German twin: the observed "
-                         "holdout, two covariate shifts, a prior shift, label noise, a ladder refitted on 2,000 rows, and the "
+                 caption="AUC of the methods on each evaluation population of the Taiwan sample and on the German twin: the observed "
+                         "holdout, two covariate shifts, a prior shift, label noise, the methods refitted on 2,000 rows, and the "
                          "German twin, where TabPFN runs.",
                  label="tab:cs-c01-variants", align="lrrrrrr")
 

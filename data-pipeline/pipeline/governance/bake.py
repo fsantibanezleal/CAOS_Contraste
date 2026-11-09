@@ -13,6 +13,7 @@ import hashlib
 import importlib.metadata as imd
 import importlib.util
 import json
+import re
 import sys
 from dataclasses import dataclass, field
 from datetime import date
@@ -262,6 +263,28 @@ def _risk_acceptance() -> dict[str, Any]:
                                "el límite es una propiedad del caso, no la aceptación de un riesgo con plazo")}
 
 
+def ladder_size_problems(doc: dict[str, Any], path: str) -> list[str]:
+    """The model counts a C11 window document's own gate finding quotes ("17 of 17 models", "for 3 of 17 at each tail") that are not the size of its ladder
+    (``outputs.models``). The register copies these titles, so a ladder that grew from 17 to 18 models while the register was not re-baked printed "17 of 17" beside a
+    step that counts 18 (viz review F7); a title that disagrees with its own document refuses the bake, and the register is re-baked from the documents."""
+    if doc.get("case_id") != "C11":
+        return []
+    models = (doc.get("outputs") or {}).get("models")
+    if not isinstance(models, list):
+        return []
+    size = len(models)
+    out = []
+    for f in doc.get("findings", []):
+        if f.get("id") != "c11-gates":
+            continue
+        for lang in ("en", "es"):
+            text = (f.get("title") or {}).get(lang, "")
+            counted = {int(m.group(1) or m.group(2)) for m in re.finditer(r"\b(?:of|de) (\d+)(?![\d.,]*[\s\u00a0]*%)|\b(?:All|Los) (\d+) (?:models|modelos)\b", text)}
+            if counted - {size}:
+                out.append(f"{path}: the gate finding ({lang}) counts {sorted(counted)} models but the document's ladder has {size}")
+    return out
+
+
 def _register_rows(E: SimpleNamespace, key: str, owner: str, tier: int, variants: list[tuple[str, str, dict[str, Any]]], as_of: date,
                    dates: dict[str, str]) -> list[dict[str, Any]]:
     rows = []
@@ -270,6 +293,8 @@ def _register_rows(E: SimpleNamespace, key: str, owner: str, tier: int, variants
         if cv not in dates:
             raise BakeError(f"CHANGELOG.md: no release heading for the code version {cv} of {path}, so its findings have no raised date")
         raised = date.fromisoformat(dates[cv])
+        if (problems := ladder_size_problems(doc, path)):
+            raise BakeError("; ".join(problems))
         for f in doc["findings"]:
             sev = f["severity"]
             days = E.findings.deadline_days(sev, tier)

@@ -1,0 +1,93 @@
+\section{Proposed method}
+\label{sec:proposed-method}
+
+\subsection{The idea: a threshold of a continuous window function}
+
+The survival period is awkward to invert. It is an integer, it is undefined for a bank that survives, and it is flat over intervals of the multiplier, so a root finder applied to $\mathrm{SP}(m)-T$ stops at any point of the interval on which the survival period equals the target and not at its left end. The proposed method replaces the integer by a continuous quantity that carries the same information. For a target $T$ define the window function
+\begin{equation}
+w_T(m)=\min_{1\le t\le T}\mathrm{NLP}_t(m)=\min_{1\le t\le T}\bigl[C_t-X_t(m)\bigr].
+\label{eq:window}
+\end{equation}
+The survival period is at most $T$ exactly when some position in the first $T$ days is negative, that is, when
+\begin{equation}
+\mathrm{SP}(m)\le T\iff w_T(m)<0.
+\label{eq:equivalence}
+\end{equation}
+The right-hand side is a statement about a continuous function of $m$, whatever the integer structure of $\mathrm{SP}$. \Cref{sec:theory} shows that $w_T$ is continuous and non-increasing in $m$, so the set of multipliers that reach the target is an interval that is open at its left end. Its left end is the root $m_0$ of $w_T$, and the method returns that end, as a six-decimal number.
+
+\subsection{Solving, rounding and the threshold property}
+
+Let $\delta=10^{-6}$. The reported multiplier is the smallest multiple of $\delta$ at which the target is reached,
+\begin{equation}
+m^\ast_T=\delta\,\Bigl\lceil \frac{m_0}{\delta}\Bigr\rceil\quad\text{(adjusted by the neighbour check below)},\qquad w_T(m_0)=0.
+\label{eq:rounding}
+\end{equation}
+Because the set of multipliers that reach the target excludes $m_0$ itself, where the position touches zero without turning negative, rounding up rather than to the nearest decimal is what places $m^\ast_T$ inside the set. The root is found by Brent's method on $w_T$ over the bracket $[1,m_{\max}]$ \citep{scipybrentq,virtanen2020}, with the bracket valid by construction once the refusal rule below has passed. The candidate is then verified: while the target is not reached at the candidate, it is raised by $\delta$; while it is still reached one step lower, it is lowered by $\delta$. The result satisfies the threshold property
+\begin{equation}
+\mathrm{SP}(m^\ast_T)\le T<\mathrm{SP}(m^\ast_T-\delta),
+\label{eq:threshold}
+\end{equation}
+which is what a reader needs in order to reproduce the number: the target is reached at the reported multiplier and not one decimal below it. The survival period at the multiplier, $\mathrm{SP}(m^\ast_T)$, is reported with it, because with a capacity that grows over time it can be shorter than $T$ (\cref{sec:theory}). A reported multiplier always travels with the survival period at the multiplier and the survival period just below it.
+
+\subsection{The refusal rule}
+
+A target for which no multiplier exists is refused with its reason and no number. The rule has three conditions, tested in this order, the first that holds being the reason returned:
+\begin{align}
+&\text{horizon:} && T\ge H, \label{eq:refuse-horizon}\\
+&\text{base:} && \mathrm{SP}(1)\le T, \label{eq:refuse-base}\\
+&\text{unreachable:} && w_T(\bar m)\ge 0,\quad \bar m=m_{\max}\ \text{if finite, else}\ 1, \label{eq:refuse-unreachable}
+\end{align}
+where in \cref{eq:refuse-unreachable} the upper bracket $\bar m$ is the cap when it is finite and 1 when no rate can be scaled. If none of the three holds, $w_T(1)\ge 0>w_T(\bar m)$, the root is bracketed, and the solver returns a number. The first condition protects against a target at or beyond the horizon, for which a survival period at most $T$ cannot be separated from surviving the ladder. The second says that the scenario already reaches the target, so the distance is zero by definition and no multiplier is informative. The third says that the bank survives even when every scalable rate is 1. Each reason is a statement about the model and the target, and none is an error. The reason is returned in words together with the quantity that decides it, the horizon, the survival period of the base or the cap, so that a table of results can print it beside the multipliers of the other bases and a reader sees why a cell has no number.
+
+\subsection{Algorithm and complexity}
+
+\begin{algorithm}[htbp]
+\caption{Reverse liquidity stress with a refusal rule.}
+\label{alg:reverse}
+\begin{algorithmic}[1]
+\Require openings $A_j$, base rates $q_{j,d}$ ($S\times H$), effective capacity $C_t$, target $T$
+\Ensure a multiplier $m^\ast$ with $\mathrm{SP}(m^\ast)$ and $\mathrm{SP}(m^\ast-\delta)$, or a refusal with its reason
+\If{$T\ge H$} \Return refusal (horizon) \EndIf
+\State $\mathrm{SP}_1\gets$ survival period of the unscaled scenario
+\If{$\mathrm{SP}_1\le T$} \Return refusal (base) \EndIf
+\State $\bar m\gets 1/\max\{q_{j,d}<1\}$ (or $1$ if no rate is below 1)
+\If{$w_T(\bar m)\ge 0$} \Return refusal (unreachable) \EndIf
+\State $m_0\gets$ root of $w_T$ on $[1,\bar m]$ by Brent's method
+\State $m\gets\min\bigl(\delta\lceil m_0/\delta\rceil,\ \bar m\bigr)$
+\While{$w_T(m)\ge 0$ and $m<\bar m$} $m\gets m+\delta$ \EndWhile
+\While{$m-\delta\ge 1$ and $w_T(m-\delta)<0$} $m\gets m-\delta$ \EndWhile
+\State \Return $m$, $\mathrm{SP}(m)$, $\mathrm{SP}(m-\delta)$
+\end{algorithmic}
+\end{algorithm}
+
+One evaluation of $w_T$ computes the stock products of \cref{eq:outflow} for $S$ segments over $T$ days, which costs $O(ST)$ operations. Brent's method keeps the root bracketed and needs at most $(k+1)^2-2$ evaluations where bisection needs $k+1$ \citep[ch.~4, p.~53, eq.~3.4]{brent1973}, and in practice far fewer (never more than $3(k+1)$ in Brent's tests): \kPEvals{} evaluations on average on the corpus against \kNEvals{} for a bisection, and the author of the method notes that convergence is usually much faster than for bisection. The two verification loops add a small constant number of evaluations. On the Adverse base of case C16 the solve takes \evalsSolve{} evaluations of the position, that is $O(ST)$ with $S=3$ and $T=30$ per evaluation, and a median of \timeAdvMs{} ms per call on the machine of \cref{sec:reproducibility}. The refusal tests cost one evaluation or none: the horizon test needs only the dimensions, and the base test needs the position at $m=1$. Memory is $O(SH)$ for the rate matrix. The cost does not grow with the precision asked of the multiplier beyond a logarithmic factor, because the verification loops move by one step of $\delta$ only when the root finder has stopped within a few steps of the threshold, while a scan of a grid needs a number of evaluations proportional to the inverse of the grid step.
+
+\subsection{Scoring against a labelled run}
+
+The second part of the proposed method is a protocol for scoring the scenario family against an observed run without calibrating on it. The fast-run base takes its single free parameter, the daily rate of the concentrated uninsured segment, from the observed runs of a table of deposit outflows that are dated before the event: the implied daily rate of a run of share $F$ over $n$ days is
+\begin{equation}
+\hat q=1-(1-F)^{1/n},\qquad q_{\mathrm{fast}}=\max_{r\in\mathcal R_{<2023}}\hat q_r,
+\label{eq:implied-rate}
+\end{equation}
+the rule that takes the maximum being a convention, since no source gives a calibration method. The engine refuses a 2023 row in a scored call, so the rows of the event cannot enter the calibration. The rows dated 2023 then score the model: with $F^{\mathrm{mod}}_n$ the modelled cumulative outflow share of the deposit base at the horizon of the row and $F^{\mathrm{obs}}$ the observed share, the score is the ratio $F^{\mathrm{mod}}_n/F^{\mathrm{obs}}$, with a light that is green from 0.8 and amber from 0.5. The observation of the failed bank, 85\% in two days, enters as a labelled anchor with the daily rate it implies and carries no forecast claim.
+
+The reverse stress extends the score into a distance. The multiplier of the labelled run is the multiplier of the fast-run base at which the modelled share at the event horizon equals the observation,
+\begin{equation}
+m_{\mathrm{run}}:\quad F^{\mathrm{mod}}_{n}(m)=F^{\mathrm{obs}},\qquad F^{\mathrm{mod}}_{n}(m)=\frac{\sum_j A_j\,F_j(n;m)}{\sum_j A_j},
+\label{eq:labelled}
+\end{equation}
+which has a root whenever the observation is below the share reached at the cap. Comparing $m_{\mathrm{run}}$ with the multiplier that brings the survival period to $n$ days measures how far beyond the exhaustion of the capacity the observed run lay in the model.
+
+\subsection{A worked example on the Adverse base}
+
+The mechanics are visible on the LiST Adverse base of case C16. Its three segments are insured deposits at the rate of other retail sight deposits, uninsured deposits at the rate of non-operational non-financial corporates, and a financial segment of rate 1; the effective capacity at day 30 is \capTzero{} billion US dollars after haircuts, the monetisation schedule having released all of it by day 3. At $m=1$ the position first turns negative on day \spAdv{}, so the base passes the second refusal test, and the cap is \capAdv{}, set by the fastest rate below 1, so the third test is passed and the root is bracketed on $[1,\capAdv{}]$. The window function over the first 30 days is the position on day 30, because the position falls from day to day once the capacity is fully released. Its root is found in \evalsSolve{} evaluations at $m_0$ slightly below \mAdv{}, and the rounding step returns \mAdv{} with a survival period of 30 days at the multiplier and 31 days one decimal below it. A reader who doubts the figure can rerun two forward calculations, at \mAdv{} and at \mAdv{} less $10^{-6}$, and see the survival periods change from 31 to 30 days; no reverse calculation is needed to check a reverse stress.
+
+\subsection{Design choices and the alternatives they exclude}
+
+Four choices of the method deserve a justification. The window is a minimum over the first $T$ days and not the position on day $T$: with a capacity that is released over days the position on day $T$ can be positive while an earlier day is negative, and only the minimum equals the event that the survival period is at most $T$. The multiplier is common to all segments because a single parameter keeps the family monotone and the answer comparable across banks and across scenarios; a segment-specific search needs a plausibility measure to choose among the many vectors that reach the target, which is the difficulty of the reverse tests of market risk and which this method avoids by construction. The cap keeps every scaled rate a share, which is what separates a faster run from a run that removes more than the stock; the cost is that a segment at rate 1 contributes nothing to the distance. And the threshold is rounded up and verified, not rounded to the nearest decimal, because the set of multipliers that reach the target is open at its left end, and a number that fails to reach the target when it is used is not a reverse stress result.
+
+The family also fixes what the answer means. A multiplier of 1 would say that the scenario already reaches the target; the refusal rule reports that case as a refusal, not as a multiplier of 1, so that every multiplier that is returned is a strictly informative distance. A multiplier close to the cap says that only an almost total run on every scalable segment reaches the target, which is a statement about the capacity as much as about the run.
+
+\subsection{Implementation}
+
+The solver is the function \texttt{solve\_multiplier} of the module \texttt{riskvalidation.liquidity.\allowbreak reverse} of the package \texttt{riskvalidation} 1.1.0, with \texttt{survival\_vs\_multiplier} as its forward function and \texttt{max\_multiplier} for the cap. The engine returns a frozen record with the status, the multiplier, the survival period at the multiplier, the reason and the survival period just below the multiplier. The case pipeline calls it with the effective capacity of the ladder, built so that the position of the engine, which takes no inflows, equals the position of the ladder at $m=1$. The experiments of this paper rebuild each base from the committed documents of the case and call the same function; the comparators and the oracle are in the experiment code and share the model of \cref{eq:outflow,eq:nlp-sp} and none of the solver code. The engine's contract names the cap as a decision of the product, the rounding to six decimals as a convention, and the tolerance of the round trip, set to 0 days in the case documents, as a named parameter; the test of the case that checks the round trip uses the threshold property of \cref{eq:threshold} and not the equality of the survival period with the target.

@@ -1,0 +1,28 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{The engine against ORE on new seeds. Panel A: the number of seeds on which the product's rule passes, the median over seeds of the largest standardised difference, and the largest difference at the product's seed 42 rerun here. Panel B: the mean standardised difference over seeds and dates with the product's and the pair-aware errors, and the mean EEPE and CVA differences.}
+\label{tab:ore-replicates}
+\textbf{A. The rule on new seeds}\par\smallskip
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedleft\arraybackslash}p{1.3cm}>{\raggedleft\arraybackslash}p{3.4cm}>{\raggedleft\arraybackslash}p{2.6cm}>{\raggedleft\arraybackslash}p{2.8cm}@{}}
+\toprule
+Variant & Seeds & Rule passed (95\% interval, \%) & \relax Median largest $\lvert z\rvert$ & \relax Largest $\lvert z\rvert$ at seed 42 \\
+\midrule
+Single swap & 24 & 22 (74--98) & 1.36 & 0.78 \\
+Netting set & 24 & 22 (74--98) & 1.38 & 0.72 \\
+CSA, 10 days & 8 & 0 (0--32) & 10.82 & 9.93 \\
+\bottomrule
+\end{tabularx}
+\par\medskip
+\textbf{B. The mean standardised difference over seeds}\par\smallskip
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedleft\arraybackslash}p{1.8cm}>{\raggedleft\arraybackslash}p{2.6cm}>{\raggedleft\arraybackslash}p{2.4cm}>{\raggedleft\arraybackslash}p{2.4cm}@{}}
+\toprule
+Variant & \relax Mean $z$ & \relax Mean $z$, pair-aware & \relax Mean EEPE $z$ & \relax Mean CVA $z$ \\
+\midrule
+Single swap & +0.10 & +0.20 & +0.29 & +0.12 \\
+Netting set & +0.10 & +0.20 & +0.29 & +0.12 \\
+CSA, 10 days & -2.18 & -2.90 & -0.12 & -14.57 \\
+\bottomrule
+\end{tabularx}
+\end{table}

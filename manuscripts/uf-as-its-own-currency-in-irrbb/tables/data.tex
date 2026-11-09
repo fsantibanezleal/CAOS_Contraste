@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{The inputs of the experiments and where each comes from: the daily secondary-market yields of the F022 table of the Banco Central de Chile on the valuation date 2026-09-03, the UF value of that day, the synthetic bank built by the case's generator and the rules of Annex 1 that the engine holds.}
+\label{tab:data}
+\begin{tabular}{p{2.4cm}p{6.6cm}p{5.4cm}}
+\toprule
+Input & Source and identifier & Use in the experiments \\
+\midrule
+Peso curve & Banco Central de Chile, table F022 (secondary-market yields), series BCLP at 2, 5, 10 years, with the monetary policy rate (series TPM) as the overnight point & zero curve of the CLP leg, 19 midpoints \\
+UF curve & Banco Central de Chile, table F022, series BUF at 2, 5, 10, 30 years & zero curve of the UR leg, 19 midpoints \\
+UF value & BDE series F073.UFF.PRE.Z.D, value of 2026-09-03 & conversion of UF flows to pesos \\
+Balance sheet & synthetic Banco Andino, calibrated to the CMF aggregates of August 2026 & 30 seeds of the repricing profiles per variant \\
+Shock sizes, floors, offset, charge & RAN 21-13 Annex 1, Hojas 9 to 12 (held by the engine) & all treatments \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,22 @@
+{\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{lrrl}
+\caption{Memory and wall-clock time of the fetch and of the bake of the cases that the design document measured on the development workstation, with the process tree polled every 20 ms; the largest bake is the validation of the validator, whose simulations run on eight worker processes.}\label{tab:protocol-resources}\\
+\toprule
+Stage & Memory & Wall time & Where it runs \\
+\midrule
+\endfirsthead
+\toprule
+Stage & Memory & Wall time & Where it runs \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+fetch & 44 MB peak & 1.2 s & workstation with network \\
+bake C01 & 634 MB peak & 183.7 s & workstation \\
+bake C04 & 157 MB peak & 296.4 s & workstation \\
+bake C05 & 212 MB peak & 32.0 s & workstation \\
+bake C22 & 1.4 GB & 9,578 s & workstation \\
+\end{longtable}
+}

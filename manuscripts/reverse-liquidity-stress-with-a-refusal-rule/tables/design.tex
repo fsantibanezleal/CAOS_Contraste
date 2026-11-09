@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\caption{Composition of the seeded corpus: 5 independent corpora of 1,000 synthetic banks, each solved at the targets of 2, 5, 10 and 30 days, counted by the outcome of the independent oracle.}
+\label{tab:design}
+\begin{tabular}{lr}
+\toprule
+Outcome of the oracle & Instances \\
+\midrule
+instances (banks $\times$ targets) & 20,000 \\
+solved by the oracle & 8,568 \\
+refused: target not below the horizon & 5,034 \\
+refused: base survival period already at or below the target & 5,870 \\
+refused: no multiplier under the cap reaches the target & 528 \\
+solved, constant capacity and no inflow & 2,318 \\
+solved, capacity on a monetisation schedule & 5,177 \\
+\bottomrule
+\end{tabular}
+\end{table}

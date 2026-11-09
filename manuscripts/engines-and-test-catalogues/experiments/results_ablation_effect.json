@@ -1,0 +1,63 @@
+{
+ "replications": 5,
+ "scenarios_each": 200000,
+ "loading_factor": 0.97,
+ "correlation_factor": 0.9409,
+ "relative_change": {
+  "var99": -0.015463917525773196,
+  "es99": -0.018824871049580964,
+  "var999": -0.02258610954263128,
+  "es999": -0.02298072279214934
+ },
+ "clean_sd_relative": {
+  "var99": 0.0019210205992266235,
+  "es99": 0.006709484969710428,
+  "var999": 0.00643803176227633,
+  "es999": 0.007392966783470825
+ },
+ "fullsize_comparison": {
+  "replications": 10,
+  "scenarios_each": 200000,
+  "seed_first": 32000,
+  "quantities": {
+   "var99": {
+    "defect_mean": 2070000.0,
+    "defect_sd": 12000.0,
+    "independent_mean": 2097000.0,
+    "independent_sd": 12727.922061357855,
+    "relative_shift": -0.012875536480686733,
+    "z_defect_minus_independent": -4.880935300919764
+   },
+   "es99": {
+    "defect_mean": 2535655.499999998,
+    "defect_sd": 14812.440683425533,
+    "independent_mean": 2572709.3999999976,
+    "independent_sd": 18337.648011672598,
+    "relative_shift": -0.014402676027070682,
+    "z_defect_minus_independent": -4.970755798436148
+   },
+   "var999": {
+    "defect_mean": 3140100.0,
+    "defect_sd": 26983.32818612263,
+    "independent_mean": 3187800.0,
+    "independent_sd": 31119.125951735856,
+    "relative_shift": -0.014963297571993217,
+    "z_defect_minus_independent": -3.6621948456537856
+   },
+   "es999": {
+    "defect_mean": 3640774.499999997,
+    "defect_sd": 49645.55622107582,
+    "independent_mean": 3699107.999999997,
+    "independent_sd": 48511.50368726989,
+    "relative_shift": -0.015769612566056468,
+    "z_defect_minus_independent": -2.6575565080471346
+   }
+  }
+ },
+ "run": {
+  "seconds": 175,
+  "peak_working_set_mb": 211,
+  "python": "3.13.14",
+  "platform": "Windows-11-10.0.26300-SP0"
+ }
+}

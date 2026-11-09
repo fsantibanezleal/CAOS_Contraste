@@ -241,6 +241,8 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         { id: 'matrix', label: { en: 'Matrix', es: 'Matriz' }, content: <MatrixView sel={sel} /> },
         { id: 'generators', label: { en: 'Generators', es: 'Generadores' }, content: <GeneratorsView sel={sel} /> },
         { id: 'mobility', label: { en: 'Mobility', es: 'Movilidad' }, content: <MobilityView sel={sel} /> },
+        // the Markov tests check the matrix's own assumptions, so they sit with the matrix views (ADR-0071 rule 5: six peers at most in Validation)
+        { id: 'tests', label: { en: 'Markov tests', es: 'Pruebas de Markov' }, content: <TestsView sel={sel} /> },
       ],
       { en: "Views of the agency's matrices", es: 'Vistas de las matrices de la agencia' },
       'model-agency',
@@ -252,7 +254,6 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         { id: 'definitions', label: { en: 'Definitions', es: 'Definiciones' }, content: <DefinitionsView sel={sel} /> },
         { id: 'lifetime', label: { en: 'Lifetime', es: 'Vida' }, content: <LifetimeView sel={sel} /> },
         ...(agency.outputs.withdrawal_bounds ? [{ id: 'anchored-k', label: { en: 'Anchored k', es: 'k anclada' }, content: <AnchoredKView sel={sel} /> }] : []),
-        { id: 'tests', label: { en: 'Markov tests', es: 'Pruebas de Markov' }, content: <TestsView sel={sel} /> },
         { id: 'semesters', label: { en: 'Semesters', es: 'Semestres' }, content: <SemestersView sel={sel} /> },
       ],
       { en: "Views of the agency's PDs and checks", es: 'Vistas de las PD y verificaciones de la agencia' },

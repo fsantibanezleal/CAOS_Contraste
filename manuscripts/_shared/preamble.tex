@@ -33,6 +33,9 @@
 \theoremstyle{remark}
 \newtheorem{remark}{Remark}
 
+% A table wider than the text block is scaled down to it; a narrower one keeps its width.
+\newcommand{\fitwidth}[1]{\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{#1}}
+
 % Notation shared by the documents (each defines it again in its notation table).
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\Prob}{\mathbb{P}}

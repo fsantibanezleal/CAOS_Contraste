@@ -1,5 +1,50 @@
-% Written by unit TR-13.
+% Written by unit TR-13. Tables and numbers: tables/make_results.py from data-pipeline/config/sources.json, data/derived/manifests and docs/design/SDD.md.
 \section{Data sources}
 \label{sec:data}
 
-% TEXT
+Every model in the report is fitted or calibrated on data whose origin, licence and truth status are stated before the model sees it. The registry of the pipeline holds \rsSources{} sources
+that the research of \rsSourcesResearched{} classified, \rsSourcesUsed{} of which the cases read; the others were researched, classified and left unused, because their terms
+forbid the intended use or because no case needs them. This section lists the sources, the cases built on them and the leakage-safe split of each case. The schema of the
+data that crosses each boundary of the pipeline is in Appendix~\ref{sec:contracts}, and the fields of every contract are there with their types, units, ranges and missing-data behaviour.
+
+\subsection{Sources and licence classes}
+\label{sec:data-sources}
+
+Each source is declared once, in the registry \texttt{data-pipeline/config/sources.json}, with its publisher, its landing page, the verbatim fragment of its licence or terms and one of four
+redistribution classes. A source of the class \emph{mirror-allowed} may have its raw rows committed or re-hosted, with attribution where the licence asks for it; a \emph{derived-only} source may be
+downloaded by the pipeline, but only aggregates, fitted parameters and results derived from it are committed and replayed; a \emph{link-only} source is fetched at run time from its publisher
+at most, and neither raw rows nor substantial derived extracts are redistributed; and an \emph{unusable} source has terms that forbid the intended use or is not publicly obtainable.
+Of the \rsSources{} sources, \rsSourcesMirror{} are mirror-allowed, \rsSourcesDerived{} derived-only, \rsSourcesLink{} link-only and \rsSourcesUnusable{} unusable (\cref{tab:data-sources}); of the
+\rsSourcesUsed{} that cases read, \rsSourcesUsedMirror{} are mirror-allowed and \rsSourcesUsedDerived{} derived-only, so no case reads a link-only or an unusable source. The table does not show
+the licence fragment of each source, which the registry holds verbatim, nor the sources whose licence the research could not confirm; the registry marks those open questions as unverified and
+keeps the class that the research could support. Every fetch writes a row of the licence manifest with the source, the address, the retrieval date, the class, the licence fragment, and the SHA-256
+digest and byte count of every file, and the raw files go to the device's data root and never into the repository. The registry and the licence manifest are contracts of the appendix, and a repository check
+refuses an artifact derived from a link-only or an unusable source.
+
+\input{tables/results-sources}
+
+\subsection{Cases, truth status and variants}
+\label{sec:data-cases}
+
+\Cref{tab:data-cases} joins each case to its sources, their licence classes and the truth status of its committed variants. The truth status says what a result can be compared with.
+\emph{Real outcomes} are observed defaults, losses or decisions, and a model is judged on a split that the leakage tests guard. \emph{Synthetic with known truth} is data from a generator whose
+true parameter, default probability, conversion factor, exposure or loss distribution is known, so that estimator error and the size and power of a test can be measured. \emph{Synthetic calibrated}
+data are generated to match the public aggregates of a regulator, as for the provisions of the synthetic bank Banco Andino and the operational losses. A \emph{published answer} is a table or a worked example of a paper
+or of a supervisor that the engine must reproduce. Several cases mix statuses, which the table shows by listing them all: the rating-transition case has real aggregates and a chain of known generator, and the interest-rate and
+liquidity cases have real balance-sheet aggregates with synthetic behaviour. The count of variants is the number of committed variant documents of the case, and the variants are the regimes of the design: a drift or a prior shift applied to the
+evaluation set, a crisis window, a deficiency planted in a generator, a currency or a scenario.
+
+\input{tables/results-cases}
+
+\subsection{Ingestion contracts}
+\label{sec:data-ingestion}
+
+The pipeline admits data through eight ingestion families, each declared once in the code of the pipeline and exported to \texttt{data/derived/contract}: the scored sample of any default-probability or machine-learning case, the loan panel for lifetime default probability, IFRS~9, loss given default and exposure at default, the rating history, the market series, the curve, the balance sheet of the banking book, the loss events of operational risk and the macroeconomic path. A record either validates or is rejected with the failing field, the expected range and the policy that applied; nothing is coerced. The policies are specific to the family: a default probability outside $(0,1)$ or an unknown grade is rejected and a missing feature is flagged with an imputation fitted on the training slice only; origination dates after the reporting date are rejected and jumps of days past due above 31 in a month are flagged; unknown rating grades are rejected and the withdrawn-rating code is handled by a declared convention and counted; non-finite market values are rejected and gaps above five business days are flagged without any forward fill across the forecast date; non-monotone tenors are rejected and rates outside $[-0.05,\,0.30]$ are flagged; unknown buckets and currencies are rejected and the caps on non-maturity deposits are enforced and reported; losses below the collection threshold are rejected because truncation is modelled and not silently kept; and a macroeconomic path whose vintage postdates the observation date of the model is rejected. The counts of accepted, rejected, flagged and excluded rows of each source are written into the manifest of its case. % voice-ok: withdrawn rating, the domain term of the study
+
+\subsection{Leakage-safe splits}
+\label{sec:data-splits}
+
+A comparison is only as good as the split behind it. \Cref{tab:data-splits} states, for each case, the variants and the split that keeps the evaluation free of information the model could not have had.
+For the card-default and corporate cases (C01 and C02) the split is a locked stratified holdout with cross-validation inside the training slice, and the shifts are applied to the evaluation set only and labelled as synthetic perturbations; C01 has a single snapshot and so no out-of-time validation, which its artifacts state. The small-business case (C03) is out of time by approval fiscal year, with the five-year charge-off target observed only at the five-year mark of each cohort. The rating, provisions and loss cases estimate on earlier cohorts or reporting dates and test on later ones, the market case is strictly rolling, so that the forecast of day $t$ uses data to $t-1$, and the generator cases use independent seeded repetitions. A case that has no split, such as the replication of a published answer, says so. The enforcement of these rules by tests, and the limits of what the tests see, are the subject of \cref{sec:bs3}.
+
+\input{tables/results-splits}

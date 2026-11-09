@@ -1,26 +1,48 @@
-\begin{table*}[htbp]
+\begin{table}[htbp]
 \centering
-\scriptsize\setlength{\tabcolsep}{3pt}
-\caption{Share of the 1,000 replications of each variant of the committed C13 desk bake (case seed 13) that each detector flags, in percent with the 95\% Wilson interval; the three proposed components and the union are calibrated on 10,000 independent null desk-years at a size of 1\% per statistic (family 1\% for the union), the published comparators at 1\% per statistic on the same null, and the regulatory zone and the desk back-test by their own rules. The no-deficiency column is the held-out false-alarm rate.}
+\footnotesize
+\renewcommand{\arraystretch}{1.1}
+\caption{Share of the 1,000 replications of each variant of the committed C13 desk bake (case seed 13) that each detector flags, in percent over its 95\% Wilson interval; the three proposed components and the union are calibrated on 10,000 independent null desk-years at a size of 1\% per statistic (family 1\% for the union), the published comparators at 1\% per statistic on the same null, and the regulatory zone and the desk back-test by their own rules. The no-deficiency column is the held-out false-alarm rate. The six variants are set in two panels.}
 \label{tab:main-results}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{p{4.1cm}cccccc}
+\begin{tabular}{>{\raggedright\arraybackslash}p{5.2cm}ccc}
 \toprule
-Detector & No deficiency & Missing basis & Stale volatility (20 days) & Wrong correlation & Omitted factor & Time misalignment \\
+Detector & \shortstack{No\\deficiency} & \shortstack{Missing\\basis} & \shortstack{Stale volatility\\(20 days)} \\
 \midrule
-Regulatory zone, amber or red & 0.0 (0.0--0.4) & 96.0 (94.6--97.0) & 0.0 (0.0--0.4) & 100.0 (99.6--100.0) & 90.1 (88.1--91.8) & 100.0 (99.6--100.0) \\
-KS distance alone, not green & 0.0 (0.0--0.4) & 86.7 (84.5--88.7) & 0.0 (0.0--0.4) & 100.0 (99.6--100.0) & 44.8 (41.7--47.9) & 0.0 (0.0--0.4) \\
-\relax KS distance, threshold recalibrated at 1\% & 0.5 (0.2--1.2) & 99.7 (99.1--99.9) & 6.3 (5.0--8.0) & 100.0 (99.6--100.0) & 99.4 (98.7--99.7) & 0.4 (0.2--1.0) \\
-\relax Spearman of levels, threshold recalibrated at 1\% & 1.2 (0.7--2.1) & 100.0 (99.6--100.0) & 55.2 (52.1--58.3) & 7.8 (6.3--9.6) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\
-Desk back-test over its limit & 0.0 (0.0--0.4) & 56.5 (53.4--59.5) & 0.5 (0.2--1.2) & 95.4 (93.9--96.5) & 6.4 (5.0--8.1) & 0.0 (0.0--0.4) \\
-\relax Christoffersen conditional coverage, 97.5\% & 0.8 (0.4--1.6) & 90.0 (88.0--91.7) & 12.7 (10.8--14.9) & 100.0 (99.6--100.0) & 61.3 (58.2--64.3) & 1.1 (0.6--2.0) \\
-MZ Wald, OLS covariance & 1.0 (0.5--1.8) & 0.6 (0.3--1.3) & 41.0 (38.0--44.1) & 100.0 (99.6--100.0) & 1.9 (1.2--2.9) & 100.0 (99.6--100.0) \\
-MZ Wald on the squared series & 1.3 (0.8--2.2) & 100.0 (99.6--100.0) & 20.0 (17.6--22.6) & 100.0 (99.6--100.0) & 97.7 (96.6--98.5) & 99.1 (98.3--99.5) \\
-Ljung--Box on the squared residual & 1.1 (0.6--2.0) & 1.0 (0.5--1.8) & 71.9 (69.0--74.6) & 45.5 (42.4--48.6) & 47.1 (44.0--50.2) & 84.9 (82.5--87.0) \\
-MZ Wald, HC3 (proposed) & 0.8 (0.4--1.6) & 0.9 (0.5--1.7) & 14.2 (12.2--16.5) & 100.0 (99.6--100.0) & 0.6 (0.3--1.3) & 100.0 (99.6--100.0) \\
-Spearman of absolute values (proposed) & 1.6 (1.0--2.6) & 100.0 (99.6--100.0) & 76.7 (74.0--79.2) & 8.7 (7.1--10.6) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\
-Spearman of 20-day rolling means (proposed) & 1.2 (0.7--2.1) & 99.9 (99.4--100.0) & 99.9 (99.4--100.0) & 4.5 (3.4--6.0) & 98.7 (97.8--99.2) & 42.3 (39.3--45.4) \\
-\relax Union of the three proposed, family 1\% & 0.9 (0.5--1.7) & 100.0 (99.6--100.0) & 99.9 (99.4--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\
+Regulatory zone, amber or red & 0.0 (0.0--0.4) & 96.0 (94.6--97.0) & 0.0 (0.0--0.4) \\ \addlinespace[0.8ex]
+KS distance alone, not green & 0.0 (0.0--0.4) & 86.7 (84.5--88.7) & 0.0 (0.0--0.4) \\ \addlinespace[0.8ex]
+KS distance, threshold recalibrated at 1\% & 0.5 (0.2--1.2) & 99.7 (99.1--99.9) & 6.3 (5.0--8.0) \\ \addlinespace[0.8ex]
+Spearman of levels, threshold recalibrated at 1\% & 1.2 (0.7--2.1) & 100.0 (99.6--100.0) & 55.2 (52.1--58.3) \\ \addlinespace[0.8ex]
+Desk back-test over its limit & 0.0 (0.0--0.4) & 56.5 (53.4--59.5) & 0.5 (0.2--1.2) \\ \addlinespace[0.8ex]
+Christoffersen conditional coverage, 97.5\% & 0.8 (0.4--1.6) & 90.0 (88.0--91.7) & 12.7 (10.8--14.9) \\ \addlinespace[0.8ex]
+MZ Wald, OLS covariance & 1.0 (0.5--1.8) & 0.6 (0.3--1.3) & 41.0 (38.0--44.1) \\ \addlinespace[0.8ex]
+MZ Wald on the squared series & 1.3 (0.8--2.2) & 100.0 (99.6--100.0) & 20.0 (17.6--22.6) \\ \addlinespace[0.8ex]
+Ljung--Box on the squared residual & 1.1 (0.6--2.0) & 1.0 (0.5--1.8) & 71.9 (69.0--74.6) \\ \addlinespace[0.8ex]
+MZ Wald, HC3 (proposed) & 0.8 (0.4--1.6) & 0.9 (0.5--1.7) & 14.2 (12.2--16.5) \\ \addlinespace[0.8ex]
+Spearman of absolute values (proposed) & 1.6 (1.0--2.6) & 100.0 (99.6--100.0) & 76.7 (74.0--79.2) \\ \addlinespace[0.8ex]
+Spearman of 20-day rolling means (proposed) & 1.2 (0.7--2.1) & 99.9 (99.4--100.0) & 99.9 (99.4--100.0) \\ \addlinespace[0.8ex]
+Union of the three proposed, family 1\% & 0.9 (0.5--1.7) & 100.0 (99.6--100.0) & 99.9 (99.4--100.0) \\ \addlinespace[0.8ex]
 \bottomrule
-\end{tabular}}
-\end{table*}
+\end{tabular}
+
+\vspace{1.5ex}
+
+\begin{tabular}{>{\raggedright\arraybackslash}p{5.2cm}ccc}
+\toprule
+Detector & \shortstack{Wrong\\correlation} & \shortstack{Omitted\\factor} & \shortstack{Time\\misalignment} \\
+\midrule
+Regulatory zone, amber or red & 100.0 (99.6--100.0) & 90.1 (88.1--91.8) & 100.0 (99.6--100.0) \\ \addlinespace[0.8ex]
+KS distance alone, not green & 100.0 (99.6--100.0) & 44.8 (41.7--47.9) & 0.0 (0.0--0.4) \\ \addlinespace[0.8ex]
+KS distance, threshold recalibrated at 1\% & 100.0 (99.6--100.0) & 99.4 (98.7--99.7) & 0.4 (0.2--1.0) \\ \addlinespace[0.8ex]
+Spearman of levels, threshold recalibrated at 1\% & 7.8 (6.3--9.6) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\ \addlinespace[0.8ex]
+Desk back-test over its limit & 95.4 (93.9--96.5) & 6.4 (5.0--8.1) & 0.0 (0.0--0.4) \\ \addlinespace[0.8ex]
+Christoffersen conditional coverage, 97.5\% & 100.0 (99.6--100.0) & 61.3 (58.2--64.3) & 1.1 (0.6--2.0) \\ \addlinespace[0.8ex]
+MZ Wald, OLS covariance & 100.0 (99.6--100.0) & 1.9 (1.2--2.9) & 100.0 (99.6--100.0) \\ \addlinespace[0.8ex]
+MZ Wald on the squared series & 100.0 (99.6--100.0) & 97.7 (96.6--98.5) & 99.1 (98.3--99.5) \\ \addlinespace[0.8ex]
+Ljung--Box on the squared residual & 45.5 (42.4--48.6) & 47.1 (44.0--50.2) & 84.9 (82.5--87.0) \\ \addlinespace[0.8ex]
+MZ Wald, HC3 (proposed) & 100.0 (99.6--100.0) & 0.6 (0.3--1.3) & 100.0 (99.6--100.0) \\ \addlinespace[0.8ex]
+Spearman of absolute values (proposed) & 8.7 (7.1--10.6) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\ \addlinespace[0.8ex]
+Spearman of 20-day rolling means (proposed) & 4.5 (3.4--6.0) & 98.7 (97.8--99.2) & 42.3 (39.3--45.4) \\ \addlinespace[0.8ex]
+Union of the three proposed, family 1\% & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\ \addlinespace[0.8ex]
+\bottomrule
+\end{tabular}
+\end{table}

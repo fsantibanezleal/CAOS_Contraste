@@ -1,0 +1,526 @@
+{
+ "H6": {
+  "criterion": {
+   "headline_change_min": 0.1,
+   "marginal": "market",
+   "wrong_level": 0.99
+  },
+  "market_ec_at_99": 165879.70943394568,
+  "market_ec_at_999": 283435.3606894786,
+  "market_ec_change": -0.4147529474430065,
+  "simple_sum_mismatched": 540490.275073538,
+  "simple_sum": 658045.9263290708,
+  "headline_change": -0.17864353619103857,
+  "consistency_light_mismatched_level": "red",
+  "consistency_light_mismatched_horizon": "red",
+  "consistency_light_matched": "green",
+  "engine_refusal": "ec does not match the marginals: marginal 1 has ec 165879.70943394568 but ppf(level) - el is 283465.95064875757 (tolerance 0.01)",
+  "outcome": "held"
+ },
+ "H7": {
+  "criterion": {
+   "tests_total": 9,
+   "runnable_with_gaussian_only_max_share": 0.5
+  },
+  "tests": {
+   "aggregation.simple_sum_and_variance_covariance": {
+    "needs": [
+     "Gaussian row",
+     "marginal capitals",
+     "correlation matrix"
+    ],
+    "with_all_rows": {
+     "runnable": true,
+     "light": "green",
+     "reason": ""
+    },
+    "with_gaussian_only": {
+     "runnable": true,
+     "light": "green",
+     "reason": ""
+    },
+    "light_in_committed_document": "green"
+   },
+   "aggregation.copula_choice_sensitivity": {
+    "needs": [
+     "Gaussian row",
+     "t rows"
+    ],
+    "with_all_rows": {
+     "runnable": true,
+     "light": "amber",
+     "reason": ""
+    },
+    "without_t_rows": {
+     "runnable": false,
+     "light": "not_evaluated",
+     "reason": "not evaluated"
+    },
+    "with_gaussian_only": {
+     "runnable": false,
+     "light": "not_evaluated",
+     "reason": "not evaluated"
+    },
+    "light_in_committed_document": "amber"
+   },
+   "aggregation.worst_case_bracket": {
+    "needs": [
+     "lower bound",
+     "worst case",
+     "interior rows"
+    ],
+    "with_all_rows": {
+     "runnable": true,
+     "light": "green",
+     "reason": ""
+    },
+    "without_bounds": {
+     "runnable": false,
+     "reason": "TypeError: float() argument must be a string or a real number, not 'NoneType'"
+    },
+    "with_gaussian_only": {
+     "runnable": false,
+     "reason": "TypeError: float() argument must be a string or a real number, not 'NoneType'"
+    },
+    "light_in_committed_document": "green"
+   },
+   "aggregation.correlation_stress": {
+    "needs": [
+     "Gaussian row of the base matrix",
+     "Gaussian row of the stressed matrix"
+    ],
+    "with_all_rows": {
+     "runnable": true,
+     "light": "amber",
+     "reason": ""
+    },
+    "without_stressed_band": {
+     "runnable": false,
+     "reason": "TypeError: float() argument must be a string or a real number, not 'NoneType'"
+    },
+    "with_gaussian_only": {
+     "runnable": false,
+     "reason": "TypeError: float() argument must be a string or a real number, not 'NoneType'"
+    },
+    "light_in_committed_document": "amber"
+   },
+   "aggregation.diversification_sign": {
+    "needs": [
+     "the diversification factor of each interior row"
+    ],
+    "with_all_rows": {
+     "runnable": true,
+     "light": "green",
+     "reason": ""
+    },
+    "with_gaussian_only": {
+     "runnable": true,
+     "light": "green",
+     "reason": ""
+    },
+    "light_in_committed_document": "green"
+   },
+   "aggregation.horizon_confidence_consistency": {
+    "needs": [
+     "horizon and level of each marginal"
+    ],
+    "with_all_rows": {
+     "runnable": true,
+     "light": "green",
+     "reason": ""
+    },
+    "with_gaussian_only": {
+     "runnable": true,
+     "light": "green",
+     "reason": ""
+    },
+    "light_in_committed_document": "green"
+   },
+   "portfolio.euler_additivity": {
+    "needs": [
+     "the Euler contributions and the aggregate expected shortfall"
+    ],
+    "with_all_rows": {
+     "runnable": true,
+     "light": "green",
+     "reason": ""
+    },
+    "with_gaussian_only": {
+     "runnable": true,
+     "light": "green",
+     "reason": ""
+    },
+    "light_in_committed_document": "green"
+   },
+   "aggregation.elliptical_mc_agreement": {
+    "needs": [
+     "square-root row",
+     "an elliptical simulation"
+    ],
+    "with_all_rows": {
+     "runnable": true,
+     "light": "green",
+     "reason": ""
+    },
+    "with_gaussian_only": {
+     "runnable": true,
+     "light": "green",
+     "reason": ""
+    },
+    "light_in_committed_document": "green"
+   },
+   "aggregation.rosenberg_schuermann_reference": {
+    "needs": [
+     "simple sum",
+     "Gaussian row"
+    ],
+    "with_all_rows": {
+     "runnable": true,
+     "light": "green",
+     "reason": ""
+    },
+    "with_gaussian_only": {
+     "runnable": true,
+     "light": "green",
+     "reason": ""
+    },
+    "light_in_committed_document": "green"
+   }
+  },
+  "runnable_with_gaussian_only": [
+   "aggregation.simple_sum_and_variance_covariance",
+   "aggregation.diversification_sign",
+   "aggregation.horizon_confidence_consistency",
+   "portfolio.euler_additivity",
+   "aggregation.elliptical_mc_agreement",
+   "aggregation.rosenberg_schuermann_reference"
+  ],
+  "need_other_rows": [
+   "aggregation.copula_choice_sensitivity",
+   "aggregation.worst_case_bracket",
+   "aggregation.correlation_stress"
+  ],
+  "runnable_with_gaussian_only_share": 0.6666666666666666,
+  "removed_rows_still_runnable": {
+   "copula_choice_without_t_rows": false,
+   "correlation_stress_without_stressed_band": false
+  },
+  "clause_removing_rows_makes_tests_unrunnable": true,
+  "clause_gaussian_only_share_ok": false,
+  "non_green_lights_in_document": {
+   "aggregation.copula_choice_sensitivity": "amber",
+   "aggregation.correlation_stress": "amber"
+  },
+  "outcome": "refuted"
+ },
+ "euler": {
+  "seeds": [
+   4001,
+   4002,
+   4003,
+   4004,
+   4005,
+   4006,
+   4007,
+   4008,
+   4009,
+   4010,
+   4011,
+   4012,
+   4013,
+   4014,
+   4015,
+   4016,
+   4017,
+   4018,
+   4019,
+   4020
+  ],
+  "risks": [
+   "credit",
+   "market",
+   "irrbb",
+   "operational"
+  ],
+  "share_mean": [
+   0.36734378015975266,
+   0.3932028976289589,
+   0.11157802509404051,
+   0.12787529711724793
+  ],
+  "share_sd": [
+   0.012039664077233104,
+   0.012939352728709452,
+   0.003402529482568194,
+   0.02702448123784994
+  ],
+  "max_relative_gap": 3.2959464513472615e-16,
+  "es_total_mean": 703686.2454481524,
+  "es_total_sd": 20714.55919132261,
+  "standalone_es": [
+   346948.98761972535,
+   355803.0083217577,
+   106382.42111286118,
+   171091.4865456052
+  ],
+  "standalone_share": [
+   0.35394798928035925,
+   0.3629806221352097,
+   0.10852847361221955,
+   0.17454291497221155
+  ],
+  "sum_of_standalone_es": 980225.9035999494,
+  "standalone_over_aggregate_es": 1.392987158610268,
+  "euler_contribution_mean": [
+   258494.76544934785,
+   276691.4707318563,
+   78515.9215529451,
+   89984.08771400315
+  ],
+  "benefit_by_risk_mean": [
+   0.25494878303933277,
+   0.22234645503154293,
+   0.26194646886587103,
+   0.47405864820738763
+  ]
+ },
+ "ablation_variants": [
+  {
+   "variant": "full band (bounds and all interior rows, base and stressed matrix)",
+   "kind": "interval",
+   "low": 118508.51353539355,
+   "high": 823346.9923477678,
+   "covered": 10,
+   "of": 10,
+   "share": 1.0,
+   "median_width_over_truth": 1.262549949453728,
+   "missed": []
+  },
+  {
+   "variant": "without the sharp bounds (interior rows, base and stressed matrix)",
+   "kind": "interval",
+   "low": 488070.9283676742,
+   "high": 584399.6546551468,
+   "covered": 8,
+   "of": 10,
+   "share": 0.8,
+   "median_width_over_truth": 0.1725499276232978,
+   "missed": [
+    "gaussian-independent",
+    "t3-crisis"
+   ]
+  },
+  {
+   "variant": "without the stressed matrix (interior rows of the base matrix)",
+   "kind": "interval",
+   "low": 488070.9283676742,
+   "high": 546940.3267302664,
+   "covered": 2,
+   "of": 10,
+   "share": 0.2,
+   "median_width_over_truth": 0.10545048001961804,
+   "missed": [
+    "gaussian-stress",
+    "gaussian-crisis",
+    "gaussian-independent",
+    "t3-base",
+    "t25-base",
+    "t3-crisis",
+    "clayton-survival",
+    "gumbel"
+   ]
+  },
+  {
+   "variant": "without the t copula rows (square-root rule and Gaussian copula, base matrix)",
+   "kind": "interval",
+   "low": 488070.9283676742,
+   "high": 528106.3388493821,
+   "covered": 2,
+   "of": 10,
+   "share": 0.2,
+   "median_width_over_truth": 0.07171388481118238,
+   "missed": [
+    "gaussian-stress",
+    "gaussian-crisis",
+    "gaussian-independent",
+    "t3-base",
+    "t25-base",
+    "t3-crisis",
+    "clayton-survival",
+    "gumbel"
+   ]
+  },
+  {
+   "variant": "Gaussian copula row alone",
+   "kind": "point",
+   "tolerance": 0.05,
+   "covered": 2,
+   "of": 10,
+   "share": 0.2,
+   "median_abs_error": 0.14123461870948406,
+   "max_abs_error": 0.39947930683209787,
+   "mean_error": -0.06484628411437968,
+   "errors": {
+    "gaussian-base": 0.0003890224113041185,
+    "gaussian-stress": -0.11435057201874288,
+    "gaussian-crisis": -0.15255945858189623,
+    "gaussian-independent": 0.39947930683209787,
+    "t3-base": -0.12156500733312181,
+    "t25-base": -0.1299097788370719,
+    "t3-crisis": -0.20131251137802875,
+    "regime-mixture": -0.011374511102667628,
+    "clayton-survival": -0.16310718389672574,
+    "gumbel": -0.15415214723894377
+   }
+  },
+  {
+   "variant": "square-root row alone",
+   "kind": "point",
+   "tolerance": 0.05,
+   "covered": 2,
+   "of": 10,
+   "share": 0.2,
+   "median_abs_error": 0.08274725827251622,
+   "max_abs_error": 0.5142755900220517,
+   "mean_error": 0.011862367646930572,
+   "errors": {
+    "gaussian-base": 0.08244878632221653,
+    "gaussian-stress": -0.04170265072028623,
+    "gaussian-crisis": -0.08304573022281592,
+    "gaussian-independent": 0.5142755900220517,
+    "t3-base": -0.049508870675825545,
+    "t25-base": -0.058538145872003344,
+    "t3-crisis": -0.1357978912785972,
+    "regime-mixture": 0.06972031540760426,
+    "clayton-survival": -0.0944586628017614,
+    "gumbel": -0.08476906371127713
+   }
+  },
+  {
+   "variant": "simple sum alone (the headline)",
+   "kind": "point",
+   "tolerance": 0.05,
+   "covered": 0,
+   "of": 10,
+   "share": 0.0,
+   "median_abs_error": 0.17873225710505003,
+   "max_abs_error": 0.8868602969709025,
+   "mean_error": 0.2608292308827118,
+   "errors": {
+    "gaussian-base": 0.34878330726178275,
+    "gaussian-stress": 0.19408463886155491,
+    "gaussian-crisis": 0.14256917114758427,
+    "gaussian-independent": 0.8868602969709025,
+    "t3-base": 0.18435771293038106,
+    "t25-base": 0.173106801279719,
+    "t3-crisis": 0.07683743847525171,
+    "regime-mixture": 0.3329230196310611,
+    "clayton-survival": 0.12834810762578197,
+    "gumbel": 0.14042181464309866
+   }
+  },
+  {
+   "variant": "hybrid quantile with the correlation of the truth sample",
+   "kind": "point",
+   "tolerance": 0.05,
+   "covered": 5,
+   "of": 10,
+   "share": 0.5,
+   "median_abs_error": 0.06505262832915815,
+   "max_abs_error": 0.17669086617836394,
+   "mean_error": -0.06791263170737218,
+   "errors": {
+    "gaussian-base": 0.00861197804698599,
+    "gaussian-stress": -0.037239005711520945,
+    "gaussian-crisis": -0.04065118450511618,
+    "gaussian-independent": 0.03001625655611906,
+    "t3-base": -0.08945407215320011,
+    "t25-base": -0.12188008623365776,
+    "t3-crisis": -0.0914513039329089,
+    "regime-mixture": 0.014344451597051444,
+    "clayton-survival": -0.1747324845591104,
+    "gumbel": -0.17669086617836394
+   }
+  },
+  {
+   "variant": "Gaussian copula with the rank correlation of the truth sample",
+   "kind": "point",
+   "tolerance": 0.05,
+   "covered": 5,
+   "of": 10,
+   "share": 0.5,
+   "median_abs_error": 0.03567105046384006,
+   "max_abs_error": 0.21846773260468133,
+   "mean_error": -0.07701671101901622,
+   "errors": {
+    "gaussian-base": -0.006507826312009857,
+    "gaussian-stress": -0.00598613628800404,
+    "gaussian-crisis": 0.0030725865872178737,
+    "gaussian-independent": -0.0030687855409659015,
+    "t3-base": -0.12215400655424391,
+    "t25-base": -0.1290159386571864,
+    "t3-crisis": -0.06205883842098259,
+    "regime-mixture": -0.009283262506697532,
+    "clayton-survival": -0.21846773260468133,
+    "gumbel": -0.21669716989260845
+   }
+  },
+  {
+   "variant": "Gaussian copula alone, tolerance 10 percent",
+   "kind": "point",
+   "tolerance": 0.1,
+   "covered": 2,
+   "of": 10,
+   "share": 0.2,
+   "median_abs_error": 0.14123461870948406,
+   "max_abs_error": 0.39947930683209787,
+   "mean_error": -0.06484628411437968,
+   "errors": {
+    "gaussian-base": 0.0003890224113041185,
+    "gaussian-stress": -0.11435057201874288,
+    "gaussian-crisis": -0.15255945858189623,
+    "gaussian-independent": 0.39947930683209787,
+    "t3-base": -0.12156500733312181,
+    "t25-base": -0.1299097788370719,
+    "t3-crisis": -0.20131251137802875,
+    "regime-mixture": -0.011374511102667628,
+    "clayton-survival": -0.16310718389672574,
+    "gumbel": -0.15415214723894377
+   }
+  },
+  {
+   "variant": "without the t copula rows, with the stressed matrix (square-root rule and Gaussian copula, both matrices)",
+   "kind": "interval",
+   "low": 488070.9283676742,
+   "high": 568520.4605747111,
+   "covered": 5,
+   "of": 10,
+   "share": 0.5,
+   "median_width_over_truth": 0.14410614044896453,
+   "missed": [
+    "gaussian-crisis",
+    "gaussian-independent",
+    "t3-crisis",
+    "clayton-survival",
+    "gumbel"
+   ]
+  },
+  {
+   "variant": "t copula rows only (4, 8 and 30 degrees of freedom, both matrices)",
+   "kind": "interval",
+   "low": 498751.7239500787,
+   "high": 584399.6546551468,
+   "covered": 6,
+   "of": 10,
+   "share": 0.6,
+   "median_width_over_truth": 0.1534178309400801,
+   "missed": [
+    "gaussian-base",
+    "gaussian-independent",
+    "t3-crisis",
+    "regime-mixture"
+   ]
+  }
+ ],
+ "seconds": 79
+}

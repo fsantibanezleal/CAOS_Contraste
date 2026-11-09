@@ -30,9 +30,9 @@ def fit_width() -> None:
     """Wrap the tabular of every generated table in a box that shrinks it to the text width when it is wider."""
     for f in OUT.glob("provisions-t-*.tex"):
         s = f.read_text(encoding="utf-8")
-        if "\\resizebox" in s:
+        if "\\resizebox" in s or "\\fitwidth" in s:
             continue
-        s = s.replace("\\begin{tabular}", "\\resizebox{\\ifdim\\width>\\textwidth\\textwidth\\else\\width\\fi}{!}{%\n\\begin{tabular}", 1)
+        s = s.replace("\\begin{tabular}", "\\fitwidth{%\n\\begin{tabular}", 1)
         s = s.replace("\\end{tabular}", "\\end{tabular}}", 1)
         f.write_text(s, encoding="utf-8", newline="\n")
 
@@ -108,8 +108,8 @@ def tables_c06() -> None:
     macro("CindexCoxMax", f"{max(c['cox'] for c in cp):.2f}")
     macro("DatesHold", str(sum(holds_all)))
     macro("DatesTotal", str(len(holds_all)))
-    macro("IbsWorseMax", f"{max(ibs_gap):.5f}")
-    macro("IbsBetterMax", f"{-min(ibs_gap):.5f}")
+    macro("PbsWorseMax", f"{max(ibs_gap):.5f}")
+    macro("PbsBetterMax", f"{-min(ibs_gap):.5f}")
     macro("GapBetterMax", f"{-min(gap_gap):.4f}")
     macro("HoldDates", ", ".join(d for d, h in zip(DATES, holds_all) if h))
     macro("FailDates", ", ".join(d for d, h in zip(DATES, holds_all) if not h))
@@ -124,7 +124,8 @@ def tables_c06() -> None:
     h = c06m("2010-12")
     l1 = rung(h, "L1-dth")["details"]
     macro("DthCells", num(l1["cells"], 0))
-    macro("DthLoans", num(int(l1["cleaning"]["loans-kept"]), 0))
+    macro("DthLoans", num(int(rung(h, "L1-dth")["parameters"]["n_loans"]["value"]), 0))
+    macro("CleanLoans", num(int(l1["cleaning"]["loans-kept"]), 0))
     macro("DthCoef", str(len(next(e for e in h["fit"]["ladder"] if e["rung_id"] == "L1-dth")["coefficients"])))
     macro("CoxCoef", str(len(next(e for e in h["fit"]["ladder"] if e["rung_id"] == "L2-cox")["coefficients"])))
     macro("LossRho", f"{h['fit']['pit']['rho']:.2f}")
@@ -138,17 +139,18 @@ def tables_c06() -> None:
                           "stopping, the epoch of the lowest hold-out loss and the negative log-likelihood per training default on each part."),
                  label="tab:prov-pch-fit", digits=3, align="lrrrrrrrr", wide=True)
     figkit.table(OUT / "provisions-t-rungs.tex",
-                 ["Date", "IBS KM", "IBS DTH", "IBS Cox", "IBS PCH", "C DTH", "C Cox", "C PCH"], rows_rungs,
-                 caption=("Integrated Brier score (IBS, the mean over the observed horizons of 6 to 36 months of the Brier score of the "
-                          "predicted against the observed cumulative default) of the four lifetime PD rungs, Kaplan-Meier (KM), "
+                 ["Date", "PBS KM", "PBS DTH", "PBS Cox", "PBS PCH", "C DTH", "C Cox", "C PCH"], rows_rungs,
+                 caption=("Pooled Brier score (PBS, the mean over the observed horizons of 6 to 36 months of the Brier term of the pooled "
+                          "predicted against the pooled observed cumulative default; it equals the observed variance plus the squared gap "
+                          "between the two, so it measures calibration in the large and carries no ranking information) of the four lifetime PD rungs, Kaplan-Meier (KM), "
                           "discrete-time hazard (DTH), Cox and PC-Hazard (PCH), and the c-index of the 12-month PD of the three rungs that rank "
                           "loans, on the loans with 36 months of contractual life left, per reporting date of case C06."),
                  label="tab:prov-rungs", digits=4)
     figkit.table(OUT / "provisions-t-s4.tex",
-                 ["Date", "IBS Cox", "IBS PCH", "Gap Cox", "Gap PCH", "Both criteria hold"], rows_s4,
-                 caption=("PC-Hazard against Cox at the six reporting dates of case C06: the integrated Brier score (IBS) and the mean absolute "
+                 ["Date", "PBS Cox", "PBS PCH", "Gap Cox", "Gap PCH", "Both criteria hold"], rows_s4,
+                 caption=("PC-Hazard against Cox at the six reporting dates of case C06: the pooled Brier score (PBS) and the mean absolute "
                           "gap between predicted and Aalen-Johansen observed cumulative default across the ten risk deciles at 12, 24 and 36 "
-                          "months, with the last column stating whether the PC-Hazard rung has both the lower IBS and the smaller gap."),
+                          "months, with the last column stating whether the PC-Hazard rung has both the lower PBS and the smaller gap."),
                  label="tab:prov-s4", digits=4)
     figkit.table(OUT / "provisions-t-ecl.tex",
                  ["Date", "Stage 1 ECL", "Stage 2 ECL", "Total ECL", "Coverage (\\%)", "Stage 2 share (\\%)", "NL index", "Realised / ECL"],
@@ -233,7 +235,7 @@ def curve_and_decile_macros() -> None:
         macro("BaseEnd" + names[e["rung_id"]], f"{e['baseline']['cumulative_pd'][-1] * 100:.1f}")
         macro("BaseMonth" + names[e["rung_id"]], str(e["baseline"]["months"][-1]))
     words = {12: "Twelve", 24: "TwentyFour", 36: "ThirtySix"}
-    npts = 0
+    counts = []
     for rid, tag in (("L2-cox", "Cox"), ("L3-pch", "Pch")):
         for k, w in words.items():
             errs = []
@@ -243,9 +245,9 @@ def curve_and_decile_macros() -> None:
                     if row["months"] == k and row["observed_aalen_johansen"]:
                         errs.append(abs(row["predicted_cumulative_pd"] / row["observed_aalen_johansen"] - 1.0))
             macro(f"DecMed{tag}{w}", f"{statistics.median(errs) * 100:.0f}")
-            if tag == "Pch" and k == 12:
-                npts = len(errs)
-    macro("DecPoints", str(npts))
+            counts.append(len(errs))
+    macro("DecPointsMin", str(min(counts)))
+    macro("DecPointsMax", str(max(counts)))
 
 
 # ---------------------------------------------------------------------------------------------------------------------

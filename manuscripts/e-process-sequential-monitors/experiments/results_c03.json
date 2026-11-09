@@ -1,0 +1,291 @@
+{
+ "meta": {
+  "engine_version": "1.1.0",
+  "alpha_level": 0.05,
+  "direction": "upper",
+  "headline": "average",
+  "script": "experiments/exp_c03.py"
+ },
+ "cohorts": {
+  "fy2006-07": {
+   "months": [
+    12,
+    24,
+    36,
+    48,
+    60
+   ],
+   "vintages": [
+    {
+     "fiscal_year": 2006,
+     "n": 86393,
+     "defaults": 19271,
+     "predicted_defaults": 7600.56,
+     "rejection_month": 12,
+     "max_log_e": 6423.19067,
+     "five_year_light": "red",
+     "months_observed": 60
+    },
+    {
+     "fiscal_year": 2007,
+     "n": 88134,
+     "defaults": 24310,
+     "predicted_defaults": 7721.77,
+     "rejection_month": 12,
+     "max_log_e": 11631.7198,
+     "five_year_light": "red",
+     "months_observed": 60
+    }
+   ],
+   "average": {
+    "rejection_month": 12,
+    "max_log_e": 11631.0267,
+    "anytime_p_value": 0.0
+   },
+   "product": {
+    "rejection_month": 12,
+    "max_log_e": 18054.9105,
+    "anytime_p_value": 0.0
+   },
+   "recomputed_equals_committed": true,
+   "sources": {
+    "document": "data/derived/C03/fy2006-07.json",
+    "builder": "data-pipeline/pipeline/cases/c03/sequential.py"
+   }
+  },
+  "fy2008-10": {
+   "months": [
+    12,
+    24,
+    36,
+    48,
+    60
+   ],
+   "vintages": [
+    {
+     "fiscal_year": 2008,
+     "n": 61539,
+     "defaults": 13088,
+     "predicted_defaults": 4526.14,
+     "rejection_month": 12,
+     "max_log_e": 6363.64222,
+     "five_year_light": "red",
+     "months_observed": 60
+    },
+    {
+     "fiscal_year": 2009,
+     "n": 36594,
+     "defaults": 3066,
+     "predicted_defaults": 2251.4,
+     "rejection_month": 12,
+     "max_log_e": 366.373467,
+     "five_year_light": "red",
+     "months_observed": 60
+    },
+    {
+     "fiscal_year": 2010,
+     "n": 39890,
+     "defaults": 1954,
+     "predicted_defaults": 2157.5,
+     "rejection_month": 24,
+     "max_log_e": 42.514924,
+     "five_year_light": "green",
+     "months_observed": 60
+    }
+   ],
+   "average": {
+    "rejection_month": 12,
+    "max_log_e": 6362.54361,
+    "anytime_p_value": 0.0
+   },
+   "product": {
+    "rejection_month": 12,
+    "max_log_e": 6528.00843,
+    "anytime_p_value": 0.0
+   },
+   "recomputed_equals_committed": true,
+   "sources": {
+    "document": "data/derived/C03/fy2008-10.json",
+    "builder": "data-pipeline/pipeline/cases/c03/sequential.py"
+   }
+  },
+  "fy2011-14": {
+   "months": [
+    12,
+    24,
+    36,
+    48,
+    60
+   ],
+   "vintages": [
+    {
+     "fiscal_year": 2011,
+     "n": 45592,
+     "defaults": 1662,
+     "predicted_defaults": 2956.65,
+     "rejection_month": null,
+     "max_log_e": -3.432575,
+     "five_year_light": "green",
+     "months_observed": 60
+    },
+    {
+     "fiscal_year": 2012,
+     "n": 38861,
+     "defaults": 1272,
+     "predicted_defaults": 2544.7,
+     "rejection_month": null,
+     "max_log_e": -5.245369,
+     "five_year_light": "green",
+     "months_observed": 60
+    },
+    {
+     "fiscal_year": 2013,
+     "n": 40400,
+     "defaults": 1240,
+     "predicted_defaults": 2506.18,
+     "rejection_month": null,
+     "max_log_e": -3.10492,
+     "five_year_light": "green",
+     "months_observed": 60
+    },
+    {
+     "fiscal_year": 2014,
+     "n": 45942,
+     "defaults": 1616,
+     "predicted_defaults": 2922.0,
+     "rejection_month": null,
+     "max_log_e": -1.34015,
+     "five_year_light": "green",
+     "months_observed": 60
+    }
+   ],
+   "average": {
+    "rejection_month": null,
+    "max_log_e": -2.452798,
+    "anytime_p_value": 1.0
+   },
+   "product": {
+    "rejection_month": null,
+    "max_log_e": -13.123014,
+    "anytime_p_value": 1.0
+   },
+   "recomputed_equals_committed": true,
+   "sources": {
+    "document": "data/derived/C03/fy2011-14.json",
+    "builder": "data-pipeline/pipeline/cases/c03/sequential.py"
+   }
+  },
+  "fy2015-17": {
+   "months": [
+    12,
+    24,
+    36,
+    48,
+    60
+   ],
+   "vintages": [
+    {
+     "fiscal_year": 2015,
+     "n": 55387,
+     "defaults": 2134,
+     "predicted_defaults": 4886.01,
+     "rejection_month": null,
+     "max_log_e": -7.644228,
+     "five_year_light": "green",
+     "months_observed": 60
+    },
+    {
+     "fiscal_year": 2016,
+     "n": 56759,
+     "defaults": 2194,
+     "predicted_defaults": 4742.31,
+     "rejection_month": null,
+     "max_log_e": -7.167437,
+     "five_year_light": "green",
+     "months_observed": 60
+    },
+    {
+     "fiscal_year": 2017,
+     "n": 56057,
+     "defaults": 2417,
+     "predicted_defaults": 4507.53,
+     "rejection_month": null,
+     "max_log_e": -7.194056,
+     "five_year_light": "green",
+     "months_observed": 60
+    }
+   ],
+   "average": {
+    "rejection_month": null,
+    "max_log_e": -7.312654,
+    "anytime_p_value": 1.0
+   },
+   "product": {
+    "rejection_month": null,
+    "max_log_e": -22.005722,
+    "anytime_p_value": 1.0
+   },
+   "recomputed_equals_committed": true,
+   "sources": {
+    "document": "data/derived/C03/fy2015-17.json",
+    "builder": "data-pipeline/pipeline/cases/c03/sequential.py"
+   }
+  },
+  "fy2018-20": {
+   "months": [
+    12,
+    24,
+    36,
+    48,
+    60
+   ],
+   "vintages": [
+    {
+     "fiscal_year": 2018,
+     "n": 54171,
+     "defaults": 2526,
+     "predicted_defaults": 3616.22,
+     "rejection_month": 12,
+     "max_log_e": 3.542732,
+     "five_year_light": "green",
+     "months_observed": 60
+    },
+    {
+     "fiscal_year": 2019,
+     "n": 45664,
+     "defaults": 1786,
+     "predicted_defaults": 2629.59,
+     "rejection_month": null,
+     "max_log_e": -2.857967,
+     "five_year_light": "green",
+     "months_observed": 60
+    },
+    {
+     "fiscal_year": 2020,
+     "n": 36456,
+     "defaults": 944,
+     "predicted_defaults": 2024.88,
+     "rejection_month": null,
+     "max_log_e": -6.286599,
+     "five_year_light": "green",
+     "months_observed": 60
+    }
+   ],
+   "average": {
+    "rejection_month": null,
+    "max_log_e": 2.445833,
+    "anytime_p_value": 0.0866539558
+   },
+   "product": {
+    "rejection_month": null,
+    "max_log_e": -5.601834,
+    "anytime_p_value": 1.0
+   },
+   "recomputed_equals_committed": true,
+   "sources": {
+    "document": "data/derived/C03/fy2018-20.json",
+    "builder": "data-pipeline/pipeline/cases/c03/sequential.py"
+   }
+  }
+ }
+}

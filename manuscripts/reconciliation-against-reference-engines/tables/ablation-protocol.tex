@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{Contribution of each part of the protocol, measured by what the reconciliation reports with the part and without it: the unit of the gap, the tested explanation, the independent route, the pair-aware error, the family-wise bound, the diagnostic run, the equivalence margin and the scope list.}
+\label{tab:ablation-protocol}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{2.8cm}@{}}
+\toprule
+Part of the protocol & Measurement & With the part & Without it \\
+\midrule
+Gap in units of the last digit & numbers classed by the size of the gap & 313, 70, 35, 20 in four bins & 313 agree, 125 fail \\
+Tested explanation of a gap & cells of Tables 9 to 12 agreeing (of 96) & 92 (printed inputs scaled) & 69 (exact inputs) \\
+Independent route & planted defects flagged (of 9) & 6 (C3) & 1 (C2) and 0 (C1) \\
+Pair-aware errors & power against a 2 percent volatility error, netting set, bound 3.18 & 76.5 percent & 18.5 percent \\
+Family-wise bound & size on the netting set, pair-aware errors & 3.8 percent (bound 3.18) & 56.0 percent (bound 2) \\
+Diagnostic with a zero minimum transfer amount & largest standardised difference, 10 and 20 days & 3.64 and 4.17 & 9.93 and 7.09 \\
+Equivalence margin and detectable gap & what a pass on the single swap EEPE supports & equivalent within 1.9 percent; gap of 2.8 percent detectable & agreement, no size \\
+Scope list & comparisons listed as not run & wrong-way variant against ORE & silence \\
+\bottomrule
+\end{tabularx}
+\end{table}

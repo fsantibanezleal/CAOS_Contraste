@@ -1,0 +1,64 @@
+\section{Experimental design}
+\label{sec:experimental-design}
+
+The design follows the structure of a simulation study: the aims, the data-generating mechanism, the estimands, the methods compared, the performance measures and the statistics \citep{morris2019}.
+
+\subsection{Hypotheses}
+\label{sec:ed-hypotheses}
+
+Three hypotheses are stated here. Only a statement written before the data it is tested on can fail on them: H1 carries its date, and for H2 and H3 the record cannot show one (below).
+\begin{description}
+\item[H1] The minimum Cram\'er-von Mises and the optimally bias-robust fits of the generalised Pareto tail, through the mean-adjusted single loss approximation, have a smaller interquartile range of capital over the true quantile and a median ratio nearer to 1 than the splice in at least \rhHolds{} percent of the cells; the hypothesis is refuted when either count is under \rhRefuted{} percent.
+\item[H2] The delta-method standard deviation of the logarithm of the single loss approximation, \cref{eq:dispersion}, is within \preSd{} percent of the measured one in every cell.
+\item[H3] The share of histories with a fitted index of one or more predicted by \cref{eq:misclassification} is within \preShare{} percentage points of the measured share in every cell at tail indices 0.96 and 1.1.
+\end{description}
+H1 is the hypothesis of the case parameters of the product (the object \texttt{S3\_HYPOTHESIS}), committed with the code of the robust rungs on 29 October 2026, before the re-bake of 1 November 2026 that ran those rungs on the 16{,}000 histories; it is the test of this paper that was fixed first. A robust rung is better than the splice in a cell on spread when its interquartile range of capital over the true quantile is smaller, and on bias when the absolute logarithm of its median ratio to the truth is smaller; the hypothesis holds for a rung when both counts reach \rhHolds{} percent of the cells in which both rungs have a capital, is refuted when either count falls under \rhRefuted{} percent and is inconclusive between the two. The thresholds were the choice of the case and are not tuned here; the hypothesis is reported over the 16 cells and at each tail index, whichever way it falls.
+H2 and H3 are the predictions of the theory of \cref{sec:theory}. Their tolerances are written in the analysis script \texttt{experiments/analyse.py}, which the repository holds in the same commit as its results, so the record cannot show that the tolerances were fixed before the theory was compared with the 16 cells. The tolerance of H2, \preSd{} percent, is about five times the largest error observed, so H2 is a loose test: a theory wrong by more than a quarter would fail it and a theory wrong by a tenth would pass.
+
+The design of the product also states four quantitative facts about the committed grid of 16 cells: the range of the interquartile range of the splice capital, that every capital stability row of the six-rung ladder (which includes the mean-corrected rung) is red, and the ranges of the shares of false conclusions about the mean at tail indices 0.96 and 1.1. These statements were written into the software design document on 21 October 2026, after the 16{,}000 histories had been drawn on 14 October 2026, and this analysis reads the same histories, so they are not hypotheses: a difference could come only from an error of coding. They are listed as R1 to R4 in \cref{tab:hypotheses} and the analysis reproduces them first, from the per-history data, to a largest relative difference of $\chkRatio$ in the percentiles. An independent replication of the 16{,}000 histories would not be expected to reproduce them at two decimals, because each endpoint of the range is itself an estimate: the 95 percent bootstrap intervals of the interquartile range of the splice in its smallest and largest cells are \spMinLo{} to \spMinHi{} and \spMaxLo{} to \spMaxHi{}.
+
+\subsection{Data and provenance}
+\label{sec:ed-data}
+
+The data are generated, not observed. The generator is the compound Poisson process of \cref{sec:problem} at four tail indices, calibrated to four median severity percentiles and the median frequency of the 2008 Loss Data Collection Exercise \citep{bcbs160}; \cref{tab:truth} lists the scale, the rate and the true quantile of each variant and the largest log error of the calibration to the four percentiles. The calibration is best at $\xi=0.96$, the index of the least-squares fit of the percentiles, and worst at $\xi=0.6$, whose tail cannot reach the 95th percentile of the exercise; the error is stated and not hidden.
+The statistics of the exercise are medians of per-bank statistics and describe no bank, so the process is a synthetic bank of EUR 50 billion in assets with a stated business indicator of EUR 1.4 billion.
+
+\input{tables/tab-truth}
+
+The true quantile of each variant is the Fourier quantile of the compound loss. The Panjer recursion agrees within \panGapD{} percent at the heaviest tail and the Monte Carlo of ten million years lies within the standard errors listed in \cref{tab:truth}, which is the acceptance criterion of the truth. The 16 cells combine two lengths of history (5 and 10 years) and two collection thresholds (EUR 10,000 and 20,000) with the four variants, and each cell holds \nPer{} independent histories on seeds that do not overlap, \nHist{} histories in all.
+
+\subsection{Methods compared}
+\label{sec:ed-methods}
+
+The published methods are run by the product on the same histories; none is taken from a reported number. The ten rungs are the lognormal that ignores the threshold, the truncated lognormal \citep{mignola2007,cope2009}, the lognormal-GPD splice \citep{chavez2006}, the single loss approximation \citep{degen2010,embrechts1997}, its mean-corrected form (a comparison only, in a separately labelled row, because its form is not confirmed against a primary text), the scenario combination by Bayesian credibility \citep{shevchenko2006}, the mean-adjusted approximation on the maximum likelihood fit,
+the minimum Cram\'er-von Mises and optimally bias-robust fits \citep{opdyke2012}, and the lognormal fitted by minimum Cram\'er-von Mises distance as a control with a family that does not match the generator. The standardised approach \citep{ope25} is computed on the annual recorded losses of the same histories. Every capital, quantile, fit and multiplier is returned by the engine \texttt{riskvalidation} 1.1.0 and the product holds no formula of the estimators.
+
+Each rung is a call of one function of the engine with the recorded losses and the recorded annual counts as arguments, so a difference between two rungs is a difference of method and not of data handling. The control with the wrong family is included because a method that is robust to contamination can still be wrong when its family is wrong, and the experiment should show the size of that error.
+
+\subsection{Metrics}
+\label{sec:ed-metrics}
+
+The estimand of every rung is the true 99.9 percent quantile of the annual loss. The performance measures are those of \cref{eq:metrics,eq:pi}: the median ratio, the interquartile range of the ratio, the share of histories below the truth, the share within a factor of two, the number of histories on which the rung is defined, and the share of fits with an index of one or more. The standard deviation of the logarithm of the ratio, $\sigma$, is also reported for the theory. A rung that the engine refuses on a history is not replaced by a number: the statistics are conditional on the rung being defined, and the number of defined histories is part of the result.
+
+The median and the interquartile range of the ratio are reported as location and scale because the ratio is right-skewed with a long upper tail, and a mean or a variance would be dominated by a few histories. The share below one and the share within a factor of two are counts and carry Wilson intervals. The standard deviation of the logarithm is the quantity that the delta method predicts and is reported for the single loss approximation, whose estimator the theory covers.
+
+\subsection{Protocol, seeds and repetitions}
+\label{sec:ed-protocol}
+
+Each cell runs \cref{alg:protocol} with $R=1{,}000$ histories and the seeds of \cref{eq:seeds} with $\varsigma_0=42$. The bootstrap uses $B=2{,}000$ resamples with the seed 20261104, and the paired comparisons of the ablation use the seed 20261105. The estimates of the precision of the measurement draw 400 random subsets of each size, with replacement, from the defined histories of a cell, for the sizes that the cell can supply, with the seed 20261105 offset by the cell index. All computations are deterministic functions of the seeds: the first eight histories of one cell, re-drawn through the pipeline of the product, reproduce the stored capitals of all ten rungs to the last digit (\cref{sec:reproducibility}).
+
+The order of computation is fixed. The truth of a variant is computed first and its three checks must pass. The scenario prior of a variant and a history length is computed once from the expert's points and reads no loss of any history. Then each cell is run, each history through the loss-event contract and then through the rungs, and the committed documents are written from the cell summaries. The analysis of this document starts from the per-history arrays and reproduces those summaries before it computes anything else.
+
+\subsection{Ablations planned}
+\label{sec:ed-ablations}
+
+The ablation measures what each component of the estimation ladder adds, on the histories where both rungs it compares are defined: the modelling of the threshold, the splice of a tail, the closed-form tail, the scenario credibility tail, the adjustment by one mean, the two robust fits and the choice of family; the mean correction is compared in a separate row and is not read as a component. The measure is the share of histories within a factor of two of the truth and the dispersion of the logarithm of the ratio, with a paired bootstrap interval of the difference. The effect of the length of the history and of the threshold is read from the cells themselves, and the effect of the number of histories from the subsets.
+
+Each comparison is between two rungs that differ by one component, so the change is attributable to it. The splice and the truncated lognormal differ by the tail. The single loss approximation and the splice differ by the aggregation and by the use of every recorded loss above the threshold in the tail fit, two changes that the design cannot separate, and the text says so when it reads the result.
+
+\subsection{Statistics}
+\label{sec:ed-statistics}
+
+Intervals are 95 percent: percentile bootstrap over histories for the median, the interquartile range and the share below one, and Wilson score for shares and for the shares within a factor of two. A paired difference of shares has the percentile bootstrap interval of the difference over the paired histories. The histories of a cell are independent by construction and the cells use disjoint seeds, so pooled shares are shares of independent histories. No test of significance is used: the intervals carry the inference, and H2 and H3 held when their measured values lie inside the stated tolerance and H1 by the rule above.
+
+The intervals are not corrected for multiplicity. The 16 cells and ten rungs give about 160 intervals in the main tables, and if the intervals were exact and independent about eight of them would miss the true value at the nominal level; the text therefore reads patterns across cells and across rungs and not single intervals. The bootstrap resamples 1{,}000 histories, so the intervals of a heavy-tailed statistic such as the interquartile range of a right-skewed ratio are approximate, which the width of the intervals at the heavy tails reflects.

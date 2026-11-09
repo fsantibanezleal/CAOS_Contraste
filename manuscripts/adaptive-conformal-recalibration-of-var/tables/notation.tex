@@ -1,0 +1,29 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Notation of the manuscript: each symbol with its meaning and its unit; the symbols of the back-tests and scores are those defined where they are first used in the experimental design.}
+\label{tab:notation}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lll}
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+$y_t$, $L_t$ & \relax Return and loss of day $t$ ($L_t = -y_t$) & decimal \\
+$\alpha$ & Target tail level of the VaR & probability \\
+$a_t$ & \relax Working tail level on day $t$ & probability \\
+$\gamma$ & Step of the level update & probability \\
+$[\ell, u]$ & Clipping band of the working level & probability \\
+$V_t(a)$, $E_t(a)$ & \relax VaR and ES of the model at level $a$ (positive loss) & decimal \\
+$e_t$ & \relax Hit indicator $\indic\{L_t > V_t(a_t)\}$ & 0 or 1 \\
+$T$ & Number of forecast days & days \\
+$C_T$ & Total amount the band removes from the level & probability \\
+$c$ & Ratio of the true scale to the scale the model assumes & 1 \\
+$F$, $f$, $q_\nu$ & \relax Distribution, density and quantile function of the unit-variance Student-$t$ & 1 \\
+$a^*$ & Fixed point of the level update & probability \\
+$S_t$, $\theta_t$ & \relax Score $L_t/V_t$ and the scale applied to the VaR & 1 \\
+FZ0 & Mean Fissler--Ziegel score of the VaR and ES pair & score \\
+$Z_2$ & Acerbi--Szekely ES statistic & 1 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

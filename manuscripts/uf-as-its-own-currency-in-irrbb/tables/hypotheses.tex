@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{The statements tested or reproduced in this paper, with the deciding quantity and the outcome: R1 to R4 are the statements of the product's specification, entered after the numbers of the published case were known, and so reproduced and not tested; H2 and H5 were written by the author into the headers of the experiment scripts before the scripts that decide them ran, and H4 likewise, but its decision rule was written out after the runs (an order that the repository history cannot show); H1 was stated for every shock and only its consequence for the two measures was checked, so it is printed in that narrower form and is a statement revised after its result, not a prediction; H3 was written after the reproduction run had printed a value that already contradicts one of its clauses, so it is a refuted statement and not a prediction.}
+\label{tab:hypotheses}
+\begin{tabular}{p{0.8cm}p{7.6cm}p{1.9cm}p{3.6cm}}
+\toprule
+Id & Statement and deciding quantity & Status & Outcome \\
+\midrule
+R1 & The indexation charge is 55.9\% of the delta NII of the short UF variant (reproduction). & reproduced & 55.9\% \\
+R2 & The single-currency delta NII is 6.8 to 8.8 times smaller in the three 30\% variants (reproduction). & reproduced & 6.8 to 8.8 \\
+R3 & The single-currency delta EVE is 10 to 27\% smaller in the same three variants (reproduction). & reproduced & 10 to 27\% \\
+R4 & No floor binds on the committed curves; the closest post-shock rate is 20.48 bp from its floor (reproduction). & reproduced & 20.48 bp in every variant \\
+H1 & The sum of the legs is at most the pair rule, which is at most the positive parts, for the two measures of every variant, book and treatment. & held & 0 violations in 2{,}880 comparisons \\
+H2 & For the delta EVE, the pair rule has the largest absolute Shapley value in the three 30\% variants. & refuted & the own curve has the largest value in all three \\
+H3 & The Annex 1 delta NII exceeds the single-currency and the positive-part delta NII, and the Annex 1 delta EVE is not below the single-currency one, in every variant and book. & refuted in one clause (not a prediction) & the CLP steepener variant: Annex 1 below positive parts in 30 of 30 books \\
+H4 & A net UF position exists at which Annex 1 flags the bank in most books and the single-currency treatment flags none. & held at one position only & 110\% of Tier 1 only (17 of 20 books against 0), the delta EVE test only \\
+H5 & A binding UR floor never raises the Annex 1 measure. & refuted & 208 of 1{,}920 comparisons of the two measures raise it, all on the delta NII \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,116 @@
+The method has four parts that build on one another: the family of PDs indexed by the odds ratio of withdrawal, the bounds of that family, the tipping odds ratio of a decision, and the anchor that reads the odds ratio from a second source. Everything is in closed form; no random number is drawn, so the output of the method on a cohort is deterministic and the only randomness in the paper is that of the data generator used to test it.
+
+\subsection{The PD as a function of the odds ratio}
+
+The idea is to stop asking which of the three treatments is right and to state what each assumes. Equation~\eqref{eq:k} defines the odds ratio $k$ from the unobserved count $X$ of \wdn{} ratings that would have defaulted. Solving it for $X$ gives, for given $D$, $S$ and $W$,
+\begin{equation}
+X(k)=W\,\frac{kD}{kD+S},\qquad \pdk(k)=\frac{D+X(k)}{N}.
+\label{eq:pdk}
+\end{equation}
+The derivation is one line. Equation~\eqref{eq:k} reads $XS=kD(W-X)$, so $X(S+kD)=kDW$, which is the first part of Equation~\eqref{eq:pdk}; the second part is Equation~\eqref{eq:followed} with $X$ replaced by $X(k)$. The function is defined for every $k\in[0,\infty]$, and its values at three points are the treatments of the introduction:
+\begin{equation}
+\pdk(0)=\frac{D}{N},\qquad \pdk(1)=\frac{D}{D+S},\qquad \lim_{k\to\infty}\pdk(k)=\frac{D+W}{N}.
+\label{eq:limits}
+\end{equation}
+At $k=0$ no \wdn{} rating would have defaulted and the PD is the share of defaults in the whole cohort. At $k=1$ the \wdn{} ratings default at the rate of the others, $X(1)=WD/(D+S)$, and the PD is the removal estimate $D/(D+S)$, because $D+WD/(D+S)=DN/(D+S)$. As $k\to\infty$ every \wdn{} rating was a default in waiting, and the PD is the largest value that the counts allow, the worst case of \citet{manski1989}. Between these points $\pdk(k)$ increases with $k$ and is concave in it; Section~\ref{sec:theory} proves both, together with the fact that $X(k)$ reaches half of its range at $k=S/D$, the inverse of the odds of default among the ratings seen. For a grade with a low PD, $S/D$ is large, so a plausible $k$ of a few units sits on the steep part of the curve and the PD moves a lot with it.
+
+\subsection{The identified band}
+
+The cohort alone does not say which $k$ holds. What it does support is the whole family, and the identified band is the sampling interval of that family. Let $L(C)$ and $U(C)$ be the lower and upper limits of the Jeffreys interval of $C$ defaults among $N$ ratings at confidence $1-\alpha$,
+\begin{equation}
+L(C)=B^{-1}\!\left(\tfrac{\alpha}{2};\,C+\tfrac12,\,N-C+\tfrac12\right),\qquad U(C)=B^{-1}\!\left(1-\tfrac{\alpha}{2};\,C+\tfrac12,\,N-C+\tfrac12\right),
+\label{eq:jeffreys}
+\end{equation}
+with $L(0)=0$ and $U(N)=1$, where $B^{-1}(p;a,b)$ is the quantile function of the Beta$(a,b)$ distribution \citep{brown2001}. The identified band is $[L(D),\,U(D+W)]$. It is the interval that the transition page supports for the PD of the grade when nothing is assumed about the \wdn{} ratings, and it is wide whenever the share $W/N$ of \wdn{} ratings is large against the PD: it is bounded below by the PD that keeping gives and above by Manski's bound. Its width is what a second source can reduce. The band is the interval that a sensitivity analysis would report if it varied $k$ over its whole range, and it is the right output when no second source exists: it says that the transition page, on its own, supports every PD between the two ends, and that a decision whose threshold lies inside the band cannot be taken from the page.
+
+\subsection{The tipping odds ratio}
+
+A decision is taken on a PD: a grade is assigned to a master-scale step, a risk weight is read from a function of the PD, a provision is sized. Let the decision change when the PD crosses a threshold $t$. The tipping odds ratio $\tip$ is the value of $k$ at which $\pdk(k)=t$. Inverting Equation~\eqref{eq:pdk}, the count that puts the PD exactly at the threshold is $X^{\ast}=tN-D$, and
+\begin{equation}
+\tip=\frac{X^{\ast}S}{D\,(W-X^{\ast})},\qquad X^{\ast}=tN-D,\qquad 0\le X^{\ast}\le W,
+\label{eq:tip}
+\end{equation}
+with $\tip=0$ at $X^{\ast}=0$ and $\tip=\infty$ at $X^{\ast}=W$. The threshold is reached for some $k$ only when it lies between $D/N$ and $(D+W)/N$. If the removal estimate $D/(D+S)$ is below $t$ and $(D+W)/N\ge t$, the decision flips upward when the withdrawal is informative enough, and the result says \emph{flips up}; if the removal estimate is at or above $t$ and $D/N<t$, it flips downward; otherwise the decision does not depend on how the \wdn{} ratings would have behaved and the result says \emph{robust}. A decision that flips only at an implausible $\tip$ can be taken as it stands, and a decision that flips at $k$ near 1 cannot be taken without a second source. The method does not choose the plausible range; it returns $\tip$ so that the range is argued against it.
+
+\subsection{The anchor and the anchored interval}
+
+When a second source counts $A$ defaults among $N_a$ ratings of the same grade, assumption A4 says that $A/N_a$ estimates $(D+X)/N$, so that $X$ can be solved for. The anchored count of \wdn{} defaulters and the anchored odds ratio are
+\begin{equation}
+\widehat X=\min\!\Big\{W,\,\max\big\{0,\;N\tfrac{A}{N_a}-D\big\}\Big\},\qquad \widehat k=\frac{\widehat X\,S}{D\,(W-\widehat X)},\qquad \widehat\pi=\frac{D+\widehat X}{N}.
+\label{eq:anchor}
+\end{equation}
+The clipping to $[0,W]$ is reported: a second source that counts fewer defaults than the transition page already saw gives the flag \emph{anchor below observed} and $\widehat k=0$, and one that counts more than $D+W$ gives \emph{anchor above identified} and $\widehat k=\infty$. The sampling uncertainty of the second source enters through its own Jeffreys interval for $A/N_a$, with limits $a_{\ell}$ and $a_{u}$. Passing the limits through the same inversion gives the band of the anchored odds ratio, $[k_{\ell},k_{u}]$, with
+\begin{equation}
+X_{\ell}=\mathrm{clip}\big(a_{\ell}N-D,\,0,\,W\big),\qquad X_{u}=\mathrm{clip}\big(a_{u}N-D,\,0,\,W\big),
+\label{eq:band}
+\end{equation}
+and $k_{\ell}$, $k_{u}$ obtained from $X_{\ell}$, $X_{u}$ by Equation~\eqref{eq:anchor}. The anchored interval for the PD runs from the Jeffreys lower limit of the count $D+X_{\ell}$ to the Jeffreys upper limit of the count $D+X_{u}$, both at the size $N$ of the cohort,
+\begin{equation}
+\Big[\,L\big(D+X_{\ell}\big),\;U\big(D+X_{u}\big)\,\Big].
+\label{eq:interval}
+\end{equation}
+It counts the sampling noise of the two pages, the second source through the band and the transition page through the outer Jeffreys limits, so it is conservative, and Section~\ref{sec:theory} shows that it is never narrower than the Jeffreys interval of the oracle that follows every \wdn{} rating. A grade with no observed default, $D=0$, has no odds ratio, since $X(k)=0$ for every finite $k$: only the Manski bound $W/N$ is valid, and the result says so.
+
+\subsection{Algorithms and complexity}
+
+Algorithm~\ref{alg:anchored} computes the family, the identified band and the anchored result of one grade from its counts, and Algorithm~\ref{alg:tipping} the tipping odds ratio and the status of a decision. Both are straight-line code: the cost per grade is a constant number of arithmetic operations plus four Beta quantiles, so the cost per cohort is $O(G)$ for $G$ grades, with no iteration and no random draw. The memory is the size of the counts, and the call of the engine's \pth{withdrawal\_bounds} on a full cohort of seven grades takes a median of \nv{rt.call.median} milliseconds (95th percentile \nv{rt.call.p95}) over \nv{rt.calls} cohorts, and the evaluation of the six treatments of the experiments \nv{rt.eval.median} milliseconds, measured by \pth{experiments/extended_study.py} on the machine of Section~\ref{sec:reproducibility}, the cost being the Beta quantiles; the experiments below call the method several times for every repetition of every cell, which is why they can be run on a workstation in minutes. The two algorithms are the whole of the method: the identified band, the family, the anchor, its band and the anchored interval come from the first, and the decision status from the second.
+
+\begin{algorithm}[htbp]
+\caption{Anchored PD of one grade: the family $\pdk(k)$, the identified band and the anchored interval, from the counts of the transition page and of a second source.}
+\label{alg:anchored}
+\begin{algorithmic}[1]
+\Require $D,S,W$ of the transition page, $N=D+S+W$; $A,N_a$ of the second source (optional); level $1-\alpha$; grid of $k$
+\Ensure $\pdk(k)$ on the grid, identified band, $\widehat k$ with its band, $\widehat\pi$ and the anchored interval
+\State $\pdk(k)\gets\big(D+W\,kD/(kD+S)\big)/N$ for every $k$ of the grid, with $\pdk(\infty)\gets(D+W)/N$
+\State identified band $\gets[L(D),\,U(D+W)]$ by Equation~\eqref{eq:jeffreys}
+\If{second source given}
+  \State $a_{\ell},a_{u}\gets$ Jeffreys limits of $A$ among $N_a$
+  \State $X_c\gets\mathrm{clip}(NA/N_a-D,0,W)$, $X_{\ell}\gets\mathrm{clip}(a_{\ell}N-D,0,W)$, $X_{u}\gets\mathrm{clip}(a_{u}N-D,0,W)$
+  \State flag \emph{below observed} if $NA/N_a<D$, \emph{above identified} if $NA/N_a>D+W$
+  \For{$X\in\{X_c,X_{\ell},X_{u}\}$}
+    \State $k\gets XS/\big(D(W-X)\big)$ if $D>0$ and $W>0$, with $k=\infty$ at $X=W$
+  \EndFor
+  \State $\widehat\pi\gets(D+X_c)/N$; interval $\gets[L(D+X_{\ell}),\,U(D+X_{u})]$
+\EndIf
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[htbp]
+\caption{Tipping odds ratio of a decision at a threshold, and its status.}
+\label{alg:tipping}
+\begin{algorithmic}[1]
+\Require $D,S,W$, threshold $t\in(0,1)$
+\Ensure $\tip$ and the status of the decision
+\State $X^{\ast}\gets tN-D$
+\If{$X^{\ast}<0$ or $X^{\ast}>W$}
+  \State status $\gets$ \emph{robust}; $\tip\gets$ undefined
+\Else
+  \State $\tip\gets X^{\ast}S/\big(D(W-X^{\ast})\big)$
+  \State status $\gets$ \emph{flips up} if $D/(D+S)<t$, otherwise \emph{flips down}
+\EndIf
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Parameters and edge cases}
+
+The method has no parameter that is fitted. The confidence level $1-\alpha$ of the Jeffreys limits is set to $0.95$, as for every interval of the engine; the grid of $k$ on which the family is tabulated is $\{0,1,3,9,\infty\}$ and affects only the table, since the function $\pdk(k)$ is available at any $k$; the thresholds $t$ are supplied by the user, a master-scale boundary or a step of the risk-weight function, or derived from the data by Equation~\eqref{eq:threshold}. Each edge case has a defined answer. A grade with no cohort, $N=0$, returns an undefined PD and the reason \emph{no cohort}. A grade with no withdrawal, $W=0$, has the PD $D/N$ for every $k$, and the result says \emph{no withdrawals}. A grade with $D=0$ has no odds ratio, for $X(k)=0$ whatever finite $k$, and only the bound $W/N$ is valid. A second source with more defaults than ratings, $A>N_a$, is refused with an error, because no count can be larger than its cohort. Because every quantity is a count or a ratio of counts and no iteration is involved, there is no convergence criterion and no numerical instability beyond the evaluation of a Beta quantile, which the engine delegates to a library routine; the checks of Section~\ref{sec:theory} confirm the closed forms to rounding error.
+
+\subsection{A worked example}
+
+The pooled counts of S\&P's grade B over the \nv{real.sp.cohorts} annual cohorts are $D=\nv{real.sp.B.D}$, $S=\nv{real.sp.B.S}$ and $W=\nv{real.sp.B.W}$, so that $N=\nv{real.sp.B.N}$. Keeping the \wdn{} ratings gives $\pdk(0)=D/N=\nv{real.sp.B.pd0}\%$, removing them $\pdk(1)=D/(D+S)=\nv{real.sp.B.pdind}\%$, and Manski's bound is $\pdk(\infty)=(D+W)/N=\nv{real.sp.B.manski}\%$. The default page counts $A=\nv{real.sp.B.A}$ defaults over $N_a=\nv{real.sp.B.Na}$ ratings, a rate of \nv{real.sp.B.pdanc}\%, which lies inside the identified interval, so the anchor is not clipped. Equation~\eqref{eq:anchor} gives $\widehat X=\nv{real.sp.B.ximp}$ \wdn{} ratings that would have defaulted, out of $W$, and an anchored odds ratio $\widehat k=\nv{real.sp.B.k}$ with the band from \nv{real.sp.B.klo} to \nv{real.sp.B.khi}, from the sampling interval of the default page. The anchored interval of Equation~\eqref{eq:interval} runs from \nv{real.sp.B.pdlo}\% to \nv{real.sp.B.pdhi}\%. The tipping threshold to the next grade, from Equation~\eqref{eq:threshold}, is \nv{real.sp.B.tipthr}\%, and Equation~\eqref{eq:tip} gives $\tip=\nv{real.sp.B.tip}$, above the band of $\widehat k$: the anchored PD of grade B stays below the threshold of the next grade. The same computation on the first annual cohort of the generator is the one that the experiments repeat \nv{reps} times.
+
+\subsection{Implementation}
+
+The method is the module \pth{riskvalidation.transitions.withdrawals} of the engine \pth{riskvalidation} 1.1.0, with the functions \pth{withdrawn_defaulters} for $X(k)$, \pth{withdrawal_pd} for $\pdk(k)$, \pth{odds_multiplier} for the inverse, \pth{tipping_k} for Equation~\eqref{eq:tip} and \pth{withdrawal_bounds} for the whole result of a cohort. The last takes the count matrix of a cohort with the default state last, the \wdn{} count of each start state, optional \pth{anchor_defaults} and \pth{anchor_obligors}, optional thresholds, the grid of $k$ and the level. It raises an error for a malformed matrix, a negative count, a level outside $(0,1)$ or an anchor with more defaults than ratings, and it returns for every grade a reason, one of \emph{ok}, \emph{no cohort}, \emph{no observed defaults} and \emph{no withdrawals}.
+
+On real cohorts the product applies the engine per grade and per annual cohort, with three rules that are part of the method's use. A cohort enters a grade only when the second source exists for it, the grade has ratings and withdrawals in it, and the second source does not count more defaulted ratings than its own cohort holds. The pooled anchored $k$ is computed from the sums of the counts over the cohorts that entered. The tipping threshold between a grade and the next is the geometric mean of their removal PDs, pooled over all cohorts,
+\begin{equation}
+t_g=\sqrt{\widehat p_g\,\widehat p_{g+1}},\qquad \widehat p_g=\frac{\sum_{c}D_{gc}}{\sum_{c}(D_{gc}+S_{gc})},
+\label{eq:threshold}
+\end{equation}
+so that the tipping $k$ of a grade is the odds ratio at which its PD reaches the next notch. Stability of the anchored $k$ across years is judged by the share of the usable annual cohorts whose own band contains the pooled anchored $k$,
+\begin{equation}
+s_g=\frac{\big|\{c:\;k_{\ell,c}\le\widehat k_{\mathrm{pooled}}\le k_{u,c}\}\big|}{\big|\{\text{usable cohorts}\}\big|},\qquad \text{stable}\iff s_g\ge 0.80,
+\label{eq:stability}
+\end{equation}
+a criterion that was fixed before any run (Section~\ref{sec:experimental-design}).

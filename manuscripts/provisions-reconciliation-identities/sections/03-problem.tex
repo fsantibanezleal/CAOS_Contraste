@@ -1,0 +1,94 @@
+\section{Problem formulation}
+\label{sec:problem}
+
+\subsection{The tables and their identities}
+\label{sec:problem-tables}
+
+A reporting date gives a book of tables.
+For each stage $s\in\{1,2,3\}$ the allowance roll-forward has an opening $O^{A}_{s}$, signed movements $m^{A}_{s,\ell}$ indexed by the movement lines $\ell$ (originations, transfers between stages, remeasurement, macro update, write-off, derecognition), and a closing $C^{A}_{s}$; the gross carrying amount has the same shape with entries $O^{G}_{s}$, $m^{G}_{s,\ell}$ and $C^{G}_{s}$.
+The waterfall of the total allowance has an opening $w_0$, movement lines $w_\ell$ and a closing $w_C$, and the model ECL has one amount $E_s$ per stage.
+Overlays are signed amounts $\OVL_k$ carried in a stage $s(k)$ or, at portfolio level, in stage 1.
+All entries are amounts of one currency; \cref{tab:notation} collects the symbols.
+The vector $x\in\mathbb{R}^{n}$ of all entries is the book, and $n=\esixEntries{}$ for the committed C06 books.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Notation of the problem, the method and the theory: each symbol with its meaning and its unit, where the unit is a currency unit (USD for the C06 loan book, CLP for the synthetic bank) or a pure number.}
+\label{tab:notation}
+\begin{adjustbox}{max width=\textwidth}\begin{tabular}{lll}
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+$x$, $n$, $m$ & the book (all entries of the tables), its number of entries and the number of identity equations & currency, count \\
+$O^{A}_s, m^{A}_{s,\ell}, C^{A}_s$ & opening, movement on line $\ell$ and closing of the allowance of stage $s$ & currency \\
+$O^{G}_s, m^{G}_{s,\ell}, C^{G}_s$ & the same for the gross carrying amount & currency \\
+$w_0, w_\ell, w_C$ & opening, movement lines and closing of the waterfall & currency \\
+$E_s$, $K_s$ & model ECL of stage $s$; overlay money carried in stage $s$ & currency \\
+$\gross$ & gross total, $\sum_s |C^{G}_s|$ & currency \\
+$\tol$, $\tlim$ & relative tolerance ($10^{-6}$) and the limit $\tol\max(1,\gross)$ & pure, currency \\
+$A$, $r$ & the signed matrix of the identities and the residual vector $Ax$ & pure, currency \\
+$\delta$, $e_j$ & size of a planted defect and the unit vector of entry $j$ & currency, pure \\
+$\LA$, $M$, $\OVL_k$ & total allowance, model ECL, overlay $k$ & currency \\
+$p$, $\rho$, $z$ & through-the-cycle PD, asset correlation, systematic factor & pure \\
+$\mathrm{PD}(z)$, $z^{*}$ & conditional PD and its inflection point & pure \\
+$w_k$, $z_k$, $\bar z$ & scenario weights, scenario factors and their weighted mean & pure \\
+$\nu$ & index: weighted PD over the PD at $\bar z$, minus one & pure \\
+$\mu$, $\sigma$ & mean and standard deviation of the forecast factor & pure \\
+$P^{*}$, $P_d$, $\varepsilon_d$ & expected PD, PD of scenario set $d$, relative error & pure \\
+$T_B, T_I, T_A$ & totals of B-1, IFRS 9 and Annex 9 on the same book & currency \\
+$b_j$ & steps of the bridge from $T_B$ to $T_I$ & currency \\
+$q$, $u$ & largest number of nonzero terms in an identity; rounding unit of a published table & count, currency \\
+$\theta$, $\zeta$ & overlay share of the allowance; standardised argument $(\Norm^{-1}(p)-\sqrt\rho z)/\sqrt{1-\rho}$ & pure \\
+$c$, $\varphi$, $\xi$ & $\sqrt{\rho/(1-\rho)}$; standard normal density; a standard normal draw & pure \\
+$h$, $\kappa$, $N$ & a change of the book; matched moment order; number of Gauss--Hermite nodes & currency, count \\
+$z_{0.975}$ & the 0.975 quantile of the standard normal, 1.96, in the Wilson interval & pure \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+The engine of the product states twelve identities on a committed C06 book: the two roll-forwards of each of three stages (six), the closing of the waterfall, the equality of the waterfall closing to the sum of the stage closings, the equality of each waterfall movement line to the sum of the stage movements on that line (judged as the largest difference, so one identity), and the equality of each stage closing to its stage ECL plus the overlay money carried in it (three).
+Every identity is linear in the entries of the book, so the residual vector is $r=Ax$ for a matrix $A$ that is fixed by the layout of the tables.
+The identities are necessary conditions for a correct allowance, not sufficient ones: a book can reconcile and still be wrong.
+
+\subsection{The detection problem}
+\label{sec:problem-detection}
+
+An acceptance test needs a tolerance, because the entries are floating-point numbers and published tables are rounded.
+The engine judges a money identity as closed when its absolute residual is at most $\tlim=\tol\max(1,\gross)$, where $\gross$ is the sum of the absolute closing amounts of the gross carrying amount rows and $\tol=10^{-6}$.
+The test flags a book when some identity exceeds the limit.
+The question is a function of the defect.
+A defect of size $\delta$ at entry $j$ changes the book to $x+\delta e_j$; the size at which the test first flags it, $\delta^{*}_{j}$, is the detection limit of that entry, and the set of entries or of changes that no identity sees is the blind part of the test.
+Three properties of a set of identities are asked for: the limit of every entry in units of the book, the identities that fail for a defect at an entry (which localize it), and the defects that leave every residual unchanged.
+The false-alarm side is as important: a clean book must not be flagged, whatever the rounding of its published form.
+
+\subsection{Overlays}
+\label{sec:problem-overlays}
+
+The total allowance is $\LA=M+\sum_k\OVL_k$ with $M=\sum_s E_s$ the model ECL.
+The rule under test is that overlays are separate lines: changing the overlays changes $\LA$ by exactly their sum and leaves $M$ and every $E_s$ unchanged; an overlay carried in a stage raises that stage closing by its amount and is a line of the waterfall.
+The questions are whether the engine honours the rule for every overlay set, which wrong bookings of an overlay the identities flag, and what a merge of the overlay into the model estimate does to the attribution of the model ECL.
+Each overlay has an identifier, a rationale, a method, a target parameter, a segment or portfolio level, a staging effect and a review date, so that it can be attributed, and an overlay at portfolio level is carried in stage 1 because the roll-forward has no portfolio row.
+The stage rule is a convention of the engine's contract, not a rule of the standard, and the paper tests the convention and states no compliance claim.
+
+\subsection{The non-linearity of the weighted loss}
+\label{sec:problem-nonlinearity}
+
+With asset correlation $\rho$ and through-the-cycle PD $p$ the one-factor conditional PD is $\mathrm{PD}(z)=\Norm\!\big((\Norm^{-1}(p)-\sqrt{\rho}\,z)/\sqrt{1-\rho}\big)$.
+Scenarios give factors $z_k$ with weights $w_k$, at least two, summing to one.
+The weighted PD is $\sum_k w_k\mathrm{PD}(z_k)$, the PD at the mean path is $\mathrm{PD}(\bar z)$ with $\bar z=\sum_k w_kz_k$, and the index $\nu$ is their ratio minus one.
+The questions are the sign of $\nu$ as a function of where the scenario factors lie, and, for a forecast that is a normal factor with mean $\mu$ and standard deviation $\sigma$, how far the expected PD $P^{*}=\mathbb{E}[\mathrm{PD}(\mu+\sigma\xi)]$ of a scenario set $d$ is from the full distribution, measured by $\varepsilon_d=(P_d-P^{*})/P^{*}$.
+The inflection $z^{*}$ at which the curvature changes sign depends on $p$ and $\rho$, and where the scenario factors lie against it decides the sign of $\nu$.
+The scenario sets compared are those a bank can build from a forecast: the base alone, a symmetric three-scenario set, and moment-matched sets, each with weights summing to one.
+The engine's test row returns the index with a quadrature cross-check of the model, and this paper reuses it without change.
+
+\subsection{Three regimes on one book}
+\label{sec:problem-regimes}
+
+One book of accounts is provisioned under CMF B-1, IFRS 9 and Bank of Spain Annex 9, giving totals $T_B$, $T_I$ and $T_A$ in each of six scenarios.
+The gap $T_I-T_B$ is explained by a bridge of steps $b_j$ that must sum to it.
+The questions are whether the bridge closes in every run, how the ratios $T_I/T_B$ and $T_A/T_B$ vary with the generated book, and whether the ordering of the regimes is stable.
+The assumptions are that the book is synthetic and calibrated to public aggregates, that each regime total is returned by the engine, and that no regime is taken as the right one.
+The B-1 and Annex 9 totals are the sums of the engine's transcribed provision tables over the accounts of the book, and the IFRS 9 total is the probability-weighted, discounted ECL plus the overlays, each regime returned by a function of the engine and none computed in the product.
+The scenarios differ by named shocks to drivers such as the systematic factor, house prices, consumer arrears and the UF inflation, each with a source or the label of an assumption of the case.

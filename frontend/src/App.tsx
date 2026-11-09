@@ -4,7 +4,7 @@
 // documentation routes are DocPages. Identity, licence and visibility come from product.json (one source,
 // written by scripts/instantiate.py); the version is VERSION, injected at build.
 import { lazy, Suspense } from 'react';
-import { AppShell, CitationsProvider, Landing, STANDARD_ROUTES, type ShellConfig } from '@fasl-work/caos-app-shell';
+import { AppShell, CitationsProvider, Landing, LinkedViewProvider, STANDARD_ROUTES, type ShellConfig } from '@fasl-work/caos-app-shell';
 import { Route, Routes } from 'react-router';
 import product from '../../product.json';
 import { architecture } from './architecture';
@@ -18,6 +18,8 @@ const Implementation = lazy(() => import('./pages/Implementation').then((module)
 const Introduction = lazy(() => import('./pages/Introduction').then((module) => ({ default: module.Introduction })));
 const Methodology = lazy(() => import('./pages/Methodology').then((module) => ({ default: module.Methodology })));
 const Workbench = lazy(() => import('./workbench/Workbench').then((module) => ({ default: module.Workbench })));
+// The guided story (ADR-0082, SHOW-1): /story/<step>, full viewport (immersiveRoutes), over the same artifacts as the App.
+const Story = lazy(() => import('./pages/Story').then((module) => ({ default: module.Story })));
 
 const config: ShellConfig = {
   product: { name: product.name },
@@ -28,6 +30,7 @@ const config: ShellConfig = {
   license: { en: `${product.license} licence`, es: `Licencia ${product.license}` },
   visibility: product.visibility === 'private' ? 'private' : 'public',
   contain: true,
+  immersiveRoutes: ['/story'],
   architecture,
 };
 
@@ -35,10 +38,12 @@ export function App() {
   return (
     <CitationsProvider items={CITATIONS}>
       <AppShell config={config}>
+        <LinkedViewProvider>
         <Suspense fallback={<p className="caos-pending" data-state="loading" role="status" aria-label="Loading / Cargando">…</p>}>
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/app" element={<Workbench />} />
+            <Route path="/story/:step" element={<Story />} />
             <Route path="/introduction" element={<Introduction />} />
             <Route path="/methodology" element={<Methodology />} />
             <Route path="/implementation" element={<Implementation />} />
@@ -47,6 +52,7 @@ export function App() {
             <Route path="*" element={<Landing />} />
           </Routes>
         </Suspense>
+        </LinkedViewProvider>
       </AppShell>
     </CitationsProvider>
   );

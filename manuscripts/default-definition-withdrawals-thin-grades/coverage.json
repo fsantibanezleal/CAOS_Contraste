@@ -1,7 +1,13 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:definitions",
+    "tab:rw",
+    "tab:main-results",
+    "tab:thin",
+    "fig:lra-definitions",
+    "fig:bias-ladder",
+    "fig:thin-coverage"
   ],
   "claims": {
     "BS-4": "sec:proposed-method"

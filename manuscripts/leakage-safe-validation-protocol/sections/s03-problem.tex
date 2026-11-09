@@ -1,0 +1,57 @@
+\section{Problem formulation}
+\label{sec:problem}
+
+The problem is to state, for one case, a split and a fitting path such that the number reported on the holdout estimates the performance of the fitted model on new rows, and to give a test that fails when the fitting path reads rows that the estimate treats as new. Table~\ref{tab:notation} collects the symbols.
+
+\input{tables/tab-notation}
+
+\subsection{Data, slices and information sets}
+
+A case supplies a data set $D=(X,y)$ of $n$ rows, with inputs $X\in\R^{n\times p}$ (missing values are allowed) and a binary outcome $y\in\{0,1\}^n$ that equals one when the obligor defaults inside the horizon of the case. The case declares a partition of the row indices
+\begin{equation}
+\{1,\dots,n\}=T\sqcup C\sqcup H,\qquad T\cap C=T\cap H=C\cap H=\emptyset,
+\label{eq:partition}
+\end{equation}
+into a training slice $T$, a calibration slice $C$ and a holdout slice $H$. The holdout is locked: it is read once, to score the final model. When the rows carry dates, each row $i$ has an observation date $t_i$ at which its inputs are known and a closing date $u_i\ge t_i$ at which its outcome is known, and the information set of a model built on the date $b$ is the set of rows with $u_i\le b$. The sizes of $T$, $C$ and $H$, their numbers of events and the seed of the split are facts of the case and are written to its artifact, so that the split can be checked from the output alone. The partition is a property of the case and not of the model: two models built on the same case share it, so that their holdout estimates are comparable, and a change of the split is a change of the case.
+
+\subsection{The fitting procedure and the rows each step reads}
+
+The fitting procedure $\mathcal A$ is a sequence of steps $s\in\mathcal S$, with
+\begin{equation}
+\mathcal S=\{\text{impute},\text{scale},\text{bin},\text{woe},\text{screen},\text{select},\text{fit},\text{calibrate}\}.
+\label{eq:steps}
+\end{equation}
+A scorecard uses the steps impute, bin, woe, screen, select, fit and calibrate; a standardised logistic regression uses impute, scale, screen, select, fit and calibrate. Step $s$ is a function of the rows $R_s\subseteq\{1,\dots,n\}$ that it reads, and the fitted parameters are
+\begin{equation}
+\theta_s=f_s\bigl(D_{R_s},\theta_{<s}\bigr),\qquad \theta=(\theta_s)_{s\in\mathcal S},
+\label{eq:fit}
+\end{equation}
+where $D_R$ is the data restricted to the rows $R$ and $\theta_{<s}$ are the parameters of the earlier steps. The procedure is \emph{leak-free} when
+\begin{equation}
+R_s\subseteq T\ \ (s\neq\text{calibrate}),\qquad R_{\text{calibrate}}\subseteq C,
+\label{eq:leakfree}
+\end{equation}
+with the cross-validation that serves the step select taken inside $T$. A \emph{leak} is any step whose row set violates~\eqref{eq:leakfree}; it is a leak whether or not it changes the fitted parameters by much, because the validation estimate treats $H$ as unseen and the validator cannot know how much was seen. The row sets make the leak a statement that can be read from the code: each step is a function with a declared argument, and a reviewer who finds a step that receives the pooled rows has found the leak without running anything. The gates test the same statement by running the path, for the steps whose row sets cannot be read from the code, such as a step inside a library call.
+
+\subsection{The estimand and the bias of a validation procedure}
+
+For a fitted model with score function $S_\theta$ the quantity that the holdout estimates is the population AUC
+\begin{equation}
+A^{\ast}(\theta)=\Prob\bigl(S_\theta(X_1)>S_\theta(X_0)\bigr)+\tfrac12\Prob\bigl(S_\theta(X_1)=S_\theta(X_0)\bigr),
+\label{eq:aucstar}
+\end{equation}
+where $X_1$ and $X_0$ are the inputs of a defaulter and of a survivor drawn independently from the population. The holdout estimate is the Mann-Whitney statistic
+\begin{equation}
+\hat A_H=\frac{1}{n_1n_0}\sum_{i\in H:\,y_i=1}\ \sum_{j\in H:\,y_j=0}\Bigl(\indic\{S_\theta(x_i)>S_\theta(x_j)\}+\tfrac12\indic\{S_\theta(x_i)=S_\theta(x_j)\}\Bigr),
+\label{eq:auchat}
+\end{equation}
+with $n_1$ events and $n_0$ non-events in $H$, and the engine reports its variance $s^2$ and the interval $\hat A_H\pm1.96\,s$ \citep{delong1988,hanley1982}. The bias of a validation procedure for a fitted model is
+\begin{equation}
+b=\E\bigl[\hat A_H-A^{\ast}(\theta)\bigr],
+\label{eq:bias}
+\end{equation}
+the expectation being over the draws of the data and of the split, and the coverage of the interval is $\Prob\bigl(|\hat A_H-A^{\ast}(\theta)|\le1.96\,s\bigr)$. The same definitions apply to the Brier score and to the expected calibration error of the calibrated probability. The bias is defined for the fitted model that the procedure produced, not for an average over models: a repeated experiment estimates the expectation over fits, and a reference sample supplies the value of $A^{\ast}(\theta)$ for each fit. The question of the paper has two parts. First, for each way of violating~\eqref{eq:leakfree}, what are $b$ and the coverage? Second, which test on the fitted pipeline fails when~\eqref{eq:leakfree} is violated, and with what probability?
+
+\subsection{Assumptions}
+
+Four assumptions bound the results. (A1) The rows of $T\cup C\cup H$ are an independent sample from one population, so that the slices are exchangeable given the outcome; this holds inside one snapshot and is false across vintages, which is why a dated case gets an out-of-time rule (Section~\ref{sec:proposed-method}). (A2) The fitting path is deterministic given its seeds, so that two runs on the same data give bit-identical parameters; the gates compare parameters by equality, and a pipeline with uncontrolled randomness fails them on its own. (A3) The perturbation that a gate applies reaches the step it is meant to test: inputs outside the training range for a step that fits a range, labels redrawn for a step that reads labels. (A4) For a dated case, the closing date $u_i$ of every row in the training window precedes the first observation date of the cohort that is tested on. A fifth condition is a limit rather than an assumption: nothing in~\eqref{eq:leakfree} constrains what the inputs themselves contain. A feature built from information dated after $t_i$ is in the data before any step runs, and the protocol does not see it. Section~\ref{sec:limitations} returns to this limit.

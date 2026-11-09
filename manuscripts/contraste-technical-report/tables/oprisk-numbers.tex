@@ -24,6 +24,7 @@
 \newcommand{\opCalErrD}{0.160}
 \newcommand{\opCapRed}{156}
 \newcommand{\opCapTests}{156}
+\newcommand{\opContamCap}{900}
 \newcommand{\opContamCleanCvm}{0.32}
 \newcommand{\opContamCleanIqrCvm}{0.69}
 \newcommand{\opContamCleanIqrMle}{0.54}
@@ -37,10 +38,13 @@
 \newcommand{\opContamMleMedian}{7.70}
 \newcommand{\opContamN}{148 to 170}
 \newcommand{\opContamObreMedian}{3.90}
+\newcommand{\opContamRequested}{200}
 \newcommand{\opContamSplCvm}{0.98}
 \newcommand{\opContamSplMle}{1.51}
 \newcommand{\opContamSplObre}{0.62}
 \newcommand{\opContamSpliceErrMle}{1.21}
+\newcommand{\opContamSpliceErrRobHi}{1.36}
+\newcommand{\opContamSpliceErrRobLo}{1.31}
 \newcommand{\opContamSpliceErrSplice}{0.99}
 \newcommand{\opContamSpliceMed}{0.26}
 \newcommand{\opExpCount}{41}
@@ -58,6 +62,8 @@
 \newcommand{\opFinLoB}{94}
 \newcommand{\opFinLoC}{66}
 \newcommand{\opFinLoD}{9}
+\newcommand{\opGpdIqrHi}{1.85}
+\newcommand{\opGpdIqrLo}{0.12}
 \newcommand{\opIlmExp}{0.8}
 \newcommand{\opIlmJump}{0.231}
 \newcommand{\opIlmJumpAdded}{90}
@@ -121,9 +127,6 @@
 \newcommand{\opIqrMaB}{1.00}
 \newcommand{\opIqrMaC}{0.60}
 \newcommand{\opIqrMaD}{0.16}
-\newcommand{\opIqrMcA}{0.75}
-\newcommand{\opIqrMcB}{1.00}
-\newcommand{\opIqrMcC}{0.60}
 \newcommand{\opIqrObreA}{0.77}
 \newcommand{\opIqrObreB}{1.08}
 \newcommand{\opIqrObreC}{0.59}
@@ -205,9 +208,6 @@
 \newcommand{\opMedMaB}{0.98}
 \newcommand{\opMedMaC}{0.71}
 \newcommand{\opMedMaD}{0.27}
-\newcommand{\opMedMcA}{0.92}
-\newcommand{\opMedMcB}{0.98}
-\newcommand{\opMedMcC}{0.71}
 \newcommand{\opMedObreA}{0.92}
 \newcommand{\opMedObreB}{0.98}
 \newcommand{\opMedObreC}{0.68}
@@ -246,9 +246,6 @@
 \newcommand{\opNdMaB}{988}
 \newcommand{\opNdMaC}{683}
 \newcommand{\opNdMaD}{164}
-\newcommand{\opNdMcA}{1,000}
-\newcommand{\opNdMcB}{988}
-\newcommand{\opNdMcC}{683}
 \newcommand{\opNdObreA}{1,000}
 \newcommand{\opNdObreB}{985}
 \newcommand{\opNdObreC}{653}
@@ -304,16 +301,23 @@
 \newcommand{\opPanjerStep}{1,000}
 \newcommand{\opQRatio}{63}
 \newcommand{\opRepMc}{200,000}
+\newcommand{\opScAmberN}{2}
+\newcommand{\opScAmberWhich}{$\xi=0.6$ and $\xi=1.1$}
 \newcommand{\opScBase}{1,430.5}
 \newcommand{\opScMaxId}{S8}
 \newcommand{\opScMaxInf}{0.093}
 \newcommand{\opScNPoints}{8}
 \newcommand{\opScNeg}{6}
+\newcommand{\opScTestA}{0.165}
+\newcommand{\opScTestB}{0.083}
+\newcommand{\opScTestC}{0.093}
+\newcommand{\opScTestD}{0.148}
 \newcommand{\opScaleA}{24,382}
 \newcommand{\opScaleB}{17,744}
 \newcommand{\opScaleC}{12,824}
 \newcommand{\opScaleD}{8,797}
 \newcommand{\opSeedBase}{4201000}
+\newcommand{\opSlaNdMin}{1,000}
 \newcommand{\opSlaQA}{29.6}
 \newcommand{\opSlaQB}{157.7}
 \newcommand{\opSlaQC}{626.2}
@@ -322,6 +326,9 @@
 \newcommand{\opSlaRelB}{-3.5}
 \newcommand{\opSlaRelC}{-1.4}
 \newcommand{\opSlaRelD}{-0.7}
+\newcommand{\opSpMedBelowOne}{16}
+\newcommand{\opSpMedHi}{0.93}
+\newcommand{\opSpMedLo}{0.50}
 \newcommand{\opSpQhiA}{1.83}
 \newcommand{\opSpQhiB}{2.33}
 \newcommand{\opSpQhiC}{2.54}
@@ -331,6 +338,7 @@
 \newcommand{\opSpQloC}{0.31}
 \newcommand{\opSpQloD}{0.29}
 \newcommand{\opSpliceLost}{5,257}
+\newcommand{\opTestsAmber}{2}
 \newcommand{\opTestsGreen}{22}
 \newcommand{\opTestsRed}{160}
 \newcommand{\opTestsTotal}{184}
@@ -360,9 +368,6 @@
 \newcommand{\opUndMaB}{51}
 \newcommand{\opUndMaC}{72}
 \newcommand{\opUndMaD}{100}
-\newcommand{\opUndMcA}{55}
-\newcommand{\opUndMcB}{51}
-\newcommand{\opUndMcC}{72}
 \newcommand{\opUndObreA}{54}
 \newcommand{\opUndObreB}{51}
 \newcommand{\opUndObreC}{74}

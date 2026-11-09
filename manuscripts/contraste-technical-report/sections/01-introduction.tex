@@ -1,5 +1,68 @@
-% Written by unit TR-13.
+% Written by unit TR-13. Every number that comes from the product is a macro of tables/results-numbers.tex (tables/make_results.py).
 \section{Introduction}
 \label{sec:introduction}
 
-% TEXT
+\paragraph{The problem in its context.} Banks set capital and provisions with internal models, and supervisors keep finding deficiencies
+in those models that raise capital or block an approval. The euro-area review of internal models covered 200 on-site investigations at 65
+banks and reported more than 5,800 findings, about 30 percent of them of high severity, and the supervisory decisions that followed raised the
+risk-weighted assets of the models assessed by about 12 percent \citep{fr:ecbtrim}. The weakness found most often is the evidence behind the
+model: the validation analyses and the quantitative thresholds for back-testing, discriminatory power and stability are missing or are not
+measured. The pressure has not eased. In 2025 the euro-area supervisor launched 77 investigations of internal models and found about 16
+findings in each, almost half of them of high severity \citep{fr:ecbar2025}; management overlays, which cover roughly a quarter of the loan loss
+coverage of performing books, have become permanent instead of transitional \citep{fr:ecboverlays}; and the supervisor has said that it will seek
+to ensure that application packages do not include models with material deficiencies \citep{fr:ecbnl2025}.
+
+The rules that frame the evidence change on fixed dates in several jurisdictions at once. The euro-area guide to internal models asks institutions for
+quantitative thresholds in the back-testing, discriminatory power, override and stability analyses \citep{fr:ecbegim2026}; the British principles of
+model risk management took effect on 17 May 2024 for firms with an internal model approval \citep{fr:pra2023}; the Canadian guideline applies from 1 May 2027
+to all federally regulated financial institutions in proportion to their size and risk \citep{fr:osfie23}; and the United States letter of 17 April 2026
+replaced the guidance of 2011 \citep{credit-scoring:sr262}. In Chile the supervisor proposed in August 2026 that banks may submit internal models for
+individual exposures from January 2028, with the provisioning adjustments taking effect in January 2031, and estimated 571 million United States dollars of
+additional provisions on individually assessed commercial loans across the banks if the proposed model applied without their own models
+\citep{fr:cmf2026}. Capital floors make every model result a capital question: the European Banking Authority projects a 4.7 percent average rise in
+minimum Tier 1 capital once the output floor applies \citep{fr:eba2026}. Machine-learning credit scoring enters the same decisions under the high-risk
+rules of the European artificial intelligence act \citep{fr:aiact}. No primary source was found for a supervisory fine or capital add-on tied by name to weak
+model validation, nor for the size of the model inventories or validation backlogs of banks; the argument above rests on the supervisory
+findings and the dates of the rules, not on those figures.
+
+The people who build a model and the people who validate it independently need the same things: the model families done properly, the full battery of
+validation tests with their formulas and references, the regulatory and accounting impact of each model, and a trace of the outcome. They also need to know
+how far a passed or a failed test can be trusted, a question that the texts of the supervisors leave open. The reporting instructions of the European Central Bank fix the
+statistics and the p-values of the back-testing of the probability of default and set no pass or fail threshold \citep{credit-scoring:ecb2019}, and the Basel
+Committee working paper that introduced most of these tests concludes that no really powerful tests of adequate calibration are available
+\citep{credit-scoring:bcbswp14}.
+
+\paragraph{What Contraste does and what this report covers.} Contraste is a workbench that builds the main families of bank risk models, runs the validation
+battery that a validator and a supervisor would run on each of them, and shows what each model changes in capital, provisions, liquidity or decisions. It
+answers, for \rsCases{} authored cases, the question of what a model says, whether it passes the tests, what it changes and what its limits are. The cases span
+\rsCategories{} categories, from credit scoring and rating transitions to provisions, loss given default and exposure at default, portfolio capital, market risk,
+counterparty credit risk, interest-rate and liquidity risk of the banking book, operational risk, capital aggregation and stress testing, machine-learning and
+fairness validation, and the validation of the validator itself. \rsCasesResult{} cases carry committed results; case \rsCaseNoResult{} is planned and has none. The report is the complete technical account:
+it states each method with its theory and its parameters, each data contract, the pipeline, the protocol shared by all cases, the results of every case and their
+limits.
+
+\paragraph{Contributions.} The report makes the following contributions.
+\begin{enumerate}
+\item It implements, runs and compares the methods of \rsMethodRows{} entries of the method ladder on public or synthetic data of known truth, in sections~\ref{sec:credit-scoring}
+to~\ref{sec:validation-tests}, each with its equations, its algorithm, its parameters and the criterion by which it is accepted.
+\item It measures the size and the power of the validation tests on planted defects, so that a light of a test can be read with its error rates
+(\cref{sec:bs1}), and reruns the published studies that measured them before (\cref{sec:m37}).
+\item It reconciles the engine with reference engines and with the printed answers of the papers, and reports the gaps instead of hiding them (\cref{sec:bs2}).
+\item It fixes a leakage-safe evaluation protocol for each case and states what each cannot show (\cref{sec:bs3}).
+\item It adds engines and test constructions that no maintained open toolkit provides, among them the Chilean indexation unit in the interest-rate risk of the banking
+book (\cref{sec:bs7}), a test of a behavioural assumption changed at a limit breach (\cref{sec:bs8}), the dependence band shown with every aggregate capital figure
+(\cref{sec:bs9}) and a reverse liquidity stress with a refusal rule (\cref{sec:bs11}).
+\item It proposes four methods and reports each whatever its result: a scale-and-level complement to the profit-and-loss attribution test (\cref{sec:bs13}), an
+anchored tipping-point default probability under informative rating withdrawals (\cref{sec:bs14}), e-process sequential monitors for calibration and back-tests
+(\cref{sec:bs15}) and adaptive conformal recalibration of the value at risk (\cref{sec:bs16}).
+\item It collects the findings that the validation raised on the \rsCasesResult{} cases, \rsFindTotal{} in all, with their severity and the opinion level of each case
+(\cref{sec:results}).
+\end{enumerate}
+
+\paragraph{Organisation.} Section~\ref{sec:problem} states the validation problem formally and the scope of the product, and Section~\ref{sec:notation} fixes the notation.
+Section~\ref{sec:data} lists the data sources and the splits, and Section~\ref{sec:architecture} describes the system. The methods follow in
+Sections~\ref{sec:credit-scoring} to~\ref{sec:proposed}, one section for each family of models and one for the product's own contributions, each ending with its results.
+Section~\ref{sec:protocol} states the protocol that every case shares, Section~\ref{sec:results} collects the results across the cases, and
+Section~\ref{sec:validation} explains how those results are known to be correct. Sections~\ref{sec:discussion} and~\ref{sec:limitations} discuss the findings and their
+limits, Section~\ref{sec:reproducibility} gives the commands that rebuild every table and figure, and Section~\ref{sec:conclusions} concludes. The data contracts are in
+Appendix~\ref{sec:contracts}.

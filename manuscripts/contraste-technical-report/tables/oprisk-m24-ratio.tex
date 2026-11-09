@@ -3,7 +3,7 @@
 \small
 \caption{The 99.9 percent capital of the loss distribution approach as a multiple of the true quantile of the generator: median over independent histories and, in brackets, the interquartile range over the same histories, for ten years of data and a collection threshold of EUR 20,000. A ratio of one is unbiased; a dash marks a method with no capital at an infinite mean.}
 \label{tab:op-m24-ratio}
-\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\fitwidth{%
 \begin{tabular}{lrrrr}
 \toprule
 Method & $\xi=0.6$ & $\xi=0.8$ & $\xi=0.96$ & $\xi=1.1$ \\
@@ -12,7 +12,6 @@ Lognormal, threshold ignored & 0.17 (0.023) & 0.042 (0.008) & 0.013 (0.003) & 0.
 Truncated lognormal & 0.37 (0.17) & 0.26 (0.28) & 0.24 (0.31) & 0.095 (0.12) \\
 Lognormal and GPD splice & 0.84 (1.35) & 0.91 (1.98) & 0.93 (2.23) & 0.73 (2.32) \\
 Single loss approximation & 0.80 (0.73) & 0.96 (1.02) & 0.97 (1.18) & 1.00 (1.44) \\
-SLA with mean correction & 0.92 (0.75) & 0.98 (1.00) & 0.71 (0.60) & -- \\
 Scenario credibility & 1.36 (0.68) & 1.26 (0.84) & 1.17 (0.82) & 0.97 (0.84) \\
 \bottomrule
 \end{tabular}}

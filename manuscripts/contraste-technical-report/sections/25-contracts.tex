@@ -1,5 +1,5 @@
 \section{Data contracts}
 \label{sec:contracts}
 
-% INTRODUCTION (TR-13)
+This appendix holds the \rsContracts{} data contracts of Contraste, one subsection each, grouped as the catalog groups them: the shared documents of the inventory, the manifests and the readiness, the eight input families, the API document, and then the documents of each case. A contract is the agreement between the program that writes a document and the programs that read it, and it is tested on both sides. Each subsection states what the contract is for, its version and status, its producer, the tests on the producing side and on the reading side, the behaviour fixed in advance when the data is missing or out of date, and, where one exists, the provider that serves a stand-in document. Under the text a table lists the top-level fields of the schema with their JSON type, their unit, the range or the values they take, and a description. To read a table, start with the type and the range, which the schema enforces; the unit is the one the schema declares or, where it declares none, the one the description or the name of the field implies; and a description that begins with ``The'' and restates the name was derived from the declaration and adds nothing the schema does not say.
 

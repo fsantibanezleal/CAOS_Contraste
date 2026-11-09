@@ -1,0 +1,42 @@
+{
+ "seed": 20261120,
+ "monotone_in_multiplier": {
+  "banks": 3000,
+  "comparisons": 117000,
+  "violations": 0,
+  "largest_increase": 1.5631940186722204e-13
+ },
+ "closed_form_single_segment": {
+  "instances": 3000,
+  "solved": 1953,
+  "refused": 1047,
+  "condition_mismatches": 0,
+  "max_abs_difference": 9.999029360052702e-07,
+  "median_abs_difference": 5.07559376972111e-07,
+  "engine_below_closed_form": 0,
+  "multiplier_bound_violations": 0,
+  "hyperbolic_bound_violations": 0,
+  "hyperbolic_instances": 983,
+  "hyperbolic_relative_error_median": 0.019897142250890676,
+  "hyperbolic_relative_error_q90": 0.08335470857861162
+ },
+ "monotone_in_target": {
+  "banks": 600,
+  "pairs": 2152,
+  "violations": 0
+ },
+ "monotone_in_capacity": {
+  "banks": 600,
+  "pairs": 626,
+  "violations": 0
+ },
+ "exact_round_trip": {
+  "solved_flat_no_inflow": 710,
+  "condition_holds": 710,
+  "exact": 710,
+  "condition_and_exact": 710,
+  "violations_of_the_proposition": 0,
+  "margin_min": 786.8697924341831,
+  "margin_median": 342614.33461509075
+ }
+}

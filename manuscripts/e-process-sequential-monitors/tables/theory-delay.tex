@@ -1,0 +1,19 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{The first-order delay of the e-process at a VaR level of 1\,\%: the Kullback-Leibler divergence per day of the true hit rate from the null, in thousandths of a nat, the number of days a log-optimal bet needs to reach the threshold $\log 20$, the same with the penalty $\log K$ of a mixture of $K=8$ alternatives, and the measured median first-rejection days (95\,\% bootstrap intervals) of the single-alternative e-process whose alternative is the true hit rate (matched at every factor) and of the mixture e-process, on the same 2,000 streams. Where the median exceeds the 1,000-day horizon the symbol $>$ is printed.}
+\label{tab:theory-delay}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{rrrrrr}
+\toprule
+Hit-rate factor $m$ & $1000\,\mathrm{KL}(m\alpha\|\alpha)$ & Time $\log 20/\mathrm{KL}$ & Time with the mixture penalty & Measured median, matched single alternative & Measured median, mixture \\
+\midrule
+\relax 1.5 & 1.09 & 2737 & 4636 & \relax $>$1,000 & \relax $>$1,000 \\
+\relax 2 & 3.91 & 765 & 1297 & \relax 600 [584, 636] & \relax 862 [830, 920] \\
+\relax 3 & 13.16 & 228 & 386 & \relax 182 [177, 203] & \relax 259 [237, 273] \\
+\relax 4 & 25.91 & 116 & 196 & \relax 102 [95, 108] & \relax 130 [125, 134] \\
+\relax 6 & 58.79 & 51 & 86 & \relax 45 [44, 46] & \relax 60 [58, 62] \\
+\relax 10 & 144.48 & 21 & 35 & \relax 17 [16, 18] & \relax 27 [26, 28] \\
+\bottomrule
+\end{tabular}}
+\end{table*}

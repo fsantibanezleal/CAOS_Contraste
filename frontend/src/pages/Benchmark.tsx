@@ -1,15 +1,16 @@
 // The held-out comparisons: every rung against the champion on each case's holdout, with the interval of its AUC and
 // the paired DeLong test, its calibration, and the decision it would make. Every number is read from the committed
 // artifacts at load time; none is typed in. The claim each table supports is only what its test shows.
-import { Callout, Cite, DocPage, DocSection, PlotCard, Verdict, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
+import { Callout, Cite, DocPage, DocSection, PlotCard, TabGroups, Verdict, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { loadAllManifests, loadAllVariants, useArtifact } from '../api/artifacts';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, relight } from '../lib/policy';
 import { P, T, useT } from '../content/bi';
 import { sourceText } from '../content/sources';
 import { CHAMPION, extra, test, value } from '../workbench/model';
+import { familyOf } from './experiments/families';
 import { C04Benchmark } from './C04Sections';
 import { C05BenchmarkSection } from './C05Sections';
 import { C22BenchmarkSection } from './C22Sections';
@@ -254,14 +255,130 @@ export const NO_BENCHMARK: Record<string, { en: string; es: string }> = {
   },
 };
 
+/**
+ * The Benchmark page as groups of tabs (GATE-15B, ADR-0071 and ADR-0017.2): the page was one document of every case's
+ * comparison and the traversal of the gate stopped at its budget on it, and one tab per question family still did on the
+ * scoring and the capital families. Now each case comparison is a tab of its own, in the group of the case's question
+ * family (`experiments/families.ts`, the one the Experiments page uses), and each section of the page sits in exactly one
+ * tab: the reading, the cases with no comparison and the limits in the first tab of the first group, the robustness charts
+ * and the provenance of the data in its next two. At most six groups and six tabs in a group (ADR-0071); a tab or a group
+ * with no section is not drawn.
+ */
+export type BenchGroupId = 'reading' | 'pd' | 'losses' | 'capital' | 'market' | 'validation';
+export interface BenchTab {
+  id: string;
+  label: BiText;
+  /** The sections of the tab in order: `how`, `case:<id>`, `excluded`, `limits`, `robustness`, `provenance`. */
+  sections: string[];
+}
+export interface BenchGroup {
+  id: BenchGroupId;
+  label: BiText;
+  tabs: BenchTab[];
+}
+const BENCH_GROUP_LABEL: Record<BenchGroupId, BiText> = {
+  reading: { en: 'How are the comparisons read, and what stands behind them?', es: '¿Cómo se leen las comparaciones y qué hay detrás?' },
+  pd: { en: 'Credit scoring and PD', es: 'Calificación crediticia y PD' },
+  losses: { en: 'Credit losses', es: 'Pérdidas de crédito' },
+  capital: { en: 'Capital, aggregation and stress', es: 'Capital, agregación y estrés' },
+  market: { en: 'Market and balance-sheet risk', es: 'Riesgo de mercado y de balance' },
+  validation: { en: 'ML, AI and the validator', es: 'ML, IA y el validador' },
+};
+/** The group of the comparisons of a question family. */
+export const FAMILY_GROUP: Record<string, BenchGroupId> = {
+  pd: 'pd',
+  'credit-losses': 'losses',
+  capital: 'capital',
+  'market-balance': 'market',
+  'ml-ai-risk': 'validation',
+  validator: 'validation',
+};
+/** The group of a case's comparison: its family's; a family not listed lands in the capital group. */
+export function benchGroupOf(caseId: string): BenchGroupId {
+  return FAMILY_GROUP[familyOf(caseId).id] ?? 'capital';
+}
+const READING_TABS: BenchTab[] = [
+  { id: 'reading', label: { en: 'Reading and limits', es: 'Lectura y límites' }, sections: [] },
+  { id: 'robustness', label: { en: 'Robustness', es: 'Robustez' }, sections: ['robustness'] },
+  { id: 'provenance', label: { en: 'Provenance', es: 'Procedencia' }, sections: ['provenance'] },
+];
+/** The groups of the page for the cases shown, whether cases are excluded and whether a robustness chart exists, in the order of the page. */
+export function benchmarkPlan(shown: string[], excluded: boolean, comparable: boolean): BenchGroup[] {
+  const reading = READING_TABS.map((t) => ({ ...t, sections: [...t.sections] }));
+  reading[0].sections = excluded ? ['how', 'excluded', 'limits'] : ['how', 'limits'];
+  const groups: BenchGroup[] = [{ id: 'reading', label: BENCH_GROUP_LABEL.reading, tabs: reading.filter((t) => t.id !== 'robustness' || comparable) }];
+  for (const id of ['pd', 'losses', 'capital', 'market', 'validation'] as BenchGroupId[]) {
+    const tabs = shown.filter((c) => benchGroupOf(c) === id).map((c) => ({ id: `case-${c.toLowerCase()}`, label: { en: c, es: c }, sections: [`case:${c}`] }));
+    if (tabs.length) groups.push({ id, label: BENCH_GROUP_LABEL[id], tabs });
+  }
+  return groups;
+}
+
 export function Benchmark() {
   const t = useT();
   const lang = useShellLang();
   const all = useArtifact((s) => loadAllManifests(s), []);
-  const manifests = all.state === 'ready' ? all.data.manifests : [];
+  const ready = all.state === 'ready';
+  const manifests = ready ? all.data.manifests : [];
   const shown = manifests.filter((m) => !(m.case_id in NO_BENCHMARK));
   const excluded = manifests.filter((m) => m.case_id in NO_BENCHMARK);
   const comparable = shown.filter((m) => !HAS_OWN_BENCHMARK.has(m.case_id) && !U6_BENCHMARK_CASES.has(m.case_id) && !W2_BENCHMARK_CASES.has(m.case_id) && !B3_BENCHMARK_CASES.has(m.case_id));
+  const plan = benchmarkPlan(shown.map((m) => m.case_id), excluded.length > 0, comparable.length > 0);
+  const section = (key: string): ReactNode => {
+    if (key === 'how')
+      return (
+        <DocSection key={key} title={{ en: 'How to read the comparisons', es: 'Cómo leer las comparaciones' }} refs={['delong1988', 'lessmann2015']}>
+          <P
+            en={<>A challenger beats the champion only when the paired DeLong test on the same obligors says so <Cite id="delong1988" />, and only by the difference it measures: the literature reports gains of a few AUC points for tree ensembles on retail data <Cite id="lessmann2015" />, and this page shows whether each case agrees, with the interval of every AUC and the calibration of every rung.</>}
+            es={<>Un retador supera al campeón solo cuando la prueba pareada de DeLong sobre los mismos deudores lo dice <Cite id="delong1988" />, y solo por la diferencia que mide: la literatura reporta ganancias de unos pocos puntos de AUC para los ensambles de árboles en datos minoristas <Cite id="lessmann2015" />, y esta página muestra si cada caso lo confirma, con el intervalo de cada AUC y la calibración de cada peldaño.</>}
+          />
+        </DocSection>
+      );
+    if (key.startsWith('case:')) {
+      const m = shown.find((x) => x.case_id === key.slice(5));
+      if (!m) return null;
+      return (
+        <DocSection
+          key={key}
+          area={HAS_OWN_BENCHMARK.has(m.case_id) ? 'results' : 'comparison'}
+          title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }}
+          noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos versionados.' }}
+        >
+          {m.case_id === 'C04' ? <C04Benchmark manifest={m} /> : m.case_id === 'C05' ? <C05BenchmarkSection manifest={m} /> : m.case_id === 'C22' ? <C22BenchmarkSection manifest={m} /> : U6_BENCHMARK_CASES.has(m.case_id) ? <U6BenchmarkSection manifest={m} /> : W2_BENCHMARK_CASES.has(m.case_id) ? <W2BenchmarkSection manifest={m} /> : B3_BENCHMARK_CASES.has(m.case_id) ? <B3BenchmarkSection manifest={m} /> : <CaseBenchmark manifest={m} />}
+        </DocSection>
+      );
+    }
+    if (key === 'excluded')
+      return (
+        <DocSection key={key} area="comparison" title={{ en: 'Cases with no champion-against-challenger comparison', es: 'Casos sin comparación de campeón contra retadores' }} noRefsReason={{ en: 'States why a case is not compared here.', es: 'Declara por qué un caso no se compara aquí.' }}>
+          <Table head={[t('Case', 'Caso'), t('Why it is not compared here', 'Por qué no se compara aquí')]} rows={excluded.map((m) => [`${m.case_id}: ${pick(m.title, lang)}`, pick(NO_BENCHMARK[m.case_id], lang)])} wide={2} />
+        </DocSection>
+      );
+    if (key === 'robustness')
+      return (
+        <DocSection key={key} area="robustness" title={{ en: 'Robustness to perturbed data', es: 'Robustez ante datos perturbados' }} noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos versionados.' }}>
+          {comparable.map((m) => (
+            <Robustness key={m.case_id} manifest={m} />
+          ))}
+        </DocSection>
+      );
+    if (key === 'provenance')
+      return (
+        <DocSection key={key} area="provenance" title={{ en: 'Provenance of the data', es: 'Procedencia de los datos' }} noRefsReason={{ en: 'Read from the manifests and the source registry.', es: 'Leído de los manifiestos y del registro de fuentes.' }}>
+          <Provenance manifests={manifests} />
+        </DocSection>
+      );
+    return (
+      <DocSection key={key} area="caveat" title={{ en: 'The limits of the comparison', es: 'Los límites de la comparación' }} noRefsReason={{ en: 'States the limits of this page.', es: 'Declara los límites de esta página.' }}>
+        <Callout variant="honest" title={<T en="What these comparisons do not show" es="Lo que estas comparaciones no muestran" />}>
+          <T
+            en="Each comparison holds for its dataset and its split: a gain on one portfolio is not a gain on another, no out-of-time validation is possible on a single snapshot, and a significant difference in AUC is not a difference that matters for a decision until its capital or loss effect is read. Nothing here certifies a model."
+            es="Cada comparación vale para su conjunto de datos y su partición: una ganancia en una cartera no es una ganancia en otra, no es posible una validación fuera del tiempo sobre una sola foto, y una diferencia significativa de AUC no es una diferencia que importe para una decisión hasta que se lee su efecto en capital o en pérdida. Nada de esto certifica un modelo."
+          />
+        </Callout>
+      </DocSection>
+    );
+  };
   return (
     <DocPage
       wide
@@ -280,48 +397,27 @@ export function Benchmark() {
         },
       ]}
     >
-      <DocSection title={{ en: 'How to read the comparisons', es: 'Cómo leer las comparaciones' }} refs={['delong1988', 'lessmann2015']}>
-        <P
-          en={<>A challenger beats the champion only when the paired DeLong test on the same obligors says so <Cite id="delong1988" />, and only by the difference it measures: the literature reports gains of a few AUC points for tree ensembles on retail data <Cite id="lessmann2015" />, and this page shows whether each case agrees, with the interval of every AUC and the calibration of every rung.</>}
-          es={<>Un retador supera al campeón solo cuando la prueba pareada de DeLong sobre los mismos deudores lo dice <Cite id="delong1988" />, y solo por la diferencia que mide: la literatura reporta ganancias de unos pocos puntos de AUC para los ensambles de árboles en datos minoristas <Cite id="lessmann2015" />, y esta página muestra si cada caso lo confirma, con el intervalo de cada AUC y la calibración de cada peldaño.</>}
-        />
-      </DocSection>
-      {all.state === 'ready' &&
-        shown.map((m) => (
-          <DocSection
-            key={m.case_id}
-            area={HAS_OWN_BENCHMARK.has(m.case_id) ? 'results' : 'comparison'}
-            title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }}
-            noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos versionados.' }}
-          >
-            {m.case_id === 'C04' ? <C04Benchmark manifest={m} /> : m.case_id === 'C05' ? <C05BenchmarkSection manifest={m} /> : m.case_id === 'C22' ? <C22BenchmarkSection manifest={m} /> : U6_BENCHMARK_CASES.has(m.case_id) ? <U6BenchmarkSection manifest={m} /> : W2_BENCHMARK_CASES.has(m.case_id) ? <W2BenchmarkSection manifest={m} /> : B3_BENCHMARK_CASES.has(m.case_id) ? <B3BenchmarkSection manifest={m} /> : <CaseBenchmark manifest={m} />}
-          </DocSection>
-        ))}
-      {all.state === 'ready' && excluded.length > 0 && (
-        <DocSection area="comparison" title={{ en: 'Cases with no champion-against-challenger comparison', es: 'Casos sin comparación de campeón contra retadores' }} noRefsReason={{ en: 'States why a case is not compared here.', es: 'Declara por qué un caso no se compara aquí.' }}>
-          <Table head={[t('Case', 'Caso'), t('Why it is not compared here', 'Por qué no se compara aquí')]} rows={excluded.map((m) => [`${m.case_id}: ${pick(m.title, lang)}`, pick(NO_BENCHMARK[m.case_id], lang)])} wide={2} />
-        </DocSection>
-      )}
-      {all.state === 'ready' && comparable.length > 0 && (
-        <DocSection area="robustness" title={{ en: 'Robustness to perturbed data', es: 'Robustez ante datos perturbados' }} noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos versionados.' }}>
-          {comparable.map((m) => (
-            <Robustness key={m.case_id} manifest={m} />
-          ))}
-        </DocSection>
-      )}
-      {all.state === 'ready' && (
-        <DocSection area="provenance" title={{ en: 'Provenance of the data', es: 'Procedencia de los datos' }} noRefsReason={{ en: 'Read from the manifests and the source registry.', es: 'Leído de los manifiestos y del registro de fuentes.' }}>
-          <Provenance manifests={manifests} />
-        </DocSection>
-      )}
-      <DocSection area="caveat" title={{ en: 'The limits of the comparison', es: 'Los límites de la comparación' }} noRefsReason={{ en: 'States the limits of this page.', es: 'Declara los límites de esta página.' }}>
-        <Callout variant="honest" title={<T en="What these comparisons do not show" es="Lo que estas comparaciones no muestran" />}>
-          <T
-            en="Each comparison holds for its dataset and its split: a gain on one portfolio is not a gain on another, no out-of-time validation is possible on a single snapshot, and a significant difference in AUC is not a difference that matters for a decision until its capital or loss effect is read. Nothing here certifies a model."
-            es="Cada comparación vale para su conjunto de datos y su partición: una ganancia en una cartera no es una ganancia en otra, no es posible una validación fuera del tiempo sobre una sola foto, y una diferencia significativa de AUC no es una diferencia que importe para una decisión hasta que se lee su efecto en capital o en pérdida. Nada de esto certifica un modelo."
-          />
-        </Callout>
-      </DocSection>
+      <TabGroups
+        ariaLabel={t('Parts of the benchmark', 'Partes del benchmark')}
+        groups={plan.map((g) => ({
+          id: g.id,
+          label: pick(g.label, lang),
+          tabs: g.tabs.map((tab) => ({
+            id: tab.id,
+            label: pick(tab.label, lang),
+            content: (
+              <>
+                {tab.sections.map((key) => section(key))}
+                {!ready && tab.id === 'reading' && (
+                  <p className="caos-pending" data-state="loading">
+                    {t('Loading the case manifests', 'Cargando los manifiestos de los casos')}
+                  </p>
+                )}
+              </>
+            ),
+          })),
+        }))}
+      />
     </DocPage>
   );
 }

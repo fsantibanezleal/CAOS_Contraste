@@ -1513,6 +1513,33 @@ export function anchoredKChart(o: C04AgencyOutputs, g: number): AnchoredKChart |
   };
 }
 
+export interface PooledKChart {
+  x: number[];
+  k: (number | null)[];
+  low: (number | null)[];
+  high: (number | null)[];
+  /** grades whose pooled k or band end the log axis cannot draw (0, or none) */
+  undrawn: number;
+  series: ChartSeries[];
+}
+
+/** The pooled k of every grade with its band, on the grade axis: what the view draws when the chosen grade has no cohort k above 0, so
+ * its drawing is never an empty card (gate G6) and the grades stay comparable. */
+export function pooledKChart(o: C04AgencyOutputs): PooledKChart | null {
+  const study = o.withdrawal_bounds;
+  if (!study) return null;
+  const rows = GRADES.map((g) => study.grades.find((r) => r.grade === g)?.pooled ?? null);
+  const k = rows.map((r) => onLog(r?.k));
+  const low = rows.map((r) => onLog(r?.k_low));
+  const high = rows.map((r) => onLog(r?.k_high));
+  const series: ChartSeries[] = [
+    { id: 'k', label: { en: 'Pooled k', es: 'k agrupada' }, values: k, color: '--color-fg', mode: 'points' as const },
+    { id: 'low', label: { en: 'Lower end of its band', es: 'Extremo inferior de su banda' }, values: low, color: DEFINITION_COLOR.keep, width: 1.6, dash: [5, 3], dots: true },
+    { id: 'high', label: { en: 'Upper end of its band', es: 'Extremo superior de su banda' }, values: high, color: DEFINITION_COLOR.keep, width: 1.6, dash: [2, 3], dots: true },
+  ];
+  return { x: GRADES.map((_, i) => i + 1), k, low, high, undrawn: k.filter((x) => x === null).length, series: series.filter((s) => s.values.some((x) => x !== null)) };
+}
+
 /** The anchored k of the transition page's withdrawals, by grade and cohort year: how much likelier a rating about to
  * default is withdrawn than one that survives, read off the agency's own default page, and whether the pooled k holds
  * year by year against the share fixed before the run. */
@@ -1522,6 +1549,8 @@ export function AnchoredKView({ sel }: { sel: C04Sel | null }) {
   const v = agencyOf(sel);
   const g = sel?.grade ?? N_GRADES - 1;
   const data = useMemo(() => (v ? anchoredKChart(v.outputs, g) : null), [v, g]);
+  // a grade with no cohort k above 0 has nothing to draw cohort by cohort: the pooled k of every grade is drawn instead
+  const byGrade = useMemo(() => (v && data && data.series.length === 0 ? pooledKChart(v.outputs) : null), [v, data]);
   if (!sel) return <Pending />;
   if (!v) return <NotAgency sel={sel} />;
   const o = v.outputs;
@@ -1553,6 +1582,16 @@ export function AnchoredKView({ sel }: { sel: C04Sel | null }) {
     ...(onLog(pooled?.k) !== null ? [{ y: pooled!.k as number, label: bi((l) => t(l, `Pooled k ${kText(l, pooled!.k)}`, `k agrupada ${kText(l, pooled!.k)}`)), tone: 'good' as const }] : []),
   ];
   const drawn = [...data.k, ...data.low, ...data.high, ...yMarks.map((m) => m.y)].filter((x): x is number => x !== null);
+  const drawnByGrade = byGrade && byGrade.series.length ? byGrade : null;
+  const gradeDrawn = drawnByGrade ? [...drawnByGrade.k, ...drawnByGrade.low, ...drawnByGrade.high, 1].filter((x): x is number => x !== null) : [];
+  const gradeNote = bi(
+    (l) =>
+      t(
+        l,
+        `The pooled k of every grade, the odds ratio of withdrawal before default, with its ${pcs(l, level)} band; ${grade} is marked. Above 1, a rating about to default is withdrawn more often than one that survives. No cohort of ${grade} has a k above 0, so its cohort-by-cohort chart has nothing to draw. ${drawnByGrade && drawnByGrade.undrawn ? `${count(l, drawnByGrade.undrawn)} grades have no pooled k above 0 (the table lists every grade). ` : ''}`,
+        `La k agrupada de cada grado, la razón de chances de retiro antes del incumplimiento, con su banda al ${pcs(l, level)}; ${grade} está marcado. Sobre 1, una calificación por incumplir se retira más que una que sobrevive. Ninguna cohorte de ${grade} tiene una k sobre 0, así que su gráfico cohorte por cohorte no tiene qué dibujar. ${drawnByGrade && drawnByGrade.undrawn ? `${count(l, drawnByGrade.undrawn)} grados no tienen k agrupada sobre 0 (la tabla lista cada grado). ` : ''}`,
+      ) + sourceText(o, l),
+  );
   const chartNote = bi((l) => {
     const pooledText = pooled
       ? t(
@@ -1599,8 +1638,24 @@ export function AnchoredKView({ sel }: { sel: C04Sel | null }) {
   const yes = (b: boolean | undefined): string => (b === undefined ? '-' : b ? t(lang, 'yes', 'sí') : t(lang, 'no', 'no'));
   return (
     <ViewsRow shares={[3, 2]}>
-      <PlotCard fill title={bi((l) => t(l, `${pick(name, l)} ${grade}: the anchored k, cohort by cohort`, `${pick(name, l)} ${grade}: la k anclada, cohorte por cohorte`))} lane={REPLAY} provenance={prov} dataKey={stateKey} note={chartNote}>
-        {data.series.length ? (
+      <PlotCard
+        fill
+        title={bi((l) => (drawnByGrade ? t(l, `${pick(name, l)}: the pooled k of every grade`, `${pick(name, l)}: la k agrupada de cada grado`) : t(l, `${pick(name, l)} ${grade}: the anchored k, cohort by cohort`, `${pick(name, l)} ${grade}: la k anclada, cohorte por cohorte`)))}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={drawnByGrade ? gradeNote : chartNote}
+      >
+        {drawnByGrade ? (
+          <UPlotChart
+            height="fill"
+            x={{ values: drawnByGrade.x, label: GRADE_AXIS, format: { decimals: 0 } }}
+            y={{ label: { en: 'k, odds ratio (log)', es: 'k, razón de chances (log)' }, format: { digits: 2 }, log: true, range: [Math.min(...gradeDrawn) / 1.3, Math.max(...gradeDrawn) * 1.3] }}
+            series={drawnByGrade.series}
+            marks={[{ x: g + 1, label: grade }]}
+            yMarks={[{ y: 1, label: { en: 'k 1: withdrawal says nothing', es: 'k 1: el retiro no dice nada' }, tone: 'neutral' as const }]}
+          />
+        ) : data.series.length ? (
           <UPlotChart
             height="fill"
             x={{ values: data.years, label: { en: 'Cohort year', es: 'Año de la cohorte' }, format: { decimals: 0, grouping: false } }}

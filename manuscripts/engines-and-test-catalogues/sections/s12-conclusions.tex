@@ -1,0 +1,23 @@
+\section{Conclusions}
+\label{sec:conclusions}
+
+The open package studied here holds \testsTotal{} registered tests, five of the \ecbSections{} statistics of the European Central Bank's instructions for reporting the validation of internal credit models, a copula and CreditRisk+ portfolio engine and an engine for interest rate risk in the banking book, and each implemented component agrees with a reference outside it, two of which (the IRB formula and the QuantLib discount factor) share its arithmetic.
+The five ECB statistics agree with an independent transcription of the instructions to \ecbAllMax{} on \ecbInputs{} random inputs each, the large-portfolio law to \lhpMax{}, the CreditRisk+ recursion to \crpIndMax{} against an independent recursion, the copula sampler within $|z|<1$ of an independent simulator over \mcReps{} runs of \mcScen{} scenarios, the committed one-million-scenario rung to a relative \regenRel{}, and the interest rate present values to a relative \irrQlMax{} against QuantLib on \irrLegs{} leg and shock pairs (Table~\ref{tab:main-results}).
+Hypotheses~H1 (first part), H2, H3, H4 and H6 held, Hypothesis~H7 was not refuted by a survey whose limits Section~\ref{sec:limitations} states, Hypothesis~H8 \ablHEight{}, and the second part of Hypothesis~H1 and Hypothesis~H5 did not hold.
+
+Three results limit what the package can be said to offer.
+First, \ecbAbsent{} of the \ecbSections{} ECB statistics are not implemented (the qualitative validation tools, the loss, conversion factor and exposure statistics, and the slotting statistics), so a validator who needs the loss-side statistics as specified does not find them here.
+Second, the Jeffreys test differs from the exact binomial test in \disagreeFive{} of \cCells{} grade cells of eight credit-card models at the 5\,\% level and in none at the 1\,\%, which Proposition~\ref{prop:sandwich} explains: the engine's contribution is the assembly of the grade and portfolio tests in one result record, not a new statistic.
+Third, the maximum-likelihood interval of the asset correlation falls outside the binomial band of its simulator in \gridMlFail{} of \gridMlCells{} cells, at a correlation of \gridMlWorstRho{} with series of \gridMlWorstYears{} years, is below the nominal level in \gridMlBelow{} cells, and has a negative bias in \gridMlNegBias{}; the refutation of the single cell does not survive a Bonferroni correction at a family-wise level of 1\,\%, and the pooled evidence assumes independent cells.
+
+The protocol that produced these agreements was itself measured.
+Of \ablMutants{} planted defects, \ablReal{} change a result; \ablAny{} of them are found by at least one of the five layers and \ablOnly{} by exactly one, and each layer finds a defect that no other layer finds.
+The regeneration of a committed result flags the two changes of the sample path that are not defects, so it is a regression check and not a correctness check, and a cross-implementation check at reduced size cannot see a six per cent defect in the correlation, which the comparison at the full size sees on \fsFlagged{} of four risk measures and misses on the fourth, because the resolution of an independent simulation is a number that Proposition~\ref{prop:power} computes.
+The absence claim that motivated the package, that no open toolkit implements the specified tests, is not refuted by a survey of \pypiFound{} package descriptions and \distScanned{} installed distributions and is not proved by it.
+
+Four pieces of work follow from these limits.
+The ECB statistics of the loss given default, the credit conversion factor and the exposure have to be transcribed from the instructions and implemented, and the transcription written for this study is the template for checking them.
+The CreditRisk+ checks have to be extended to several sectors and to an idiosyncratic weight, where the recursion has more terms and Proposition~\ref{prop:crp} does not apply.
+The correlation estimator needs an interval that covers at short series and low correlations, and the moments estimator needs one that covers anywhere in the grid.
+The absence claim needs a search that reads source code and not only package descriptions, repeated on a stated date, before it is stated without the limits of Section~\ref{sec:limitations}.
+Until then, the supported statement is narrower than the title of a catalogue: the components listed in Table~\ref{tab:main-results} reproduce what exists outside the package to the stated accuracy, and the checks that show it are a necessary condition for the correctness of an engine, not a sufficient one.

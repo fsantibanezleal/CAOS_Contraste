@@ -23,8 +23,10 @@ standard library only).
 | `check_artifacts.py` | contract 2: the index, manifests and artifacts agree; each lane matches its gate |
 | `check_version_coherence.py` | VERSION is the only source; the package, the changelog and the tags agree with it |
 | `check_notebooks.py` | the notebooks: layout, the English and Spanish mirror, levels and the SDD's `BS-` claims, anatomy, metadata, cleanliness, pins (static; the execution is `run_notebooks.py --check`) |
+| `check_notebook_depth.py` | current 1000/1500-word, 2/3-figure, 1/2-equation and 3/4-source depth plus limits/own-data headings and whole-tool coverage; static standard library only, independently reviewed teaching quality remains a local release gate |
 | `check_readme_areas.py` | the README states the repository by areas, each active or dormant, every folder link present |
 | `check_sdd.py` | the SDD has its sections; every requirement names a gate that exists |
+| `check_manuscript_depth.py` | native LaTeX source, current complete report/paper content floors, section depth, authoritative method/contract/contribution coverage and result-supported titles; standard-library companions share the existing Markdown parser; independent scientific/visual acceptance remains a separate local publication gate |
 | `check_template_residue.py` | an instantiated product carries none of the example |
 | `check_doc_paths.py` | every repository path a document names exists |
 | `check_web_baseline.py` | the web's tokens, classes, numbers, images and animation loops |

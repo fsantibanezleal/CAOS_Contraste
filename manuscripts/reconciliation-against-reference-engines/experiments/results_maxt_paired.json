@@ -1,0 +1,88 @@
+{
+ "reps": 400,
+ "sidak_bound": 3.1816376084204343,
+ "max_estimated_pair_bound": 3.0991480570554857,
+ "regions_nested": true,
+ "cells": {
+  "single-swap|null": {
+   "sidak_rejected": 18,
+   "maxT_rejected": 18,
+   "gained": 0,
+   "lost": 0,
+   "gain_points": 0.0,
+   "sign_test_p": 1.0
+  },
+  "single-swap|sigma+2%": {
+   "sidak_rejected": 306,
+   "maxT_rejected": 321,
+   "gained": 15,
+   "lost": 0,
+   "gain_points": 3.75,
+   "sign_test_p": 6.103515625e-05
+  },
+  "single-swap|sigma+5%": {
+   "sidak_rejected": 400,
+   "maxT_rejected": 400,
+   "gained": 0,
+   "lost": 0,
+   "gain_points": 0.0,
+   "sign_test_p": 1.0
+  },
+  "single-swap|a+50%": {
+   "sidak_rejected": 400,
+   "maxT_rejected": 400,
+   "gained": 0,
+   "lost": 0,
+   "gain_points": 0.0,
+   "sign_test_p": 1.0
+  },
+  "single-swap|measure": {
+   "sidak_rejected": 400,
+   "maxT_rejected": 400,
+   "gained": 0,
+   "lost": 0,
+   "gain_points": 0.0,
+   "sign_test_p": 1.0
+  },
+  "netting-set|null": {
+   "sidak_rejected": 15,
+   "maxT_rejected": 19,
+   "gained": 4,
+   "lost": 0,
+   "gain_points": 1.0,
+   "sign_test_p": 0.125
+  },
+  "netting-set|sigma+2%": {
+   "sidak_rejected": 306,
+   "maxT_rejected": 325,
+   "gained": 19,
+   "lost": 0,
+   "gain_points": 4.75,
+   "sign_test_p": 3.814697265625e-06
+  },
+  "netting-set|sigma+5%": {
+   "sidak_rejected": 400,
+   "maxT_rejected": 400,
+   "gained": 0,
+   "lost": 0,
+   "gain_points": 0.0,
+   "sign_test_p": 1.0
+  },
+  "netting-set|a+50%": {
+   "sidak_rejected": 400,
+   "maxT_rejected": 400,
+   "gained": 0,
+   "lost": 0,
+   "gain_points": 0.0,
+   "sign_test_p": 1.0
+  },
+  "netting-set|measure": {
+   "sidak_rejected": 400,
+   "maxT_rejected": 400,
+   "gained": 0,
+   "lost": 0,
+   "gain_points": 0.0,
+   "sign_test_p": 1.0
+  }
+ }
+}

@@ -1,7 +1,11 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:main-results",
+    "fig:iqr-by-cell",
+    "tab:rungs",
+    "tab:lights",
+    "tab:tail-index"
   ],
   "claims": {
     "BS-12": "sec:proposed-method"

@@ -1,0 +1,2052 @@
+{
+ "unexplained": [
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T11 pb,scaled g=0.95",
+   "printed": 0.84,
+   "recomputed": 0.8452506092117477,
+   "decimals": 2,
+   "unit_gap": 0.5250609211747692
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T11 pc,scaled g=0.95",
+   "printed": 1.22,
+   "recomputed": 1.2032454200243927,
+   "decimals": 2,
+   "unit_gap": 1.6754579975607253
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T12 pb,scaled g=0.999",
+   "printed": 9.54,
+   "recomputed": 9.444946422284053,
+   "decimals": 2,
+   "unit_gap": 9.505357771594625
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T7 pa g=0.99",
+   "printed": 2.65,
+   "recomputed": 2.6563422512306816,
+   "decimals": 2,
+   "unit_gap": 0.6342251230681661
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T7 pb g=0.999",
+   "printed": 5.77,
+   "recomputed": 5.764989720891593,
+   "decimals": 2,
+   "unit_gap": 0.5010279108407012
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T7 pc g=0.75",
+   "printed": 0.92,
+   "recomputed": 0.9252383426917562,
+   "decimals": 2,
+   "unit_gap": 0.5238342691756159
+  },
+  {
+   "source": "Tasche (2013), Table 5",
+   "key": "grade 17",
+   "printed": 48.355,
+   "recomputed": 48.35368981751268,
+   "decimals": 3,
+   "unit_gap": 1.3101824873160695
+  }
+ ],
+ "unit_gaps": {
+  "Pluto and Tasche (2005), Tables 1 to 12": [
+   0.3394,
+   0.3137,
+   0.2591,
+   0.3766,
+   0.3993,
+   0.0248,
+   0.7411,
+   0.0789,
+   0.0027,
+   0.4647,
+   0.4946,
+   0.2215,
+   0.212,
+   0.3463,
+   0.3757,
+   0.2944,
+   0.2854,
+   0.458,
+   0.5805,
+   0.5171,
+   0.1055,
+   0.3623,
+   0.315,
+   0.1536,
+   0.0367,
+   0.4715,
+   0.3487,
+   0.2817,
+   0.1516,
+   0.3091,
+   0.2794,
+   1.202,
+   0.3083,
+   0.4311,
+   0.1249,
+   0.5526,
+   0.2113,
+   1.8262,
+   0.2448,
+   0.0092,
+   0.3529,
+   0.0974,
+   0.4701,
+   1.3841,
+   0.5409,
+   0.5251,
+   0.5202,
+   0.5636,
+   0.539,
+   1.7894,
+   0.0447,
+   1.6755,
+   0.0581,
+   0.2282,
+   0.4346,
+   0.0765,
+   0.3353,
+   0.1185,
+   0.0945,
+   0.4453,
+   1.0696,
+   0.7977,
+   0.9423,
+   1.1571,
+   0.1259,
+   0.0694,
+   1.0973,
+   0.35,
+   0.5687,
+   0.7375,
+   0.6568,
+   9.5054,
+   1.033,
+   0.3011,
+   1.3388,
+   0.4106,
+   0.5356,
+   0.2543,
+   0.1028,
+   0.2154,
+   0.16,
+   0.2953,
+   0.4278,
+   0.1969,
+   0.0782,
+   0.1032,
+   0.459,
+   0.3608,
+   0.3335,
+   0.3722,
+   0.1185,
+   1.2163,
+   0.3178,
+   0.3669,
+   0.0122,
+   0.2546,
+   0.4328,
+   0.1181,
+   0.1891,
+   0.3909,
+   0.2187,
+   0.2673,
+   0.1183,
+   0.4984,
+   0.0345,
+   0.1455,
+   0.2104,
+   0.4078,
+   0.3458,
+   0.2688,
+   0.4348,
+   0.0307,
+   0.6342,
+   0.2985,
+   0.2982,
+   0.0987,
+   0.1776,
+   0.2054,
+   0.0262,
+   0.501,
+   0.0157,
+   0.5238,
+   0.1253,
+   0.0478,
+   0.2558,
+   0.2674,
+   0.9447,
+   0.5126,
+   0.9042,
+   0.7923,
+   0.42,
+   0.4644,
+   0.9431,
+   0.9206,
+   0.831,
+   0.4693,
+   0.284,
+   0.7887,
+   0.4831,
+   0.6383,
+   0.8669,
+   0.2242,
+   0.8613,
+   0.6737,
+   0.1212,
+   0.0911,
+   0.2453,
+   0.2862,
+   0.1604,
+   0.4629,
+   0.4798,
+   0.3257,
+   0.3656,
+   0.2867,
+   0.2968,
+   0.1678,
+   0.1637,
+   0.0497,
+   0.4503,
+   0.1987,
+   0.3592,
+   0.3621,
+   0.3917,
+   0.0423,
+   0.5214,
+   0.3062,
+   0.4222,
+   0.2054
+  ],
+  "Tasche (2013), Table 5": [
+   0.2294,
+   0.1842,
+   0.2395,
+   0.1135,
+   0.1507,
+   0.2772,
+   0.1932,
+   0.3423,
+   0.3064,
+   0.4958,
+   0.0869,
+   0.5582,
+   0.0283,
+   0.0735,
+   0.1766,
+   0.1131,
+   1.3102
+  ],
+  "Tasche (2013), Table 6": [
+   0.4096,
+   0.1959,
+   0.4857,
+   0.4367,
+   0.0963,
+   0.3759,
+   0.1742,
+   1.048,
+   1.148,
+   1.1865,
+   1.2512,
+   1.2171,
+   1.764,
+   1.4961,
+   0.365,
+   5.3879,
+   12.5697
+  ],
+  "Tasche (2013), Table 9, 2009": [
+   35.7948,
+   15.4094,
+   6.6694,
+   3.2122,
+   0.9608,
+   0.4262,
+   0.644,
+   0.5078,
+   0.3842,
+   0.3809,
+   0.3573,
+   0.2639,
+   0.2622,
+   0.3274,
+   0.1632,
+   0.1082,
+   0.4425
+  ],
+  "Tasche (2013), Table 7, 2010": [
+   0.2921,
+   0.2863,
+   0.2818,
+   0.1173,
+   0.0984,
+   0.3811,
+   0.1676,
+   0.1271,
+   0.603,
+   0.0243,
+   0.0038,
+   0.3169,
+   0.1544,
+   0.4946,
+   0.7032,
+   0.558,
+   1.4097,
+   0.4518,
+   0.3784,
+   0.3558,
+   0.2942,
+   0.0827,
+   0.3039,
+   0.3585,
+   0.3953,
+   0.0524,
+   0.1585,
+   0.2018,
+   0.0076,
+   0.3878,
+   0.0957,
+   0.1268,
+   0.6541,
+   1.7111,
+   0.3199,
+   0.3655,
+   0.0716,
+   0.249,
+   0.4258,
+   0.1582,
+   0.4165,
+   0.0658,
+   0.0008,
+   0.0165,
+   0.4129,
+   0.093,
+   0.072,
+   0.3731,
+   0.1518,
+   0.9051,
+   2.5742,
+   0.4596,
+   0.5393,
+   0.1766,
+   0.0494,
+   0.0527,
+   0.0031,
+   0.2416,
+   0.0701,
+   0.3017,
+   0.6207,
+   0.0268,
+   0.3081,
+   0.6608,
+   0.699,
+   0.5635,
+   0.4295,
+   4.7506
+  ],
+  "Tasche (2013), Table 8, 2010": [
+   0.1782,
+   0.1003,
+   0.3123,
+   0.347
+  ],
+  "Tasche (2013), Table 7, 2011": [
+   0.1224,
+   0.2813,
+   0.287,
+   0.4095,
+   0.4022,
+   0.0671,
+   0.2604,
+   0.1783,
+   0.3424,
+   0.2604,
+   0.1213,
+   0.1188,
+   0.2093,
+   0.3557,
+   0.5072,
+   0.0209,
+   2.2965,
+   0.1491,
+   0.3532,
+   0.4265,
+   0.03,
+   0.2278,
+   0.0573,
+   0.0713,
+   0.5205,
+   0.2452,
+   0.5288,
+   0.1118,
+   0.1806,
+   0.106,
+   0.0863,
+   0.5928,
+   0.1455,
+   4.1965,
+   0.4424,
+   0.3338,
+   0.409,
+   0.0788,
+   0.4175,
+   0.0984,
+   0.4185,
+   0.0951,
+   0.3353,
+   0.2559,
+   0.6073,
+   0.166,
+   0.6439,
+   0.35,
+   0.0227,
+   0.6812,
+   2.4669,
+   0.333,
+   0.0957,
+   0.394,
+   0.072,
+   0.2317,
+   0.1417,
+   0.2527,
+   0.2497,
+   0.1077,
+   0.3507,
+   0.1719,
+   0.688,
+   0.6608,
+   0.5004,
+   1.1731,
+   0.9955,
+   2.1283
+  ],
+  "Tasche (2013), Table 8, 2011": [
+   0.1435,
+   0.1312,
+   0.5731,
+   0.422
+  ],
+  "Schuermann and Hanson (2004), Table 5": [
+   0.4527,
+   0.2776,
+   0.2697,
+   0.0,
+   0.4347,
+   0.4347,
+   0.0,
+   0.3307,
+   0.3307,
+   0.1321,
+   0.3184,
+   0.4504,
+   0.1552,
+   0.4314,
+   0.2762,
+   0.0,
+   0.2385,
+   0.2385
+  ],
+  "Israel, Rosenthal and Wei (2001), L1 distances": [
+   4.2349,
+   0.1461,
+   0.4659,
+   0.012,
+   0.1505,
+   0.324,
+   0.32,
+   0.3692,
+   0.349
+  ],
+  "Engelmann (2024), TTC portfolio and PDs": [
+   0.3395,
+   0.1428,
+   0.132,
+   0.4733,
+   0.4731,
+   0.0207,
+   0.3294,
+   0.0,
+   0.4349,
+   0.0,
+   0.5,
+   0.28
+  ],
+  "Pluto and Tasche (2005), Tables 13 and 14": [
+   0.7,
+   0.39,
+   1.15,
+   0.46,
+   0.89,
+   1.22,
+   0.61,
+   0.9,
+   0.61,
+   0.76,
+   1.12,
+   0.79,
+   0.46,
+   1.11,
+   0.48,
+   0.59,
+   1.53,
+   1.75,
+   0.8,
+   0.89,
+   0.8,
+   0.67,
+   1.48,
+   1.75,
+   1.5,
+   1.07,
+   1.3,
+   1.9,
+   0.92,
+   2.42,
+   1.45,
+   2.3,
+   4.2,
+   5.12,
+   4.68,
+   4.32
+  ]
+ },
+ "engine": "1.1.0",
+ "sources": [
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "kind": "recomputed",
+   "n": 168,
+   "agree": 125,
+   "max_unit_gap": 9.505357771594625,
+   "max_abs_gap": 0.09505357771594625
+  },
+  {
+   "source": "Tasche (2013), Table 5",
+   "kind": "recomputed",
+   "n": 17,
+   "agree": 15,
+   "max_unit_gap": 1.3101824873160695,
+   "max_abs_gap": 0.0013101824873160695
+  },
+  {
+   "source": "Tasche (2013), Table 6",
+   "kind": "recomputed",
+   "n": 17,
+   "agree": 8,
+   "max_unit_gap": 12.56973857131527,
+   "max_abs_gap": 0.001256973857131527
+  },
+  {
+   "source": "Tasche (2013), Table 9, 2009",
+   "kind": "recomputed",
+   "n": 17,
+   "agree": 10,
+   "max_unit_gap": 35.794806562375925,
+   "max_abs_gap": 0.35794806562375925
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "kind": "recomputed",
+   "n": 68,
+   "agree": 54,
+   "max_unit_gap": 4.750582515065105,
+   "max_abs_gap": 0.0004750582515065105
+  },
+  {
+   "source": "Tasche (2013), Table 8, 2010",
+   "kind": "recomputed",
+   "n": 4,
+   "agree": 4,
+   "max_unit_gap": 0.34695344393780303,
+   "max_abs_gap": 0.0034695344393780303
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "kind": "recomputed",
+   "n": 68,
+   "agree": 52,
+   "max_unit_gap": 4.196546952268676,
+   "max_abs_gap": 0.0004196546952268676
+  },
+  {
+   "source": "Tasche (2013), Table 8, 2011",
+   "kind": "recomputed",
+   "n": 4,
+   "agree": 3,
+   "max_unit_gap": 0.5730542867135924,
+   "max_abs_gap": 0.005730542867135924
+  },
+  {
+   "source": "Schuermann and Hanson (2004), Table 5",
+   "kind": "recomputed",
+   "n": 18,
+   "agree": 18,
+   "max_unit_gap": 0.45274094672732856,
+   "max_abs_gap": 4.5274094672732856e-07
+  },
+  {
+   "source": "Israel, Rosenthal and Wei (2001), L1 distances",
+   "kind": "read",
+   "n": 9,
+   "agree": 8,
+   "max_unit_gap": 4.234889999999991,
+   "max_abs_gap": 0.0004234889999999991
+  },
+  {
+   "source": "Engelmann (2024), TTC portfolio and PDs",
+   "kind": "read",
+   "n": 12,
+   "agree": 12,
+   "max_unit_gap": 0.5000000000001531,
+   "max_abs_gap": 4.7331000000039314e-05
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "kind": "read",
+   "n": 36,
+   "agree": 4,
+   "max_unit_gap": 5.119999999999991,
+   "max_abs_gap": 0.05119999999999991
+  }
+ ],
+ "totals": {
+  "n": 438,
+  "agree": 313,
+  "recomputed_n": 381,
+  "recomputed_agree": 289,
+  "read_n": 57,
+  "read_agree": 24
+ },
+ "sdd_statement": {
+  "n": 413,
+  "agree": 296
+ },
+ "without_tasche_tables_8_and_9": {
+  "n": 413,
+  "agree": 296
+ },
+ "unit_gap_bins": {
+  "half": 313,
+  "to_one": 70,
+  "to_two": 35,
+  "beyond_two": 20
+ },
+ "unit_gap_bins_recomputed": {
+  "half": 289,
+  "to_one": 57,
+  "to_two": 22,
+  "beyond_two": 13
+ },
+ "tolerance_sweep": [
+  {
+   "units": 0.5,
+   "agree": 313,
+   "agree_recomputed": 289
+  },
+  {
+   "units": 1.0,
+   "agree": 383,
+   "agree_recomputed": 346
+  },
+  {
+   "units": 2.0,
+   "agree": 418,
+   "agree_recomputed": 368
+  },
+  {
+   "units": 5.0,
+   "agree": 431,
+   "agree_recomputed": 375
+  }
+ ],
+ "misses": [
+  {
+   "source": "Tasche (2013), Table 9, 2009",
+   "key": "grade 1",
+   "printed": 1501.55,
+   "recomputed": 1501.1920519343762,
+   "decimals": 2,
+   "unit_gap": 35.794806562375925,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 9, 2009",
+   "key": "grade 2",
+   "printed": 715.28,
+   "recomputed": 715.1259055610856,
+   "decimals": 2,
+   "unit_gap": 15.409443891439878,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 6",
+   "key": "grade 17",
+   "printed": 39.2628,
+   "recomputed": 39.26154302614287,
+   "decimals": 4,
+   "unit_gap": 12.56973857131527,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T12 pb,scaled g=0.999",
+   "printed": 9.54,
+   "recomputed": 9.444946422284053,
+   "decimals": 2,
+   "unit_gap": 9.505357771594625,
+   "explanation": "no explanation; beyond one unit"
+  },
+  {
+   "source": "Tasche (2013), Table 9, 2009",
+   "key": "grade 3",
+   "printed": 353.69,
+   "recomputed": 353.62330576996,
+   "decimals": 2,
+   "unit_gap": 6.669423004001374,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 6",
+   "key": "grade 16",
+   "printed": 25.3242,
+   "recomputed": 25.323661211587563,
+   "decimals": 4,
+   "unit_gap": 5.3878841243815145,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pa g=0.999",
+   "printed": 1.17,
+   "recomputed": 1.1188,
+   "decimals": 2,
+   "unit_gap": 5.119999999999991,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "key": "A4-slr grade 17",
+   "printed": 15.576,
+   "recomputed": 15.575524941748494,
+   "decimals": 4,
+   "unit_gap": 4.750582515065105,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pb g=0.999",
+   "printed": 1.29,
+   "recomputed": 1.2432,
+   "decimals": 2,
+   "unit_gap": 4.679999999999995,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pc g=0.999",
+   "printed": 1.7,
+   "recomputed": 1.6568,
+   "decimals": 2,
+   "unit_gap": 4.3199999999999905,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Israel, Rosenthal and Wei (2001), L1 distances",
+   "key": "S&P 1981-1991 jlt",
+   "printed": 0.1169,
+   "recomputed": 0.116476511,
+   "decimals": 4,
+   "unit_gap": 4.234889999999991,
+   "explanation": "printed generator (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pc g=0.999",
+   "printed": 1.23,
+   "recomputed": 1.188,
+   "decimals": 2,
+   "unit_gap": 4.200000000000004,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A2-iar grade 17",
+   "printed": 13.3871,
+   "recomputed": 13.387519654695227,
+   "decimals": 4,
+   "unit_gap": 4.196546952268676,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 9, 2009",
+   "key": "grade 4",
+   "printed": 167.12,
+   "recomputed": 167.0878776974466,
+   "decimals": 2,
+   "unit_gap": 3.212230255340387,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "key": "A3-spd grade 17",
+   "printed": 12.7755,
+   "recomputed": 12.775242578878467,
+   "decimals": 4,
+   "unit_gap": 2.5742112153182006,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A3-spd grade 17",
+   "printed": 9.6998,
+   "recomputed": 9.699553306423736,
+   "decimals": 4,
+   "unit_gap": 2.4669357626372346,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pc g=0.99",
+   "printed": 1.01,
+   "recomputed": 0.9858,
+   "decimals": 2,
+   "unit_gap": 2.42,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pb g=0.999",
+   "printed": 0.62,
+   "recomputed": 0.597,
+   "decimals": 2,
+   "unit_gap": 2.300000000000002,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A1-idp grade 17",
+   "printed": 12.1942,
+   "recomputed": 12.193970350992798,
+   "decimals": 4,
+   "unit_gap": 2.2964900720268133,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A4-slr grade 17",
+   "printed": 12.7721,
+   "recomputed": 12.771887174109867,
+   "decimals": 4,
+   "unit_gap": 2.1282589013260633,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pa g=0.99",
+   "printed": 0.7,
+   "recomputed": 0.681,
+   "decimals": 2,
+   "unit_gap": 1.8999999999999906,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T11 pa,scaled g=0.75",
+   "printed": 0.54,
+   "recomputed": 0.5217378368274994,
+   "decimals": 2,
+   "unit_gap": 1.8262163172500623,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T11 pc,scaled g=0.75",
+   "printed": 0.75,
+   "recomputed": 0.7321057789313451,
+   "decimals": 2,
+   "unit_gap": 1.7894221068654903,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Tasche (2013), Table 6",
+   "key": "grade 13",
+   "printed": 4.2968,
+   "recomputed": 4.296976398407427,
+   "decimals": 4,
+   "unit_gap": 1.7639840742678103,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pc g=0.9",
+   "printed": 0.46,
+   "recomputed": 0.4425,
+   "decimals": 2,
+   "unit_gap": 1.7500000000000016,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pc g=0.95",
+   "printed": 0.61,
+   "recomputed": 0.5925,
+   "decimals": 2,
+   "unit_gap": 1.749999999999996,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "key": "A2-iar grade 17",
+   "printed": 14.5179,
+   "recomputed": 14.51772888820146,
+   "decimals": 4,
+   "unit_gap": 1.7111179853834813,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T11 pc,scaled g=0.95",
+   "printed": 1.22,
+   "recomputed": 1.2032454200243927,
+   "decimals": 2,
+   "unit_gap": 1.6754579975607253,
+   "explanation": "no explanation; beyond one unit"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pb g=0.9",
+   "printed": 0.38,
+   "recomputed": 0.3647,
+   "decimals": 2,
+   "unit_gap": 1.529999999999998,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pa g=0.99",
+   "printed": 0.3,
+   "recomputed": 0.285,
+   "decimals": 2,
+   "unit_gap": 1.5000000000000013,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 6",
+   "key": "grade 14",
+   "printed": 7.3802,
+   "recomputed": 7.3803496132496065,
+   "decimals": 4,
+   "unit_gap": 1.4961324960616196,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pb g=0.95",
+   "printed": 0.49,
+   "recomputed": 0.4752,
+   "decimals": 2,
+   "unit_gap": 1.479999999999998,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pa g=0.999",
+   "printed": 0.55,
+   "recomputed": 0.5355,
+   "decimals": 2,
+   "unit_gap": 1.4500000000000068,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "key": "A1-idp grade 17",
+   "printed": 12.9712,
+   "recomputed": 12.9713409687164,
+   "decimals": 4,
+   "unit_gap": 1.4096871639956987,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T11 pb,scaled g=0.75",
+   "printed": 0.61,
+   "recomputed": 0.5961594193529273,
+   "decimals": 2,
+   "unit_gap": 1.384058064707272,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T12 pc,scaled g=0.9",
+   "printed": 2.76,
+   "recomputed": 2.746611900294463,
+   "decimals": 2,
+   "unit_gap": 1.3388099705536671,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Tasche (2013), Table 5",
+   "key": "grade 17",
+   "printed": 48.355,
+   "recomputed": 48.35368981751268,
+   "decimals": 3,
+   "unit_gap": 1.3101824873160695,
+   "explanation": "no explanation; beyond one unit"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pc g=0.99",
+   "printed": 0.67,
+   "recomputed": 0.657,
+   "decimals": 2,
+   "unit_gap": 1.3000000000000012,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 6",
+   "key": "grade 11",
+   "printed": 1.2934,
+   "recomputed": 1.2935251155300636,
+   "decimals": 4,
+   "unit_gap": 1.2511553006344656,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pc g=0.5",
+   "printed": 0.15,
+   "recomputed": 0.1378,
+   "decimals": 2,
+   "unit_gap": 1.2199999999999989,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 6",
+   "key": "grade 12",
+   "printed": 1.9143,
+   "recomputed": 1.9144217096330371,
+   "decimals": 4,
+   "unit_gap": 1.2170963303725912,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T4 pa g=0.75",
+   "printed": 0.65,
+   "recomputed": 0.6378366063791554,
+   "decimals": 2,
+   "unit_gap": 1.216339362084462,
+   "explanation": "confidence level of the print (tested)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T11 k g=0.75",
+   "printed": 0.83,
+   "recomputed": 0.8179803912310386,
+   "decimals": 2,
+   "unit_gap": 1.2019608768961354,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Tasche (2013), Table 6",
+   "key": "grade 10",
+   "printed": 1.5642,
+   "recomputed": 1.5643186497243375,
+   "decimals": 4,
+   "unit_gap": 1.186497243375051,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A4-slr grade 15",
+   "printed": 1.3414,
+   "recomputed": 1.3415173104941753,
+   "decimals": 4,
+   "unit_gap": 1.173104941754044,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T12 pa,scaled g=0.95",
+   "printed": 2.95,
+   "recomputed": 2.938428609558548,
+   "decimals": 2,
+   "unit_gap": 1.1571390441452056,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pc g=0.5",
+   "printed": 0.07,
+   "recomputed": 0.0585,
+   "decimals": 2,
+   "unit_gap": 1.1500000000000004,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 6",
+   "key": "grade 9",
+   "printed": 1.1436,
+   "recomputed": 1.1437147982831355,
+   "decimals": 4,
+   "unit_gap": 1.1479828313554208,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pb g=0.75",
+   "printed": 0.24,
+   "recomputed": 0.2288,
+   "decimals": 2,
+   "unit_gap": 1.1199999999999988,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pb g=0.9",
+   "printed": 0.13,
+   "recomputed": 0.1189,
+   "decimals": 2,
+   "unit_gap": 1.1099999999999999,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T12 pb,scaled g=0.5",
+   "printed": 0.72,
+   "recomputed": 0.7090267132311364,
+   "decimals": 2,
+   "unit_gap": 1.0973286768863555,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pb g=0.99",
+   "printed": 0.33,
+   "recomputed": 0.3193,
+   "decimals": 2,
+   "unit_gap": 1.0700000000000043,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T12 pa,scaled g=0.5",
+   "printed": 0.64,
+   "recomputed": 0.6293035837994445,
+   "decimals": 2,
+   "unit_gap": 1.0696416200555503,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Tasche (2013), Table 6",
+   "key": "grade 8",
+   "printed": 0.6355,
+   "recomputed": 0.6356047967672827,
+   "decimals": 4,
+   "unit_gap": 1.0479676728269993,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T12 pc,scaled g=0.5",
+   "printed": 0.75,
+   "recomputed": 0.7396701596950981,
+   "decimals": 2,
+   "unit_gap": 1.0329840304901916,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A4-slr grade 16",
+   "printed": 3.6627,
+   "recomputed": 3.6627995495292285,
+   "decimals": 4,
+   "unit_gap": 0.9954952922841542,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 9, 2009",
+   "key": "grade 5",
+   "printed": 88.18,
+   "recomputed": 88.17039209837222,
+   "decimals": 2,
+   "unit_gap": 0.9607901627788351,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T8 pa g=0.5",
+   "printed": 0.72,
+   "recomputed": 0.7105526144761605,
+   "decimals": 2,
+   "unit_gap": 0.9447385523839502,
+   "explanation": "print at or above the exact bound (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T8 pb g=0.5",
+   "printed": 0.81,
+   "recomputed": 0.8005687521722128,
+   "decimals": 2,
+   "unit_gap": 0.9431247827787259,
+   "explanation": "print at or above the exact bound (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T12 pa,scaled g=0.9",
+   "printed": 2.16,
+   "recomputed": 2.150576726516175,
+   "decimals": 2,
+   "unit_gap": 0.9423273483825323,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T8 pb g=0.75",
+   "printed": 1.59,
+   "recomputed": 1.5807938515781828,
+   "decimals": 2,
+   "unit_gap": 0.9206148421817328,
+   "explanation": "print at or above the exact bound (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pb g=0.99",
+   "printed": 0.77,
+   "recomputed": 0.7608,
+   "decimals": 2,
+   "unit_gap": 0.9199999999999986,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "key": "A3-spd grade 16",
+   "printed": 5.1671,
+   "recomputed": 5.167009489218242,
+   "decimals": 4,
+   "unit_gap": 0.9051078175748017,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T8 pa g=0.9",
+   "printed": 2.5,
+   "recomputed": 2.490958278527142,
+   "decimals": 2,
+   "unit_gap": 0.90417214728582,
+   "explanation": "print at or above the exact bound (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pb g=0.75",
+   "printed": 0.07,
+   "recomputed": 0.061,
+   "decimals": 2,
+   "unit_gap": 0.9000000000000008,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pb g=0.5",
+   "printed": 0.14,
+   "recomputed": 0.1311,
+   "decimals": 2,
+   "unit_gap": 0.8900000000000019,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pb g=0.95",
+   "printed": 0.18,
+   "recomputed": 0.1711,
+   "decimals": 2,
+   "unit_gap": 0.8899999999999991,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T8 pc g=0.9",
+   "printed": 3.19,
+   "recomputed": 3.1813306479991796,
+   "decimals": 2,
+   "unit_gap": 0.8669352000820307,
+   "explanation": "print at or above the exact bound (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T8 pc g=0.99",
+   "printed": 7.68,
+   "recomputed": 7.671387363507673,
+   "decimals": 2,
+   "unit_gap": 0.8612636492326686,
+   "explanation": "print at or above the exact bound (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T8 pb g=0.9",
+   "printed": 2.77,
+   "recomputed": 2.7616895757127846,
+   "decimals": 2,
+   "unit_gap": 0.8310424287215401,
+   "explanation": "print at or above the exact bound (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pa g=0.95",
+   "printed": 0.16,
+   "recomputed": 0.152,
+   "decimals": 2,
+   "unit_gap": 0.8000000000000007,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pc g=0.95",
+   "printed": 0.37,
+   "recomputed": 0.362,
+   "decimals": 2,
+   "unit_gap": 0.8000000000000007,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T12 pa,scaled g=0.75",
+   "printed": 1.24,
+   "recomputed": 1.2320228662045165,
+   "decimals": 2,
+   "unit_gap": 0.7977133795483482,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T8 pa g=0.95",
+   "printed": 3.42,
+   "recomputed": 3.4120765997571847,
+   "decimals": 2,
+   "unit_gap": 0.7923400242815237,
+   "explanation": "print at or above the exact bound (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pc g=0.75",
+   "printed": 0.27,
+   "recomputed": 0.2621,
+   "decimals": 2,
+   "unit_gap": 0.7900000000000018,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T8 pb g=0.999",
+   "printed": 10.92,
+   "recomputed": 10.91211265579416,
+   "decimals": 2,
+   "unit_gap": 0.7887344205839142,
+   "explanation": "print at or above the exact bound (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pa g=0.75",
+   "printed": 0.21,
+   "recomputed": 0.2024,
+   "decimals": 2,
+   "unit_gap": 0.7599999999999996,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T10 k g=0.5",
+   "printed": 0.46,
+   "recomputed": 0.4674110649750894,
+   "decimals": 2,
+   "unit_gap": 0.7411064975089365,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T12 pb,scaled g=0.95",
+   "printed": 3.25,
+   "recomputed": 3.2426252165877307,
+   "decimals": 2,
+   "unit_gap": 0.737478341226927,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "key": "A1-idp grade 15",
+   "printed": 2.0554,
+   "recomputed": 2.0553296804768837,
+   "decimals": 4,
+   "unit_gap": 0.7031952311642442,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pa g=0.5",
+   "printed": 0.03,
+   "recomputed": 0.023,
+   "decimals": 2,
+   "unit_gap": 0.7,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "key": "A4-slr grade 14",
+   "printed": 0.8023,
+   "recomputed": 0.8023699038327553,
+   "decimals": 4,
+   "unit_gap": 0.6990383275529144,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A4-slr grade 12",
+   "printed": 0.2405,
+   "recomputed": 0.24056879575931697,
+   "decimals": 4,
+   "unit_gap": 0.6879575931698079,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A3-spd grade 16",
+   "printed": 3.9231,
+   "recomputed": 3.9230318849937196,
+   "decimals": 4,
+   "unit_gap": 0.6811500628023381,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T8 pc g=0.999",
+   "printed": 13.14,
+   "recomputed": 13.133263069138321,
+   "decimals": 2,
+   "unit_gap": 0.6736930861679369,
+   "explanation": "print at or above the exact bound (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pa g=0.95",
+   "printed": 0.43,
+   "recomputed": 0.4233,
+   "decimals": 2,
+   "unit_gap": 0.6699999999999984,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "key": "A4-slr grade 13",
+   "printed": 0.4576,
+   "recomputed": 0.45766607971836304,
+   "decimals": 4,
+   "unit_gap": 0.6607971836303239,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A4-slr grade 13",
+   "printed": 0.3635,
+   "recomputed": 0.3635660775673501,
+   "decimals": 4,
+   "unit_gap": 0.6607756735010906,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T12 pb,scaled g=0.99",
+   "printed": 5.54,
+   "recomputed": 5.533432262206853,
+   "decimals": 2,
+   "unit_gap": 0.656773779314701,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "key": "A2-iar grade 16",
+   "printed": 4.5164,
+   "recomputed": 4.516334586920189,
+   "decimals": 4,
+   "unit_gap": 0.6541307981056121,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 9, 2009",
+   "key": "grade 7",
+   "printed": 23.98,
+   "recomputed": 23.973559552065186,
+   "decimals": 2,
+   "unit_gap": 0.6440447934814131,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A3-spd grade 13",
+   "printed": 0.4573,
+   "recomputed": 0.45736439246145666,
+   "decimals": 4,
+   "unit_gap": 0.6439246145667488,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T8 pc g=0.75",
+   "printed": 1.76,
+   "recomputed": 1.7536168406447723,
+   "decimals": 2,
+   "unit_gap": 0.6383159355227708,
+   "explanation": "print at or above the exact bound (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T7 pa g=0.99",
+   "printed": 2.65,
+   "recomputed": 2.6563422512306816,
+   "decimals": 2,
+   "unit_gap": 0.6342251230681661,
+   "explanation": "no explanation; within one unit"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "key": "A4-slr grade 10",
+   "printed": 0.1581,
+   "recomputed": 0.15816206586051978,
+   "decimals": 4,
+   "unit_gap": 0.6206586051979435,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pc g=0.75",
+   "printed": 0.14,
+   "recomputed": 0.1339,
+   "decimals": 2,
+   "unit_gap": 0.6100000000000022,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T13 pa g=0.75",
+   "printed": 0.06,
+   "recomputed": 0.0539,
+   "decimals": 2,
+   "unit_gap": 0.6099999999999994,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A3-spd grade 11",
+   "printed": 0.2282,
+   "recomputed": 0.22826072899666305,
+   "decimals": 4,
+   "unit_gap": 0.6072899666306752,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "key": "A1-idp grade 9",
+   "printed": 0.1647,
+   "recomputed": 0.16463970149562593,
+   "decimals": 4,
+   "unit_gap": 0.6029850437408446,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A2-iar grade 15",
+   "printed": 1.271,
+   "recomputed": 1.2709407169915687,
+   "decimals": 4,
+   "unit_gap": 0.5928300843116574,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 13 and 14",
+   "key": "T14 pa g=0.9",
+   "printed": 0.33,
+   "recomputed": 0.3241,
+   "decimals": 2,
+   "unit_gap": 0.5900000000000016,
+   "explanation": "Monte Carlo print (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T10 pb,scaled g=0.5",
+   "printed": 0.38,
+   "recomputed": 0.37419469303859243,
+   "decimals": 2,
+   "unit_gap": 0.5805306961407575,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Tasche (2013), Table 8, 2011",
+   "key": "case 3",
+   "printed": 2.84,
+   "recomputed": 2.834269457132864,
+   "decimals": 2,
+   "unit_gap": 0.5730542867135924,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T12 pb,scaled g=0.9",
+   "printed": 2.39,
+   "recomputed": 2.384313450204393,
+   "decimals": 2,
+   "unit_gap": 0.5686549795607121,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T11 pb,scaled g=0.999",
+   "printed": 1.32,
+   "recomputed": 1.3256364975140764,
+   "decimals": 2,
+   "unit_gap": 0.5636497514076355,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "key": "A4-slr grade 15",
+   "printed": 1.6844,
+   "recomputed": 1.6844563487046962,
+   "decimals": 4,
+   "unit_gap": 0.5634870469628517,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 5",
+   "key": "grade 12",
+   "printed": 1.518,
+   "recomputed": 1.518558238280581,
+   "decimals": 3,
+   "unit_gap": 0.5582382805808805,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "key": "A1-idp grade 16",
+   "printed": 4.538,
+   "recomputed": 4.537944196439422,
+   "decimals": 4,
+   "unit_gap": 0.5580356057865998,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T11 k g=0.999",
+   "printed": 0.71,
+   "recomputed": 0.7155263023464885,
+   "decimals": 2,
+   "unit_gap": 0.5526302346488543,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T11 pb,scaled g=0.9",
+   "printed": 0.74,
+   "recomputed": 0.7454092445276729,
+   "decimals": 2,
+   "unit_gap": 0.5409244527672885,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2010",
+   "key": "A4-slr grade 2",
+   "printed": 0.0012,
+   "recomputed": 0.0011460739578260054,
+   "decimals": 4,
+   "unit_gap": 0.5392604217399448,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T11 pc,scaled g=0.5",
+   "printed": 0.49,
+   "recomputed": 0.4846095147133819,
+   "decimals": 2,
+   "unit_gap": 0.5390485286618119,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T12 pc,scaled g=0.99",
+   "printed": 6.61,
+   "recomputed": 6.604643518754745,
+   "decimals": 2,
+   "unit_gap": 0.5356481245255118,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A2-iar grade 10",
+   "printed": 0.1147,
+   "recomputed": 0.11464712119827096,
+   "decimals": 4,
+   "unit_gap": 0.5287880172903658,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T11 pb,scaled g=0.95",
+   "printed": 0.84,
+   "recomputed": 0.8452506092117477,
+   "decimals": 2,
+   "unit_gap": 0.5250609211747692,
+   "explanation": "no explanation; within one unit"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T7 pc g=0.75",
+   "printed": 0.92,
+   "recomputed": 0.9252383426917562,
+   "decimals": 2,
+   "unit_gap": 0.5238342691756159,
+   "explanation": "no explanation; within one unit"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T9 pc,scaled g=0.9",
+   "printed": 0.46,
+   "recomputed": 0.4547858208365057,
+   "decimals": 2,
+   "unit_gap": 0.5214179163494315,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A2-iar grade 8",
+   "printed": 0.0416,
+   "recomputed": 0.041547951093103386,
+   "decimals": 4,
+   "unit_gap": 0.5204890689661235,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T11 pb,scaled g=0.99",
+   "printed": 1.06,
+   "recomputed": 1.054797987462354,
+   "decimals": 2,
+   "unit_gap": 0.5202012537645961,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T10 pb,scaled g=0.75",
+   "printed": 0.37,
+   "recomputed": 0.36482946059518157,
+   "decimals": 2,
+   "unit_gap": 0.517053940481843,
+   "explanation": "rounded printed inputs (tested)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T8 pa g=0.75",
+   "printed": 1.42,
+   "recomputed": 1.414873741198076,
+   "decimals": 2,
+   "unit_gap": 0.5126258801923855,
+   "explanation": "print at or above the exact bound (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 9, 2009",
+   "key": "grade 8",
+   "printed": 13.89,
+   "recomputed": 13.884922325039943,
+   "decimals": 2,
+   "unit_gap": 0.5077674960057621,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A1-idp grade 15",
+   "printed": 1.3483,
+   "recomputed": 1.3483507189988406,
+   "decimals": 4,
+   "unit_gap": 0.5071899884057096,
+   "explanation": "documented tolerance (recorded)"
+  },
+  {
+   "source": "Pluto and Tasche (2005), Tables 1 to 12",
+   "key": "T7 pb g=0.999",
+   "printed": 5.77,
+   "recomputed": 5.764989720891593,
+   "decimals": 2,
+   "unit_gap": 0.5010279108407012,
+   "explanation": "no explanation; within one unit"
+  },
+  {
+   "source": "Tasche (2013), Table 7, 2011",
+   "key": "A4-slr grade 14",
+   "printed": 0.6378,
+   "recomputed": 0.6378500394577034,
+   "decimals": 4,
+   "unit_gap": 0.5003945770332141,
+   "explanation": "documented tolerance (recorded)"
+  }
+ ],
+ "n_misses_recomputed": 92,
+ "explain_scaled": {
+  "table9": {
+   "cells": 24,
+   "agree_with_exact_bounds": 23,
+   "agree_with_printed_bounds": 24,
+   "worst_unit_gap_exact": 0.5214179163494315,
+   "worst_unit_gap_printed": 0.4771048744460826
+  },
+  "table10": {
+   "cells": 24,
+   "agree_with_exact_bounds": 21,
+   "agree_with_printed_bounds": 24,
+   "worst_unit_gap_exact": 0.7411064975089365,
+   "worst_unit_gap_printed": 0.4999999999999949
+  },
+  "table11": {
+   "cells": 24,
+   "agree_with_exact_bounds": 13,
+   "agree_with_printed_bounds": 21,
+   "worst_unit_gap_exact": 1.8262163172500623,
+   "worst_unit_gap_printed": 1.1349206349206442
+  },
+  "table12": {
+   "cells": 24,
+   "agree_with_exact_bounds": 12,
+   "agree_with_printed_bounds": 23,
+   "worst_unit_gap_exact": 9.505357771594625,
+   "worst_unit_gap_printed": 8.959433354797142
+  }
+ },
+ "miss_categories": {
+  "rounded printed inputs (tested)": 24,
+  "no explanation; within one unit": 4,
+  "no explanation; beyond one unit": 3,
+  "confidence level of the print (tested)": 1,
+  "print at or above the exact bound (recorded)": 12,
+  "documented tolerance (recorded)": 48,
+  "printed generator (recorded)": 1,
+  "Monte Carlo print (recorded)": 32
+ },
+ "n_misses": 125,
+ "by_group": {
+  "Pluto and Tasche (2005), Table 1": {
+   "n": 6,
+   "agree": 6,
+   "max_unit_gap": 0.39926047043342683
+  },
+  "Pluto and Tasche (2005), Table 10": {
+   "n": 24,
+   "agree": 21,
+   "max_unit_gap": 0.7411064975089365
+  },
+  "Pluto and Tasche (2005), Table 11": {
+   "n": 24,
+   "agree": 13,
+   "max_unit_gap": 1.8262163172500623
+  },
+  "Pluto and Tasche (2005), Table 12": {
+   "n": 24,
+   "agree": 12,
+   "max_unit_gap": 9.505357771594625
+  },
+  "Pluto and Tasche (2005), Table 2": {
+   "n": 6,
+   "agree": 6,
+   "max_unit_gap": 0.4277847092748477
+  },
+  "Pluto and Tasche (2005), Table 3": {
+   "n": 6,
+   "agree": 6,
+   "max_unit_gap": 0.45903867899493855
+  },
+  "Pluto and Tasche (2005), Table 4": {
+   "n": 6,
+   "agree": 5,
+   "max_unit_gap": 1.216339362084462
+  },
+  "Pluto and Tasche (2005), Table 5": {
+   "n": 6,
+   "agree": 6,
+   "max_unit_gap": 0.4328364080644076
+  },
+  "Pluto and Tasche (2005), Table 6": {
+   "n": 6,
+   "agree": 6,
+   "max_unit_gap": 0.4983705257841864
+  },
+  "Pluto and Tasche (2005), Table 7": {
+   "n": 18,
+   "agree": 15,
+   "max_unit_gap": 0.6342251230681661
+  },
+  "Pluto and Tasche (2005), Table 8": {
+   "n": 18,
+   "agree": 6,
+   "max_unit_gap": 0.9447385523839502
+  },
+  "Pluto and Tasche (2005), Table 9": {
+   "n": 24,
+   "agree": 23,
+   "max_unit_gap": 0.5214179163494315
+  },
+  "Tasche (2013), Table 5": {
+   "n": 17,
+   "agree": 15,
+   "max_unit_gap": 1.3101824873160695
+  },
+  "Tasche (2013), Table 6": {
+   "n": 17,
+   "agree": 8,
+   "max_unit_gap": 12.56973857131527
+  },
+  "Tasche (2013), Table 9, 2009": {
+   "n": 17,
+   "agree": 10,
+   "max_unit_gap": 35.794806562375925
+  },
+  "Tasche (2013), Table 7, 2010": {
+   "n": 68,
+   "agree": 54,
+   "max_unit_gap": 4.750582515065105
+  },
+  "Tasche (2013), Table 8, 2010": {
+   "n": 4,
+   "agree": 4,
+   "max_unit_gap": 0.34695344393780303
+  },
+  "Tasche (2013), Table 7, 2011": {
+   "n": 68,
+   "agree": 52,
+   "max_unit_gap": 4.196546952268676
+  },
+  "Tasche (2013), Table 8, 2011": {
+   "n": 4,
+   "agree": 3,
+   "max_unit_gap": 0.5730542867135924
+  },
+  "Schuermann and Hanson (2004), Table 5": {
+   "n": 18,
+   "agree": 18,
+   "max_unit_gap": 0.45274094672732856
+  },
+  "Israel, Rosenthal and Wei (2001), L1 distances": {
+   "n": 9,
+   "agree": 8,
+   "max_unit_gap": 4.234889999999991
+  },
+  "Engelmann (2024), TTC portfolio and PDs": {
+   "n": 12,
+   "agree": 12,
+   "max_unit_gap": 0.5000000000001531
+  },
+  "Pluto and Tasche (2005), Tables 13 and 14": {
+   "n": 36,
+   "agree": 4,
+   "max_unit_gap": 5.119999999999991
+  }
+ },
+ "table4_level": {
+  "bound_at_0_75": 0.6378366063791554,
+  "bound_at_0_763": 0.6501337440734142,
+  "level_range_printing_0_65": [
+   0.757699999999998,
+   0.7678999999999969
+  ]
+ },
+ "wrong_way_appendix": {
+  "cells": [
+   {
+    "key": "a1",
+    "printed": -6.9128,
+    "recomputed": -6.912832942802748,
+    "decimals": 4,
+    "unit_gap": 0.32942802747903954,
+    "agrees": true
+   },
+   {
+    "key": "a2",
+    "printed": -7.8509,
+    "recomputed": -7.850767563580849,
+    "decimals": 4,
+    "unit_gap": 1.324364191512828,
+    "agrees": false
+   },
+   {
+    "key": "h1[0]",
+    "printed": 0.0027,
+    "recomputed": 0.0027045142902101995,
+    "decimals": 5,
+    "unit_gap": 0.4514290210199355,
+    "agrees": true
+   },
+   {
+    "key": "h1[1]",
+    "printed": 0.00735,
+    "recomputed": 0.007351632049886198,
+    "decimals": 5,
+    "unit_gap": 0.1632049886198146,
+    "agrees": true
+   },
+   {
+    "key": "h1[2]",
+    "printed": 0.01998,
+    "recomputed": 0.019983807810722773,
+    "decimals": 5,
+    "unit_gap": 0.380781072277167,
+    "agrees": true
+   },
+   {
+    "key": "h2[0]",
+    "printed": 0.00106,
+    "recomputed": 0.0010586428053135767,
+    "decimals": 5,
+    "unit_gap": 0.135719468642324,
+    "agrees": true
+   },
+   {
+    "key": "h2[1]",
+    "printed": 0.00782,
+    "recomputed": 0.007822371077191336,
+    "decimals": 5,
+    "unit_gap": 0.23710771913359321,
+    "agrees": true
+   },
+   {
+    "key": "h2[2]",
+    "printed": 0.02126,
+    "recomputed": 0.021263409154592818,
+    "decimals": 5,
+    "unit_gap": 0.340915459281707,
+    "agrees": true
+   },
+   {
+    "key": "b from two points",
+    "printed": 0.0408,
+    "recomputed": 0.04077336356234973,
+    "decimals": 4,
+    "unit_gap": 0.2663643765027368,
+    "agrees": true
+   }
+  ],
+  "bisection_gap_a1": 1.5987211554602254e-14,
+  "bisection_gap_a2": 5.329070518200751e-15,
+  "recomputed_a": [
+   -6.912832942802748,
+   -7.850767563580849
+  ],
+  "max_calibration_error": 1.1102230246251565e-16,
+  "n": 9,
+  "agree": 8
+ }
+}

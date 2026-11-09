@@ -5,7 +5,7 @@ Every figure is a vector PDF drawn from the committed documents of ``data/derive
 
 Run from the repository root::
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/contraste-technical-report/figures/make_proposed.py
+    python manuscripts/contraste-technical-report/figures/make_proposed.py
 """
 from __future__ import annotations
 

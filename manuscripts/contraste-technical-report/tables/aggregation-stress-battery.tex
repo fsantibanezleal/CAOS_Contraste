@@ -3,7 +3,7 @@
 \small
 \caption{The tests the engine applies to the aggregation and the stress chain of case C18 on the Federal Reserve severely adverse document and on the aggregation document: the test, the loan type or variable it was applied to, its statistic and metric as the engine returns them, and the light the Contraste internal rule assigns. The thresholds are internal acceptance criteria, not regulatory values.}
 \label{tab:aggregation-stress-battery}
-\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\fitwidth{%
 \begin{tabular}{llrrl}
 \toprule
 Test & Segment & Statistic & Metric & Light \\
@@ -16,7 +16,6 @@ Sign of every diversification benefit & -- & 0.839 & 0.252 & green \\
 One horizon and one level across the marginals & -- & 0 & -- & green \\
 Euler contributions add to the total (total ES, CLP bn) & -- & 709.4 & $1.6\times10^{-16}$ & green \\
 Monte Carlo against the variance-covariance formula, elliptical case & -- & $-$0.89 & $-$0.0027 & green \\
-Additive overestimate against the published range (reference) & -- & 0.338 & 0.338 & green \\
 Coefficients with the wrong sign & -- & 6 & -- & red \\
 Back-cast of 2020 to 2025 (RMSE, points; peak timing, quarters) & Commercial and industrial & 0.55 & 0 & red \\
 Back-cast of 2020 to 2025 (RMSE, points; peak timing, quarters) & Commercial real estate & 0.79 & $-$14 & red \\

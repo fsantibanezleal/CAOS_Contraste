@@ -4,23 +4,25 @@
 \subsection{Predictions}
 \label{sec:design-hypotheses}
 
-Five predictions are tested; they are listed with their criteria and outcomes in Table~\ref{tab:hypotheses}, and each is stated here in the form it takes before any number is shown.
+Five predictions are tested; they are listed with their criteria and outcomes in Table~\ref{tab:hypotheses}.
+Only H1 and H2 were fixed in writing before the evaluation (in the specification of the method and in the research brief that proposed it); H3 to H5 were not recorded before the runs.
 \textbf{H1}: at a size of at most 1\%, the complement flags the model that uses a 20-day-old volatility in at least 30\% of replications, and the prediction is refuted if it flags fewer than 10\%.
 This is the acceptance and refutation criterion fixed for the method before the evaluation.
 \textbf{H2}, the second clause of the research brief that proposed the method: the Wald component flags the wrong-correlation and the missing-basis variants at least as often as the Kolmogorov--Smirnov distance alone does, and flags the desk with no deficiency at most at its stated rate.
 \textbf{H3}: the false-alarm rate of the union stays at most 1\% on desks whose generator differs from the calibration null.
 \textbf{H4}: the flag rate of the rolling-mean statistic rises with the age $L$ of the volatility input.
 \textbf{H5}: the complement flags a constant mis-scale of RTPL that the regulatory zone does not.
-H1 and H2 come from the specification of the method; H3 to H5 are predictions about its limits, written from the theory of Section~\ref{sec:theory} (Proposition~\ref{prop:size} and its exchangeability condition for H3, Proposition~\ref{prop:rolling} for H4 and Proposition~\ref{prop:invariance} for H5).
+H1 comes from the specification of the method and H2 from the research brief that proposed it; H3 to H5 are predictions about its limits, written from the theory of Section~\ref{sec:theory} (Proposition~\ref{prop:size} and its exchangeability condition for H3, Proposition~\ref{prop:rolling} for H4 and Proposition~\ref{prop:invariance} for H5).
 A prediction that fails is reported as failed, with its numbers.
 
 \subsection{Data and its provenance}
 \label{sec:design-data}
 
 All desk-years come from the committed generator of the C13 case of CAOS\_Contraste, \texttt{desk-pnl-generator/1.0.0}, whose truth status is a synthetic desk with a known true risk model; no external dataset is used and the case carries no licence class.
-The desk is a two-factor spread with loadings $0.006$ and $-0.004$ per standard deviation of the factor, a factor correlation of $0.6$, a log-AR(1) volatility with persistence $\phi=0.98$ and stationary standard deviation $0.35$ (so $v=0.1225$), known at the start of the day, a pricing noise of 10\% of the standard deviation of the factor profit and loss that is present in every variant, 300 burn-in days before the 250-day window, and the 97.5\% and 99\% value-at-risk of the true model for the desk back-test.
+The desk is a two-factor spread with loadings $0.006$ and $-0.004$ per standard deviation of the factor, a factor correlation of $0.6$, a log-AR(1) volatility with persistence $\phi=0.98$ and stationary standard deviation $0.35$ (so $v=0.1225$), known at the start of the day, a pricing noise of 10\% of the standard deviation of the factor profit and loss that is present in every variant, 300 burn-in days before the 250-day window, and the 97.5\% and 99\% value-at-risk of the risk model for the desk back-test (built on the volatility input and the correlation that the variant plants, and on the true scale for the time-misalignment variant).
 Each of the six variants plants one deficiency in the risk model alone (Table~\ref{tab:variants}); the strengths were fixed before the generator was run and are not tuned to a catch rate.
-A desk-year is a pure function of its seed: replication $i$ of the variant with index $k$ under case seed $s$ uses the seed $1000s+1000k+i$ in the numpy \texttt{default\_rng}, and the draws are made in a fixed order whatever the variant, so that the variants share their desk and differ only in the planted term.
+A desk-year is a pure function of its seed: replication $i$ of the variant with index $k$ under case seed $s$ uses the seed $1000s+1000k+i$ in the numpy \texttt{default\_rng}, and the draws are made in a fixed order whatever the variant, so that a desk is independent of the term planted in it.
+Each variant has its own seed range, so the six variants are independent desks; the lag ladder reuses the seeds of the stale-volatility variant at every lag, and the constant mis-scale and level experiments reuse the seeds of the no-deficiency variant, so those experiments share their desks with the variants they extend.
 The committed bake is case seed 13 with 1,000 replications per variant, whose statistics are committed in the product's derived data; the calibration null is the variant with nothing planted under the ten case seeds 5013 to 5022 (10,000 desk-years, with seeds that meet none of the committed ones); five further bakes use the case seeds 23, 33, 43, 53 and 63.
 
 \input{tables/variants}
@@ -75,4 +77,12 @@ The thresholds are calibrated once, on the 10,000 null desk-years, before any de
 \item \textbf{Ablation}: the full complement, each statistic removed or alone, the window at 5, 10, 40 and 60 days, the ordinary covariance in place of HC3, no multiplicity correction, and rolling means at four windows combined, on the held-out null and on the stale desks at four lags and the four other variants.
 \item \textbf{Checks of the theory}: the leave-one-block-out size on the real null, an independent simulation of the size of Proposition~\ref{prop:size} on Gaussian draws, and the slope and the rolling-mean correlation of Propositions~\ref{prop:slope} and~\ref{prop:rolling} on 250-day and 100,000-day windows of the noise-free model.
 \end{enumerate}
-The seeds are those of Section~\ref{sec:design-data}; no experiment draws a random number except through them and through the bootstrap seed of the area under the curve.
+The specification of the method also planned a cross-check of the size on the C22 case of the product.
+C22 runs the size and power of the engine's tests that return a p-value, across credit, fairness, market back-test, counterparty, portfolio and machine-learning families, and it holds no desk profit and loss generator and no attribution statistic; the complement decides by simulated critical values and not by a p-value, so the size of the complement itself cannot be read there without registering the C13 generator and the complement in that harness, which was not done.
+The size of the complement is checked instead on the ten held-out blocks of the null, on Gaussian draws and on the six alternative nulls above.
+What the C22 documents do allow is a check of one comparator.
+They hold the size of the Christoffersen conditional-coverage test, the one used here, on independent hits, and the script \path{experiments/c22_size_check.py} reads that committed size and reruns the same engine function on the same design (1,500 days, hit probability 5\%, 2,000 replications, its own seed); Table~\ref{tab:c22-check} gives the two sizes, which agree.
+At the 5\% rule, the p-value of that test rejects more often than its nominal size on 1,500 days (6.7\%, with a 95\% interval of 5.6 to 7.8\%), and at both rules it rejects less often on the 250 days at 2.5\% of the desk back-test (3.5\% and 0.3\%). The critical value read from the calibration null, which this paper uses for the comparator as for every other detector, avoids both errors (0.8\% held out).
+
+\input{tables/c22-check}
+The seeds are those of Section~\ref{sec:design-data}; no experiment draws a random number except through them and through the bootstrap seed of the area under the curve and the seed of the C22 size check.

@@ -1,0 +1,4158 @@
+{
+ "CmBaseBB": {
+  "source": "data/derived/C20/fed-shift.json: window:baseline p_value",
+  "value": "0.523"
+ },
+ "CmBaseBin": {
+  "source": "data/derived/C20/fed-shift.json: window:baseline extras.p_value_binomial",
+  "value": "0.313"
+ },
+ "CmBaseCov": {
+  "source": "data/derived/C20/fed-shift.json: window:baseline metric",
+  "value": "0.8946"
+ },
+ "CmBaseLight": {
+  "source": "data/derived/C20/fed-shift.json: window:baseline light",
+  "value": "green"
+ },
+ "CmBaseM": {
+  "source": "data/derived/C20/fed-shift.json: window:baseline n",
+  "value": "3,151"
+ },
+ "CmFairAboveTen": {
+  "source": "data/derived/C21/pair-*.json: pairs whose share of significant complainants is at least 0.10",
+  "value": "6"
+ },
+ "CmFairAmber": {
+  "source": "data/derived/C21/pair-*.json: pairs with an amber light",
+  "value": "4"
+ },
+ "CmFairGreen": {
+  "source": "data/derived/C21/pair-*.json: pairs with a green light",
+  "value": "2"
+ },
+ "CmFairGreenHi": {
+  "source": "data/derived/C21/pair-*.json: highest share among the green pairs",
+  "value": "0.1992"
+ },
+ "CmFairGreenLo": {
+  "source": "data/derived/C21/pair-*.json: lowest share among the green pairs",
+  "value": "0.1871"
+ },
+ "CmFairGreenOverNull": {
+  "source": "data/derived/C21/pair-*.json lowest green share over the largest null mean share of the plants, rounded down to one decimal",
+  "value": "3.4"
+ },
+ "CmFairMax": {
+  "source": "data/derived/C21/pair-*.json: situation_testing metric, maximum",
+  "value": "0.2629"
+ },
+ "CmFairMin": {
+  "source": "data/derived/C21/pair-*.json: situation_testing metric, minimum",
+  "value": "0.1871"
+ },
+ "CmFairPairs": {
+  "source": "data/derived/C21/pair-*.json: year pairs",
+  "value": "6"
+ },
+ "CmFairQMax": {
+  "source": "data/derived/C21/pair-*.json: largest number of complainants",
+  "value": "8,113"
+ },
+ "CmFairQMin": {
+  "source": "data/derived/C21/pair-*.json: smallest number of complainants",
+  "value": "4,485"
+ },
+ "CmHalfBB": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x0.5 p_value",
+  "value": "$4.56 \\times 10^{-52}$"
+ },
+ "CmHalfBin": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x0.5 extras.p_value_binomial",
+  "value": "$1.19 \\times 10^{-194}$"
+ },
+ "CmHalfCov": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x0.5 metric",
+  "value": "0.7099"
+ },
+ "CmHalfLight": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x0.5 light",
+  "value": "red"
+ },
+ "CmHalfM": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x0.5 n",
+  "value": "3,151"
+ },
+ "CmNcal": {
+  "source": "data/derived/C20/fed-shift.json: extras.n_cal",
+  "value": "1,471"
+ },
+ "CmOneBB": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x1 p_value",
+  "value": "0.037"
+ },
+ "CmOneBin": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x1 extras.p_value_binomial",
+  "value": "$2.58 \\times 10^{-4}$"
+ },
+ "CmOneCov": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x1 metric",
+  "value": "0.8800"
+ },
+ "CmOneLight": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x1 light",
+  "value": "amber"
+ },
+ "CmOneM": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x1 n",
+  "value": "3,151"
+ },
+ "CmPoolBB": {
+  "source": "data/derived/C20/fed-shift.json: window:pooled p_value",
+  "value": "$2.86 \\times 10^{-20}$"
+ },
+ "CmPoolBin": {
+  "source": "data/derived/C20/fed-shift.json: window:pooled extras.p_value_binomial",
+  "value": "$2.16 \\times 10^{-207}$"
+ },
+ "CmPoolCov": {
+  "source": "data/derived/C20/fed-shift.json: window:pooled metric",
+  "value": "0.8089"
+ },
+ "CmPoolLight": {
+  "source": "data/derived/C20/fed-shift.json: window:pooled light",
+  "value": "red"
+ },
+ "CmPoolM": {
+  "source": "data/derived/C20/fed-shift.json: window:pooled n",
+  "value": "12,604"
+ },
+ "CmQuarterBB": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x0.25 p_value",
+  "value": "$2.13 \\times 10^{-35}$"
+ },
+ "CmQuarterBin": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x0.25 extras.p_value_binomial",
+  "value": "$3.69 \\times 10^{-127}$"
+ },
+ "CmQuarterCov": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x0.25 metric",
+  "value": "0.7509"
+ },
+ "CmQuarterLight": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x0.25 light",
+  "value": "red"
+ },
+ "CmQuarterM": {
+  "source": "data/derived/C20/fed-shift.json: window:fed-higher-risk-x0.25 n",
+  "value": "3,151"
+ },
+ "CmRecomputeDiff": {
+  "source": "make_numbers.py: largest difference in log10 p between the engine function on the committed counts and the committed value",
+  "value": "$1.0 \\times 10^{-16}$"
+ },
+ "CmResDraws": {
+  "source": "data/derived/C20/fed-shift.json: shift_resilience extras.shift_permutations",
+  "value": "199"
+ },
+ "CmResDrop": {
+  "source": "data/derived/C20/fed-shift.json: shift_resilience metric",
+  "value": "0.0857"
+ },
+ "CmResN": {
+  "source": "data/derived/C20/fed-shift.json: shift_resilience n",
+  "value": "316"
+ },
+ "CmResNullMean": {
+  "source": "data/derived/C20/fed-shift.json: shift_resilience extras.null_mean",
+  "value": "0.0007"
+ },
+ "CmResNullP": {
+  "source": "data/derived/C20/fed-shift.json: shift_resilience extras.null_p95",
+  "value": "0.0243"
+ },
+ "CmResP": {
+  "source": "data/derived/C20/fed-shift.json: shift_resilience p_value",
+  "value": "0.005"
+ },
+ "CovBBMaxExact": {
+  "source": "experiments/results/coverage.json: maximum exact Beta-Binomial size over the size cells",
+  "value": "0.0499"
+ },
+ "CovBBMaxRate": {
+  "source": "experiments/results/coverage.json: maximum simulated Beta-Binomial size over the size grid",
+  "value": "0.054"
+ },
+ "CovBBOverBound": {
+  "source": "experiments/results/coverage.json: size-grid cells where the Beta-Binomial rate exceeds 0.05 plus two standard errors",
+  "value": "0"
+ },
+ "CovEngineMismatches": {
+  "source": "experiments/results/coverage.json: engine p-value against the vectorised p-value",
+  "value": "0"
+ },
+ "CovExBBA": {
+  "source": "experiments/results/coverage.json: exact sum, n=20000, m=2000",
+  "value": "0.047"
+ },
+ "CovExBBB": {
+  "source": "experiments/results/coverage.json: exact sum, n=2000, m=2000",
+  "value": "0.048"
+ },
+ "CovExBBC": {
+  "source": "experiments/results/coverage.json: exact sum, n=1000, m=4000",
+  "value": "0.050"
+ },
+ "CovExBBMaxTenth": {
+  "source": "experiments/results/coverage.json: exact Beta-Binomial size at ratio 0.1",
+  "value": "0.046"
+ },
+ "CovExBBMinTenth": {
+  "source": "experiments/results/coverage.json: exact Beta-Binomial size at ratio 0.1",
+  "value": "0.015"
+ },
+ "CovExBinA": {
+  "source": "experiments/results/coverage.json: exact sum, n=20000, m=2000",
+  "value": "0.059"
+ },
+ "CovExBinB": {
+  "source": "experiments/results/coverage.json: exact sum, n=2000, m=2000",
+  "value": "0.162"
+ },
+ "CovExBinC": {
+  "source": "experiments/results/coverage.json: exact sum, n=1000, m=4000",
+  "value": "0.376"
+ },
+ "CovExBinMaxEight": {
+  "source": "experiments/results/coverage.json: exact binomial size, ratio Eight",
+  "value": "0.512"
+ },
+ "CovExBinMaxFour": {
+  "source": "experiments/results/coverage.json: exact binomial size, ratio Four",
+  "value": "0.379"
+ },
+ "CovExBinMaxOne": {
+  "source": "experiments/results/coverage.json: exact binomial size, ratio One",
+  "value": "0.161"
+ },
+ "CovExBinMaxTenth": {
+  "source": "experiments/results/coverage.json: exact binomial size, ratio Tenth",
+  "value": "0.055"
+ },
+ "CovExBinMinEight": {
+  "source": "experiments/results/coverage.json: exact binomial size, ratio Eight",
+  "value": "0.506"
+ },
+ "CovExBinMinFour": {
+  "source": "experiments/results/coverage.json: exact binomial size, ratio Four",
+  "value": "0.370"
+ },
+ "CovExBinMinOne": {
+  "source": "experiments/results/coverage.json: exact binomial size, ratio One",
+  "value": "0.150"
+ },
+ "CovExBinMinTenth": {
+  "source": "experiments/results/coverage.json: exact binomial size, ratio Tenth",
+  "value": "0.050"
+ },
+ "CovGridCells": {
+  "source": "experiments/results/coverage.json: the size grid",
+  "value": "21"
+ },
+ "CovMcCompare": {
+  "source": "experiments/results/coverage.json: simulated against exact size comparisons (two rules, every size cell)",
+  "value": "46"
+ },
+ "CovMcExactMaxZ": {
+  "source": "experiments/results/coverage.json: largest simulated minus exact size in standard errors",
+  "value": "2.0"
+ },
+ "CovMeanAFive": {
+  "source": "experiments/results/coverage.json: mean coverage, n=20000, m=2000, b=1.05",
+  "value": "0.895"
+ },
+ "CovMeanATen": {
+  "source": "experiments/results/coverage.json: mean coverage, n=20000, m=2000, b=1.1",
+  "value": "0.891"
+ },
+ "CovMeanATwenty": {
+  "source": "experiments/results/coverage.json: mean coverage, n=20000, m=2000, b=1.2",
+  "value": "0.881"
+ },
+ "CovMeanATwo": {
+  "source": "experiments/results/coverage.json: mean coverage, n=20000, m=2000, b=1.02",
+  "value": "0.898"
+ },
+ "CovMeanBFive": {
+  "source": "experiments/results/coverage.json: mean coverage, n=2000, m=2000, b=1.05",
+  "value": "0.896"
+ },
+ "CovMeanBTen": {
+  "source": "experiments/results/coverage.json: mean coverage, n=2000, m=2000, b=1.1",
+  "value": "0.890"
+ },
+ "CovMeanBTwenty": {
+  "source": "experiments/results/coverage.json: mean coverage, n=2000, m=2000, b=1.2",
+  "value": "0.881"
+ },
+ "CovMeanBTwo": {
+  "source": "experiments/results/coverage.json: mean coverage, n=2000, m=2000, b=1.02",
+  "value": "0.898"
+ },
+ "CovMeanCFive": {
+  "source": "experiments/results/coverage.json: mean coverage, n=1000, m=4000, b=1.05",
+  "value": "0.895"
+ },
+ "CovMeanCTen": {
+  "source": "experiments/results/coverage.json: mean coverage, n=1000, m=4000, b=1.1",
+  "value": "0.891"
+ },
+ "CovMeanCTwenty": {
+  "source": "experiments/results/coverage.json: mean coverage, n=1000, m=4000, b=1.2",
+  "value": "0.882"
+ },
+ "CovMeanCTwo": {
+  "source": "experiments/results/coverage.json: mean coverage, n=1000, m=4000, b=1.02",
+  "value": "0.898"
+ },
+ "CovNormalBinA": {
+  "source": "experiments/results/coverage.json: normal approximation, n=20000, m=2000",
+  "value": "0.062"
+ },
+ "CovNormalBinB": {
+  "source": "experiments/results/coverage.json: normal approximation, n=2000, m=2000",
+  "value": "0.166"
+ },
+ "CovNormalBinC": {
+  "source": "experiments/results/coverage.json: normal approximation, n=1000, m=4000",
+  "value": "0.380"
+ },
+ "CovNormalMaxErr": {
+  "source": "experiments/results/coverage.json: largest exact minus normal binomial size",
+  "value": "0.030"
+ },
+ "CovOracleCutA": {
+  "source": "experiments/results/coverage.json: size-calibrated binomial cut, n=20000, m=2000",
+  "value": "0.0368"
+ },
+ "CovOracleCutB": {
+  "source": "experiments/results/coverage.json: size-calibrated binomial cut, n=2000, m=2000",
+  "value": "0.0052"
+ },
+ "CovOracleCutC": {
+  "source": "experiments/results/coverage.json: size-calibrated binomial cut, n=1000, m=4000",
+  "value": "$1.2 \\times 10^{-5}$"
+ },
+ "CovPowBBAFive": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.05, bb",
+  "value": "0.103"
+ },
+ "CovPowBBATen": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.1, bb",
+  "value": "0.248"
+ },
+ "CovPowBBATwenty": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.2, bb",
+  "value": "0.731"
+ },
+ "CovPowBBATwo": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.02, bb",
+  "value": "0.052"
+ },
+ "CovPowBBBFive": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.05, bb",
+  "value": "0.076"
+ },
+ "CovPowBBBTen": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.1, bb",
+  "value": "0.190"
+ },
+ "CovPowBBBTwenty": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.2, bb",
+  "value": "0.489"
+ },
+ "CovPowBBBTwo": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.02, bb",
+  "value": "0.053"
+ },
+ "CovPowBBCFive": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.05, bb",
+  "value": "0.079"
+ },
+ "CovPowBBCTen": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.1, bb",
+  "value": "0.162"
+ },
+ "CovPowBBCTwenty": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.2, bb",
+  "value": "0.414"
+ },
+ "CovPowBBCTwo": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.02, bb",
+  "value": "0.050"
+ },
+ "CovPowBinAFive": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.05, bin",
+  "value": "0.129"
+ },
+ "CovPowBinATen": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.1, bin",
+  "value": "0.292"
+ },
+ "CovPowBinATwenty": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.2, bin",
+  "value": "0.772"
+ },
+ "CovPowBinATwo": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.02, bin",
+  "value": "0.066"
+ },
+ "CovPowBinBFive": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.05, bin",
+  "value": "0.204"
+ },
+ "CovPowBinBTen": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.1, bin",
+  "value": "0.372"
+ },
+ "CovPowBinBTwenty": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.2, bin",
+  "value": "0.686"
+ },
+ "CovPowBinBTwo": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.02, bin",
+  "value": "0.173"
+ },
+ "CovPowBinCFive": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.05, bin",
+  "value": "0.412"
+ },
+ "CovPowBinCTen": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.1, bin",
+  "value": "0.532"
+ },
+ "CovPowBinCTwenty": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.2, bin",
+  "value": "0.769"
+ },
+ "CovPowBinCTwo": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.02, bin",
+  "value": "0.389"
+ },
+ "CovPowDoubleAFive": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.05, bb_n_double",
+  "value": "0.114"
+ },
+ "CovPowDoubleATen": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.1, bb_n_double",
+  "value": "0.273"
+ },
+ "CovPowDoubleATwenty": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.2, bb_n_double",
+  "value": "0.752"
+ },
+ "CovPowDoubleBFive": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.05, bb_n_double",
+  "value": "0.122"
+ },
+ "CovPowDoubleBTen": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.1, bb_n_double",
+  "value": "0.264"
+ },
+ "CovPowDoubleBTwenty": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.2, bb_n_double",
+  "value": "0.574"
+ },
+ "CovPowDoubleCFive": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.05, bb_n_double",
+  "value": "0.164"
+ },
+ "CovPowDoubleCTen": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.1, bb_n_double",
+  "value": "0.286"
+ },
+ "CovPowDoubleCTwenty": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.2, bb_n_double",
+  "value": "0.565"
+ },
+ "CovPowEqAFive": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.05, bb_eqtail",
+  "value": "0.103"
+ },
+ "CovPowEqATen": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.1, bb_eqtail",
+  "value": "0.248"
+ },
+ "CovPowEqATwenty": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.2, bb_eqtail",
+  "value": "0.731"
+ },
+ "CovPowEqBFive": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.05, bb_eqtail",
+  "value": "0.069"
+ },
+ "CovPowEqBTen": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.1, bb_eqtail",
+  "value": "0.179"
+ },
+ "CovPowEqBTwenty": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.2, bb_eqtail",
+  "value": "0.469"
+ },
+ "CovPowEqCFive": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.05, bb_eqtail",
+  "value": "0.070"
+ },
+ "CovPowEqCTen": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.1, bb_eqtail",
+  "value": "0.146"
+ },
+ "CovPowEqCTwenty": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.2, bb_eqtail",
+  "value": "0.389"
+ },
+ "CovPowHalfAFive": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.05, bb_n_half",
+  "value": "0.091"
+ },
+ "CovPowHalfATen": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.1, bb_n_half",
+  "value": "0.224"
+ },
+ "CovPowHalfATwenty": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.2, bb_n_half",
+  "value": "0.709"
+ },
+ "CovPowHalfBFive": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.05, bb_n_half",
+  "value": "0.033"
+ },
+ "CovPowHalfBTen": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.1, bb_n_half",
+  "value": "0.102"
+ },
+ "CovPowHalfBTwenty": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.2, bb_n_half",
+  "value": "0.341"
+ },
+ "CovPowHalfCFive": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.05, bb_n_half",
+  "value": "0.020"
+ },
+ "CovPowHalfCTen": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.1, bb_n_half",
+  "value": "0.055"
+ },
+ "CovPowHalfCTwenty": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.2, bb_n_half",
+  "value": "0.211"
+ },
+ "CovPowOracleAFive": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.05, bin_oracle",
+  "value": "0.103"
+ },
+ "CovPowOracleATen": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.1, bin_oracle",
+  "value": "0.248"
+ },
+ "CovPowOracleATwenty": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.2, bin_oracle",
+  "value": "0.731"
+ },
+ "CovPowOracleBFive": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.05, bin_oracle",
+  "value": "0.069"
+ },
+ "CovPowOracleBTen": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.1, bin_oracle",
+  "value": "0.179"
+ },
+ "CovPowOracleBTwenty": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.2, bin_oracle",
+  "value": "0.469"
+ },
+ "CovPowOracleCFive": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.05, bin_oracle",
+  "value": "0.072"
+ },
+ "CovPowOracleCTen": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.1, bin_oracle",
+  "value": "0.151"
+ },
+ "CovPowOracleCTwenty": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.2, bin_oracle",
+  "value": "0.399"
+ },
+ "CovPowSeBBAFive": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.05, bb",
+  "value": "0.005"
+ },
+ "CovPowSeBBATen": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.1, bb",
+  "value": "0.007"
+ },
+ "CovPowSeBBATwenty": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.2, bb",
+  "value": "0.007"
+ },
+ "CovPowSeBBATwo": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.02, bb",
+  "value": "0.004"
+ },
+ "CovPowSeBBBFive": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.05, bb",
+  "value": "0.004"
+ },
+ "CovPowSeBBBTen": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.1, bb",
+  "value": "0.006"
+ },
+ "CovPowSeBBBTwenty": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.2, bb",
+  "value": "0.008"
+ },
+ "CovPowSeBBBTwo": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.02, bb",
+  "value": "0.004"
+ },
+ "CovPowSeBBCFive": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.05, bb",
+  "value": "0.004"
+ },
+ "CovPowSeBBCTen": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.1, bb",
+  "value": "0.006"
+ },
+ "CovPowSeBBCTwenty": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.2, bb",
+  "value": "0.008"
+ },
+ "CovPowSeBBCTwo": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.02, bb",
+  "value": "0.003"
+ },
+ "CovPowSeBinAFive": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.05, bin",
+  "value": "0.005"
+ },
+ "CovPowSeBinATen": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.1, bin",
+  "value": "0.007"
+ },
+ "CovPowSeBinATwenty": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.2, bin",
+  "value": "0.007"
+ },
+ "CovPowSeBinATwo": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.02, bin",
+  "value": "0.004"
+ },
+ "CovPowSeBinBFive": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.05, bin",
+  "value": "0.006"
+ },
+ "CovPowSeBinBTen": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.1, bin",
+  "value": "0.008"
+ },
+ "CovPowSeBinBTwenty": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.2, bin",
+  "value": "0.007"
+ },
+ "CovPowSeBinBTwo": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.02, bin",
+  "value": "0.006"
+ },
+ "CovPowSeBinCFive": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.05, bin",
+  "value": "0.008"
+ },
+ "CovPowSeBinCTen": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.1, bin",
+  "value": "0.008"
+ },
+ "CovPowSeBinCTwenty": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.2, bin",
+  "value": "0.007"
+ },
+ "CovPowSeBinCTwo": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.02, bin",
+  "value": "0.008"
+ },
+ "CovPowSeDoubleAFive": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.05, bb_n_double",
+  "value": "0.005"
+ },
+ "CovPowSeDoubleATen": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.1, bb_n_double",
+  "value": "0.007"
+ },
+ "CovPowSeDoubleATwenty": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.2, bb_n_double",
+  "value": "0.007"
+ },
+ "CovPowSeDoubleBFive": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.05, bb_n_double",
+  "value": "0.005"
+ },
+ "CovPowSeDoubleBTen": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.1, bb_n_double",
+  "value": "0.007"
+ },
+ "CovPowSeDoubleBTwenty": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.2, bb_n_double",
+  "value": "0.008"
+ },
+ "CovPowSeDoubleCFive": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.05, bb_n_double",
+  "value": "0.006"
+ },
+ "CovPowSeDoubleCTen": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.1, bb_n_double",
+  "value": "0.007"
+ },
+ "CovPowSeDoubleCTwenty": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.2, bb_n_double",
+  "value": "0.008"
+ },
+ "CovPowSeEqAFive": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.05, bb_eqtail",
+  "value": "0.005"
+ },
+ "CovPowSeEqATen": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.1, bb_eqtail",
+  "value": "0.007"
+ },
+ "CovPowSeEqATwenty": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.2, bb_eqtail",
+  "value": "0.007"
+ },
+ "CovPowSeEqBFive": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.05, bb_eqtail",
+  "value": "0.004"
+ },
+ "CovPowSeEqBTen": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.1, bb_eqtail",
+  "value": "0.006"
+ },
+ "CovPowSeEqBTwenty": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.2, bb_eqtail",
+  "value": "0.008"
+ },
+ "CovPowSeEqCFive": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.05, bb_eqtail",
+  "value": "0.004"
+ },
+ "CovPowSeEqCTen": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.1, bb_eqtail",
+  "value": "0.006"
+ },
+ "CovPowSeEqCTwenty": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.2, bb_eqtail",
+  "value": "0.008"
+ },
+ "CovPowSeHalfAFive": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.05, bb_n_half",
+  "value": "0.005"
+ },
+ "CovPowSeHalfATen": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.1, bb_n_half",
+  "value": "0.007"
+ },
+ "CovPowSeHalfATwenty": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.2, bb_n_half",
+  "value": "0.007"
+ },
+ "CovPowSeHalfBFive": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.05, bb_n_half",
+  "value": "0.003"
+ },
+ "CovPowSeHalfBTen": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.1, bb_n_half",
+  "value": "0.005"
+ },
+ "CovPowSeHalfBTwenty": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.2, bb_n_half",
+  "value": "0.007"
+ },
+ "CovPowSeHalfCFive": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.05, bb_n_half",
+  "value": "0.002"
+ },
+ "CovPowSeHalfCTen": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.1, bb_n_half",
+  "value": "0.004"
+ },
+ "CovPowSeHalfCTwenty": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.2, bb_n_half",
+  "value": "0.006"
+ },
+ "CovPowSeOracleAFive": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.05, bin_oracle",
+  "value": "0.005"
+ },
+ "CovPowSeOracleATen": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.1, bin_oracle",
+  "value": "0.007"
+ },
+ "CovPowSeOracleATwenty": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.2, bin_oracle",
+  "value": "0.007"
+ },
+ "CovPowSeOracleBFive": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.05, bin_oracle",
+  "value": "0.004"
+ },
+ "CovPowSeOracleBTen": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.1, bin_oracle",
+  "value": "0.006"
+ },
+ "CovPowSeOracleBTwenty": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.2, bin_oracle",
+  "value": "0.008"
+ },
+ "CovPowSeOracleCFive": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.05, bin_oracle",
+  "value": "0.004"
+ },
+ "CovPowSeOracleCTen": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.1, bin_oracle",
+  "value": "0.006"
+ },
+ "CovPowSeOracleCTwenty": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.2, bin_oracle",
+  "value": "0.008"
+ },
+ "CovPowSeZinfAFive": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.05, z_inflated",
+  "value": "0.005"
+ },
+ "CovPowSeZinfATen": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.1, z_inflated",
+  "value": "0.007"
+ },
+ "CovPowSeZinfATwenty": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.2, z_inflated",
+  "value": "0.007"
+ },
+ "CovPowSeZinfBFive": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.05, z_inflated",
+  "value": "0.004"
+ },
+ "CovPowSeZinfBTen": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.1, z_inflated",
+  "value": "0.006"
+ },
+ "CovPowSeZinfBTwenty": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.2, z_inflated",
+  "value": "0.008"
+ },
+ "CovPowSeZinfCFive": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.05, z_inflated",
+  "value": "0.004"
+ },
+ "CovPowSeZinfCTen": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.1, z_inflated",
+  "value": "0.006"
+ },
+ "CovPowSeZinfCTwenty": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.2, z_inflated",
+  "value": "0.008"
+ },
+ "CovPowZinfAFive": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.05, z_inflated",
+  "value": "0.113"
+ },
+ "CovPowZinfATen": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.1, z_inflated",
+  "value": "0.273"
+ },
+ "CovPowZinfATwenty": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1.2, z_inflated",
+  "value": "0.752"
+ },
+ "CovPowZinfBFive": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.05, z_inflated",
+  "value": "0.076"
+ },
+ "CovPowZinfBTen": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.1, z_inflated",
+  "value": "0.190"
+ },
+ "CovPowZinfBTwenty": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1.2, z_inflated",
+  "value": "0.489"
+ },
+ "CovPowZinfCFive": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.05, z_inflated",
+  "value": "0.079"
+ },
+ "CovPowZinfCTen": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.1, z_inflated",
+  "value": "0.162"
+ },
+ "CovPowZinfCTwenty": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1.2, z_inflated",
+  "value": "0.414"
+ },
+ "CovReps": {
+  "source": "experiments/results/coverage.json: replications per cell",
+  "value": "4,000"
+ },
+ "CovSeBBA": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1, bb",
+  "value": "0.003"
+ },
+ "CovSeBBB": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1, bb",
+  "value": "0.003"
+ },
+ "CovSeBBC": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1, bb",
+  "value": "0.003"
+ },
+ "CovSeBinA": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1, bin",
+  "value": "0.004"
+ },
+ "CovSeBinB": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1, bin",
+  "value": "0.006"
+ },
+ "CovSeBinC": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1, bin",
+  "value": "0.008"
+ },
+ "CovSeDoubleA": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1, bb_n_double",
+  "value": "0.004"
+ },
+ "CovSeDoubleB": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1, bb_n_double",
+  "value": "0.005"
+ },
+ "CovSeDoubleC": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1, bb_n_double",
+  "value": "0.005"
+ },
+ "CovSeEqA": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1, bb_eqtail",
+  "value": "0.003"
+ },
+ "CovSeEqB": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1, bb_eqtail",
+  "value": "0.004"
+ },
+ "CovSeEqC": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1, bb_eqtail",
+  "value": "0.003"
+ },
+ "CovSeHalfA": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1, bb_n_half",
+  "value": "0.003"
+ },
+ "CovSeHalfB": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1, bb_n_half",
+  "value": "0.002"
+ },
+ "CovSeHalfC": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1, bb_n_half",
+  "value": "0.001"
+ },
+ "CovSeOracleA": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1, bin_oracle",
+  "value": "0.003"
+ },
+ "CovSeOracleB": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1, bin_oracle",
+  "value": "0.004"
+ },
+ "CovSeOracleC": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1, bin_oracle",
+  "value": "0.003"
+ },
+ "CovSeZinfA": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1, z_inflated",
+  "value": "0.003"
+ },
+ "CovSeZinfB": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1, z_inflated",
+  "value": "0.003"
+ },
+ "CovSeZinfC": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1, z_inflated",
+  "value": "0.003"
+ },
+ "CovSimBinMaxFour": {
+  "source": "experiments/results/coverage.json: simulated binomial size, ratio 4.0",
+  "value": "0.378"
+ },
+ "CovSimBinMaxOne": {
+  "source": "experiments/results/coverage.json: simulated binomial size, ratio 1.0",
+  "value": "0.162"
+ },
+ "CovSimBinMinFour": {
+  "source": "experiments/results/coverage.json: simulated binomial size, ratio 4.0",
+  "value": "0.361"
+ },
+ "CovSimBinMinOne": {
+  "source": "experiments/results/coverage.json: simulated binomial size, ratio 1.0",
+  "value": "0.148"
+ },
+ "CovSinBBA": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1, bb",
+  "value": "0.045"
+ },
+ "CovSinBBB": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1, bb",
+  "value": "0.051"
+ },
+ "CovSinBBC": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1, bb",
+  "value": "0.048"
+ },
+ "CovSinBinA": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1, bin",
+  "value": "0.057"
+ },
+ "CovSinBinB": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1, bin",
+  "value": "0.157"
+ },
+ "CovSinBinC": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1, bin",
+  "value": "0.361"
+ },
+ "CovSinDoubleA": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1, bb_n_double",
+  "value": "0.053"
+ },
+ "CovSinDoubleB": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1, bb_n_double",
+  "value": "0.089"
+ },
+ "CovSinDoubleC": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1, bb_n_double",
+  "value": "0.124"
+ },
+ "CovSinEqA": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1, bb_eqtail",
+  "value": "0.045"
+ },
+ "CovSinEqB": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1, bb_eqtail",
+  "value": "0.052"
+ },
+ "CovSinEqC": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1, bb_eqtail",
+  "value": "0.046"
+ },
+ "CovSinHalfA": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1, bb_n_half",
+  "value": "0.040"
+ },
+ "CovSinHalfB": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1, bb_n_half",
+  "value": "0.018"
+ },
+ "CovSinHalfC": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1, bb_n_half",
+  "value": "0.007"
+ },
+ "CovSinOracleA": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1, bin_oracle",
+  "value": "0.045"
+ },
+ "CovSinOracleB": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1, bin_oracle",
+  "value": "0.052"
+ },
+ "CovSinOracleC": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1, bin_oracle",
+  "value": "0.048"
+ },
+ "CovSinZinfA": {
+  "source": "experiments/results/coverage.json: n=20000, m=2000, b=1, z_inflated",
+  "value": "0.049"
+ },
+ "CovSinZinfB": {
+  "source": "experiments/results/coverage.json: n=2000, m=2000, b=1, z_inflated",
+  "value": "0.051"
+ },
+ "CovSinZinfC": {
+  "source": "experiments/results/coverage.json: n=1000, m=4000, b=1, z_inflated",
+  "value": "0.047"
+ },
+ "CovTotalCells": {
+  "source": "experiments/results/coverage.json: all cells",
+  "value": "35"
+ },
+ "CovTotalReps": {
+  "source": "experiments/results/coverage.json: replications over all cells",
+  "value": "140,000"
+ },
+ "EngSiSeTwenty": {
+  "source": "CAOS_RiskValidation docs/fairness/06_validation-tests.md l.77 (recorded by the engine's size-and-power suite, 4,000 repetitions): standard error of the size of the cut 0.20",
+  "value": "0.0031"
+ },
+ "EngSiSizeTen": {
+  "source": "CAOS_RiskValidation docs/fairness/06_validation-tests.md l.77 (recorded by the engine's size-and-power suite, 4,000 repetitions): size of the former cut 0.10",
+  "value": "0.194"
+ },
+ "EngSiSizeTwenty": {
+  "source": "CAOS_RiskValidation docs/fairness/06_validation-tests.md l.77 (recorded by the engine's size-and-power suite, 4,000 repetitions): size of the cut 0.20",
+  "value": "0.0395"
+ },
+ "EnvEngine": {
+  "source": "experiments/results/coverage.json: meta.versions.riskvalidation",
+  "value": "1.1.0"
+ },
+ "EnvNumpy": {
+  "source": "experiments/results/coverage.json: meta.versions.numpy",
+  "value": "2.4.6"
+ },
+ "EnvScipy": {
+  "source": "experiments/results/coverage.json: meta.versions.scipy",
+  "value": "1.18.1"
+ },
+ "ExPowBBBTen": {
+  "source": "exact.json: exact power b=1.10, n=2000, m=2000",
+  "value": "0.177"
+ },
+ "ExPowBBCTen": {
+  "source": "exact.json: exact power b=1.10, n=1000, m=4000",
+  "value": "0.158"
+ },
+ "ExPowBinBTen": {
+  "source": "exact.json: exact power b=1.10, n=2000, m=2000",
+  "value": "0.354"
+ },
+ "ExPowBinCTen": {
+  "source": "exact.json: exact power b=1.10, n=1000, m=4000",
+  "value": "0.533"
+ },
+ "ExPowGapCells": {
+  "source": "exact.json power curves: cells (window pair and drift shape)",
+  "value": "48"
+ },
+ "ExPowGapMax": {
+  "source": "exact.json power curves: largest difference between the exact power of the Beta-Binomial test and of the size-calibrated binomial test",
+  "value": "0.019"
+ },
+ "ExPowNodes": {
+  "source": "exact.json: quantiles of the Beta law used by the midpoint rule",
+  "value": "2,000"
+ },
+ "ExPowOracleBTen": {
+  "source": "exact.json: exact power b=1.10, n=2000, m=2000",
+  "value": "0.166"
+ },
+ "ExPowOracleCTen": {
+  "source": "exact.json: exact power b=1.10, n=1000, m=4000",
+  "value": "0.149"
+ },
+ "ExPowPairs": {
+  "source": "exact.json power curves: window pairs",
+  "value": "3"
+ },
+ "ExPowShapes": {
+  "source": "exact.json power curves: drift shapes",
+  "value": "16"
+ },
+ "GranAllowedFull": {
+  "source": "exact.json: granularity",
+  "value": "8"
+ },
+ "GranAllowedNineteen": {
+  "source": "exact.json: granularity",
+  "value": "-1"
+ },
+ "GranAllowedNinetyNine": {
+  "source": "exact.json: granularity",
+  "value": "3"
+ },
+ "GranAllowedThirtyNine": {
+  "source": "exact.json: granularity",
+  "value": "0"
+ },
+ "GranExactFull": {
+  "source": "exact.json: granularity, the exact size (number of attainable p-values below 0.05) over R + 1",
+  "value": "0.045"
+ },
+ "GranExactNineteen": {
+  "source": "exact.json: granularity, the exact size (number of attainable p-values below 0.05) over R + 1",
+  "value": "0.000"
+ },
+ "GranExactNinetyNine": {
+  "source": "exact.json: granularity, the exact size (number of attainable p-values below 0.05) over R + 1",
+  "value": "0.040"
+ },
+ "GranExactThirtyNine": {
+  "source": "exact.json: granularity, the exact size (number of attainable p-values below 0.05) over R + 1",
+  "value": "0.025"
+ },
+ "GranSmallestFull": {
+  "source": "exact.json: granularity",
+  "value": "0.005"
+ },
+ "GranSmallestNineteen": {
+  "source": "exact.json: granularity",
+  "value": "0.050"
+ },
+ "GranSmallestNinetyNine": {
+  "source": "exact.json: granularity",
+  "value": "0.010"
+ },
+ "GranSmallestThirtyNine": {
+  "source": "exact.json: granularity",
+  "value": "0.025"
+ },
+ "HypHeld": {
+  "source": "make_numbers.py: predictions held",
+  "value": "7"
+ },
+ "HypPartial": {
+  "source": "make_numbers.py: predictions held in part",
+  "value": "0"
+ },
+ "HypRefuted": {
+  "source": "make_numbers.py: predictions refuted",
+  "value": "3"
+ },
+ "HypTotal": {
+  "source": "make_numbers.py: predictions of the hypotheses table",
+  "value": "10"
+ },
+ "LimBinEight": {
+  "source": "Proposition 4: 2 Phi(-1.96 / sqrt(1 + r)) at r = 8.0",
+  "value": "0.514"
+ },
+ "LimBinFour": {
+  "source": "Proposition 4: 2 Phi(-1.96 / sqrt(1 + r)) at r = 4.0",
+  "value": "0.381"
+ },
+ "LimBinOne": {
+  "source": "Proposition 4: 2 Phi(-1.96 / sqrt(1 + r)) at r = 1.0",
+  "value": "0.166"
+ },
+ "LimBinTenth": {
+  "source": "Proposition 4: 2 Phi(-1.96 / sqrt(1 + r)) at r = 0.1",
+  "value": "0.062"
+ },
+ "NbBBFour": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 10 output, m/n = 4.0",
+  "value": "0.0427"
+ },
+ "NbBBOne": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 10 output, m/n = 1.0",
+  "value": "0.0440"
+ },
+ "NbBBTenth": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 10 output, m/n = 0.1",
+  "value": "0.0460"
+ },
+ "NbBinFour": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 10 output, m/n = 4.0",
+  "value": "0.3893"
+ },
+ "NbBinOne": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 10 output, m/n = 1.0",
+  "value": "0.1587"
+ },
+ "NbBinTenth": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 10 output, m/n = 0.1",
+  "value": "0.0600"
+ },
+ "NbCovReps": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 10, REPS",
+  "value": "1,500"
+ },
+ "NbFixedFiveT": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 17 output, shift 2, drop above 0.05",
+  "value": "0.8500"
+ },
+ "NbFixedFiveZ": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 17 output, shift 0, drop above 0.05",
+  "value": "0.2000"
+ },
+ "NbFixedTenT": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 17 output, shift 2, drop above 0.10",
+  "value": "0.6667"
+ },
+ "NbFixedTenZ": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 17 output, shift 0, drop above 0.10",
+  "value": "0.0833"
+ },
+ "NbPermT": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 17 output, shift 2, permutation",
+  "value": "0.5000"
+ },
+ "NbPermZ": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 17 output, shift 0, permutation",
+  "value": "0.0667"
+ },
+ "NbShiftReps": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 17, replications per shift",
+  "value": "60"
+ },
+ "NbSitCutTenZ": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 24 output, gap 0, share above 0.10",
+  "value": "0.0850"
+ },
+ "NbSitCutTwentyZ": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 24 output, gap 0, share above 0.20",
+  "value": "0.0150"
+ },
+ "NbSitReps": {
+  "source": "notebooks/en/13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb: cell 24, replications per gap",
+  "value": "200"
+ },
+ "PowerExactMaxGap": {
+  "source": "exact.json power curve against coverage.json simulated power, Beta-Binomial",
+  "value": "0.013"
+ },
+ "RankOffBBFour": {
+  "source": "exact: Beta-Binomial test of rank k on a law of rank k+1, n=1000, m=4000",
+  "value": "0.049"
+ },
+ "RankOffBBOne": {
+  "source": "exact: Beta-Binomial test of rank k on a law of rank k+1, n=1000, m=1000",
+  "value": "0.047"
+ },
+ "RankOffBinFour": {
+  "source": "exact: binomial test on a law of rank k+1, n=1000, m=4000",
+  "value": "0.380"
+ },
+ "RankOffBinOne": {
+  "source": "exact: binomial test on a law of rank k+1, n=1000, m=1000",
+  "value": "0.158"
+ },
+ "RedMinDraws": {
+  "source": "smallest number of draws whose smallest p-value 1 / (R + 1) is below the red level 0.01",
+  "value": "100"
+ },
+ "RegionBBHi": {
+  "source": "exact: highest accepted coverage at n = m = 1000, bb",
+  "value": "0.926"
+ },
+ "RegionBBLo": {
+  "source": "exact: lowest accepted coverage at n = m = 1000, bb",
+  "value": "0.874"
+ },
+ "RegionBinHi": {
+  "source": "exact: highest accepted coverage at n = m = 1000, bin",
+  "value": "0.918"
+ },
+ "RegionBinLo": {
+  "source": "exact: lowest accepted coverage at n = m = 1000, bin",
+  "value": "0.881"
+ },
+ "RootSeed": {
+  "source": "experiments/results/coverage.json: meta.base_seed",
+  "value": "20261104"
+ },
+ "ShCells": {
+  "source": "experiments/results/shift.json: cells",
+  "value": "10"
+ },
+ "ShFixedOracleDiffT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2, fixed cut 0.05 minus calibrated fixed cut",
+  "value": "0.205"
+ },
+ "ShFixedPermDiffT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2, fixed cut 0.05 minus reference",
+  "value": "0.245"
+ },
+ "ShMeanDropAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0",
+  "value": "0.122"
+ },
+ "ShMeanDropAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0",
+  "value": "0.016"
+ },
+ "ShMeanDropBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0",
+  "value": "0.136"
+ },
+ "ShMeanDropBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0",
+  "value": "0.015"
+ },
+ "ShMeanDropCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0",
+  "value": "0.180"
+ },
+ "ShMeanDropCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0",
+  "value": "0.065"
+ },
+ "ShMeanDropCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0",
+  "value": "0.133"
+ },
+ "ShMeanDropCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0",
+  "value": "0.017"
+ },
+ "ShMeanDropDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0",
+  "value": "0.135"
+ },
+ "ShMeanDropDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0",
+  "value": "0.016"
+ },
+ "ShNAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0",
+  "value": "398"
+ },
+ "ShNAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0",
+  "value": "398"
+ },
+ "ShNBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0",
+  "value": "400"
+ },
+ "ShNBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0",
+  "value": "400"
+ },
+ "ShNCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0",
+  "value": "400"
+ },
+ "ShNCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0",
+  "value": "400"
+ },
+ "ShNCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0",
+  "value": "400"
+ },
+ "ShNCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0",
+  "value": "400"
+ },
+ "ShNDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0",
+  "value": "400"
+ },
+ "ShNDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0",
+  "value": "400"
+ },
+ "ShNullMeanAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0",
+  "value": "0.0187"
+ },
+ "ShNullMeanAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0",
+  "value": "0.0173"
+ },
+ "ShNullMeanBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0",
+  "value": "0.0152"
+ },
+ "ShNullMeanBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0",
+  "value": "0.0160"
+ },
+ "ShNullMeanCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0",
+  "value": "0.0153"
+ },
+ "ShNullMeanCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0",
+  "value": "0.0148"
+ },
+ "ShNullMeanCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0",
+  "value": "0.0151"
+ },
+ "ShNullMeanCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0",
+  "value": "0.0149"
+ },
+ "ShNullMeanDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0",
+  "value": "0.0141"
+ },
+ "ShNullMeanDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0",
+  "value": "0.0146"
+ },
+ "ShOracleCut": {
+  "source": "experiments/results/shift.json: eval 500, 95th percentile of the null drops",
+  "value": "0.098"
+ },
+ "ShOracleDiffSe": {
+  "source": "experiments/results/shift.json: standard error of that difference (independent rates)",
+  "value": "0.032"
+ },
+ "ShOracleDiffT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2, power of the calibrated fixed cut minus power of the reference",
+  "value": "0.040"
+ },
+ "ShOracleRateH": {
+  "source": "experiments/results/shift.json: eval 500, fixed cut at the 95th percentile of the null drops, shift 3.0",
+  "value": "0.927"
+ },
+ "ShOracleRateO": {
+  "source": "experiments/results/shift.json: eval 500, fixed cut at the 95th percentile of the null drops, shift 1.0",
+  "value": "0.242"
+ },
+ "ShOracleRateT": {
+  "source": "experiments/results/shift.json: eval 500, fixed cut at the 95th percentile of the null drops, shift 2.0",
+  "value": "0.720"
+ },
+ "ShOracleRateZ": {
+  "source": "experiments/results/shift.json: eval 500, fixed cut at the 95th percentile of the null drops, shift 0.0",
+  "value": "0.050"
+ },
+ "ShOracleSeH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0",
+  "value": "0.013"
+ },
+ "ShOracleSeO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0",
+  "value": "0.021"
+ },
+ "ShOracleSeT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0",
+  "value": "0.022"
+ },
+ "ShOracleSeZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0",
+  "value": "0.011"
+ },
+ "ShPermCUpper": {
+  "source": "experiments/results/shift.json: 0.05 plus two exact-null standard errors at 500 rows",
+  "value": "0.072"
+ },
+ "ShPermExcessFull": {
+  "source": "experiments/results/shift.json: pooled size minus the exact size of the p-value grid, 199 draws",
+  "value": "0.009"
+ },
+ "ShPermExcessNinetyNine": {
+  "source": "experiments/results/shift.json: pooled size minus the exact size of the p-value grid, 99 draws",
+  "value": "0.009"
+ },
+ "ShPermExcessThirtyNine": {
+  "source": "experiments/results/shift.json: pooled size minus the exact size of the p-value grid, 39 draws",
+  "value": "0.011"
+ },
+ "ShPermExcessZExactMax": {
+  "source": "experiments/results/shift.json: that excess in standard errors of the exact null rate sqrt(p (1 - p) / n), maximum",
+  "value": "2.9"
+ },
+ "ShPermExcessZExactMin": {
+  "source": "experiments/results/shift.json: that excess in standard errors of the exact null rate sqrt(p (1 - p) / n), minimum",
+  "value": "1.8"
+ },
+ "ShPermExcessZMax": {
+  "source": "experiments/results/shift.json: that excess in standard errors, maximum",
+  "value": "2.4"
+ },
+ "ShPermExcessZMin": {
+  "source": "experiments/results/shift.json: that excess in standard errors, minimum",
+  "value": "1.7"
+ },
+ "ShPermOverBound": {
+  "source": "experiments/results/shift.json: no-shift cells where the permutation rule (199 draws) exceeds 0.05 plus two standard errors",
+  "value": "0"
+ },
+ "ShPermPooledFull": {
+  "source": "shift.json: mean size over the four evaluation sizes, 199 draws",
+  "value": "0.054"
+ },
+ "ShPermPooledNineteen": {
+  "source": "shift.json: mean size over the four evaluation sizes, 19 draws",
+  "value": "0.000"
+ },
+ "ShPermPooledNinetyNine": {
+  "source": "shift.json: mean size over the four evaluation sizes, 99 draws",
+  "value": "0.049"
+ },
+ "ShPermPooledSeFull": {
+  "source": "shift.json: standard error of that mean, 199 draws",
+  "value": "0.006"
+ },
+ "ShPermPooledSeNineteen": {
+  "source": "shift.json: standard error of that mean, 19 draws",
+  "value": "0.000"
+ },
+ "ShPermPooledSeNinetyNine": {
+  "source": "shift.json: standard error of that mean, 99 draws",
+  "value": "0.005"
+ },
+ "ShPermPooledSeThirtyNine": {
+  "source": "shift.json: standard error of that mean, 39 draws",
+  "value": "0.005"
+ },
+ "ShPermPooledThirtyNine": {
+  "source": "shift.json: mean size over the four evaluation sizes, 39 draws",
+  "value": "0.036"
+ },
+ "ShPermPowerGapMin": {
+  "source": "experiments/results/shift.json: smallest power of the fixed cut 0.05 minus the power of the permutation rule",
+  "value": "0.093"
+ },
+ "ShPowGapAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2, power of the fixed cut 0.05 minus power of the permutation reference",
+  "value": "0.392"
+ },
+ "ShPowGapBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2, power of the fixed cut 0.05 minus power of the permutation reference",
+  "value": "0.325"
+ },
+ "ShPowGapCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2, power of the fixed cut 0.05 minus power of the permutation reference",
+  "value": "0.245"
+ },
+ "ShPowGapDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2, power of the fixed cut 0.05 minus power of the permutation reference",
+  "value": "0.123"
+ },
+ "ShQNinetyFiveAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0",
+  "value": "0.351"
+ },
+ "ShQNinetyFiveAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0",
+  "value": "0.149"
+ },
+ "ShQNinetyFiveBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0",
+  "value": "0.274"
+ },
+ "ShQNinetyFiveBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0",
+  "value": "0.110"
+ },
+ "ShQNinetyFiveCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0",
+  "value": "0.276"
+ },
+ "ShQNinetyFiveCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0",
+  "value": "0.162"
+ },
+ "ShQNinetyFiveCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0",
+  "value": "0.236"
+ },
+ "ShQNinetyFiveCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0",
+  "value": "0.098"
+ },
+ "ShQNinetyFiveDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0",
+  "value": "0.204"
+ },
+ "ShQNinetyFiveDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0",
+  "value": "0.088"
+ },
+ "ShRateFixedFiveAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0, fixed_0.05",
+  "value": "0.709"
+ },
+ "ShRateFixedFiveAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0, fixed_0.05",
+  "value": "0.254"
+ },
+ "ShRateFixedFiveBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0, fixed_0.05",
+  "value": "0.853"
+ },
+ "ShRateFixedFiveBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0, fixed_0.05",
+  "value": "0.212"
+ },
+ "ShRateFixedFiveCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0, fixed_0.05",
+  "value": "0.993"
+ },
+ "ShRateFixedFiveCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0, fixed_0.05",
+  "value": "0.552"
+ },
+ "ShRateFixedFiveCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0, fixed_0.05",
+  "value": "0.925"
+ },
+ "ShRateFixedFiveCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0, fixed_0.05",
+  "value": "0.175"
+ },
+ "ShRateFixedFiveDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0, fixed_0.05",
+  "value": "0.993"
+ },
+ "ShRateFixedFiveDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0, fixed_0.05",
+  "value": "0.125"
+ },
+ "ShRateFixedTenAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0, fixed_0.10",
+  "value": "0.520"
+ },
+ "ShRateFixedTenAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0, fixed_0.10",
+  "value": "0.098"
+ },
+ "ShRateFixedTenBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0, fixed_0.10",
+  "value": "0.635"
+ },
+ "ShRateFixedTenBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0, fixed_0.10",
+  "value": "0.068"
+ },
+ "ShRateFixedTenCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0, fixed_0.10",
+  "value": "0.927"
+ },
+ "ShRateFixedTenCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0, fixed_0.10",
+  "value": "0.235"
+ },
+ "ShRateFixedTenCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0, fixed_0.10",
+  "value": "0.703"
+ },
+ "ShRateFixedTenCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0, fixed_0.10",
+  "value": "0.048"
+ },
+ "ShRateFixedTenDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0, fixed_0.10",
+  "value": "0.792"
+ },
+ "ShRateFixedTenDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0, fixed_0.10",
+  "value": "0.040"
+ },
+ "ShRatePermAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0, perm_199",
+  "value": "0.317"
+ },
+ "ShRatePermAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0, perm_199",
+  "value": "0.048"
+ },
+ "ShRatePermBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0, perm_199",
+  "value": "0.527"
+ },
+ "ShRatePermBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0, perm_199",
+  "value": "0.055"
+ },
+ "ShRatePermCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0, perm_199",
+  "value": "0.900"
+ },
+ "ShRatePermCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0, perm_199",
+  "value": "0.250"
+ },
+ "ShRatePermCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0, perm_199",
+  "value": "0.680"
+ },
+ "ShRatePermCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0, perm_199",
+  "value": "0.062"
+ },
+ "ShRatePermDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0, perm_199",
+  "value": "0.870"
+ },
+ "ShRatePermDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0, perm_199",
+  "value": "0.052"
+ },
+ "ShRatePermNineteenAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0, perm_19",
+  "value": "0.000"
+ },
+ "ShRatePermNineteenAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0, perm_19",
+  "value": "0.000"
+ },
+ "ShRatePermNineteenBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0, perm_19",
+  "value": "0.000"
+ },
+ "ShRatePermNineteenBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0, perm_19",
+  "value": "0.000"
+ },
+ "ShRatePermNineteenCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0, perm_19",
+  "value": "0.000"
+ },
+ "ShRatePermNineteenCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0, perm_19",
+  "value": "0.000"
+ },
+ "ShRatePermNineteenCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0, perm_19",
+  "value": "0.000"
+ },
+ "ShRatePermNineteenCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0, perm_19",
+  "value": "0.000"
+ },
+ "ShRatePermNineteenDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0, perm_19",
+  "value": "0.000"
+ },
+ "ShRatePermNineteenDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0, perm_19",
+  "value": "0.000"
+ },
+ "ShRatePermNinetyNineAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0, perm_99",
+  "value": "0.289"
+ },
+ "ShRatePermNinetyNineAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0, perm_99",
+  "value": "0.038"
+ },
+ "ShRatePermNinetyNineBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0, perm_99",
+  "value": "0.477"
+ },
+ "ShRatePermNinetyNineBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0, perm_99",
+  "value": "0.058"
+ },
+ "ShRatePermNinetyNineCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0, perm_99",
+  "value": "0.877"
+ },
+ "ShRatePermNinetyNineCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0, perm_99",
+  "value": "0.242"
+ },
+ "ShRatePermNinetyNineCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0, perm_99",
+  "value": "0.618"
+ },
+ "ShRatePermNinetyNineCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0, perm_99",
+  "value": "0.055"
+ },
+ "ShRatePermNinetyNineDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0, perm_99",
+  "value": "0.810"
+ },
+ "ShRatePermNinetyNineDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0, perm_99",
+  "value": "0.048"
+ },
+ "ShRatePermThirtyNineAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0, perm_39",
+  "value": "0.201"
+ },
+ "ShRatePermThirtyNineAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0, perm_39",
+  "value": "0.030"
+ },
+ "ShRatePermThirtyNineBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0, perm_39",
+  "value": "0.340"
+ },
+ "ShRatePermThirtyNineBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0, perm_39",
+  "value": "0.035"
+ },
+ "ShRatePermThirtyNineCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0, perm_39",
+  "value": "0.690"
+ },
+ "ShRatePermThirtyNineCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0, perm_39",
+  "value": "0.150"
+ },
+ "ShRatePermThirtyNineCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0, perm_39",
+  "value": "0.463"
+ },
+ "ShRatePermThirtyNineCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0, perm_39",
+  "value": "0.037"
+ },
+ "ShRatePermThirtyNineDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0, perm_39",
+  "value": "0.583"
+ },
+ "ShRatePermThirtyNineDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0, perm_39",
+  "value": "0.043"
+ },
+ "ShRateZruleAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0, z_rule",
+  "value": "0.188"
+ },
+ "ShRateZruleAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0, z_rule",
+  "value": "0.035"
+ },
+ "ShRateZruleBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0, z_rule",
+  "value": "0.422"
+ },
+ "ShRateZruleBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0, z_rule",
+  "value": "0.030"
+ },
+ "ShRateZruleCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0, z_rule",
+  "value": "0.965"
+ },
+ "ShRateZruleCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0, z_rule",
+  "value": "0.223"
+ },
+ "ShRateZruleCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0, z_rule",
+  "value": "0.723"
+ },
+ "ShRateZruleCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0, z_rule",
+  "value": "0.065"
+ },
+ "ShRateZruleDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0, z_rule",
+  "value": "0.940"
+ },
+ "ShRateZruleDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0, z_rule",
+  "value": "0.045"
+ },
+ "ShReps": {
+  "source": "experiments/results/shift.json: replications per cell",
+  "value": "400"
+ },
+ "ShSdDropAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0",
+  "value": "0.127"
+ },
+ "ShSdDropAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0",
+  "value": "0.083"
+ },
+ "ShSdDropBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0",
+  "value": "0.092"
+ },
+ "ShSdDropBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0",
+  "value": "0.056"
+ },
+ "ShSdDropCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0",
+  "value": "0.059"
+ },
+ "ShSdDropCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0",
+  "value": "0.052"
+ },
+ "ShSdDropCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0",
+  "value": "0.059"
+ },
+ "ShSdDropCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0",
+  "value": "0.048"
+ },
+ "ShSdDropDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0",
+  "value": "0.040"
+ },
+ "ShSdDropDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0",
+  "value": "0.037"
+ },
+ "ShSdScaleMax": {
+  "source": "experiments/results/shift.json: same, maximum",
+  "value": "1.18"
+ },
+ "ShSdScaleMin": {
+  "source": "experiments/results/shift.json: standard deviation of the drop without shift times the square root of the evaluation rows, minimum over four sizes",
+  "value": "0.88"
+ },
+ "ShSeFixedFiveAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0, fixed_0.05",
+  "value": "0.023"
+ },
+ "ShSeFixedFiveAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0, fixed_0.05",
+  "value": "0.022"
+ },
+ "ShSeFixedFiveBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0, fixed_0.05",
+  "value": "0.018"
+ },
+ "ShSeFixedFiveBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0, fixed_0.05",
+  "value": "0.020"
+ },
+ "ShSeFixedFiveCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0, fixed_0.05",
+  "value": "0.004"
+ },
+ "ShSeFixedFiveCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0, fixed_0.05",
+  "value": "0.025"
+ },
+ "ShSeFixedFiveCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0, fixed_0.05",
+  "value": "0.013"
+ },
+ "ShSeFixedFiveCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0, fixed_0.05",
+  "value": "0.019"
+ },
+ "ShSeFixedFiveDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0, fixed_0.05",
+  "value": "0.004"
+ },
+ "ShSeFixedFiveDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0, fixed_0.05",
+  "value": "0.017"
+ },
+ "ShSeFixedTenAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0, fixed_0.10",
+  "value": "0.025"
+ },
+ "ShSeFixedTenAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0, fixed_0.10",
+  "value": "0.015"
+ },
+ "ShSeFixedTenBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0, fixed_0.10",
+  "value": "0.024"
+ },
+ "ShSeFixedTenBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0, fixed_0.10",
+  "value": "0.013"
+ },
+ "ShSeFixedTenCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0, fixed_0.10",
+  "value": "0.013"
+ },
+ "ShSeFixedTenCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0, fixed_0.10",
+  "value": "0.021"
+ },
+ "ShSeFixedTenCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0, fixed_0.10",
+  "value": "0.023"
+ },
+ "ShSeFixedTenCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0, fixed_0.10",
+  "value": "0.011"
+ },
+ "ShSeFixedTenDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0, fixed_0.10",
+  "value": "0.020"
+ },
+ "ShSeFixedTenDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0, fixed_0.10",
+  "value": "0.010"
+ },
+ "ShSePermAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0, perm_199",
+  "value": "0.023"
+ },
+ "ShSePermAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0, perm_199",
+  "value": "0.011"
+ },
+ "ShSePermBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0, perm_199",
+  "value": "0.025"
+ },
+ "ShSePermBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0, perm_199",
+  "value": "0.011"
+ },
+ "ShSePermCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0, perm_199",
+  "value": "0.015"
+ },
+ "ShSePermCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0, perm_199",
+  "value": "0.022"
+ },
+ "ShSePermCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0, perm_199",
+  "value": "0.023"
+ },
+ "ShSePermCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0, perm_199",
+  "value": "0.012"
+ },
+ "ShSePermDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0, perm_199",
+  "value": "0.017"
+ },
+ "ShSePermDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0, perm_199",
+  "value": "0.011"
+ },
+ "ShSePermNineteenAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0, perm_19",
+  "value": "0.000"
+ },
+ "ShSePermNineteenAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0, perm_19",
+  "value": "0.000"
+ },
+ "ShSePermNineteenBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0, perm_19",
+  "value": "0.000"
+ },
+ "ShSePermNineteenBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0, perm_19",
+  "value": "0.000"
+ },
+ "ShSePermNineteenCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0, perm_19",
+  "value": "0.000"
+ },
+ "ShSePermNineteenCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0, perm_19",
+  "value": "0.000"
+ },
+ "ShSePermNineteenCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0, perm_19",
+  "value": "0.000"
+ },
+ "ShSePermNineteenCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0, perm_19",
+  "value": "0.000"
+ },
+ "ShSePermNineteenDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0, perm_19",
+  "value": "0.000"
+ },
+ "ShSePermNineteenDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0, perm_19",
+  "value": "0.000"
+ },
+ "ShSePermNinetyNineAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0, perm_99",
+  "value": "0.023"
+ },
+ "ShSePermNinetyNineAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0, perm_99",
+  "value": "0.010"
+ },
+ "ShSePermNinetyNineBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0, perm_99",
+  "value": "0.025"
+ },
+ "ShSePermNinetyNineBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0, perm_99",
+  "value": "0.012"
+ },
+ "ShSePermNinetyNineCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0, perm_99",
+  "value": "0.016"
+ },
+ "ShSePermNinetyNineCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0, perm_99",
+  "value": "0.021"
+ },
+ "ShSePermNinetyNineCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0, perm_99",
+  "value": "0.024"
+ },
+ "ShSePermNinetyNineCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0, perm_99",
+  "value": "0.011"
+ },
+ "ShSePermNinetyNineDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0, perm_99",
+  "value": "0.020"
+ },
+ "ShSePermNinetyNineDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0, perm_99",
+  "value": "0.011"
+ },
+ "ShSePermThirtyNineAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0, perm_39",
+  "value": "0.020"
+ },
+ "ShSePermThirtyNineAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0, perm_39",
+  "value": "0.009"
+ },
+ "ShSePermThirtyNineBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0, perm_39",
+  "value": "0.024"
+ },
+ "ShSePermThirtyNineBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0, perm_39",
+  "value": "0.009"
+ },
+ "ShSePermThirtyNineCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0, perm_39",
+  "value": "0.023"
+ },
+ "ShSePermThirtyNineCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0, perm_39",
+  "value": "0.018"
+ },
+ "ShSePermThirtyNineCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0, perm_39",
+  "value": "0.025"
+ },
+ "ShSePermThirtyNineCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0, perm_39",
+  "value": "0.009"
+ },
+ "ShSePermThirtyNineDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0, perm_39",
+  "value": "0.025"
+ },
+ "ShSePermThirtyNineDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0, perm_39",
+  "value": "0.010"
+ },
+ "ShSeZruleAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0, z_rule",
+  "value": "0.020"
+ },
+ "ShSeZruleAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0, z_rule",
+  "value": "0.009"
+ },
+ "ShSeZruleBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0, z_rule",
+  "value": "0.025"
+ },
+ "ShSeZruleBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0, z_rule",
+  "value": "0.009"
+ },
+ "ShSeZruleCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0, z_rule",
+  "value": "0.009"
+ },
+ "ShSeZruleCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0, z_rule",
+  "value": "0.021"
+ },
+ "ShSeZruleCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0, z_rule",
+  "value": "0.022"
+ },
+ "ShSeZruleCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0, z_rule",
+  "value": "0.012"
+ },
+ "ShSeZruleDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0, z_rule",
+  "value": "0.012"
+ },
+ "ShSeZruleDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0, z_rule",
+  "value": "0.010"
+ },
+ "ShShareShifted": {
+  "source": "the engine plant: a quarter of the evaluation rows is shifted",
+  "value": "0.25"
+ },
+ "ShSkippedAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0",
+  "value": "2"
+ },
+ "ShSkippedAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0",
+  "value": "2"
+ },
+ "ShSkippedBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0",
+  "value": "0"
+ },
+ "ShSkippedBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0",
+  "value": "0"
+ },
+ "ShSkippedCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0",
+  "value": "0"
+ },
+ "ShSkippedCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0",
+  "value": "0"
+ },
+ "ShSkippedCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0",
+  "value": "0"
+ },
+ "ShSkippedCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0",
+  "value": "0"
+ },
+ "ShSkippedDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0",
+  "value": "0"
+ },
+ "ShSkippedDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0",
+  "value": "0"
+ },
+ "ShTotalReps": {
+  "source": "experiments/results/shift.json: replications over all cells",
+  "value": "4,000"
+ },
+ "ShUndefPctAT": {
+  "source": "experiments/results/shift.json: eval 125, shift 2.0: draws left out for a single-class subsample, percent",
+  "value": "0.3"
+ },
+ "ShUndefPctAZ": {
+  "source": "experiments/results/shift.json: eval 125, shift 0.0: draws left out for a single-class subsample, percent",
+  "value": "0.3"
+ },
+ "ShUndefPctBT": {
+  "source": "experiments/results/shift.json: eval 250, shift 2.0: draws left out for a single-class subsample, percent",
+  "value": "0.0"
+ },
+ "ShUndefPctBZ": {
+  "source": "experiments/results/shift.json: eval 250, shift 0.0: draws left out for a single-class subsample, percent",
+  "value": "0.0"
+ },
+ "ShUndefPctCH": {
+  "source": "experiments/results/shift.json: eval 500, shift 3.0: draws left out for a single-class subsample, percent",
+  "value": "0.0"
+ },
+ "ShUndefPctCO": {
+  "source": "experiments/results/shift.json: eval 500, shift 1.0: draws left out for a single-class subsample, percent",
+  "value": "0.0"
+ },
+ "ShUndefPctCT": {
+  "source": "experiments/results/shift.json: eval 500, shift 2.0: draws left out for a single-class subsample, percent",
+  "value": "0.0"
+ },
+ "ShUndefPctCZ": {
+  "source": "experiments/results/shift.json: eval 500, shift 0.0: draws left out for a single-class subsample, percent",
+  "value": "0.0"
+ },
+ "ShUndefPctDT": {
+  "source": "experiments/results/shift.json: eval 1000, shift 2.0: draws left out for a single-class subsample, percent",
+  "value": "0.0"
+ },
+ "ShUndefPctDZ": {
+  "source": "experiments/results/shift.json: eval 1000, shift 0.0: draws left out for a single-class subsample, percent",
+  "value": "0.0"
+ },
+ "ShZOverBound": {
+  "source": "experiments/results/shift.json: no-shift cells where the z rule exceeds 0.05 plus two standard errors",
+  "value": "0"
+ },
+ "SiChosenIndLarge": {
+  "source": "experiments/results/situation_indep.json: cut chosen on the independent-attributes design, n 1000",
+  "value": "0.15"
+ },
+ "SiChosenIndSmall": {
+  "source": "experiments/results/situation_indep.json: cut chosen on the independent-attributes design, n 400",
+  "value": "0.20"
+ },
+ "SiChosenThrLarge": {
+  "source": "experiments/results/situation.json: cut chosen by the rule of the proposed method on the threshold-bias plant, n 1000",
+  "value": "0.075"
+ },
+ "SiChosenThrSmall": {
+  "source": "experiments/results/situation.json: cut chosen by the rule of the proposed method on the threshold-bias plant, n 400",
+  "value": "0.15"
+ },
+ "SiComplainantsLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1",
+  "value": "500"
+ },
+ "SiComplainantsLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2",
+  "value": "499"
+ },
+ "SiComplainantsLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4",
+  "value": "500"
+ },
+ "SiComplainantsLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8",
+  "value": "500"
+ },
+ "SiComplainantsLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0",
+  "value": "500"
+ },
+ "SiComplainantsSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1",
+  "value": "200"
+ },
+ "SiComplainantsSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2",
+  "value": "200"
+ },
+ "SiComplainantsSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4",
+  "value": "199"
+ },
+ "SiComplainantsSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8",
+  "value": "200"
+ },
+ "SiComplainantsSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0",
+  "value": "200"
+ },
+ "SiDesignLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1: design effect",
+  "value": "20.0"
+ },
+ "SiDesignLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2: design effect",
+  "value": "40.2"
+ },
+ "SiDesignLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4: design effect",
+  "value": "20.2"
+ },
+ "SiDesignLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8: design effect",
+  "value": "8.9"
+ },
+ "SiDesignLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0: design effect",
+  "value": "5.8"
+ },
+ "SiDesignSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1: design effect",
+  "value": "26.6"
+ },
+ "SiDesignSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2: design effect",
+  "value": "47.2"
+ },
+ "SiDesignSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4: design effect",
+  "value": "60.2"
+ },
+ "SiDesignSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8: design effect",
+  "value": "9.4"
+ },
+ "SiDesignSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0: design effect",
+  "value": "10.6"
+ },
+ "SiInComplainantsLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1",
+  "value": "399"
+ },
+ "SiInComplainantsLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2",
+  "value": "399"
+ },
+ "SiInComplainantsLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4",
+  "value": "400"
+ },
+ "SiInComplainantsLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0",
+  "value": "400"
+ },
+ "SiInComplainantsSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1",
+  "value": "160"
+ },
+ "SiInComplainantsSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2",
+  "value": "161"
+ },
+ "SiInComplainantsSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4",
+  "value": "160"
+ },
+ "SiInComplainantsSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0",
+  "value": "160"
+ },
+ "SiInDesignLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1: design effect",
+  "value": "64.8"
+ },
+ "SiInDesignLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2: design effect",
+  "value": "92.3"
+ },
+ "SiInDesignLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4: design effect",
+  "value": "15.3"
+ },
+ "SiInDesignLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0: design effect",
+  "value": "12.3"
+ },
+ "SiInDesignSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1: design effect",
+  "value": "70.7"
+ },
+ "SiInDesignSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2: design effect",
+  "value": "86.8"
+ },
+ "SiInDesignSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4: design effect",
+  "value": "16.5"
+ },
+ "SiInDesignSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0: design effect",
+  "value": "12.8"
+ },
+ "SiInMeanShareLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1",
+  "value": "0.224"
+ },
+ "SiInMeanShareLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2",
+  "value": "0.502"
+ },
+ "SiInMeanShareLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4",
+  "value": "0.938"
+ },
+ "SiInMeanShareLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0",
+  "value": "0.055"
+ },
+ "SiInMeanShareSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1",
+  "value": "0.223"
+ },
+ "SiInMeanShareSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2",
+  "value": "0.504"
+ },
+ "SiInMeanShareSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4",
+  "value": "0.938"
+ },
+ "SiInMeanShareSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0",
+  "value": "0.055"
+ },
+ "SiInRateBonfLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, bonferroni_any",
+  "value": "0.472"
+ },
+ "SiInRateBonfLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, bonferroni_any",
+  "value": "0.973"
+ },
+ "SiInRateBonfLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, bonferroni_any",
+  "value": "1.000"
+ },
+ "SiInRateBonfLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, bonferroni_any",
+  "value": "0.058"
+ },
+ "SiInRateBonfSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, bonferroni_any",
+  "value": "0.362"
+ },
+ "SiInRateBonfSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, bonferroni_any",
+  "value": "0.858"
+ },
+ "SiInRateBonfSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, bonferroni_any",
+  "value": "1.000"
+ },
+ "SiInRateBonfSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, bonferroni_any",
+  "value": "0.051"
+ },
+ "SiInRateCountBinLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, count_binomial",
+  "value": "0.975"
+ },
+ "SiInRateCountBinLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, count_binomial",
+  "value": "1.000"
+ },
+ "SiInRateCountBinLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, count_binomial",
+  "value": "1.000"
+ },
+ "SiInRateCountBinLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, count_binomial",
+  "value": "0.288"
+ },
+ "SiInRateCountBinSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, count_binomial",
+  "value": "0.815"
+ },
+ "SiInRateCountBinSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, count_binomial",
+  "value": "0.995"
+ },
+ "SiInRateCountBinSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, count_binomial",
+  "value": "1.000"
+ },
+ "SiInRateCountBinSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, count_binomial",
+  "value": "0.243"
+ },
+ "SiInRateCutFifteenLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, cut_0.15",
+  "value": "0.792"
+ },
+ "SiInRateCutFifteenLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, cut_0.15",
+  "value": "1.000"
+ },
+ "SiInRateCutFifteenLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, cut_0.15",
+  "value": "1.000"
+ },
+ "SiInRateCutFifteenLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, cut_0.15",
+  "value": "0.025"
+ },
+ "SiInRateCutFifteenSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, cut_0.15",
+  "value": "0.635"
+ },
+ "SiInRateCutFifteenSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, cut_0.15",
+  "value": "0.993"
+ },
+ "SiInRateCutFifteenSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, cut_0.15",
+  "value": "1.000"
+ },
+ "SiInRateCutFifteenSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, cut_0.15",
+  "value": "0.090"
+ },
+ "SiInRateCutFiveLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, cut_0.05",
+  "value": "0.990"
+ },
+ "SiInRateCutFiveLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, cut_0.05",
+  "value": "1.000"
+ },
+ "SiInRateCutFiveLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, cut_0.05",
+  "value": "1.000"
+ },
+ "SiInRateCutFiveLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, cut_0.05",
+  "value": "0.466"
+ },
+ "SiInRateCutFiveSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, cut_0.05",
+  "value": "0.897"
+ },
+ "SiInRateCutFiveSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, cut_0.05",
+  "value": "0.998"
+ },
+ "SiInRateCutFiveSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, cut_0.05",
+  "value": "1.000"
+ },
+ "SiInRateCutFiveSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, cut_0.05",
+  "value": "0.392"
+ },
+ "SiInRateCutSevenFiveLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, cut_0.075",
+  "value": "0.968"
+ },
+ "SiInRateCutSevenFiveLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, cut_0.075",
+  "value": "1.000"
+ },
+ "SiInRateCutSevenFiveLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, cut_0.075",
+  "value": "1.000"
+ },
+ "SiInRateCutSevenFiveLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, cut_0.075",
+  "value": "0.252"
+ },
+ "SiInRateCutSevenFiveSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, cut_0.075",
+  "value": "0.835"
+ },
+ "SiInRateCutSevenFiveSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, cut_0.075",
+  "value": "0.998"
+ },
+ "SiInRateCutSevenFiveSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, cut_0.075",
+  "value": "1.000"
+ },
+ "SiInRateCutSevenFiveSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, cut_0.075",
+  "value": "0.273"
+ },
+ "SiInRateCutTenLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, cut_0.1",
+  "value": "0.932"
+ },
+ "SiInRateCutTenLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, cut_0.1",
+  "value": "1.000"
+ },
+ "SiInRateCutTenLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, cut_0.1",
+  "value": "1.000"
+ },
+ "SiInRateCutTenLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, cut_0.1",
+  "value": "0.128"
+ },
+ "SiInRateCutTenSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, cut_0.1",
+  "value": "0.785"
+ },
+ "SiInRateCutTenSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, cut_0.1",
+  "value": "0.995"
+ },
+ "SiInRateCutTenSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, cut_0.1",
+  "value": "1.000"
+ },
+ "SiInRateCutTenSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, cut_0.1",
+  "value": "0.195"
+ },
+ "SiInRateCutThirtyLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, cut_0.3",
+  "value": "0.190"
+ },
+ "SiInRateCutThirtyLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, cut_0.3",
+  "value": "0.983"
+ },
+ "SiInRateCutThirtyLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, cut_0.3",
+  "value": "1.000"
+ },
+ "SiInRateCutThirtyLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, cut_0.3",
+  "value": "0.000"
+ },
+ "SiInRateCutThirtySmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, cut_0.3",
+  "value": "0.273"
+ },
+ "SiInRateCutThirtySmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, cut_0.3",
+  "value": "0.900"
+ },
+ "SiInRateCutThirtySmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, cut_0.3",
+  "value": "1.000"
+ },
+ "SiInRateCutThirtySmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, cut_0.3",
+  "value": "0.007"
+ },
+ "SiInRateCutTwentyFiveLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, cut_0.25",
+  "value": "0.355"
+ },
+ "SiInRateCutTwentyFiveLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, cut_0.25",
+  "value": "0.988"
+ },
+ "SiInRateCutTwentyFiveLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, cut_0.25",
+  "value": "1.000"
+ },
+ "SiInRateCutTwentyFiveLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, cut_0.25",
+  "value": "0.001"
+ },
+ "SiInRateCutTwentyFiveSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, cut_0.25",
+  "value": "0.385"
+ },
+ "SiInRateCutTwentyFiveSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, cut_0.25",
+  "value": "0.935"
+ },
+ "SiInRateCutTwentyFiveSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, cut_0.25",
+  "value": "1.000"
+ },
+ "SiInRateCutTwentyFiveSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, cut_0.25",
+  "value": "0.015"
+ },
+ "SiInRateCutTwentyLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, cut_0.2",
+  "value": "0.593"
+ },
+ "SiInRateCutTwentyLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, cut_0.2",
+  "value": "0.998"
+ },
+ "SiInRateCutTwentyLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, cut_0.2",
+  "value": "1.000"
+ },
+ "SiInRateCutTwentyLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, cut_0.2",
+  "value": "0.001"
+ },
+ "SiInRateCutTwentySmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, cut_0.2",
+  "value": "0.507"
+ },
+ "SiInRateCutTwentySmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, cut_0.2",
+  "value": "0.970"
+ },
+ "SiInRateCutTwentySmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, cut_0.2",
+  "value": "1.000"
+ },
+ "SiInRateCutTwentySmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, cut_0.2",
+  "value": "0.035"
+ },
+ "SiInRepsNull": {
+  "source": "experiments/results/situation_indep.json: replications at bias 0",
+  "value": "2,000"
+ },
+ "SiInRhoLarge": {
+  "source": "experiments/results/situation_indep.json: average correlation of eq:design-effect solved with the null mean share, n 1000",
+  "value": "0.026"
+ },
+ "SiInRhoSmall": {
+  "source": "experiments/results/situation_indep.json: average correlation of eq:design-effect solved with the null mean share, n 400",
+  "value": "0.068"
+ },
+ "SiInSdShareLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1",
+  "value": "0.088"
+ },
+ "SiInSdShareLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2",
+  "value": "0.105"
+ },
+ "SiInSdShareLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4",
+  "value": "0.043"
+ },
+ "SiInSdShareLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0",
+  "value": "0.038"
+ },
+ "SiInSdShareSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1",
+  "value": "0.145"
+ },
+ "SiInSdShareSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2",
+  "value": "0.160"
+ },
+ "SiInSdShareSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4",
+  "value": "0.070"
+ },
+ "SiInSdShareSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0",
+  "value": "0.062"
+ },
+ "SiInSeBonfLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, bonferroni_any",
+  "value": "0.025"
+ },
+ "SiInSeBonfLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, bonferroni_any",
+  "value": "0.008"
+ },
+ "SiInSeBonfLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, bonferroni_any",
+  "value": "0.000"
+ },
+ "SiInSeBonfLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, bonferroni_any",
+  "value": "0.005"
+ },
+ "SiInSeBonfSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, bonferroni_any",
+  "value": "0.024"
+ },
+ "SiInSeBonfSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, bonferroni_any",
+  "value": "0.017"
+ },
+ "SiInSeBonfSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, bonferroni_any",
+  "value": "0.000"
+ },
+ "SiInSeBonfSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, bonferroni_any",
+  "value": "0.005"
+ },
+ "SiInSeCountBinLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, count_binomial",
+  "value": "0.008"
+ },
+ "SiInSeCountBinLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, count_binomial",
+  "value": "0.000"
+ },
+ "SiInSeCountBinLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, count_binomial",
+  "value": "0.000"
+ },
+ "SiInSeCountBinLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, count_binomial",
+  "value": "0.010"
+ },
+ "SiInSeCountBinSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, count_binomial",
+  "value": "0.019"
+ },
+ "SiInSeCountBinSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, count_binomial",
+  "value": "0.004"
+ },
+ "SiInSeCountBinSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, count_binomial",
+  "value": "0.000"
+ },
+ "SiInSeCountBinSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, count_binomial",
+  "value": "0.010"
+ },
+ "SiInSeCutFifteenLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, cut_0.15",
+  "value": "0.020"
+ },
+ "SiInSeCutFifteenLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, cut_0.15",
+  "value": "0.000"
+ },
+ "SiInSeCutFifteenLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, cut_0.15",
+  "value": "0.000"
+ },
+ "SiInSeCutFifteenLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, cut_0.15",
+  "value": "0.003"
+ },
+ "SiInSeCutFifteenSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, cut_0.15",
+  "value": "0.024"
+ },
+ "SiInSeCutFifteenSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, cut_0.15",
+  "value": "0.004"
+ },
+ "SiInSeCutFifteenSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, cut_0.15",
+  "value": "0.000"
+ },
+ "SiInSeCutFifteenSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, cut_0.15",
+  "value": "0.006"
+ },
+ "SiInSeCutFiveLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, cut_0.05",
+  "value": "0.005"
+ },
+ "SiInSeCutFiveLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, cut_0.05",
+  "value": "0.000"
+ },
+ "SiInSeCutFiveLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, cut_0.05",
+  "value": "0.000"
+ },
+ "SiInSeCutFiveLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, cut_0.05",
+  "value": "0.011"
+ },
+ "SiInSeCutFiveSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, cut_0.05",
+  "value": "0.015"
+ },
+ "SiInSeCutFiveSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, cut_0.05",
+  "value": "0.002"
+ },
+ "SiInSeCutFiveSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, cut_0.05",
+  "value": "0.000"
+ },
+ "SiInSeCutFiveSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, cut_0.05",
+  "value": "0.011"
+ },
+ "SiInSeCutSevenFiveLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, cut_0.075",
+  "value": "0.009"
+ },
+ "SiInSeCutSevenFiveLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, cut_0.075",
+  "value": "0.000"
+ },
+ "SiInSeCutSevenFiveLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, cut_0.075",
+  "value": "0.000"
+ },
+ "SiInSeCutSevenFiveLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, cut_0.075",
+  "value": "0.010"
+ },
+ "SiInSeCutSevenFiveSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, cut_0.075",
+  "value": "0.019"
+ },
+ "SiInSeCutSevenFiveSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, cut_0.075",
+  "value": "0.002"
+ },
+ "SiInSeCutSevenFiveSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, cut_0.075",
+  "value": "0.000"
+ },
+ "SiInSeCutSevenFiveSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, cut_0.075",
+  "value": "0.010"
+ },
+ "SiInSeCutTenLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, cut_0.1",
+  "value": "0.013"
+ },
+ "SiInSeCutTenLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, cut_0.1",
+  "value": "0.000"
+ },
+ "SiInSeCutTenLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, cut_0.1",
+  "value": "0.000"
+ },
+ "SiInSeCutTenLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, cut_0.1",
+  "value": "0.007"
+ },
+ "SiInSeCutTenSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, cut_0.1",
+  "value": "0.021"
+ },
+ "SiInSeCutTenSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, cut_0.1",
+  "value": "0.004"
+ },
+ "SiInSeCutTenSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, cut_0.1",
+  "value": "0.000"
+ },
+ "SiInSeCutTenSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, cut_0.1",
+  "value": "0.009"
+ },
+ "SiInSeCutThirtyLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, cut_0.3",
+  "value": "0.020"
+ },
+ "SiInSeCutThirtyLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, cut_0.3",
+  "value": "0.007"
+ },
+ "SiInSeCutThirtyLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, cut_0.3",
+  "value": "0.000"
+ },
+ "SiInSeCutThirtyLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, cut_0.3",
+  "value": "0.000"
+ },
+ "SiInSeCutThirtySmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, cut_0.3",
+  "value": "0.022"
+ },
+ "SiInSeCutThirtySmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, cut_0.3",
+  "value": "0.015"
+ },
+ "SiInSeCutThirtySmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, cut_0.3",
+  "value": "0.000"
+ },
+ "SiInSeCutThirtySmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, cut_0.3",
+  "value": "0.002"
+ },
+ "SiInSeCutTwentyFiveLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, cut_0.25",
+  "value": "0.024"
+ },
+ "SiInSeCutTwentyFiveLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, cut_0.25",
+  "value": "0.006"
+ },
+ "SiInSeCutTwentyFiveLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, cut_0.25",
+  "value": "0.000"
+ },
+ "SiInSeCutTwentyFiveLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, cut_0.25",
+  "value": "0.000"
+ },
+ "SiInSeCutTwentyFiveSmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, cut_0.25",
+  "value": "0.024"
+ },
+ "SiInSeCutTwentyFiveSmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, cut_0.25",
+  "value": "0.012"
+ },
+ "SiInSeCutTwentyFiveSmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, cut_0.25",
+  "value": "0.000"
+ },
+ "SiInSeCutTwentyFiveSmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, cut_0.25",
+  "value": "0.003"
+ },
+ "SiInSeCutTwentyLargeA": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.1, cut_0.2",
+  "value": "0.025"
+ },
+ "SiInSeCutTwentyLargeB": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.2, cut_0.2",
+  "value": "0.002"
+ },
+ "SiInSeCutTwentyLargeC": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.4, cut_0.2",
+  "value": "0.000"
+ },
+ "SiInSeCutTwentyLargeZ": {
+  "source": "experiments/results/situation_indep.json: n 1000, bias 0.0, cut_0.2",
+  "value": "0.000"
+ },
+ "SiInSeCutTwentySmallA": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.1, cut_0.2",
+  "value": "0.025"
+ },
+ "SiInSeCutTwentySmallB": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.2, cut_0.2",
+  "value": "0.009"
+ },
+ "SiInSeCutTwentySmallC": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.4, cut_0.2",
+  "value": "0.000"
+ },
+ "SiInSeCutTwentySmallZ": {
+  "source": "experiments/results/situation_indep.json: n 400, bias 0.0, cut_0.2",
+  "value": "0.004"
+ },
+ "SiIndepSd": {
+  "source": "the standard deviation of a share of independent complainants, n 400",
+  "value": "0.015"
+ },
+ "SiMarkovTen": {
+  "source": "Proposition 6: Markov bound at the cut 0.10",
+  "value": "0.500"
+ },
+ "SiMarkovTwenty": {
+  "source": "Proposition 6: Markov bound at the cut 0.20 from a mean share of 0.05",
+  "value": "0.250"
+ },
+ "SiMeanCasesLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1",
+  "value": "0.334"
+ },
+ "SiMeanCasesLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2",
+  "value": "0.437"
+ },
+ "SiMeanCasesLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4",
+  "value": "0.548"
+ },
+ "SiMeanCasesLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8",
+  "value": "0.684"
+ },
+ "SiMeanCasesLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0",
+  "value": "0.200"
+ },
+ "SiMeanCasesSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1",
+  "value": "0.408"
+ },
+ "SiMeanCasesSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2",
+  "value": "0.524"
+ },
+ "SiMeanCasesSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4",
+  "value": "0.691"
+ },
+ "SiMeanCasesSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8",
+  "value": "0.835"
+ },
+ "SiMeanCasesSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0",
+  "value": "0.270"
+ },
+ "SiMeanShareLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1",
+  "value": "0.086"
+ },
+ "SiMeanShareLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2",
+  "value": "0.195"
+ },
+ "SiMeanShareLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4",
+  "value": "0.408"
+ },
+ "SiMeanShareLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8",
+  "value": "0.604"
+ },
+ "SiMeanShareLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0",
+  "value": "0.028"
+ },
+ "SiMeanShareSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1",
+  "value": "0.098"
+ },
+ "SiMeanShareSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2",
+  "value": "0.185"
+ },
+ "SiMeanShareSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4",
+  "value": "0.446"
+ },
+ "SiMeanShareSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8",
+  "value": "0.739"
+ },
+ "SiMeanShareSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0",
+  "value": "0.041"
+ },
+ "SiNormalPredTenLarge": {
+  "source": "experiments/results/situation.json: normal approximation from the mean and standard deviation of the null share, n 1000, cut 0.1",
+  "value": "0.001"
+ },
+ "SiNormalPredTenSmall": {
+  "source": "experiments/results/situation.json: normal approximation from the mean and standard deviation of the null share, n 400, cut 0.1",
+  "value": "0.119"
+ },
+ "SiNormalPredTwentyLarge": {
+  "source": "experiments/results/situation.json: normal approximation from the mean and standard deviation of the null share, n 1000, cut 0.2",
+  "value": "0.000"
+ },
+ "SiNormalPredTwentySmall": {
+  "source": "experiments/results/situation.json: normal approximation from the mean and standard deviation of the null share, n 400, cut 0.2",
+  "value": "0.001"
+ },
+ "SiNullMeanMax": {
+  "source": "experiments/results/situation.json and situation_indep.json: largest null mean share over the four cells with no planted gap or bias",
+  "value": "0.055"
+ },
+ "SiQNinetyFiveLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1",
+  "value": "0.167"
+ },
+ "SiQNinetyFiveLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2",
+  "value": "0.301"
+ },
+ "SiQNinetyFiveLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4",
+  "value": "0.475"
+ },
+ "SiQNinetyFiveLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8",
+  "value": "0.651"
+ },
+ "SiQNinetyFiveLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0",
+  "value": "0.075"
+ },
+ "SiQNinetyFiveSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1",
+  "value": "0.254"
+ },
+ "SiQNinetyFiveSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2",
+  "value": "0.379"
+ },
+ "SiQNinetyFiveSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4",
+  "value": "0.623"
+ },
+ "SiQNinetyFiveSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8",
+  "value": "0.813"
+ },
+ "SiQNinetyFiveSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0",
+  "value": "0.151"
+ },
+ "SiRateBonfLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, bonferroni_any",
+  "value": "0.265"
+ },
+ "SiRateBonfLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, bonferroni_any",
+  "value": "0.760"
+ },
+ "SiRateBonfLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, bonferroni_any",
+  "value": "1.000"
+ },
+ "SiRateBonfLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, bonferroni_any",
+  "value": "1.000"
+ },
+ "SiRateBonfLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, bonferroni_any",
+  "value": "0.053"
+ },
+ "SiRateBonfSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, bonferroni_any",
+  "value": "0.185"
+ },
+ "SiRateBonfSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, bonferroni_any",
+  "value": "0.453"
+ },
+ "SiRateBonfSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, bonferroni_any",
+  "value": "0.938"
+ },
+ "SiRateBonfSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, bonferroni_any",
+  "value": "1.000"
+ },
+ "SiRateBonfSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, bonferroni_any",
+  "value": "0.079"
+ },
+ "SiRateCountBinLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, count_binomial",
+  "value": "0.625"
+ },
+ "SiRateCountBinLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, count_binomial",
+  "value": "0.990"
+ },
+ "SiRateCountBinLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, count_binomial",
+  "value": "1.000"
+ },
+ "SiRateCountBinLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, count_binomial",
+  "value": "1.000"
+ },
+ "SiRateCountBinLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, count_binomial",
+  "value": "0.070"
+ },
+ "SiRateCountBinSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, count_binomial",
+  "value": "0.505"
+ },
+ "SiRateCountBinSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, count_binomial",
+  "value": "0.823"
+ },
+ "SiRateCountBinSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, count_binomial",
+  "value": "1.000"
+ },
+ "SiRateCountBinSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, count_binomial",
+  "value": "1.000"
+ },
+ "SiRateCountBinSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, count_binomial",
+  "value": "0.156"
+ },
+ "SiRateCutFifteenLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, cut_0.15",
+  "value": "0.100"
+ },
+ "SiRateCutFifteenLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, cut_0.15",
+  "value": "0.740"
+ },
+ "SiRateCutFifteenLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, cut_0.15",
+  "value": "1.000"
+ },
+ "SiRateCutFifteenLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, cut_0.15",
+  "value": "1.000"
+ },
+ "SiRateCutFifteenLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, cut_0.15",
+  "value": "0.000"
+ },
+ "SiRateCutFifteenSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, cut_0.15",
+  "value": "0.207"
+ },
+ "SiRateCutFifteenSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, cut_0.15",
+  "value": "0.595"
+ },
+ "SiRateCutFifteenSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, cut_0.15",
+  "value": "0.988"
+ },
+ "SiRateCutFifteenSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, cut_0.15",
+  "value": "1.000"
+ },
+ "SiRateCutFifteenSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.15",
+  "value": "0.052"
+ },
+ "SiRateCutFiveLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, cut_0.05",
+  "value": "0.800"
+ },
+ "SiRateCutFiveLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, cut_0.05",
+  "value": "1.000"
+ },
+ "SiRateCutFiveLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, cut_0.05",
+  "value": "1.000"
+ },
+ "SiRateCutFiveLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, cut_0.05",
+  "value": "1.000"
+ },
+ "SiRateCutFiveLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, cut_0.05",
+  "value": "0.145"
+ },
+ "SiRateCutFiveSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, cut_0.05",
+  "value": "0.642"
+ },
+ "SiRateCutFiveSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, cut_0.05",
+  "value": "0.905"
+ },
+ "SiRateCutFiveSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, cut_0.05",
+  "value": "1.000"
+ },
+ "SiRateCutFiveSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, cut_0.05",
+  "value": "1.000"
+ },
+ "SiRateCutFiveSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.05",
+  "value": "0.274"
+ },
+ "SiRateCutSevenFiveLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, cut_0.075",
+  "value": "0.542"
+ },
+ "SiRateCutSevenFiveLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, cut_0.075",
+  "value": "0.980"
+ },
+ "SiRateCutSevenFiveLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, cut_0.075",
+  "value": "1.000"
+ },
+ "SiRateCutSevenFiveLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, cut_0.075",
+  "value": "1.000"
+ },
+ "SiRateCutSevenFiveLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, cut_0.075",
+  "value": "0.050"
+ },
+ "SiRateCutSevenFiveSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, cut_0.075",
+  "value": "0.517"
+ },
+ "SiRateCutSevenFiveSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, cut_0.075",
+  "value": "0.833"
+ },
+ "SiRateCutSevenFiveSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, cut_0.075",
+  "value": "1.000"
+ },
+ "SiRateCutSevenFiveSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, cut_0.075",
+  "value": "1.000"
+ },
+ "SiRateCutSevenFiveSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.075",
+  "value": "0.170"
+ },
+ "SiRateCutTenLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, cut_0.1",
+  "value": "0.320"
+ },
+ "SiRateCutTenLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, cut_0.1",
+  "value": "0.927"
+ },
+ "SiRateCutTenLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, cut_0.1",
+  "value": "1.000"
+ },
+ "SiRateCutTenLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, cut_0.1",
+  "value": "1.000"
+ },
+ "SiRateCutTenLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, cut_0.1",
+  "value": "0.018"
+ },
+ "SiRateCutTenSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, cut_0.1",
+  "value": "0.427"
+ },
+ "SiRateCutTenSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, cut_0.1",
+  "value": "0.743"
+ },
+ "SiRateCutTenSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, cut_0.1",
+  "value": "1.000"
+ },
+ "SiRateCutTenSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, cut_0.1",
+  "value": "1.000"
+ },
+ "SiRateCutTenSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.1",
+  "value": "0.114"
+ },
+ "SiRateCutThirtyLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, cut_0.3",
+  "value": "0.000"
+ },
+ "SiRateCutThirtyLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, cut_0.3",
+  "value": "0.055"
+ },
+ "SiRateCutThirtyLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, cut_0.3",
+  "value": "0.995"
+ },
+ "SiRateCutThirtyLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, cut_0.3",
+  "value": "1.000"
+ },
+ "SiRateCutThirtyLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, cut_0.3",
+  "value": "0.000"
+ },
+ "SiRateCutThirtySmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, cut_0.3",
+  "value": "0.025"
+ },
+ "SiRateCutThirtySmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, cut_0.3",
+  "value": "0.152"
+ },
+ "SiRateCutThirtySmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, cut_0.3",
+  "value": "0.873"
+ },
+ "SiRateCutThirtySmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, cut_0.3",
+  "value": "1.000"
+ },
+ "SiRateCutThirtySmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.3",
+  "value": "0.002"
+ },
+ "SiRateCutTwentyFiveLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, cut_0.25",
+  "value": "0.000"
+ },
+ "SiRateCutTwentyFiveLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, cut_0.25",
+  "value": "0.190"
+ },
+ "SiRateCutTwentyFiveLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, cut_0.25",
+  "value": "1.000"
+ },
+ "SiRateCutTwentyFiveLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, cut_0.25",
+  "value": "1.000"
+ },
+ "SiRateCutTwentyFiveLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, cut_0.25",
+  "value": "0.000"
+ },
+ "SiRateCutTwentyFiveSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, cut_0.25",
+  "value": "0.052"
+ },
+ "SiRateCutTwentyFiveSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, cut_0.25",
+  "value": "0.268"
+ },
+ "SiRateCutTwentyFiveSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, cut_0.25",
+  "value": "0.932"
+ },
+ "SiRateCutTwentyFiveSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, cut_0.25",
+  "value": "1.000"
+ },
+ "SiRateCutTwentyFiveSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.25",
+  "value": "0.005"
+ },
+ "SiRateCutTwentyLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, cut_0.2",
+  "value": "0.013"
+ },
+ "SiRateCutTwentyLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, cut_0.2",
+  "value": "0.468"
+ },
+ "SiRateCutTwentyLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, cut_0.2",
+  "value": "1.000"
+ },
+ "SiRateCutTwentyLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, cut_0.2",
+  "value": "1.000"
+ },
+ "SiRateCutTwentyLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, cut_0.2",
+  "value": "0.000"
+ },
+ "SiRateCutTwentySmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, cut_0.2",
+  "value": "0.113"
+ },
+ "SiRateCutTwentySmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, cut_0.2",
+  "value": "0.410"
+ },
+ "SiRateCutTwentySmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, cut_0.2",
+  "value": "0.968"
+ },
+ "SiRateCutTwentySmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, cut_0.2",
+  "value": "1.000"
+ },
+ "SiRateCutTwentySmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.2",
+  "value": "0.014"
+ },
+ "SiRepsGap": {
+  "source": "experiments/results/situation.json: replications at the other gaps",
+  "value": "400"
+ },
+ "SiRepsNull": {
+  "source": "experiments/results/situation.json: replications at gap 0",
+  "value": "1,000"
+ },
+ "SiRhoLarge": {
+  "source": "experiments/results/situation.json: average correlation of eq:design-effect solved with the null mean share, n 1000",
+  "value": "0.018"
+ },
+ "SiRhoSmall": {
+  "source": "experiments/results/situation.json: average correlation of eq:design-effect solved with the null mean share, n 400",
+  "value": "0.060"
+ },
+ "SiSdShareLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1",
+  "value": "0.044"
+ },
+ "SiSdShareLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2",
+  "value": "0.062"
+ },
+ "SiSdShareLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4",
+  "value": "0.044"
+ },
+ "SiSdShareLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8",
+  "value": "0.029"
+ },
+ "SiSdShareLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0",
+  "value": "0.023"
+ },
+ "SiSdShareSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1",
+  "value": "0.079"
+ },
+ "SiSdShareSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2",
+  "value": "0.106"
+ },
+ "SiSdShareSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4",
+  "value": "0.120"
+ },
+ "SiSdShareSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8",
+  "value": "0.047"
+ },
+ "SiSdShareSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0",
+  "value": "0.050"
+ },
+ "SiSeBonfLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, bonferroni_any",
+  "value": "0.022"
+ },
+ "SiSeBonfLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, bonferroni_any",
+  "value": "0.021"
+ },
+ "SiSeBonfLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, bonferroni_any",
+  "value": "0.000"
+ },
+ "SiSeBonfLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, bonferroni_any",
+  "value": "0.000"
+ },
+ "SiSeBonfLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, bonferroni_any",
+  "value": "0.007"
+ },
+ "SiSeBonfSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, bonferroni_any",
+  "value": "0.019"
+ },
+ "SiSeBonfSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, bonferroni_any",
+  "value": "0.025"
+ },
+ "SiSeBonfSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, bonferroni_any",
+  "value": "0.012"
+ },
+ "SiSeBonfSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, bonferroni_any",
+  "value": "0.000"
+ },
+ "SiSeBonfSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, bonferroni_any",
+  "value": "0.009"
+ },
+ "SiSeCountBinLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, count_binomial",
+  "value": "0.024"
+ },
+ "SiSeCountBinLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, count_binomial",
+  "value": "0.005"
+ },
+ "SiSeCountBinLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, count_binomial",
+  "value": "0.000"
+ },
+ "SiSeCountBinLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, count_binomial",
+  "value": "0.000"
+ },
+ "SiSeCountBinLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, count_binomial",
+  "value": "0.008"
+ },
+ "SiSeCountBinSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, count_binomial",
+  "value": "0.025"
+ },
+ "SiSeCountBinSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, count_binomial",
+  "value": "0.019"
+ },
+ "SiSeCountBinSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, count_binomial",
+  "value": "0.000"
+ },
+ "SiSeCountBinSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, count_binomial",
+  "value": "0.000"
+ },
+ "SiSeCountBinSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, count_binomial",
+  "value": "0.011"
+ },
+ "SiSeCutFifteenLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, cut_0.15",
+  "value": "0.015"
+ },
+ "SiSeCutFifteenLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, cut_0.15",
+  "value": "0.022"
+ },
+ "SiSeCutFifteenLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, cut_0.15",
+  "value": "0.000"
+ },
+ "SiSeCutFifteenLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, cut_0.15",
+  "value": "0.000"
+ },
+ "SiSeCutFifteenLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, cut_0.15",
+  "value": "0.000"
+ },
+ "SiSeCutFifteenSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, cut_0.15",
+  "value": "0.020"
+ },
+ "SiSeCutFifteenSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, cut_0.15",
+  "value": "0.025"
+ },
+ "SiSeCutFifteenSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, cut_0.15",
+  "value": "0.006"
+ },
+ "SiSeCutFifteenSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, cut_0.15",
+  "value": "0.000"
+ },
+ "SiSeCutFifteenSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.15",
+  "value": "0.007"
+ },
+ "SiSeCutFiveLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, cut_0.05",
+  "value": "0.020"
+ },
+ "SiSeCutFiveLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, cut_0.05",
+  "value": "0.000"
+ },
+ "SiSeCutFiveLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, cut_0.05",
+  "value": "0.000"
+ },
+ "SiSeCutFiveLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, cut_0.05",
+  "value": "0.000"
+ },
+ "SiSeCutFiveLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, cut_0.05",
+  "value": "0.011"
+ },
+ "SiSeCutFiveSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, cut_0.05",
+  "value": "0.024"
+ },
+ "SiSeCutFiveSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, cut_0.05",
+  "value": "0.015"
+ },
+ "SiSeCutFiveSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, cut_0.05",
+  "value": "0.000"
+ },
+ "SiSeCutFiveSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, cut_0.05",
+  "value": "0.000"
+ },
+ "SiSeCutFiveSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.05",
+  "value": "0.014"
+ },
+ "SiSeCutSevenFiveLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, cut_0.075",
+  "value": "0.025"
+ },
+ "SiSeCutSevenFiveLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, cut_0.075",
+  "value": "0.007"
+ },
+ "SiSeCutSevenFiveLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, cut_0.075",
+  "value": "0.000"
+ },
+ "SiSeCutSevenFiveLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, cut_0.075",
+  "value": "0.000"
+ },
+ "SiSeCutSevenFiveLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, cut_0.075",
+  "value": "0.007"
+ },
+ "SiSeCutSevenFiveSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, cut_0.075",
+  "value": "0.025"
+ },
+ "SiSeCutSevenFiveSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, cut_0.075",
+  "value": "0.019"
+ },
+ "SiSeCutSevenFiveSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, cut_0.075",
+  "value": "0.000"
+ },
+ "SiSeCutSevenFiveSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, cut_0.075",
+  "value": "0.000"
+ },
+ "SiSeCutSevenFiveSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.075",
+  "value": "0.012"
+ },
+ "SiSeCutTenLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, cut_0.1",
+  "value": "0.023"
+ },
+ "SiSeCutTenLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, cut_0.1",
+  "value": "0.013"
+ },
+ "SiSeCutTenLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, cut_0.1",
+  "value": "0.000"
+ },
+ "SiSeCutTenLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, cut_0.1",
+  "value": "0.000"
+ },
+ "SiSeCutTenLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, cut_0.1",
+  "value": "0.004"
+ },
+ "SiSeCutTenSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, cut_0.1",
+  "value": "0.025"
+ },
+ "SiSeCutTenSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, cut_0.1",
+  "value": "0.022"
+ },
+ "SiSeCutTenSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, cut_0.1",
+  "value": "0.000"
+ },
+ "SiSeCutTenSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, cut_0.1",
+  "value": "0.000"
+ },
+ "SiSeCutTenSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.1",
+  "value": "0.010"
+ },
+ "SiSeCutThirtyLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, cut_0.3",
+  "value": "0.000"
+ },
+ "SiSeCutThirtyLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, cut_0.3",
+  "value": "0.011"
+ },
+ "SiSeCutThirtyLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, cut_0.3",
+  "value": "0.004"
+ },
+ "SiSeCutThirtyLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, cut_0.3",
+  "value": "0.000"
+ },
+ "SiSeCutThirtyLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, cut_0.3",
+  "value": "0.000"
+ },
+ "SiSeCutThirtySmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, cut_0.3",
+  "value": "0.008"
+ },
+ "SiSeCutThirtySmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, cut_0.3",
+  "value": "0.018"
+ },
+ "SiSeCutThirtySmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, cut_0.3",
+  "value": "0.017"
+ },
+ "SiSeCutThirtySmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, cut_0.3",
+  "value": "0.000"
+ },
+ "SiSeCutThirtySmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.3",
+  "value": "0.001"
+ },
+ "SiSeCutTwentyFiveLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, cut_0.25",
+  "value": "0.000"
+ },
+ "SiSeCutTwentyFiveLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, cut_0.25",
+  "value": "0.020"
+ },
+ "SiSeCutTwentyFiveLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, cut_0.25",
+  "value": "0.000"
+ },
+ "SiSeCutTwentyFiveLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, cut_0.25",
+  "value": "0.000"
+ },
+ "SiSeCutTwentyFiveLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, cut_0.25",
+  "value": "0.000"
+ },
+ "SiSeCutTwentyFiveSmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, cut_0.25",
+  "value": "0.011"
+ },
+ "SiSeCutTwentyFiveSmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, cut_0.25",
+  "value": "0.022"
+ },
+ "SiSeCutTwentyFiveSmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, cut_0.25",
+  "value": "0.013"
+ },
+ "SiSeCutTwentyFiveSmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, cut_0.25",
+  "value": "0.000"
+ },
+ "SiSeCutTwentyFiveSmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.25",
+  "value": "0.002"
+ },
+ "SiSeCutTwentyLargeA": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.1, cut_0.2",
+  "value": "0.006"
+ },
+ "SiSeCutTwentyLargeB": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.2, cut_0.2",
+  "value": "0.025"
+ },
+ "SiSeCutTwentyLargeC": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.4, cut_0.2",
+  "value": "0.000"
+ },
+ "SiSeCutTwentyLargeD": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.8, cut_0.2",
+  "value": "0.000"
+ },
+ "SiSeCutTwentyLargeZ": {
+  "source": "experiments/results/situation.json: n 1000, gap 0.0, cut_0.2",
+  "value": "0.000"
+ },
+ "SiSeCutTwentySmallA": {
+  "source": "experiments/results/situation.json: n 400, gap 0.1, cut_0.2",
+  "value": "0.016"
+ },
+ "SiSeCutTwentySmallB": {
+  "source": "experiments/results/situation.json: n 400, gap 0.2, cut_0.2",
+  "value": "0.025"
+ },
+ "SiSeCutTwentySmallC": {
+  "source": "experiments/results/situation.json: n 400, gap 0.4, cut_0.2",
+  "value": "0.009"
+ },
+ "SiSeCutTwentySmallD": {
+  "source": "experiments/results/situation.json: n 400, gap 0.8, cut_0.2",
+  "value": "0.000"
+ },
+ "SiSeCutTwentySmallZ": {
+  "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.2",
+  "value": "0.004"
+ },
+ "TimeCovMin": {
+  "source": "experiments/results/timings.json: wall time of the cold run of coverage, minutes",
+  "value": "1.3"
+ },
+ "TimeCpus": {
+  "source": "experiments/results/timings.json: logical cores of the machine of the cold runs",
+  "value": "32"
+ },
+ "TimeExactSec": {
+  "source": "experiments/results/timings.json: wall time of exact_theory.py, seconds",
+  "value": "43"
+ },
+ "TimeShiftMin": {
+  "source": "experiments/results/timings.json: wall time of the cold run of shift, minutes",
+  "value": "9.9"
+ },
+ "TimeSitInMin": {
+  "source": "experiments/results/timings.json: wall time of the cold run of situation_indep, minutes",
+  "value": "0.7"
+ },
+ "TimeSitMin": {
+  "source": "experiments/results/timings.json: wall time of the cold run of situation, minutes",
+  "value": "1.0"
+ },
+ "TimeWorkers": {
+  "source": "experiments/results/timings.json: worker processes of the cold runs",
+  "value": "24"
+ },
+ "VarRatioA": {
+  "source": "exact.json: variance ratio n=200, m=50",
+  "value": "1.243"
+ },
+ "VarRatioB": {
+  "source": "exact.json: variance ratio n=200, m=800",
+  "value": "4.955"
+ },
+ "VarRatioC": {
+  "source": "exact.json: variance ratio n=1000, m=1000",
+  "value": "1.997"
+ },
+ "VarRatioD": {
+  "source": "exact.json: variance ratio n=1000, m=4000",
+  "value": "4.991"
+ },
+ "VarRatioE": {
+  "source": "exact.json: variance ratio n=5000, m=40000",
+  "value": "8.997"
+ },
+ "VarRatioMaxErr": {
+  "source": "experiments/results/exact.json: variance ratio",
+  "value": "$4.3 \\times 10^{-11}$"
+ },
+ "VarRatioPairs": {
+  "source": "exact.json: window pairs of the variance comparison",
+  "value": "5"
+ }
+}

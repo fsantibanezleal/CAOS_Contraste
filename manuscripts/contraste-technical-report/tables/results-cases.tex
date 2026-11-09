@@ -1,0 +1,39 @@
+{\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{l>{\raggedright\arraybackslash}p{4.0cm}>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{3.0cm}r}
+\caption{The cases of Contraste with the sources of their manifest, the licence classes of those sources, the truth status of the committed variants (real outcomes, synthetic with known truth, synthetic calibrated, or published answer) and the number of variants; a case with no source in its manifest runs on a generator or on published tables.}\label{tab:data-cases}\\
+\toprule
+Case & Title & Sources & Licence class & Truth status & Variants \\
+\midrule
+\endfirsthead
+\toprule
+Case & Title & Sources & Licence class & Truth status & Variants \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+C01 & Retail cards PD: champion vs challenger & uci-taiwan, uci-german & mirror-allowed & real outcomes, synthetic known truth & 7 \\
+C02 & Corporate PD across 1 to 5 year horizons & uci-polish & mirror-allowed & real outcomes & 6 \\
+C03 & SME PD by vintage through 2008 & sba-foia & mirror-allowed & real outcomes & 5 \\
+C04 & Rating transitions and TTC PD by grade & esma-cerep, israel-rosenthal-wei-2001, engelmann-2024, schuermann-hanson-2004 & derived-only, mirror-allowed & published answer, real outcomes, synthetic known truth & 9 \\
+C05 & Low-default portfolios and PD calibration & tasche-2013, pluto-tasche-2005 & derived-only & published answer, synthetic known truth & 6 \\
+C06 & Lifetime PD, IFRS 9 staging and ECL on public small-business loans & sba-foia, fed-stress-tests & mirror-allowed & real outcomes & 6 \\
+C07 & Chile provisions trilogy: CMF B-1 vs IFRS 9 vs BdE Annex 9 & generator & generator & synthetic calibrated & 6 \\
+C08 & LGD and downturn LGD & sba-foia & mirror-allowed & real outcomes & 6 \\
+C09 & EAD and CCF for revolving lines & generator & generator & synthetic known truth & 6 \\
+C10 & Portfolio credit capital: ASRF, Vasicek fit, copula MC & fed-chargeoff & mirror-allowed & real outcomes, synthetic known truth & 7 \\
+C11 & Market VaR/ES backtesting across 2008, 2020, 2022, 2023 & french-data-library, treasury-par-curve, fred-public-domain & derived-only, mirror-allowed & real outcomes & 6 \\
+C12 & How large is the counterparty exposure of a swap book, and what CVA does it imply? & treasury-par-curve, treasury-hqm & mirror-allowed & synthetic calibrated & 6 \\
+C13 & FRTB desk eligibility: PLA and desk backtesting & generator & generator & synthetic known truth & 6 \\
+C14 & IRRBB, six shocks on a USD balance sheet: the bank that failed in 2023 & fdic-bankfind, treasury-par-curve & mirror-allowed & synthetic calibrated & 3 \\
+C15 & IRRBB on a CLP and UF balance sheet: RAN 21-13 Annex 1 & bcch-bde & mirror-allowed & synthetic calibrated & 6 \\
+C16 & Liquidity stress, LCR and the March 2023 run & fdic-bankfind, fed-h8, fed-svb-review, treasury-par-curve & mirror-allowed & synthetic calibrated & 6 \\
+C17 & Operational risk: LDA vs SMA & generator & generator & synthetic known truth & 4 \\
+C18 & ICAAP and IAPE capital aggregation under macro scenarios & fed-stress-tests, fed-chargeoff, eba-esrb-stress-2025, ngfs-phase-v, bcch-bde & derived-only, mirror-allowed & synthetic calibrated & 6 \\
+C19 & Supervisory stress model replication (known answer) & published tables & published answers & 0 & -- \\
+C20 & ML model validation: drift, robustness, explanation stability & santanderai-sgcd, uci-taiwan, uci-polish, fed-stress-tests & mirror-allowed & real outcomes, synthetic known truth & 6 \\
+C21 & Fair-lending disparity testing & hmda & mirror-allowed & real outcomes & 6 \\
+C22 & Validating the validator: size and power of every test & bcbs-wp14, yurdakul-naranjo-2020 & derived-only & synthetic known truth & 9 \\
+\end{longtable}
+}

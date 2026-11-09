@@ -153,22 +153,29 @@ def hypothesis_block(flags: dict[str, Any], held_out: dict[str, Any], n_null: in
     power, size = flags["family"]["spearman_roll"], held_out["family"]["spearman_roll"]
     v = verdict(power["rate"], size["rate"])
     plain = flags["per_statistic"]["spearman_roll"]
+    union, union_size = flags["family"]["any"], held_out["family"]["any"]
     pla = flags["pla_amber_or_red"]
     word = {"holds": T("holds", "se sostiene"), "refuted": T("is refuted", "se refuta"),
             "not-established": T("is not established", "no queda establecida")}[v]
     n, nn = power["n"], size["n"]
+    # Two measures, each named with its statistic: the union of the three statistics (any of them past the threshold of the 1% family size,
+    # the complement's headline) and the rolling-mean statistic alone at that same size (the statistic the plan's rule judges).
     reading = T(
-        f"The hypothesis {word['en']}: the rolling-mean complement flags the stale-volatility model in {_p(power['rate'], 'en')} of "
-        f"{n:,} replications ({_p(power['ci_low'], 'en')} to {_p(power['ci_high'], 'en')}) at a size of 1% for the union of the three "
-        f"statistics, and in {_p(plain['rate'], 'en')} at 1% for each statistic; the regulatory zone flags {_p(pla['rate'], 'en')}. "
-        f"Its false-alarm rate on {nn:,} held-out exact-model replications is {_p(size['rate'], 'en')} "
-        f"({_p(size['ci_low'], 'en')} to {_p(size['ci_high'], 'en')}); the thresholds come from {n_null:,} independent null desk-years. "
+        f"The hypothesis {word['en']}. At a size of 1% for the union of the three statistics, the union flags the stale-volatility model in "
+        f"{_p(union['rate'], 'en')} of {n:,} replications ({_p(union['ci_low'], 'en')} to {_p(union['ci_high'], 'en')}), with a false-alarm rate of "
+        f"{_p(union_size['rate'], 'en')} on {nn:,} held-out exact-model replications ({_p(union_size['ci_low'], 'en')} to {_p(union_size['ci_high'], 'en')}); "
+        f"the rolling-mean statistic alone, which the plan's rule judges, at the size each statistic then has, flags {_p(power['rate'], 'en')} "
+        f"({_p(power['ci_low'], 'en')} to {_p(power['ci_high'], 'en')}) with a false-alarm rate of {_p(size['rate'], 'en')} "
+        f"({_p(size['ci_low'], 'en')} to {_p(size['ci_high'], 'en')}), and at 1% for each statistic {_p(plain['rate'], 'en')}; "
+        f"the regulatory zone flags {_p(pla['rate'], 'en')}. The thresholds come from {n_null:,} independent null desk-years. "
         f"The plan asks for at least {_p(HOLDS_POWER, 'en')} at a size of at most {_p(SIZE, 'en')} and refutes below {_p(REFUTED_POWER, 'en')}.",
-        f"La hipótesis {word['es']}: el complemento de la media móvil marca el modelo con volatilidad rezagada en {_p(power['rate'], 'es')} de "
-        f"{_n(n)} replicaciones ({_p(power['ci_low'], 'es')} a {_p(power['ci_high'], 'es')}) con un tamaño de 1 % para la unión de los tres "
-        f"estadísticos, y en {_p(plain['rate'], 'es')} con 1 % para cada estadístico; la zona regulatoria marca {_p(pla['rate'], 'es')}. "
-        f"Su tasa de falsas alarmas en {_n(nn)} replicaciones de reserva con el modelo exacto es {_p(size['rate'], 'es')} "
-        f"({_p(size['ci_low'], 'es')} a {_p(size['ci_high'], 'es')}); los umbrales vienen de {_n(n_null)} años de mesa nulos independientes. "
+        f"La hipótesis {word['es']}. Con un tamaño de 1 % para la unión de los tres estadísticos, la unión marca el modelo con volatilidad rezagada en "
+        f"{_p(union['rate'], 'es')} de {_n(n)} replicaciones ({_p(union['ci_low'], 'es')} a {_p(union['ci_high'], 'es')}), con una tasa de falsas alarmas de "
+        f"{_p(union_size['rate'], 'es')} en {_n(nn)} replicaciones de reserva con el modelo exacto ({_p(union_size['ci_low'], 'es')} a {_p(union_size['ci_high'], 'es')}); "
+        f"el estadístico de la media móvil solo, que la regla del plan juzga, con el tamaño que entonces tiene cada estadístico, marca {_p(power['rate'], 'es')} "
+        f"({_p(power['ci_low'], 'es')} a {_p(power['ci_high'], 'es')}) con una tasa de falsas alarmas de {_p(size['rate'], 'es')} "
+        f"({_p(size['ci_low'], 'es')} a {_p(size['ci_high'], 'es')}), y con 1 % para cada estadístico {_p(plain['rate'], 'es')}; "
+        f"la zona regulatoria marca {_p(pla['rate'], 'es')}. Los umbrales vienen de {_n(n_null)} años de mesa nulos independientes. "
         f"El plan pide al menos {_p(HOLDS_POWER, 'es')} con un tamaño de a lo sumo {_p(SIZE, 'es')} y la refuta bajo {_p(REFUTED_POWER, 'es')}.")
     return {
         "plan_id": PLAN_ID,

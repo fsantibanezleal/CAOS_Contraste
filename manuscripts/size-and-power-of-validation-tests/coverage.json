@@ -1,7 +1,10 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:main-results",
+    "tab:seed-replication",
+    "tab:power-summary",
+    "fig:size-forest"
   ],
   "claims": {
     "BS-1": "sec:proposed-method"

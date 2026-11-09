@@ -1,0 +1,23 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{The hypotheses of the proposed monitors with the measurements that judge them and the outcome of each. The first block was stated before the experiments: size on the generator of known truth, delay and power cost pooled over 20 independent seeds of 2,000 streams, the refutation clause on the two real windows of the case on market risk at the 99\,\% level, and the prediction for the PD monitor, followed by the outcome of the hypothesis as a whole. The second block was chosen or run after the results were known and is not a test of a pre-stated hypothesis.}
+\label{tab:hypotheses}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{p{6.0cm}p{6.6cm}p{2.4cm}}
+\toprule
+Hypothesis & Measured & Outcome \\
+\midrule
+\multicolumn{3}{l}{\textit{Stated before the experiments}} \\
+\relax Size (H1): the e-process rejects a correct VaR in at most $5\,\%$ plus three standard errors of the streams, read daily over 1,000 days, where the repeated Kupiec rule exceeds that & \relax e-process 2.4\,\%; Kupiec last 250 days 65.7\,\%, all days 31.9\,\%; bound 6.5\,\% & Held \\
+\relax Delay (H2): the median detection day is below the 250-day window, and below the traffic light's, at a hit rate three and four times too high & \relax x3: pooled median 251 [247, 255] (traffic light 250); 45\,\% of seeds below 250. x4: 128 [126, 129] (traffic light 250) & \relax x3: not met; x4: held \\
+\relax Power cost (H3): one Kupiec reading at day 250 has less than 10 points more power than the e-process has by day 250 & \relax x3: 12.4 $\pm$ 0.2 points; x4: 8.5 $\pm$ 0.2 points & \relax x3: not met; x4: held \\
+\relax Refutation clause (R), as the design states it: the hypothesis is refuted if the delay is not lower than the traffic light's on the equity 2007 to 2009 and foreign-exchange 2008 windows & \relax real windows (models the light flags): median day 24 against 250 and 68 against 250. The same comparison on the generator, which this study adds, is the delay criterion of H2 (x3 251 against 250) & \relax Does not fire \\
+\relax PD prediction (from the documentation of the engine): the PD monitor over-rejects a correct PD when the defaults of a year are correlated, because its null is binomial & \relax asset correlation 0.03: product 88.5\,\%, average 91.0\,\% of the histories & \relax Confirmed \\
+\relax Overall, the hypotheses H1 to H3 and R as stated & \relax H2 and H3 fail at three times the nominal rate; H1 holds; R does not fire & \relax Does not hold as stated \\
+\multicolumn{3}{l}{\textit{Not stated before the experiments (chosen or run after the results)}} \\
+\relax Upper-side variant of the rate monitor (chosen after the two-sided results, the direction a supervisor penalises): delay below 250 and below the traffic light's, and power cost under 10 points & \relax x3: pooled median 228 [225, 231], cost 6.7 $\pm$ 0.2 points; x4: 109 [108, 110], cost 4.6 $\pm$ 0.1 points & \relax Met at both severities; needs a prospective confirmation \\
+\relax PD question (run after the results): are the defaults of five grades detected earlier than by the chi-square test across grades read every year, when the chi-square rule is given the size the e-process measured? & \relax PD $\times 1.05$: chi-square 53.2\,\% at a size of 5\,\% and 23.2\,\% at the size of the e-process, average e-process 2.9\,\%; $\times 1.1$: 99.8, 98.8 and 55.9\,\% & \relax No: the chi-square rule detects more \\
+\bottomrule
+\end{tabular}}
+\end{table*}

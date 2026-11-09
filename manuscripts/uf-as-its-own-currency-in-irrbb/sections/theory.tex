@@ -1,0 +1,94 @@
+The theory has two purposes: to say, before any run, which orderings between treatments must hold for every book, so that a violation in the data is a defect of the code, and to say which orderings need not hold, so that a counterexample is a result. Every statement is for fixed flows and fixed curves; the flows may depend on the scenario label, as the redemption of term deposits does, but not on the floored rates.
+
+\subsection{The pair rule lies between the sum and the positive parts}
+\label{sec:theory-pair}
+
+\begin{proposition}[bounds and monotonicity of the pair rule]
+\label{prop:pair}
+For $\lambda\in[0,1]$ the function $P_\lambda$ of Equation~\eqref{eq:pair} is continuous, positively homogeneous of degree one, nondecreasing in $a$ and in $b$, and nonincreasing in $\lambda$. With $N(a,b)=\pp{(a+b)}$ and $Q(a,b)=\pp{a}+\pp{b}$,
+\begin{equation}
+N(a,b)=P_1(a,b)\ \le\ P_\lambda(a,b)\ \le\ P_0(a,b)=Q(a,b),
+\label{eq:sandwich}
+\end{equation}
+with equality throughout when $ab\ge 0$, and the reduction that the offset brings is
+\begin{equation}
+Q(a,b)-P_\lambda(a,b)=\min\{\pp{a},\lambda\,\npart{b}\}+\min\{\pp{b},\lambda\,\npart{a}\},
+\label{eq:offset-reduction}
+\end{equation}
+in which at most one of the two terms is nonzero.
+\end{proposition}
+\begin{proof}
+Each bracket of Equation~\eqref{eq:pair} is the positive part of a function that is nondecreasing in $a$ and in $b$ and nonincreasing in $\lambda$: $\pp{a}$ is nondecreasing in $a$, $\npart{a}$ is nonincreasing in $a$, and $-\lambda\npart{b}$ is nondecreasing in $b$ and nonincreasing in $\lambda$ because $\npart{b}\ge0$. The positive part is nondecreasing, so the claimed monotonicity follows, and continuity and homogeneity are immediate. At $\lambda=0$ the rule is $\pp{a}+\pp{b}=Q$. At $\lambda=1$ consider the signs: if $a,b\ge0$ then $\npart{a}=\npart{b}=0$ and the rule is $a+b$; if $a,b\le0$ then $\pp{a}=\pp{b}=0$ and the rule is $0=\pp{(a+b)}$; if $a>0>b$ the second bracket is $[0-\npart{a}]^+=0$ and the first is $[a-|b|]^+=\pp{(a+b)}$, and symmetrically for $a<0<b$. The inequalities follow from the monotonicity in $\lambda$. For Equation~\eqref{eq:offset-reduction}, $\pp{a}-[\pp{a}-x]^+=\min\{\pp{a},x\}$ for $x\ge0$, applied to $x=\lambda\npart{b}$ and, for the second bracket, to $x=\lambda\npart{a}$; and $\pp{a}>0$ implies $\npart{a}=0$, so the two terms cannot both be nonzero. When $ab\ge0$ the two minima vanish.
+\end{proof}
+
+\begin{corollary}[order of the measures]
+\label{cor:measures}
+For fixed deltas of the two legs, write $M_{\lambda}$ for either measure with the aggregator $P_\lambda$ and $M_N$ for the one with the plain sum. Then $M_N\le M_{1/2}\le M_{0}$ for the value measure, and for the income measure the same holds after adding the same charge to each. In particular the Annex 1 value measure is never below the single-currency one when the curves, sizes and floors are the same, and the Annex 1 income measure without its charge is never below it. The Annex 1 income measure with its charge is not ordered against the positive-part measure without a charge: it is at least as large if and only if
+\begin{equation}
+\kappa\,|\PNUR|\ \ge\ M_{0}^{\mathrm{NII}}-M_{1/2}^{\mathrm{NII}},
+\label{eq:charge-condition}
+\end{equation}
+the charge covering the reduction that the offset brings at the scenario that attains the maximum.
+\end{corollary}
+\begin{proof}
+The maximum over scenarios preserves a pointwise order of functions, and adding a constant preserves the order; Equation~\eqref{eq:charge-condition} is the definition of the order between $M_{1/2}+\kappa|\PNUR|$ and $M_0$.
+\end{proof}
+
+Equation~\eqref{eq:charge-condition} says what to expect: when the net UF position is small the charge is small, the offset reduction of a book whose two legs move in opposite directions is not, and the Annex 1 income measure can fall below the positive-part one. Section~\ref{sec:results-main} meets that case in the CLP steepener variant.
+
+\subsection{The charge is the worst loss of a symmetric inflation surprise}
+\label{sec:theory-charge}
+
+\begin{proposition}[the indexation charge]
+\label{prop:charge}
+Let a surprise of $s$ in the inflation that the UF accrues change the peso value of the net UF position by $\PNUR\,s$, so that the loss is $\mathcal L(s)=-\PNUR\,s$. Then
+\begin{equation}
+\kappa\,|\PNUR|=\max\bigl\{\mathcal L(\kappa),\mathcal L(-\kappa)\bigr\},
+\label{eq:charge}
+\end{equation}
+the charge does not depend on the shock, the curves, the floors, the flows or the offset, it is homogeneous of degree one in the position, and it lower-bounds the income measure: $\dNII\ge\kappa|\PNUR|$. The income test of the prioritisation, $\dNII>0.05\,T_1$, is breached by the charge alone if and only if $|\nu|>0.05/\kappa=\floorBreakNu$.
+\end{proposition}
+\begin{proof}
+$\max\{-\kappa\PNUR,\kappa\PNUR\}=\kappa|\PNUR|$. The measure of Equation~\eqref{eq:measure-nii} is a maximum of non-negative pair values plus the charge, so it is at least the charge. The test is $\kappa|\PNUR|>0.05\,T_1$, which is $|\nu|>0.05/\kappa$.
+\end{proof}
+
+The proposition reads the charge as a stress, not as an estimate of the exposure. For a net short position it is the loss of an inflation surprise of $+\kappa$, and for a net long position the loss of a deflation surprise of $-\kappa$, which is why a long position is charged in the same way as a short one although the long position gains when the index rises. The committed variant of a surprise of 2.5 percentage points on the long position reports that gain, of \repCpiEffect{} million pesos, with the sign that the stress of the charge does not take.
+
+\subsection{What a peso curve does to an indexed flow}
+\label{sec:theory-curve}
+
+\begin{proposition}[the weights of the own curve and the own sizes]
+\label{prop:curve}
+Under a parallel shift of $\delta$ for which no floor binds, and ignoring the dependence of the flows on the scenario, the first-order change of the value of the UR leg is $-\delta\sum_kt_k\mathrm{CF}_{\UR}(t_k)e^{-r_{0,\UR}(t_k)t_k}$ under the own curve and sizes and the same sum with each term multiplied by $w_k$ of Equation~\eqref{eq:weight} under the peso curve and sizes. Hence the single-currency treatment has the smaller first-order exposure than the separate one if every flow lies in a bucket with $w_k<1$, the larger one if every flow lies in a bucket with $w_k>1$, and an exposure of either order otherwise.
+\end{proposition}
+\begin{proof}
+The derivative of $\sum_k\mathrm{CF}_ke^{-(r_k+\delta)t_k}$ with respect to $\delta$ at zero is $-\sum_kt_k\mathrm{CF}_ke^{-r_kt_k}$. Replacing $r_{0,\UR}$ by $r_{0,\CLP}$ multiplies the exponential of bucket $k$ by $e^{-b(t_k)t_k}$, and replacing the size $P_{\UR}$ by $P_{\CLP}$ multiplies the shift by $P_{\CLP}/P_{\UR}$. The conclusions are those of a weighted sum with positive weights.
+\end{proof}
+
+The proposition gives no sign for the net effect of the two switches on a book whose flows lie on both sides of the bucket where $w_k$ crosses one, and the Banco Andino book is such a book. It predicts instead that the two switches have opposite signs and that a large positive contribution of the own curve is paired with a large negative one of the own sizes; the data of Section~\ref{sec:ablation} confirm the pairing and the magnitudes are measured, not derived.
+
+\subsection{When a binding floor raises a measure}
+\label{sec:theory-floor}
+
+\begin{proposition}[the sign of the effect of the UR floor on the income measure]
+\label{prop:floor}
+Let $r^{\mathrm{f}}_k=r_{0,\UR}(t_k)+\Delta S(t_k)/10^4$ be the unfloored post-shock rate and $r_k$ the floored one of Equation~\eqref{eq:floor}, and $\varepsilon_k=r_k-r^{\mathrm f}_k=\bigl[\min\{f,r_{0,\UR}(t_k)\}-r^{\mathrm f}_k\bigr]^+\ge0$. Then the floor lowers $\dNII_{i,\UR}$ by $\sum_{k:t_k<1}\mathrm{CF}_{\UR}(t_k)(1-t_k)\varepsilon_k$, which is a rise when the flows of the buckets in which the floor binds, weighted by $(1-t_k)\varepsilon_k$, are net liabilities. Since $P_{1/2}$ is nondecreasing in its second argument and the floor does not touch the up shock, the floor weakly raises $\dNII$ when that weighted sum is negative and weakly lowers it when it is positive. The floor binds in the first six buckets in the parallel-down scenario of $B$ basis points if and only if $\min_{k\le6}r_{0,\UR}(t_k)-B/10^4<f$, and the distance to binding is the difference of the two sides.
+\end{proposition}
+\begin{proof}
+By Equation~\eqref{eq:floor}, $r_k=\max\{r^{\mathrm f}_k,\min\{f,r_{0}\}\}=r^{\mathrm f}_k+[\min\{f,r_0\}-r^{\mathrm f}_k]^+$, so $r_k-r^{\mathrm f}_k=\varepsilon_k\ge0$. Substituting in Equation~\eqref{eq:dnii} gives $\dNII^{\mathrm{floored}}-\dNII^{\mathrm{free}}=-\sum_k\mathrm{CF}_k(1-t_k)\varepsilon_k$. The monotonicity of Proposition~\ref{prop:pair} gives the sign for the measure, because a rise of $b_i$ at the down scenario cannot lower $P_{1/2}(a_i,b_i)$ and the maximum is monotone. The condition for binding is $r_0-B/10^4<f$ at some bucket with $r_0>f$, and the minimum over the buckets is the binding one.
+\end{proof}
+
+The effect of the floor on a measure is therefore the effect of a deliberate loss of symmetry between the two legs: the floor that protects the UR from negative real rates reduces the gain of a liability-sensitive UR leg in a falling-rate scenario, and the pair rule, which offsets that gain against a peso loss at 50 percent, then offsets less. The statement that a floor never raises the measure, which is natural for a floor read as a limit on the shock, is false for a measure built on a pair rule, and Section~\ref{sec:results-floors} reports the books in which it fails. For the value measure no sign is claimed: the effect depends on the argmax scenario, which in the book is the parallel-up shock, at which no floor binds.
+
+\subsection{The decomposition is exact, and two switches are dummies by construction}
+\label{sec:theory-shapley}
+
+\begin{proposition}[properties of the decomposition]
+\label{prop:shapley}
+For each measure the five values $\varphi_j$ of Equation~\eqref{eq:shapley} add up to $M(\mathbf 1)-M(\mathbf 0)$. For the income measure the own sizes switch is a dummy, $\varphi_{\mathrm s}^{\mathrm{NII}}=0$, because the two scenarios of the income measure are one parallel shift of $B$ basis points for both legs and the sizes enter the income measure through no other input; and the charge switch has $\varphi_{\chi}^{\mathrm{NII}}=\kappa|\PNUR|$ exactly, because it adds the same constant to the measure of every other treatment. For the value measure $\varphi_\chi^{\mathrm{EVE}}=0$, because the charge is not part of the value measure.
+\end{proposition}
+\begin{proof}
+Efficiency holds because the weights of Equation~\eqref{eq:shapley} are those of the average over the orders of the five switches, along each of which the marginal contributions telescope to $M(\mathbf 1)-M(\mathbf 0)$. For the sizes switch, $M_{\mathrm{NII}}(\tau)$ does not depend on $\tau_{\mathrm s}$ because the income scenarios of Equation~\eqref{eq:shocks} do not use the size table for either leg, so every marginal contribution is zero. For the charge, $M_{\mathrm{NII}}(\mathbf 1_{S\cup\{\chi\}})-M_{\mathrm{NII}}(\mathbf 1_S)=\kappa|\PNUR|$ for every $S$, and the weights add to one. For the value measure the charge does not enter.
+\end{proof}
+
+These properties are checks as much as results: the experiments find $\varphi_{\mathrm s}^{\mathrm{NII}}=0$ and $\varphi_\chi^{\mathrm{NII}}=\repChargeLng{}$ million pesos in the long UF variant exactly as the proposition requires, and a value other than these would be a defect of the implementation.

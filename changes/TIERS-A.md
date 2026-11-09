@@ -1,2 +1,0 @@
-- Shell 0.19.6 adopted: the footer licence is marked translate=no (known shell defect 47).
-- Template 0.13.000 and 0.14.000 adopted: the SDD method ladder with each method classified, four proposed methods with their hypotheses, the manuscripts guard, and the internal-names guard (no internal method classification or claim id in a notebook, the README or the app; notebook sections Comparison and Evidence, 26 notebook pairs renamed by what they hold).

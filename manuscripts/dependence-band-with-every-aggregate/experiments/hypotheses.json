@@ -1,0 +1,48 @@
+{
+  "_comment": "The predictions of the manuscript, set by the author; the file was first committed together with the results. Each experiment script reads its criteria from this file and writes the outcome next to the numbers.",
+  "H1": {
+    "text": "Structure. In each of the six committed aggregates the band has eight rows in the stated order, exactly one row labelled headline capital and it is the simple sum, seven rows labelled information, one horizon and one confidence level, and an Euler allocation that adds up to the aggregate expected shortfall.",
+    "criterion": {"aggregates": 6, "rows": 8, "headline_rows": 1, "information_rows": 7, "euler_relative_error_max": 1e-6},
+    "refuted_if": "any aggregate fails any element"
+  },
+  "H2": {
+    "text": "Reproduction. The engine, given the marginals rebuilt from the committed quantile grids and the committed seed, returns every row of the committed band within the larger of three combined Monte Carlo standard errors and 0.5 percent of the committed row.",
+    "criterion": {"seed": 42, "n_draws": 1000000, "relative_tolerance": 0.005, "se_multiple": 3.0},
+    "refuted_if": "any row differs by more than the tolerance"
+  },
+  "H3": {
+    "text": "The band is not sampling noise and no single row speaks for it. The width of the band (worst case less lower bound) is at least 100 times the largest Monte Carlo standard error of its rows, and for every row some other row of the band differs from it by more than 10 percent.",
+    "criterion": {"width_over_max_se_min": 100.0, "farthest_row_relative_difference_min": 0.10},
+    "refuted_if": "the width is below 100 standard errors, or some row lies within 10 percent of every other row"
+  },
+  "H4a": {
+    "text": "Coverage by the sharp range. Over the planted dependence structures the interval from the lower bound to the worst case contains the capital of the planted structure in all of them (a structure is counted as covered when the interval contains the truth after widening it by three standard errors of the truth).",
+    "criterion": {"covered_min_share": 1.0, "truth_se_widening": 3.0},
+    "refuted_if": "any planted structure lies outside the widened range"
+  },
+  "H4b": {
+    "text": "Coverage by the interior rows. The interval spanned by the five interior rows of the band (square-root rule, Gaussian copula, t copula at 4, 8 and 30 degrees of freedom) contains the capital of the planted structure in at least 75 percent of the structures.",
+    "criterion": {"covered_min_share": 0.75, "truth_se_widening": 3.0},
+    "refuted_if": "fewer than 75 percent are covered"
+  },
+  "H4c": {
+    "text": "A single diversified figure is not reliable. The Gaussian copula row alone lies within 5 percent of the planted capital in at most half of the structures.",
+    "criterion": {"within_share_max": 0.5, "relative_tolerance": 0.05},
+    "refuted_if": "more than half of the structures are within 5 percent"
+  },
+  "H5": {
+    "text": "Invariance of the bounds. The lower bound and the worst case are equal in the base band and in the band under the market-credit correlation of 0.8 (relative difference below 1e-9), while the Gaussian copula row moves by more than 10 percent.",
+    "criterion": {"bound_relative_difference_max": 1e-9, "gaussian_move_min": 0.10},
+    "refuted_if": "a bound moves, or the Gaussian row moves by 10 percent or less"
+  },
+  "H6": {
+    "text": "The common horizon and level matter. Reading one marginal (the market marginal) at 99 percent in place of 99.9 percent changes the simple sum by at least 10 percent, and the consistency test of the engine returns red on that band.",
+    "criterion": {"headline_change_min": 0.10, "marginal": "market", "wrong_level": 0.99},
+    "refuted_if": "the change is below 10 percent or the test is not red"
+  },
+  "H7": {
+    "text": "Each row feeds a test. Removing the t copula rows leaves the copula-choice test of the engine unrunnable and removing the stressed band leaves the correlation-stress test unrunnable; with the Gaussian row alone, at most half of the nine tests of the aggregation battery can be run.",
+    "criterion": {"tests_total": 9, "runnable_with_gaussian_only_max_share": 0.5},
+    "refuted_if": "either test still runs without its rows, or more than half of the tests run on the Gaussian row alone"
+  }
+}

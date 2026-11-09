@@ -266,7 +266,10 @@ def outputs(c: Core, ctx: dict[str, Any], stress_eepe: float, sens: list[dict[st
 
     margined = spec.mpor is not None
     nica = float(e.dim[0, 0]) if e.dim is not None else 0.0
-    sa = rg.sa_ccr_block(trades, e.v0, e.c0 if margined else 0.0, margined, book.CSA["threshold"] if margined else 0.0,
+    # CRE52.10: C is the haircut value of the net collateral held, the variation margin and the NICA of CRE52.17 together;
+    # CRE52.23 takes the multiplier from V - C with that C, so a margined netting set with an initial margin passes c0 + NICA
+    # (the unmargined variants hold no collateral and the margined ones without an initial margin have NICA 0).
+    sa = rg.sa_ccr_block(trades, e.v0, (e.c0 + nica) if margined else 0.0, margined, book.CSA["threshold"] if margined else 0.0,
                          book.CSA["mta"] if margined else 0.0, nica, spec.mpor)
     ba = rg.ba_cva_block(trades, sa["ead"]["amount"])
     try:

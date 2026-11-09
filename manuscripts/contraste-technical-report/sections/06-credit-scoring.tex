@@ -7,7 +7,7 @@
 \providecommand*{\input@path}{}
 \g@addto@macro\input@path{{tables/}}
 \makeatother
-\input{../tables/credit-scoring-numbers}
+\input{tables/credit-scoring-numbers}
 
 A credit score maps the characteristics $x$ of an applicant or a borrower to the probability of default over a stated horizon,
 $\PD(x)=\Prob(Y=1\mid X=x)$, where $Y=1$ marks a default and $X$ the vector of inputs. The same quantity drives the approval
@@ -131,11 +131,11 @@ split lists. The implementation is the module \texttt{pipeline/model/scorecard.p
 judge it are the functions \texttt{disc\_auc}, \texttt{disc\_delong}, \texttt{disc\_ks}, \texttt{pd\_hosmer\_lemeshow},
 \texttt{pd\_spiegelhalter}, \texttt{pd\_brier}, \texttt{pd\_ece} and \texttt{stability\_psi} of \texttt{riskvalidation} 1.1.0.
 
-\input{../tables/credit-scoring-fit}
+\input{tables/credit-scoring-fit}
 
 The scorecard is compared with every other method by the paired DeLong test (Equation~\eqref{eq:cs-delong}), and its acceptance
 criterion has three parts: the binned inputs, fitted on the training slice only, reproduce monotone default rates; the points
-table recomputes every score exactly; and the AUC with its DeLong interval, the Kolmogorov--Smirnov separation, the Brier score,
+table recomputes every score exactly (checked on the \csPointsN{} scored applicants stored with the holdout); and the AUC with its DeLong interval, the Kolmogorov--Smirnov separation, the Brier score,
 the calibration by grade and the population stability index out of sample are reported. On the Taiwan fit all
 \csPointsMonotone{} of \csPointsFeatures{} retained inputs have monotone default rates over their bins, and the points table
 recomputes the points of \csPointsMatch{} of the \csPointsN{} scored applicants stored with the holdout. Table~\ref{tab:cs-points}
@@ -144,7 +144,7 @@ shows the points of the two inputs with the largest information value: the Septe
 spans only \csPointsSpanLimit{} points, so the ranking of the scorecard is carried by the repayment history. The score of a borrower is read directly from the table, which is what makes the
 model auditable line by line.
 
-\input{../tables/credit-scoring-points}
+\input{tables/credit-scoring-points}
 
 \begin{algorithm}[htbp]
 \caption{Fit of the monotone weight-of-evidence scorecard on the training slice}
@@ -191,7 +191,7 @@ on the training slice only, by the mean log loss over the $|\mathcal{F}|=10$ val
 \label{eq:cs-cv}
 \end{equation}
 where $\mathrm{LL}$ is the mean logistic log loss and $\hat p_C^{\mathrm{tr}}$ the model fitted on the training part of a fold with
-strength $C$. The final model is refitted on the whole training slice with $\hat C$.
+strength $C$. The final model is refitted on the whole training slice with $\hat C$ (Algorithm~\ref{alg:cs-penalised}).
 
 The assumptions are those of the scorecard, plus sparsity: that a few inputs carry the signal, which holds for the repayment
 history and the credit limit. The one parameter of the method is $C$, selected from a six-point logarithmic grid by
@@ -234,6 +234,24 @@ scorecard have the same AUC of \csHoLlAuc{} (difference \csHoLlDlDiff{}, $p=\csH
 measurable when cross-validation selects the weakest penalty of the grid; the value of the method is as the control that separates the effect of
 a different estimator from the effect of a different model class in the comparisons of the sections that follow.
 
+\begin{algorithm}[htbp]
+\caption{Fit of the penalised logistic regression on weights of evidence, with the strength chosen by cross-validation}
+\label{alg:cs-penalised}
+\begin{algorithmic}[1]
+\Require weights of evidence $Z$ of the inputs that passed the information-value screen, defaults $y$ of the training slice; the folds $\mathcal{F}$ (five folds, two repeats); the grid $\mathcal{G}$
+\For{each $C\in\mathcal{G}$, in increasing order}
+  \For{each fold $(\mathrm{tr},\mathrm{va})\in\mathcal{F}$}
+    \State fit the L1 logistic regression of Equation~\eqref{eq:cs-l1} on $(Z_{\mathrm{tr}},y_{\mathrm{tr}})$ with strength $C$ (\texttt{liblinear}, at most 2,000 iterations)
+    \State $\mathrm{LL}_{C,\mathrm{va}}\gets$ mean log loss of its PD on $(Z_{\mathrm{va}},y_{\mathrm{va}})$
+  \EndFor
+  \State $\bar{\mathrm{LL}}_C\gets$ mean of $\mathrm{LL}_{C,\mathrm{va}}$ over the folds
+\EndFor
+\State $\hat C\gets$ the $C$ with the smallest $\bar{\mathrm{LL}}_C$ (the first of equal values in increasing order)
+\State refit on all of $(Z,y)$ with strength $\hat C$; $\;\mathcal{S}\gets\{j:\hat\beta_j\neq0\}$; $\;$ flag whether every $\hat\beta_j\le0$
+\State \Return $\hat\beta_0$, $\hat\beta$, $\hat C$, $\mathcal{S}$, the sign flag
+\end{algorithmic}
+\end{algorithm}
+
 % ---------------------------------------------------------------------------------------------------------------------
 \subsection{Penalised logistic tree regression (PLTR)}
 \label{sec:m3}
@@ -263,7 +281,7 @@ J_b=\frac{|\mathcal{S}\cap\mathcal{S}_b|}{|\mathcal{S}\cup\mathcal{S}_b|},\qquad
 \label{eq:cs-jaccard}
 \end{equation}
 the Jaccard index between the rules selected on the full training slice and on the resample, with $J_b=1$ when both sets are
-empty. The acceptance criterion of the method, as the design states it, is that the rule set is stable across 20 bootstraps and
+empty. The acceptance criterion of the method is that the rule set is stable across 20 bootstraps and
 that the Jaccard index is reported; the index is a measurement, and Section~\ref{sec:results-credit-scoring} reads its value.
 
 The assumptions are those of the penalised logistic regression, and one more: that interactions of at most two variables and
@@ -274,7 +292,7 @@ supported by at least 5\,\% of the rows its tree was grown on. On the Taiwan fit
 are \csFitTwPlCand{} candidate rules out of at most $20+3\cdot190=590$, and \csFitTwPlSel{} are selected. The number of trees is
 $k+\binom{k}{2}=210$ for $k=20$, each fitted in $O(N\log N)$ at these depths; the penalised fit then runs on $N\times(k+M)$
 columns, the strength search repeats it 60 times and the bootstrap adds 20 refits at the fixed strength. Rule extraction
-dominates the run time: the design of the vintage case records 13 minutes for this method at 100,000 rows, which is why the
+dominates the run time: a pilot run of this method took 13 minutes at 100,000 rows (a figure from the design of the case, not from a committed artifact), which is why the
 vintage windows of about a million loans are fitted on a stratified sample of \csCthreeFitRows{} rows. The implementation is
 \texttt{pipeline/model/penalised.py} (\texttt{extract\_rules}, \texttt{fit\_pltr}) on \texttt{scikit-learn} 1.9.1
 \texttt{DecisionTreeClassifier} and \texttt{LogisticRegression}, with the rule extraction written in the pipeline.
@@ -332,18 +350,19 @@ score array of that term,
 where $\hat g$ is the isotonic calibration map of Section~\ref{sec:m5}, fitted on the calibration slice as the nondecreasing
 function that minimises $\sum_i(y_i-g(\hat p_i))^2$ over the calibration rows \citep{credit-scoring:zadrozny2002}, and clipped to
 $[10^{-6},1-10^{-6}]$ so that a PD stays inside the open interval that the data contracts require. A scorer outside Python needs
-only $\beta_0$, the bins and the arrays $s_t$.
+only $\beta_0$, the bins and the arrays $s_t$. Algorithm~\ref{alg:cs-ebm} states the fit, the export and its checks.
 
 The assumptions are that the response is additive up to the detected pairs, that the direction of each constrained input is known
 (the same directions as for the scorecard are passed as monotone constraints), and that the pairs found on the training slice
 represent the interactions of the population. The parameters are set below the library defaults on purpose: at most
 \csEbMaxBins{} bins per main term (the library default is 1,024), \csEbMaxIntBins{} bins per pairwise term, \csEbInteractions{}
 pairwise terms, \csEbOuterBags{} outer bags, one thread and a fixed seed. The default number of bins would produce shape
-functions too large to ship as a document within the 256\,KiB budget of the artifacts and too fine to read as a points table; the
+functions too large to ship as a document within the 256\,KiB size limit of the artifacts and too fine to read as a points table; the
 bin counts are therefore a design choice, not a tuned value. On the Taiwan fit the model has \csFitTwEbTerms{} terms (20 main
 effects and \csEbmPairs{} pairs), and the isotonic map has \csFitTwEbKnots{} knots. The cost of scoring is $T$ array lookups, and
-the cost of fitting grows with the number of bags, terms and boosting rounds; the export has the size of the sum of the term
-arrays. In every exported array, index 0 holds the missing values and the last index the categories the training slice never
+the cost of fitting is $O(B\,R\,T\,N)$ for $B$ outer bags, $R$ boosting rounds (chosen by the early stopping of the library), $T$
+terms and $N$ training rows, because each round updates one term from a pass over the rows binned on that term, plus the screening of
+the candidate pairs, which this order leaves out; the export has the size of the sum of the term arrays. In every exported array, index 0 holds the missing values and the last index the categories the training slice never
 held, so that a scorer outside Python handles both without a rule of its own. Pairwise terms are the part of the model that is
 hardest to turn into a reason code, since the contribution depends on two inputs at once, and Contraste limits them to
 \csEbInteractions{}; the monotone constraints are set on the main effects, so the check of the exported arrays below covers the main
@@ -364,6 +383,21 @@ On the paired DeLong comparison the method gains \csHoEbDlDiff{} AUC over the sc
 a gain of the same size as the penalised logistic tree regression (\csHoPlDlDiff{}), which suggests that the non-linearity of the
 repayment history and the credit limit, not the choice of method, produces the gain. That reading is a hypothesis: the artifacts
 do not isolate the components of the gain, and the pairwise terms are not ablated.
+
+\begin{algorithm}[htbp]
+\caption{Fit of the explainable boosting machine, its export, the isotonic map and the checks of the export}
+\label{alg:cs-ebm}
+\begin{algorithmic}[1]
+\Require training inputs $X$ and defaults $y$; directions $c_j\in\{-1,0,+1\}$ (0 for categorical inputs); calibration slice $(X_{\mathrm{cal}},y_{\mathrm{cal}})$; at most 64 bins per main term, 16 per pair, 5 pairs, 8 outer bags, seed
+\State fit the model of Equation~\eqref{eq:cs-ebm} by cyclic boosting on the training slice, with the monotone constraints on the main effects
+\State export the intercept $\beta_0$, for each input its bins and for each term $t$ its array $s_t$ (index 0 for missing values, the last index for unseen categories)
+\State $\hat p_i\gets\sigma(\eta(x_i))$ for the calibration rows, with $\eta$ of Equation~\eqref{eq:cs-ebm-export} evaluated from the export
+\State fit the nondecreasing isotonic map $\hat g$ on $(\hat p_i,y_i)$ of the calibration slice; clip its values to $[10^{-6},1-10^{-6}]$
+\For{each main effect with $c_j\neq0$} \State check that $c_j\,s_t$ is nondecreasing over the interior bins of the export \EndFor
+\State evaluate $\eta$ from the export alone on the applicants stored with the holdout; report the largest absolute difference from the stored logits
+\State \Return the export, $\hat g$, the monotonicity record and the difference
+\end{algorithmic}
+\end{algorithm}
 
 % ---------------------------------------------------------------------------------------------------------------------
 \subsection{Monotone gradient boosting with explicit calibration}
@@ -416,7 +450,7 @@ Taiwan fit early stopping gave \csFitTwLgRounds{} trees for LightGBM and \csFitT
 number of rounds is selected by the cross-validation, the bootstrap of the reasons adds $B_r$ refits at the selected number of
 rounds, and scoring costs $T$ tree traversals. The implementation is \texttt{pipeline/model/gbm.py} (\texttt{fit\_lightgbm},
 \texttt{fit\_xgboost}, \texttt{monotonicity}, \texttt{reason\_codes}, \texttt{reason\_stability}) on \texttt{LightGBM} 4.7.0 and
-\texttt{XGBoost} 3.4.1, with the map in \texttt{pipeline/core/calibration.py}.
+\texttt{XGBoost} 3.4.1, with the map in \texttt{pipeline/core/calibration.py}; Algorithm~\ref{alg:cs-gbm} states the procedure.
 
 The acceptance criterion has four parts: monotonicity verified on the partial-dependence grids; an isotonic map fitted on a
 separate slice; the Brier score and the reliability before and after the map; and the stability of the reason codes, measured as
@@ -430,6 +464,25 @@ Section~\ref{sec:results-credit-scoring}: for LightGBM the expected calibration 
 nearly halves it. The Brier score is \csHoLgBrier{} for LightGBM and \csHoXgBrier{} for XGBoost, against \csHoScBrier{} for the
 scorecard. LightGBM is the method with the highest AUC on the holdout (\csHoLgAuc{}), a gain of \csHoLgDlDiff{} over the scorecard
 ($p=\csHoLgDlP{}$); XGBoost reaches \csHoXgAuc{} with the same constraints, so the gain does not depend on the engine.
+
+\begin{algorithm}[htbp]
+\caption{Fit of the monotone gradient boosting machine, its isotonic map, the partial-dependence check and the stability of the reasons}
+\label{alg:cs-gbm}
+\begin{algorithmic}[1]
+\Require training slice $(X,y)$; directions $c_j$; folds $\mathcal{F}$; calibration slice; patience 50, ceiling 2,000 rounds; $B_r=10$, $n_r=200$
+\State run the cross-validation over $\mathcal{F}$ with the monotone constraints and early stopping; $\hat T\gets$ the number of rounds at which it stops
+\State train the ensemble on the whole training slice for $\hat T$ rounds
+\State fit the isotonic map $\hat g$ on the PD of the calibration slice (Section~\ref{sec:m4})
+\State draw $n_r$ training records; for each constrained input $j$ and each of the $G$ quantile levels, set the input to the level and evaluate the raw score $F$
+\State $v_j\gets$ the largest fall of $c_j F$ along the grid, floored at 0; accept the monotonicity when every $v_j\le10^{-12}$ \Comment{Equation~\eqref{eq:cs-pdp}}
+\State compute the TreeSHAP contributions of $n_r$ holdout records; $T_i\gets$ the four inputs with the largest contributions
+\For{$b=1,\dots,B_r$}
+  \State draw $N$ training rows with replacement; train for $\hat T$ rounds; $T_i^{(b)}\gets$ its four largest contributions for the same records
+  \State $O_b\gets\frac1{n_r}\sum_i|T_i\cap T_i^{(b)}|/4$ \Comment{Equation~\eqref{eq:cs-overlap}}
+\EndFor
+\State \Return the ensemble, $\hat g$, $(v_j)_j$, $\bar O$ and $\min_b O_b$
+\end{algorithmic}
+\end{algorithm}
 
 % ---------------------------------------------------------------------------------------------------------------------
 \subsection{TabPFN tabular foundation model}
@@ -468,22 +521,45 @@ Prior Labs License 1.1, Apache 2.0 with an attribution clause (\emph{Built with 
 \citep{credit-scoring:tabpfnlicence}. Contraste therefore selects the weights of version~2, shows the licence and the attribution
 in every view of the method, caches the weights in the models root of the device, and refuses to fit when the weights did not
 come from there. The parameters are $E=8$ ensemble members on the CPU, the training codes of categorical inputs learned on the
-training slice (an unseen category is $-1$), and the isotonic map; none is tuned. The method runs only on the small case. The
+training slice (an unseen category is $-1$), and the isotonic map; none is tuned (Algorithm~\ref{alg:cs-tabpfn}). The method runs only on the small case. The
 German twin has \csFitGeTrain{} training rows, \csFitGeCal{} calibration rows and a holdout of \csGtN{} applicants with
-\csGtEvents{} defaults; the context of a transformer holds all training rows, so cost and memory grow with the training size and a
-context limit is the expected failure on the samples of \csFitTwTrain{} rows and more, which is why the SDD restricts the rung to
+\csGtEvents{} defaults; the context of a transformer holds all training rows, so cost grows with the training size, as the next paragraph states, and a
+context limit is the expected failure on the samples of \csFitTwTrain{} rows and more, which is why the method is restricted to
 small cases.
 On the vintage samples the method is absent from the environment that produced the committed results (the package is an optional
 extra), and no number stands in for it. The implementation is \texttt{pipeline/model/tabpfn\_rung.py} (\texttt{fit\_tabpfn}) on
-the \texttt{tabpfn} package.
+the \texttt{tabpfn} package, version \csTpVersion{}, with the version~2 weights file \texttt{\csTpWeights{}} on the CPU.
+
+The cost of one forward pass follows from the attention layers of the architecture (as implemented in the package: attention
+along a row between the features of one record, and attention along a column between the cells of one feature, in which the
+training cells attend to one another and each test cell attends to the training cells). For $N$ training rows, $M$ test rows,
+$d$ features and $L$ layers, one member costs $O\bigl(L\,[(N+M)\,d^{2}+(N^{2}+MN)\,d]\bigr)$, and the $E=8$ members multiply it by $E$.
+The order is quadratic in the training size and in the number of features, which is the cost behind the restriction to small
+cases. The statement is derived from the layers of the package; the original paper was not opened to compare it, and no wall time
+of the fit on the German twin is recorded in a committed artifact, so none is quoted.
 
 The acceptance criterion is that the method runs on small cases only, that the weights licence is shown on every view, and that
-it meets the same checks as the boosted models. On the German twin the method reaches an AUC of \csGtTpAuc{} against \csGtScAuc{}
+it meets the checks that apply to it: discrimination, the Brier score and the reliability of the calibrated score (monotonicity
+and the stability of reason codes do not apply, because the method has no constraint and no tree attribution). On the German twin the method reaches an AUC of \csGtTpAuc{} against \csGtScAuc{}
 for the scorecard, a paired difference of \csGtTpDlDiff{} ($p=\csGtTpDlP{}$): it does not beat the scorecard. Its Brier score is
-\csGtTpBrier{} against \csGtScBrier{}, and its expected calibration error \csGtTpEce{} against \csGtScEce{}, the lowest of the
-ladder on this sample. The sample does not reproduce a gain of the foundation model on small data, and it should not be read as a
+\csGtTpBrier{} against \csGtScBrier{}, and its expected calibration error \csGtTpEce{} after the isotonic map (\csGtEceTpRaw{} before it) against \csGtScEce{} for the scorecard, the lowest of the
+methods on this sample. The sample does not reproduce a gain of the foundation model on small data, and it should not be read as a
 ranking of the methods either: with \csGtEvents{} defaults in the holdout the half-width of the interval of each AUC is about
 \csGtScHalf{}, and none of the differences in AUC between a learned method and the scorecard is significant.
+
+\begin{algorithm}[htbp]
+\caption{Fit of the TabPFN challenger and its isotonic map on a small sample}
+\label{alg:cs-tabpfn}
+\begin{algorithmic}[1]
+\Require training slice $(X,y)$ and calibration slice with at most about ten thousand rows in all; $E=8$ members; weights of version~2 in the models root
+\State learn the integer codes of the categorical inputs on the training slice (an unseen category is $-1$)
+\State load the weights from the models root; refuse to fit when they did not come from there
+\State store the training rows and labels as the context of the network (no weight is updated)
+\State $\bar q_i\gets\frac1E\sum_{e=1}^{E}q_e(x_i\mid\mathcal{D}_{\mathrm{train}})$ for the calibration rows, one forward pass per member
+\State fit the isotonic map $\hat g$ on $(\bar q_i,y_i)$ of the calibration slice
+\State \Return the context, $\hat g$, and the package and weights record
+\end{algorithmic}
+\end{algorithm}
 
 % ---------------------------------------------------------------------------------------------------------------------
 \subsection{Reject inference on a sample with a known rejected population}
@@ -560,8 +636,8 @@ The experiment has \csRjRows{} applicants, \csRjDev{} in development and \csRjTe
 policy, and four policies with $\kappa\in\{0,\,0.25,\,0.5,\,1\}$. The accepted share, the number of bands, the weight floor of
 \csRjFloor{} (no applicant weighs more than 20 times), the prudence factor of \csRjPrudence{} (the rejected assumed twice as bad
 as the accepted of their band, after \citealt{credit-scoring:siddiqi2017}) and the minimum of \csRjMinAcc{} accepted applicants per
-band are fixed values. The strengths of the private signal became a ladder because a first probe at $\kappa=1$ alone gave an
-accepted book with 2.8\,\% defaulters against 30\,\% in the population, a book no lender holds; the moderate policy, $\kappa=0.5$,
+band are fixed values. The private signal takes four strengths because at $\kappa=1$ alone the accepted book holds
+\csRjStrAccRate{}\,\% defaulters against \csRjMarPop{}\,\% in the population, a book no lender holds; the moderate policy, $\kappa=0.5$,
 was fixed as the judged regime before it was run, and no treatment, parameter or hypothesis was changed after any result was seen.
 The three hypotheses are: under the judged regime the 95\,\% interval of the accepted-only bias lies below zero (H1); at least one
 treatment cuts the absolute bias by \csRjHtwo{}\,\% or more with an interval above zero (H2); and no treatment improves the AUC by
@@ -585,11 +661,13 @@ H3 \csRjHthreeHolds{}.
 Table~\ref{tab:cs-c01-holdout} compares the methods on the locked holdout of the Taiwan sample, \csHoN{} cards with \csHoEvents{}
 defaults (a default rate of \csHoRate{}\,\%). The scorecard reaches an AUC of \csHoScAuc{} (95\,\% interval \csHoScAucLo{} to
 \csHoScAucHi{}); the single-variable benchmark on the September repayment status already reaches \csHoPzAuc{}, so the scorecard
-lifts the AUC by \csHoScOverPz{} over it. The four learned methods sit between \csHoPlAuc{} and \csHoLgAuc{}, a gain of
-\csHoPlDlDiff{} to \csHoLgDlDiff{} over the scorecard, and every paired DeLong $p$-value is below $10^{-9}$, so the gain is
+lifts the AUC by \csHoScOverPz{} over it. The four learned methods sit between \csHoEbAuc{} and \csHoLgAuc{}, a gain of
+\csHoEbDlDiff{} to \csHoLgDlDiff{} over the scorecard, and every paired DeLong $p$-value is below $10^{-9}$, so the gain is
 statistically unambiguous at \csHoN{} cards. The table does not show whether a gain of this size changes a decision; the decision
 impact at a cut-off is a separate output of the case. The penalised logistic regression repeats the scorecard exactly, which
-confirms that the gain comes from non-linear and interaction structure rather than from the estimator.
+shows that the estimator does not produce the gain; whether the gain comes from non-linear structure or from the
+\csFitTwDropIv{} inputs that the scorecard screens out (the learned methods use all \csFitTwInputs{} raw inputs, the scorecard the
+\csFitTwKept{} binned ones) is not isolated by the artifacts.
 Figure~\ref{fig:cs-roc} shows where the gain sits, in the right panel as the difference in true positive rate; it does not show
 the uncertainty of the curves, which the intervals of the table give.
 
@@ -602,7 +680,7 @@ rate between each method and the scorecard along the false positive rate (right)
 \label{fig:cs-roc}
 \end{figure}
 
-\input{../tables/credit-scoring-c01-holdout}
+\input{tables/credit-scoring-c01-holdout}
 
 \paragraph{Calibration.}
 The scorecard has a Brier score of \csHoScBrier{}, a Brier skill of \csHoScSkill{} against the trivial forecast, and a
@@ -645,7 +723,7 @@ changes: the explainable boosting machine leads (\csSsEbAuc{}), LightGBM follows
 regression (\csSsPlAuc{}) is no better than the scorecard (\csSsScAuc{}), which is consistent with the low stability of its rule
 set at that size. On the German twin no learned method differs significantly from the scorecard.
 
-\input{../tables/credit-scoring-c01-variants}
+\input{tables/credit-scoring-c01-variants}
 
 \begin{figure}[htbp]
 \centering
@@ -667,7 +745,7 @@ large sample, and less on the small ones. The checks do not say why; correlated 
 and the artifacts do not test that explanation. What follows for use is that the rules of the method should be read as examples
 of the structure the data carry, not as a stable list of risk drivers.
 
-\input{../tables/credit-scoring-checks}
+\input{tables/credit-scoring-checks}
 
 \begin{figure}[htbp]
 \centering
@@ -696,9 +774,9 @@ the scorecard; on the pooled file, with \csCtwoHoldEvP{} holdout bankruptcies, n
 corporate samples a learned method can gain much in AUC and still be the less trustworthy estimate, so the gain must be read
 with the gap.
 
-\input{../tables/credit-scoring-c02-auc}
+\input{tables/credit-scoring-c02-auc}
 
-\input{../tables/credit-scoring-c02-diff}
+\input{tables/credit-scoring-c02-diff}
 
 \begin{figure}[htbp]
 \centering
@@ -714,8 +792,8 @@ Table~\ref{tab:cs-c03-auc}, Table~\ref{tab:cs-c03-vintage}, Figure~\ref{fig:cs-c
 results. Discrimination holds through the cycle: the AUC of the scorecard is between \csCthreeDScAuc{} and \csCthreeEScAuc{} on
 the five cohorts, and no learned method dominates, since LightGBM leads on two cohorts, the penalised logistic regression on two
 and the penalised logistic tree regression on one, while the latter and the explainable boosting machine fall to
-\csCthreeEPlAuc{} and \csCthreeEEbAuc{} on the last cohort, which is a symptom of fitting on five origination attributes and
-a stratified sample of \csCthreeFitRows{} loans. Level is another matter. The scorecard for the FY2006--07 cohort, fitted on
+\csCthreeEPlAuc{} and \csCthreeEEbAuc{} on the last cohort, which may reflect fitting on five origination attributes and
+a stratified sample of \csCthreeFitRows{} loans; the artifacts do not test that explanation. Level is another matter. The scorecard for the FY2006--07 cohort, fitted on
 approvals through FY\csCthreeALast{}, predicts a 5-year charge-off probability of \csCthreeVAPred{}\,\% for the FY2006 vintage that went on to
 \csCthreeVAObs{}\,\%, an under-prediction of \csCthreeVAGap{} points, and \csCthreeVBPred{}\,\% against \csCthreeVBObs{}\,\% for FY2007
 (\csCthreeVBGap{} points); the gap is \csCthreeVCGap{} points for FY2008, \csCthreeVDGap{} for FY2009, and the sign reverses from FY2010
@@ -726,9 +804,9 @@ do not show whether a model
 fitted on a bank's own book would have behaved so: the loans are guaranteed small-business loans made under a federal program,
 the file carries no delinquency history, balance or rating, and the sample is not the SME book of a bank.
 
-\input{../tables/credit-scoring-c03-auc}
+\input{tables/credit-scoring-c03-auc}
 
-\input{../tables/credit-scoring-c03-vintage}
+\input{tables/credit-scoring-c03-vintage}
 
 \begin{figure}[htbp]
 \centering
@@ -766,9 +844,9 @@ experiment measures what a treatment does when the truth is known by constructio
 differences are means over repetitions of one policy design. What follows for validation is that the accepted-only bias must be
 measured, not assumed, and that no standard treatment should be adopted on its AUC alone.
 
-\input{../tables/credit-scoring-reject}
+\input{tables/credit-scoring-reject}
 
-\input{../tables/credit-scoring-reject-regimes}
+\input{tables/credit-scoring-reject-regimes}
 
 \begin{figure}[htbp]
 \centering
@@ -780,9 +858,11 @@ underwriter's private signal in the legacy policy.}
 \end{figure}
 
 \paragraph{What the results support.}
-Across the three cases the scorecard is a strong reference: it matches the penalised regression exactly, it trails the learned
-methods by a few AUC points where the samples are large (Taiwan, SBA) and by more on small corporate samples (Polish files), and
-it is the only method whose every parameter can be read from a table. The learned methods earn their place where the paired test
+Across the three cases the scorecard is a strong reference. It matches the penalised regression exactly on the Taiwan cards,
+where the learned methods lead it by about two AUC points; the penalised regression matches or exceeds it on the Polish files
+and on the SBA cohorts; on the SBA cohorts no learned method dominates, each leading the scorecard on some cohorts and trailing
+it on others (Table~\ref{tab:cs-c03-auc}); and on the small Polish corporate samples the learned methods lead it by more
+(Table~\ref{tab:cs-c02-diff}). It is the only method whose every parameter can be read from a table. The learned methods earn their place where the paired test
 and the structural checks both agree, as for the explainable boosting machine and LightGBM on the Taiwan holdout, and they do
 not where the sample is small, as on the German twin. Calibration, stability of the selected structure and the level of the
 estimate through a cycle are separate properties from ranking, and each needed its own measurement.

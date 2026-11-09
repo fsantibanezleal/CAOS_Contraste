@@ -247,7 +247,6 @@ TEST_NAME = {
     "aggregation.horizon_confidence_consistency": "One horizon and one level across the marginals",
     "portfolio.euler_additivity": "Euler contributions add to the total (total ES, CLP bn)",
     "aggregation.elliptical_mc_agreement": "Monte Carlo against the variance-covariance formula, elliptical case",
-    "aggregation.rosenberg_schuermann_reference": "Additive overestimate against the published range (reference)",
     "stress.sensitivity_monotonicity": "Coefficients with the wrong sign",
     "stress.satellite_backcast": "Back-cast of 2020 to 2025 (RMSE, points; peak timing, quarters)",
     "stress.static_balance_sheet_rules": "Static balance sheet rules violated",
@@ -275,7 +274,7 @@ def fmt_test(t: dict) -> tuple[str, str]:
 
 def build_battery() -> None:
     rows = []
-    tests = list(FED["tests"]) + [t for t in TCOP["tests"] if t["test_id"] in ("aggregation.elliptical_mc_agreement", "aggregation.rosenberg_schuermann_reference")]
+    tests = list(FED["tests"]) + [t for t in TCOP["tests"] if t["test_id"] == "aggregation.elliptical_mc_agreement"]
     order = list(TEST_NAME)
     tests.sort(key=lambda t: order.index(t["test_id"]))
     counts = {"green": 0, "amber": 0, "red": 0, "not_evaluated": 0}
@@ -303,6 +302,8 @@ def build_battery() -> None:
     macro("EllipticalZ", f(el["statistic"], 2), "C18/t-copula-baseline.json tests[aggregation.elliptical_mc_agreement].statistic")
     ss = by[("stress.sensitivity_monotonicity", None)]
     macro("WrongSigns", str(int(ss["statistic"])), "C18/fed-2026-severely-adverse.json tests[stress.sensitivity_monotonicity].statistic")
+    declared = sum(c["expected_sign"] != "none" for sat_ in MODELS["fit"]["satellites"] for c in sat_["coefficients"])
+    macro("SignDeclared", str(declared), f"{MOD_SRC} fit.satellites[*].coefficients[*].expected_sign other than none")
     macro("SignChecks", str(ss["n"]), "C18/fed-2026-severely-adverse.json tests[stress.sensitivity_monotonicity].n")
     bc = [t for t in tests if t["test_id"] == "stress.satellite_backcast"]
     macro("BackcastRed", str(sum(t["light"] == "red" for t in bc)), "C18/fed-2026-severely-adverse.json tests[stress.satellite_backcast].light")
@@ -394,7 +395,7 @@ def build_scenarios() -> None:
         macro("UnempPeak" + key, f(un["path_peak_deviation"], 1), f"C18/{SCEN[k]}.json outputs.severity.rows[unemployment_rate].path_peak_deviation")
     write("scenarios", ["Scenario", "Credit loss, year 1", "Year 2", "Year 3", "Total loss", "CET1 ratio, end (\\%)", "Peak depletion (pp)", "Unemployment peak (pp)"], rows,
           caption="The four macro scenarios of case C18 run through the satellites and the loss-only capital path of the static balance sheet: credit loss of each of the three "
-                  "years and total loss of the four risks in CLP billion, the CET1 ratio at the end of year three against 11 percent at the start, the largest fall of the ratio "
+                  "years and total loss in CLP billion (the market and operational terms are unstressed annual expected losses and IRRBB enters none, so it is a floor), the CET1 ratio at the end of year three against 11 percent at the start, the largest fall of the ratio "
                   "from the start in percentage points, and the peak deviation of unemployment from the jump-off in percentage points.",
           label="tab:aggregation-stress-scenarios", align="lrrrrrrr", wide=True)
     start = FED["outputs"]["capital_start"]["cet1_ratio"]
@@ -491,10 +492,20 @@ def build_gar() -> None:
         macro("GarHitsHigh" + wk, str(c95["hits"]), s + ".coverage[-1].hits")
         macro("GarRateHigh" + wk, f(c95["rate"], 2), s + ".coverage[-1].rate")
         macro("GarRateUpper" + wk, f(w["coverage"][3]["rate"], 2), s + ".coverage[3].rate")
+        sk = w["skewed_t_at_first_origin"]
+        if wk == "Gfc":
+            assert sk["status"] == "not-fitted", "the text says the skewed t fit fails in the first window"
+        else:
+            assert sk["status"] == "fitted", "the text reports the skewed t fit of the second window"
+            macro("SkewMu" + wk, f(sk["mu"], 2), s + ".skewed_t_at_first_origin.mu")
+            macro("SkewSigma" + wk, f(sk["sigma"], 2), s + ".skewed_t_at_first_origin.sigma")
+            macro("SkewAlpha" + wk, f(sk["alpha"], 2), s + ".skewed_t_at_first_origin.alpha")
+            macro("SkewNu" + wk, f(sk["nu"], 1), s + ".skewed_t_at_first_origin.nu")
+            macro("SkewDist" + wk, f(sk["distance"], 3), s + ".skewed_t_at_first_origin.distance")
         coef = w["coefficients"][0]["terms"]
         macro("GarBetaGdp" + wk, f(coef[1]["estimate"], 2), s + ".coefficients[tau 0.05].terms[real_gdp_growth].estimate")
         macro("GarBetaSpread" + wk, f(coef[2]["estimate"], 2), s + ".coefficients[tau 0.05].terms[term_spread].estimate")
-    macro("GarRegressors", ", ".join(x.replace("_", " ") for x in g["regressors"]), f"{MOD_SRC} model[c18-growth-at-risk].details.growth_at_risk.regressors")
+    macro("GarRegressors", " and ".join({"real_gdp_growth": "real GDP growth", "term_spread": "the spread of the ten-year Treasury yield over the prime rate"}[x] for x in g["regressors"]), f"{MOD_SRC} model[c18-growth-at-risk].details.growth_at_risk.regressors")
     macro("GarUncond", f(g["windows"][0]["unconditional_quantiles"][0], 2), f"{MOD_SRC} ...windows[gfc-2008-09].unconditional_quantiles[0]")
 
 
@@ -512,7 +523,6 @@ FED_KEY = [
     ("First-lien mortgage", "32", (2.0, 2.5, 5.5), "state and county price and unemployment paths; judicial-state flag; origination spread; loan history"),
     ("Credit card", "37", (8.5, 19.7, 30.4), "state unemployment; delinquency and utilisation history; the coefficients of the 2025 model"),
 ]
-CORP_EXPLORATORY = (2.09, 4.44, 7.14)  # addendum line 133: the 2026 corporate equations on the 2025 corporate files, NAICS 52 as All Other
 
 
 def build_fedkey() -> None:
@@ -532,10 +542,6 @@ def build_fedkey() -> None:
     macro("FedCardHigh", f(FED_KEY[3][2][2], 1), "addendum line 27 (Table 37)")
     macro("FedMortLow", f(FED_KEY[2][2][0], 1), "addendum line 26 (Table 32)")
     macro("FedMortHigh", f(FED_KEY[2][2][2], 1), "addendum line 26 (Table 32)")
-    macro("ExploreLow", f(CORP_EXPLORATORY[0], 2), "addendum line 133")
-    macro("ExploreTyp", f(CORP_EXPLORATORY[1], 2), "addendum line 133")
-    macro("ExploreHigh", f(CORP_EXPLORATORY[2], 2), "addendum line 133")
-    macro("PdSpreadRange", "1.4", "addendum line 137 (up to 1.4 pp for the typical portfolio across the unobserved choices)")
 
 
 def fit_width() -> None:
@@ -546,7 +552,7 @@ def fit_width() -> None:
         s = p.read_text(encoding="utf-8")
         if BS + "resizebox" in s:
             continue
-        s = s.replace(BS + "begin{tabular}", BS + "resizebox{" + BS + "ifdim" + BS + "width>" + BS + "textwidth" + BS + "textwidth" + BS + "else" + BS + "width" + BS + "fi}{!}{%" + NL + BS + "begin{tabular}", 1)
+        s = s.replace(BS + "begin{tabular}", BS + "fitwidth{%" + NL + BS + "begin{tabular}", 1)
         s = s.replace(BS + "end{tabular}", BS + "end{tabular}}", 1)
         p.write_text(s, encoding="utf-8", newline=NL)
 

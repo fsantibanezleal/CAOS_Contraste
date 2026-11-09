@@ -1,0 +1,19 @@
+\begin{table*}[htbp]
+\centering
+\footnotesize
+\caption{The settings of a test that change its measured size on the same null generator: Hosmer--Lemeshow with two fewer degrees of freedom, the traffic lights with the upper tie rule, a chi-square over a thin grade, the AUC test with an estimated development AUC and its extension, a longer run of the order test, and the PSI rules of thumb in samples of 100.}
+\label{tab:settings}
+\fitwidth{\begin{tabular}{p{2.4cm}p{4.6cm}rllcp{2.6cm}}
+\toprule
+Test & Setting & Reps & Size at 5\% [Wilson] & Size at 1\% & Exact 5\% / 1\% & Other rule \\
+\midrule
+Hosmer--Lemeshow & the same, with G $-$ 2 degrees of freedom (the model fitted on the same sample) & 4,000 & 10.97 [10.0, 12.0] & 3.38 & -- &  \\
+Traffic lights & the upper tie rule WP14's simulation used & 4,000 & 6.35 [5.6, 7.1] & 1.40 & 6.03 / 1.13 &  \\
+Chi-square over grades & a best grade expecting 0.6 defaults & 4,000 & 5.67 [5.0, 6.4] & 1.73 & -- &  \\
+AUC against development (ECB) & the development AUC estimated on an equal sample (ECB form) & 4,000 & 11.58 [10.6, 12.6] & 4.52 & -- &  \\
+AUC against development (ECB) & the same with the development AUC's variance added & 4,000 & 5.30 [4.6, 6.0] & 1.05 & -- &  \\
+Markov order & the same chain, 20,000 repetitions: the order test's size measured to 0.15 points & 20,000 & 5.05 [4.8, 5.4] & 1.05 & -- &  \\
+Population stability index & two samples of 100: the 0.10 and 0.25 rules of thumb & 4,000 & 6.98 [6.2, 7.8] & 2.05 & -- & PSI above 0.10: 85.0; above 0.25: 22.9 \\
+\bottomrule
+\end{tabular}}
+\end{table*}

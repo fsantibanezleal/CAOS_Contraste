@@ -13817,7 +13817,7 @@ export interface components {
         };
         /**
          * C22 validator variant
-         * @description Catalog row c22-variant 3.0.0: one validation harness run (outputs.kind validator). The test ids, the families (variants) and the panels are closed enums; the simulations of the engine's named studies carry a study block, every other simulation a null one.
+         * @description Catalog row c22-variant 4.0.0: one validation harness run (outputs.kind validator). The test ids, the families (variants) and the panels are closed enums; the simulations of the engine's named studies carry a study block, every other simulation a null one.
          */
         "c22-variant": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -14014,6 +14014,38 @@ export interface components {
             chi2_one_shot_power: number;
             chi2_every_year: components["schemas"]["c22SeqDetection"];
         };
+        /** @description The replication of the severities the delay (H2) and the power cost (H3) are judged on: independent seeds of the same number of streams at each hit-rate factor, the two-sided rate e-process, the Basel traffic light and one Kupiec reading at the window, per seed and pooled. The pooled reading judges H2 and H3; the single run of one seed (c22SeqHits) is kept beside it. */
+        c22SeqReplication: {
+            /** @description Independent seeds, each derived from the case seed. */
+            seeds: number;
+            /** @description Streams per seed. */
+            reps: number;
+            horizon: number;
+            alpha: number;
+            window: number;
+            /** @description Resamples of the bootstrap interval of the pooled median. */
+            bootstrap: number;
+            monitor: string;
+            factors: components["schemas"]["c22SeqReplicationFactor"][];
+        };
+        /** @description One hit-rate factor of the replication: the first-rejection day of each seed's median and of the pooled streams (null when the median is past the horizon), the share of seeds whose median is below the window, the pooled traffic-light median, and the power cost (one Kupiec reading at the window minus the e-process's rejection by the window) pooled with its standard error. */
+        c22SeqReplicationFactor: {
+            id: string;
+            factor: number;
+            seed_medians: (number | null)[];
+            seed_median_mean: number | null;
+            seed_median_sd: number | null;
+            share_of_seeds_below_window: number;
+            pooled_n: number;
+            pooled_median: number | null;
+            pooled_median_ci: (number | null)[];
+            pooled_traffic_light_median: number | null;
+            pooled_share_by_window: number;
+            pooled_kupiec_power: number;
+            pooled_power_cost: number;
+            pooled_power_cost_se: number;
+            seed_power_cost_mean: number;
+        };
         c22SeqVerdict: {
             holds: boolean;
             held: ("H1" | "H2" | "H3")[];
@@ -14021,12 +14053,13 @@ export interface components {
             text: components["schemas"]["common-text"];
             scope: components["schemas"]["common-text"];
         };
-        /** @description The sequential-monitor experiment: the method, the VaR-hit experiment, the PD-book experiment, the three hypotheses with their measured numbers and the verdict. */
+        /** @description The sequential-monitor experiment: the method, the VaR-hit experiment (the single run of one seed), the PD-book experiment, the replication of the judged severities on independent seeds (the reading that judges H2 and H3), the three hypotheses with their measured numbers and the verdict. */
         c22Sequential: {
             method: components["schemas"]["c22SeqMethod"];
             seed: number;
             hits: components["schemas"]["c22SeqHits"];
             pd_grades: components["schemas"]["c22SeqPd"];
+            replication: components["schemas"]["c22SeqReplication"];
             hypotheses: components["schemas"]["c22SeqHypothesis"][];
             verdict: components["schemas"]["c22SeqVerdict"];
         };

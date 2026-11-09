@@ -640,7 +640,7 @@ def register_counts(rows: Sequence[Mapping[str, Any]]) -> dict: ...
 ```
 
 - Units: register rows; returns `total`, `by_severity` (S1 to S4), `by_status` (the seven states), `overdue` and `by_case`, a list sorted by case id with the same four counts.
-- Golden: for the fixture register: total 84, by_severity S1 2, S2 15, S3 41, S4 26, by_status open 50, validated_closed 4, risk_accepted 30 (the other four states 0), overdue 7.
+- Golden: for the fixture register: total 84, by_severity S1 2, S2 15, S3 41, S4 26, by_status open 50, validated_closed 4, risk_accepted 30 (the other four states 0), overdue 2.
 - Invariants: each of `by_severity` and `by_status` sums to `total`; the `by_case` totals sum to `total`. A row holds `case_id`, `severity`, `status` and `overdue`; an unknown severity or state raises `ValueError` ([code] `findings.py:216-237`).
 
 ## Module `riskvalidation/governance/schedule.py`
@@ -760,7 +760,7 @@ def overdue_remediation(rows: Sequence[Mapping[str, Any]]) -> tuple[float, float
 ```
 
 - Units: register rows; returns (numerator, denominator, value, register rows): the distinct (entry, id) findings with an overdue row, the distinct findings of the register, the count, and the overdue rows.
-- Golden: for the fixture register: (3, 42, 3, 7).
+- Golden: for the fixture register: (1, 42, 1, 2).
 - Invariants: the row count equals the number of rows `is_overdue` flags at the as-of date; a finding counts once per entry.
 
 ### `riskvalidation.governance.appetite.entries_under_exception`
@@ -952,7 +952,7 @@ def findings_overdue(register: Sequence[Mapping[str, Any]], as_of: date, *, poli
 - Reference: dossier 06 B.7 l.614-628.
 - Units: `metric` is the share of open-state rows that are overdue; `n` the open-state rows; `n_events` the overdue rows.
 - Light: `upper_bad`: amber above 0, red above 0.25 (a convention).
-- Golden: the fixture register at 2026-12-31: n = 50, n_events = 7, metric = 0.1400, light `amber`.
+- Golden: the fixture register at 2026-12-31: n = 50, n_events = 2, metric = 0.0400, light `amber`.
 - Invariants: no open-state row returns `not_evaluated`; the overdue count equals `is_overdue` over the rows.
 
 ### `riskvalidation.validation.governance.validation_due`

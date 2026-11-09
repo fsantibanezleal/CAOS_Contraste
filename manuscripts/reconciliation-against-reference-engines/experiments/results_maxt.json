@@ -1,0 +1,309 @@
+{
+ "reps": 400,
+ "seed_base": 1000000,
+ "conditions": [
+  "null",
+  "sigma+2%",
+  "sigma+5%",
+  "a+50%",
+  "measure"
+ ],
+ "variants": [
+  "single-swap",
+  "netting-set"
+ ],
+ "rules": [
+  "product",
+  "pair+sidak",
+  "maxT",
+  "pair+maxT"
+ ],
+ "gaussian_draws": 400000,
+ "gaussian_seed": 20261107,
+ "bounds": {
+  "single-swap": {
+   "product": {
+    "even_judged_with_odd": 2.290426000893072,
+    "odd_judged_with_even": 2.253973703826601
+   },
+   "pair": {
+    "even_judged_with_odd": 3.098518344410772,
+    "odd_judged_with_even": 3.0744938302529277
+   }
+  },
+  "netting-set": {
+   "product": {
+    "even_judged_with_odd": 2.3608498424013953,
+    "odd_judged_with_even": 2.336258767072274
+   },
+   "pair": {
+    "even_judged_with_odd": 3.0991480570554857,
+    "odd_judged_with_even": 3.0778849385265112
+   }
+  }
+ },
+ "table": {
+  "single-swap|null": {
+   "product": {
+    "rejected": 42,
+    "rate": 0.105,
+    "lo": 0.0786237272569577,
+    "hi": 0.13889098538455907
+   },
+   "pair+sidak": {
+    "rejected": 18,
+    "rate": 0.045,
+    "lo": 0.02865145855289397,
+    "hi": 0.0700047294265747
+   },
+   "maxT": {
+    "rejected": 23,
+    "rate": 0.0575,
+    "lo": 0.0386175426370987,
+    "hi": 0.08480083798029665
+   },
+   "pair+maxT": {
+    "rejected": 18,
+    "rate": 0.045,
+    "lo": 0.02865145855289397,
+    "hi": 0.0700047294265747
+   }
+  },
+  "single-swap|sigma+2%": {
+   "product": {
+    "rejected": 283,
+    "rate": 0.7075,
+    "lo": 0.6611144236296065,
+    "hi": 0.7499379741599765
+   },
+   "pair+sidak": {
+    "rejected": 306,
+    "rate": 0.765,
+    "lo": 0.721049458451181,
+    "hi": 0.8039090254728648
+   },
+   "maxT": {
+    "rejected": 229,
+    "rate": 0.5725,
+    "lo": 0.5235553047379993,
+    "hi": 0.6200654125619756
+   },
+   "pair+maxT": {
+    "rejected": 321,
+    "rate": 0.8025,
+    "lo": 0.760687725769575,
+    "hi": 0.8385573360682508
+   }
+  },
+  "single-swap|sigma+5%": {
+   "product": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "pair+sidak": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "maxT": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "pair+maxT": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   }
+  },
+  "single-swap|a+50%": {
+   "product": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "pair+sidak": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "maxT": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "pair+maxT": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   }
+  },
+  "single-swap|measure": {
+   "product": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "pair+sidak": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "maxT": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "pair+maxT": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   }
+  },
+  "netting-set|null": {
+   "product": {
+    "rejected": 50,
+    "rate": 0.125,
+    "lo": 0.09611512303589675,
+    "hi": 0.1610190978263027
+   },
+   "pair+sidak": {
+    "rejected": 15,
+    "rate": 0.0375,
+    "lo": 0.022855029726723868,
+    "hi": 0.06094384266998878
+   },
+   "maxT": {
+    "rejected": 22,
+    "rate": 0.055,
+    "lo": 0.03659849403266932,
+    "hi": 0.08186744805714069
+   },
+   "pair+maxT": {
+    "rejected": 19,
+    "rate": 0.0475,
+    "lo": 0.03061707685760529,
+    "hi": 0.07299154964944872
+   }
+  },
+  "netting-set|sigma+2%": {
+   "product": {
+    "rejected": 300,
+    "rate": 0.75,
+    "lo": 0.7053228667006465,
+    "hi": 0.7899209860578872
+   },
+   "pair+sidak": {
+    "rejected": 306,
+    "rate": 0.765,
+    "lo": 0.721049458451181,
+    "hi": 0.8039090254728648
+   },
+   "maxT": {
+    "rejected": 220,
+    "rate": 0.55,
+    "lo": 0.5010009981940385,
+    "hi": 0.5980477723576684
+   },
+   "pair+maxT": {
+    "rejected": 325,
+    "rate": 0.8125,
+    "lo": 0.77134397025579,
+    "hi": 0.8477108456923772
+   }
+  },
+  "netting-set|sigma+5%": {
+   "product": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "pair+sidak": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "maxT": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "pair+maxT": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   }
+  },
+  "netting-set|a+50%": {
+   "product": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "pair+sidak": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "maxT": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "pair+maxT": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   }
+  },
+  "netting-set|measure": {
+   "product": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "pair+sidak": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "maxT": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   },
+   "pair+maxT": {
+    "rejected": 400,
+    "rate": 1.0,
+    "lo": 0.9904877055170676,
+    "hi": 1.0
+   }
+  }
+ },
+ "reproduces_criterion_counts": true,
+ "seconds": 1505.1497338999761
+}

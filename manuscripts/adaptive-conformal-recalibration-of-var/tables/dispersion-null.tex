@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The control scenario (no shift, 500 days, 100 replications): the mean hit rate, the standard deviation of the hit rate across replications of the unwrapped (U) and wrapped (W) model against the binomial standard deviation at the unwrapped mean rate, and the pass rate of the unwrapped model and of three recalibrations.}
+\label{tab:dispersion-null}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{llrrr}
+\toprule
+Model & Level (\%) & Mean hit rate (\%) U / W & Hit-rate s.d. (points) U / W / binomial & Pass rate U / W / rolling / tracker \\
+\midrule
+HS-250 & 1 & 1.31 / 1.13 & 0.51 / 0.26 / 0.51 & 0.85 / 0.99 / 0.95 / 0.93 \\
+HS-250 & 2.5 & 2.98 / 2.61 & 0.89 / 0.36 / 0.76 & 0.76 / 0.94 / 0.91 / 0.91 \\
+GARCH-t & 1 & 1.01 / 1.01 & 0.52 / 0.22 / 0.45 & 0.85 / 0.99 / 0.99 / 0.98 \\
+GARCH-t & 2.5 & 2.51 / 2.48 & 0.75 / 0.33 / 0.70 & 0.94 / 1.00 / 1.00 / 1.00 \\
+FHS & 1 & 1.00 / 1.02 & 0.61 / 0.23 / 0.44 & 0.76 / 0.99 / 0.97 / 0.92 \\
+FHS & 2.5 & 2.52 / 2.48 & 0.88 / 0.37 / 0.70 & 0.86 / 1.00 / 1.00 / 1.00 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

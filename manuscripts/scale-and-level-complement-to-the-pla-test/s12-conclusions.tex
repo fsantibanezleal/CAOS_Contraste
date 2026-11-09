@@ -6,11 +6,11 @@ A complement of three statistics computed on the same 250-day pair, a Mincer--Za
 The rolling-mean statistic carries the result, with an area under the ROC curve of 0.976, 0.999 and 1.000 at lags of 5, 10 and 20 days against 0.596 for the Kolmogorov--Smirnov distance at 5 days and 0.785 at 20, and a closed form (Proposition~\ref{prop:rolling}) predicts the fall of its population correlation with the lag.
 A Spearman correlation of the levels with its threshold moved to the same size flags 55.2\%, so the blind spot of the regulatory zone is largely the position of its thresholds on this desk.
 Among the three components the regression is the only one with full power against a constant mis-scale of 10\% (100.0\% against 0.0\% for the zone), and Proposition~\ref{prop:invariance} states why.
-The complement does not replace the regulatory zone: it flags the wrong correlation in 4.5\% and the one-day misalignment in 42.3\%, where the zone flags 100.0\%.
+The rolling-mean statistic alone flags the wrong correlation in 4.5\% and the one-day misalignment in 42.3\%, where the zone flags 100.0\%; the union of the three statistics flags both in 100.0\%, the wrong correlation only through the Wald statistic and the misalignment through the Wald and the absolute-value statistics, which add nothing there that the zone does not already flag, so the complement is read beside the zone and does not replace it.
 Its stated size holds on the calibration null and on the alternatives with less persistent or less dispersed volatility, and fails on desks with more persistent volatility (4.0\%), more dispersed volatility (6.2\%) and a larger pricing noise (99.0\%).
 
 The next steps follow from the negative results.
 The threshold has to be calibrated on each desk's own null, so the open question is how a bank obtains that null for a real desk.
 The window of 20 days is not the best of those tested (5 days detects 91.1\% at a lag of 5 days), and its choice, with the combination of several windows, needs an evaluation on desks not used here.
 The HC3 covariance gives no gain when the threshold is read from the simulated null, which suggests testing the regression component with the ordinary covariance on other desks.
-The Ljung--Box statistic of the squared residual keeps its size on every alternative null and is a candidate partner for the rolling-mean statistic.
+The Ljung--Box statistic of the squared residual is a competing route to the stale volatility, but its constant 1.1\% size across the alternative nulls is a property of the generator, whose null residual is a homoskedastic pricing noise, and not a measured robustness; a null whose pricing noise depends on the volatility is needed before it is a candidate partner for the rolling-mean statistic.

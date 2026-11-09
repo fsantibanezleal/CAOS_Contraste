@@ -5,8 +5,9 @@
 // Findings, the Variants (the windows) and Context views. The workbench calls this hook on every case and uses it when
 // the case is C11.
 import { ChipGroup, SubTabs, pick, useShellLang, type BiText, type RailSection } from '@fasl-work/caos-app-shell';
-import { useEffect, useMemo, useState, type ReactElement } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import type { CaseData } from '../../api/artifacts';
+import { seedOfQuery } from '../../story/exit';
 import { provenanceOf } from '../model';
 import { RailSelect } from '../c06/RailSelect';
 import { C11ContextView, C11FindingsView, C11VariantsView, LevelReadout, ModelReadout, TestReadout } from './C11Common';
@@ -32,11 +33,25 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   const [model, setModel] = useState<string | null>(null);
   const [test, setTest] = useState<string | null>(null);
   const variantId = data?.variant.variant_id;
+  // the story's exit opens the App on its window and model (`variant`, `model` in the query): the model is applied while that window
+  // is the one shown and dropped as soon as the reader moves to another (ADR-0082 rule 3, the exit carries the step's state)
+  const seed = useRef<{ model: string | null; variant: string | null; applied: boolean } | null>(null);
+  if (seed.current === null) {
+    const q = typeof window === 'undefined' ? { model: null, variant: null } : seedOfQuery(window.location.search);
+    seed.current = { model: q.model, variant: q.variant, applied: false };
+  }
   // a new window starts every control on its own defaults
   useEffect(() => {
+    const s = seed.current!;
     setAlpha(null);
-    setModel(null);
     setTest(null);
+    if (s.model && s.variant && variantId === s.variant) {
+      s.applied = true;
+      setModel(s.model);
+      return;
+    }
+    if (s.applied && variantId && variantId !== s.variant) s.model = null;
+    setModel(null);
   }, [variantId]);
 
   const o = base ? outputsOf(base) : null;

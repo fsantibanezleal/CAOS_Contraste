@@ -936,5 +936,167 @@
     "riskvalidation.validation.transitions.rating_matrix_reference",
     "riskvalidation.validation.transitions.rating_momentum",
     "riskvalidation.validation.transitions.rating_time_homogeneity"
+  ],
+  "showcase": {
+    "story_routes": [
+      "/story/inventory",
+      "/story/backtest",
+      "/story/crisis",
+      "/story/recalibrate",
+      "/story/decide"
+    ]
+  },
+  "manuscripts": [
+    {
+      "kind": "technical-report",
+      "concept_doi": "10.5281/zenodo.24053151",
+      "title": "Contraste: validating bank risk models on twenty-one public and synthetic cases, with the size of the validation tests measured under the null and their power on planted defects",
+      "version": "1.00.000",
+      "covers": []
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053155",
+      "title": "Adaptive conformal recalibration of value at risk in market stress windows: hit rates move towards the target on ten models, and the back-tests accept the wrapped runs too easily",
+      "version": "1.00.000",
+      "covers": [
+        "BS-16"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053159",
+      "title": "An anchored tipping-point PD under informative rating withdrawals: conservative coverage on known truth, an anchored odds ratio unstable across years in S&P's B and CCC to C grades and Fitch's B grade",
+      "version": "1.00.000",
+      "covers": [
+        "BS-14"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053161",
+      "title": "A test that flags a behavioural assumption changed at a limit breach: every change at a breach flagged, with 17 to 66% false flags, on stated parameters, and weak ranking on re-estimated ones that a calibrated tolerance corrects",
+      "version": "1.00.000",
+      "covers": [
+        "BS-8"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053164",
+      "title": "The default definition as part of the PD: informative withdrawals and thin grades",
+      "version": "1.00.000",
+      "covers": [
+        "BS-4"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053167",
+      "title": "The dependence band reported with every capital aggregate: what it covers on planted dependence structures",
+      "version": "1.00.000",
+      "covers": [
+        "BS-9"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053173",
+      "title": "Anytime-valid e-process monitors for VaR back-tests at a cost in power, and a PD monitor that loses its size under correlated defaults and its power to a chi-square rule",
+      "version": "1.00.000",
+      "covers": [
+        "BS-15"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053177",
+      "title": "Holding an open validation engine to outside references: five ECB statistics, a credit-portfolio engine, an IRRBB engine and twelve planted defects",
+      "version": "1.00.000",
+      "covers": [
+        "BS-6"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053183",
+      "title": "The instability of loss-distribution-approach operational-risk capital measured on independent synthetic histories of known truth",
+      "version": "1.00.000",
+      "covers": [
+        "BS-12"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053185",
+      "title": "A leakage-safe validation protocol per case with invariance gates: the bias of the holdout AUC under fitting-path leaks, their detection by the gates, and what validation tests see of a development-only leak",
+      "version": "1.00.000",
+      "covers": [
+        "BS-3"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053187",
+      "title": "Three corrections to model-validation tests (conformal coverage, shift resilience, situation testing): the false-alarm rate each removes and the power each costs, measured on planted data",
+      "version": "1.00.000",
+      "covers": [
+        "BS-10"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053189",
+      "title": "Reconciliation identities as acceptance tests of an expected credit loss allowance: detection limits on a public loan book, overlays kept apart, the convex region of scenario weighting and three provisioning regimes on one synthetic bank",
+      "version": "1.00.000",
+      "covers": [
+        "BS-5"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053198",
+      "title": "Reconciling a model-validation engine against reference engines and printed answers: measured agreement, listed gaps and the size and power of the acceptance rule",
+      "version": "1.00.000",
+      "covers": [
+        "BS-2"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053204",
+      "title": "Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run",
+      "version": "1.00.000",
+      "covers": [
+        "BS-11"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053206",
+      "title": "A scale-and-level complement to the FRTB profit and loss attribution test",
+      "version": "1.00.000",
+      "covers": [
+        "BS-13"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053208",
+      "title": "Twelve of 21 credit-risk validation tests hold their size on 200,000 null repetitions: a measurement of size and power on generators of known truth",
+      "version": "1.00.000",
+      "covers": [
+        "BS-1"
+      ]
+    },
+    {
+      "kind": "manuscript",
+      "concept_doi": "10.5281/zenodo.24053214",
+      "title": "The Unidad de Fomento as its own currency in the standardised measures of interest rate risk in the banking book: what each component adds",
+      "version": "1.00.000",
+      "covers": [
+        "BS-7"
+      ]
+    }
   ]
 }

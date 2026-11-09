@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Probability that sending m outside rows beyond the training range changes at least one decile edge of a pooled sample of 1,500 rows (1,050 development and 450 outside), simulated with the pipeline's own edge function over 10,000 trials per row, against the exact hypergeometric expression and its approximation of Proposition 2.}
+\label{tab:theory-detection}
+\fitwidth{%
+\begin{tabular}{lrrr}
+\toprule
+Perturbation of the outside rows & Simulated detection (\%) & Exact (\%) & $1-0.1^m$ (\%) \\
+\midrule
+edge shift, m = 1 & \relax 90.0 $\pm$ 0.6 & 90.07 & 90.00 \\
+edge shift, m = 2 & \relax 99.1 $\pm$ 0.2 & 99.02 & 99.00 \\
+edge shift, m = 3 & \relax 100.0 $\pm$ 0.0 & 99.90 & 99.90 \\
+edge shift, m = 5 & \relax 100.0 $\pm$ 0.0 & 100.00 & 100.00 \\
+edge shift, m = 10 & \relax 100.0 $\pm$ 0.0 & 100.00 & 100.00 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

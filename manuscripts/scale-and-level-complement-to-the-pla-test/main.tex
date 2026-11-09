@@ -3,9 +3,9 @@
 % The four macros of the header standard; tools/zenodo/publish_revision.py patches them when it reserves the DOI.
 \newcommand{\doctype}{Preprint}
 \newcommand{\docversion}{v1.00.000}
-\newcommand{\docdate}{4 November 2026}
-\newcommand{\versiondoi}{10.5281/zenodo.0}
-\newcommand{\conceptdoi}{10.5281/zenodo.0}
+\newcommand{\docdate}{8 November 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.24053207}
+\newcommand{\conceptdoi}{10.5281/zenodo.24053206}
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
 \input{../_shared/preamble}
@@ -14,6 +14,7 @@
 \newcommand{\HPL}{\mathrm{HPL}}
 \newcommand{\RTPL}{\mathrm{RTPL}}
 \newcommand{\sgn}{\operatorname{sgn}}
+\input{tables/macros}
 
 \title{A scale-and-level complement to the FRTB profit and loss attribution test}
 \author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
@@ -26,13 +27,12 @@
 \headerblock
 
 \begin{abstract}
-The profit and loss attribution test of the Basel market risk standard compares the hypothetical and the risk-theoretical profit and loss of a trading desk through a Spearman correlation of the levels and a Kolmogorov--Smirnov distance, and its zones sit at thresholds that a desk with a faulty model can pass.
-On a generator of desk profit and loss with a known true risk model, a model fed a volatility twenty days old is flagged by neither statistic in any of 1,000 replications.
-We propose a complement added beside the regulatory zone: a Mincer--Zarnowitz regression of the hypothetical on the risk-theoretical profit and loss with a joint Wald test of intercept zero and slope one under an HC3 covariance, the Spearman correlation of the absolute values, and the Spearman correlation of their 20-day rolling means, each with a critical value read from a simulated null so that the false-alarm rate is stated.
-At a family size of 1\% the complement flags the stale-volatility model in 99.9\% of 1,000 replications (95\% Wilson interval 99.4 to 100.0\%) with a held-out false-alarm rate of 0.9\% (0.5 to 1.7\%), where the regulatory zone flags 0.0\%.
-Against published comparators run on the same desk-years, the rolling-mean statistic has the largest area under the ROC curve at lags of 5, 10 and 20 days.
-The stated size does not transfer to desks whose volatility is more persistent or more dispersed (4.0\% and 6.2\%) or whose pricing noise is larger (99.0\%), so the thresholds have to be calibrated on each desk's own null.
-The complement does not replace the regulatory zone: it is weak against a one-day misalignment and against a wrong correlation.
+The profit and loss attribution test of the Basel market risk standard compares the hypothetical and the risk-theoretical profit and loss of a desk through a Spearman correlation of the levels and a Kolmogorov--Smirnov distance, with zones that a faulty-model desk can pass.
+On a generator with a known true risk model, a model fed a volatility twenty days old is flagged by neither statistic in any of 1,000 replications.
+We propose a complement added beside the regulatory zone: a Mincer--Zarnowitz regression of the hypothetical on the risk-theoretical profit and loss with a joint Wald test under an HC3 covariance, the Spearman correlation of the absolute values, and of their 20-day rolling means, each with a critical value read from a simulated null.
+At a family size of 1\% the complement flags the stale-volatility model in 99.9\% of 1,000 replications (95\% Wilson interval 99.4 to 100.0\%) with a held-out false-alarm rate of 0.9\% (0.5 to 1.7\%); the regulatory zone flags 0.0\%.
+Against published comparators the rolling-mean statistic has the largest area under the ROC curve at lags of 5, 10 and 20 days, but it is weak against a wrong correlation (4.5\%, flagged by the union only through the Wald test) and a one-day misalignment (42.3\%, flagged in 100.0\% by the absolute-value and Wald statistics).
+The stated size does not transfer to desks with more persistent or more dispersed volatility (4.0\% and 6.2\%) or a larger pricing noise (99.0\%): thresholds need each desk's own null.
 \end{abstract}
 
 \input{s01-introduction}

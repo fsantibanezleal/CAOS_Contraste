@@ -1,18 +1,18 @@
 \begin{table}[htbp]
 \centering
-\small
+\footnotesize
 \caption{The six variants of the C13 desk generator: what each plants in the risk model or in the dating of its P\&L and the regulatory statistic it was designed to break; the true desk, its volatility law and its pricing noise are the same in all six.}
 \label{tab:variants}
-\begin{tabular}{lll}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{4.0cm}>{\raggedright\arraybackslash}p{7.4cm}}
 \toprule
 Variant & Statistic it is meant to break & Planted parameter \\
 \midrule
 none & none planted & -- \\
-missing basis & spearman & basis sd share = 0.65 share-of-hpl-sd \\
-stale volatility & ks & vol lag days = 20 days \\
-wrong correlation & either & correlation error = 0.3 correlation-points \\
-omitted factor & spearman & omitted loading share = 0.6 share-of-hpl-sd \\
-time misalignment & spearman & lag days = 1 days \\
+missing basis & Spearman correlation of the levels & \relax basis with 65\% of the HPL standard deviation \\
+stale volatility & Kolmogorov--Smirnov distance & volatility input 20 days old \\
+wrong correlation & either regulatory statistic & correlation off by 0.3 points \\
+omitted factor & Spearman correlation of the levels & \relax omitted factor with 60\% of the HPL standard deviation \\
+time misalignment & Spearman correlation of the levels & \relax P\&L dated 1 day off \\
 \bottomrule
 \end{tabular}
 \end{table}

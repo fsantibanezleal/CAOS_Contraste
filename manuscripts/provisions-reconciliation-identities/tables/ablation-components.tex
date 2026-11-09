@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Ablation of the other components of the protocol, each measured on the experiment that exercises it: the tolerance basis, the cross identities, the separate overlay line, the region qualifier of the non-linearity statement and the weighting of scenarios, with the value of the measure with and without the component.}
+\label{tab:ablation-components}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{p{4.8cm}p{3.6cm}p{3.4cm}p{3.4cm}}
+\toprule
+Component removed & Measure & With the component & Without it \\
+\midrule
+Relative tolerance basis replaced by an absolute tolerance of 1e-6 units & false alarms on clean books & 0/1,200 [0.0, 0.3] & 68/1,200 [4.5, 7.1] \\
+Cross identities removed (stage arithmetic only) & detection above the limit, seven classes & 4,200/4,200 [99.9, 100.0] & 1,800/4,200 [41.4, 44.4] \\
+Separate overlay line replaced by a merge into the model ECL & wrong bookings of the overlay detected & 72/72 (four kinds) & not applicable: no line to test \\
+Convex-region qualifier dropped from the non-linearity statement & draws that contradict the statement & 0/16,906 (qualified) & 1,844/20,000 (unqualified) \\
+Probability-weighted scenarios replaced by the base scenario alone & median absolute error of the expected PD & 0.0030\% (three-point) & 9.20\% \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

@@ -203,6 +203,14 @@ describe('the C21 instrument', () => {
     expect(html(<C21FindingsView sel={sel} />)).toContain('data-fixture="true"');
   });
 
+  it('the findings keep the no-legal-claim label once, inside their card and not as a band above it (gate G6, 60 % on the App)', () => {
+    const markup = html(<C21FindingsView sel={sel} />);
+    const card = markup.indexOf('<figure');
+    expect(card).toBeGreaterThanOrEqual(0);
+    expect(markup.match(/data-label="no-legal-claim"/g)?.length).toBe(1);
+    expect(markup.indexOf('data-label="no-legal-claim"')).toBeGreaterThan(card);
+  });
+
   it('the context quotes the licence as UNVERIFIED with the platform terms and the CFPB statement, and the conventions', () => {
     const markup = html(<C21ContextView sel={sel} />);
     expect(markup).toContain('data-status="UNVERIFIED"');

@@ -1,5 +1,13 @@
 {
  "methods": {
+  "M-1": [
+   "02-credit-scoring/02-the-leakage-safe-fit-of-the-monotone-scorecard.ipynb",
+   "02-credit-scoring/03-the-validation-battery-on-a-ladder-of-models.ipynb"
+  ],
+  "M-2": [
+   "02-credit-scoring/03-the-validation-battery-on-a-ladder-of-models.ipynb",
+   "02-credit-scoring/06-challengers-against-the-scorecard.ipynb"
+  ],
   "M-3": [
    "02-credit-scoring/06-challengers-against-the-scorecard.ipynb"
   ],
@@ -12,6 +20,13 @@
   "M-6": [
    "02-credit-scoring/06-challengers-against-the-scorecard.ipynb"
   ],
+  "M-7": [
+   "03-ratings-and-calibration/05-carrying-a-pd-curve-to-a-new-year.ipynb",
+   "03-ratings-and-calibration/06-low-default-portfolios-the-most-prudent-estimate.ipynb"
+  ],
+  "M-8": [
+   "03-ratings-and-calibration/07-from-a-pd-to-capital.ipynb"
+  ],
   "M-9": [
    "03-ratings-and-calibration/08-transition-estimators.ipynb"
   ],
@@ -21,14 +36,39 @@
   "M-11": [
    "04-provisions/07-lifetime-pd-by-survival.ipynb"
   ],
+  "M-12": [
+   "04-provisions/06-chile-cmf-b1-ifrs9-and-bde-annex9-on-one-portfolio.ipynb"
+  ],
+  "M-13": [
+   "04-provisions/06-chile-cmf-b1-ifrs9-and-bde-annex9-on-one-portfolio.ipynb"
+  ],
+  "M-14": [
+   "05-lgd-and-ead/03-the-lgd-ladder-ols-to-tobit.ipynb",
+   "05-lgd-and-ead/04-downturn-lgd-and-the-regulatory-floors.ipynb"
+  ],
+  "M-15": [
+   "05-lgd-and-ead/05-ccf-estimators-on-a-generator-with-known-truth.ipynb",
+   "05-lgd-and-ead/06-ead-backtest-and-the-lgd-and-ead-battery.ipynb"
+  ],
+  "M-16": [
+   "06-portfolio-capital/02-fitting-the-asset-correlation-to-charge-off-rates.ipynb"
+  ],
   "M-17": [
    "06-portfolio-capital/07-portfolio-credit-models.ipynb"
   ],
   "M-18": [
    "07-market-risk/07-dynamic-semiparametric-es.ipynb"
   ],
+  "M-19": [
+   "07-market-risk/03-backtests-kupiec-christoffersen-duration-dynamic-quantile-and-the-basel-light.ipynb",
+   "07-market-risk/04-expected-shortfall-backtests.ipynb"
+  ],
   "M-20": [
    "08-counterparty-and-regulatory-calculators/07-the-reference-engine-ore-quantlib.ipynb"
+  ],
+  "M-21": [
+   "08-counterparty-and-regulatory-calculators/04-sa-ccr-on-the-five-official-netting-sets.ipynb",
+   "08-counterparty-and-regulatory-calculators/05-the-other-regulatory-calculators.ipynb"
   ],
   "M-22": [
    "09-irrbb/07-curves-deposits-and-recalibration.ipynb"
@@ -41,6 +81,21 @@
   ],
   "M-25": [
    "12-capital-and-stress/08-supervisory-models-and-model-risk.ipynb"
+  ],
+  "M-26": [
+   "12-capital-and-stress/04-macro-paths-satellites-and-skewed-t.ipynb",
+   "12-capital-and-stress/07-validating-aggregation-and-stress.ipynb"
+  ],
+  "M-27": [
+   "12-capital-and-stress/08-supervisory-models-and-model-risk.ipynb",
+   "12-capital-and-stress/09-the-dependence-band-and-an-honest-verdict.ipynb"
+  ],
+  "M-28": [
+   "14-validating-the-validator/02-the-null-family-does-every-test-hold-its-size.ipynb",
+   "14-validating-the-validator/03-power-against-underestimated-pds-and-exact-rejection-probabilities.ipynb",
+   "14-validating-the-validator/04-default-clustering-where-the-binomial-test-is-misused.ipynb",
+   "14-validating-the-validator/05-drift-the-psi-rules-their-benchmark-and-the-false-alarm-rate.ipynb",
+   "14-validating-the-validator/06-discrimination-decay-leakage-broken-monotonicity-and-concentration.ipynb"
   ],
   "M-29": [
    "13-ml-and-ai-risk/08-outcome-testing-toolkits.ipynb"
@@ -67,10 +122,11 @@
    "03-ratings-and-calibration/09-calibration-approaches.ipynb"
   ],
   "M-37": [
-   "14-validating-the-validator/07-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb"
+   "14-validating-the-validator/08-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb"
   ],
   "BS-1": [
-   "14-validating-the-validator/08-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb"
+   "13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb",
+   "14-validating-the-validator/09-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb"
   ],
   "BS-2": [
    "03-ratings-and-calibration/11-the-reconciliations-against-printed-answers.ipynb",
@@ -113,7 +169,7 @@
    "03-ratings-and-calibration/12-an-anchored-pd-under-informative-withdrawals.ipynb"
   ],
   "BS-15": [
-   "14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb"
+   "14-validating-the-validator/10-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb"
   ],
   "BS-16": [
    "07-market-risk/09-adaptive-conformal-recalibration-of-the-var.ipynb"
@@ -131,12 +187,20 @@
   "variant-envelope": [
    "14-validating-the-validator/01-why-measure-a-test-size-power-and-monte-carlo-error.ipynb",
    "14-validating-the-validator/02-the-null-family-does-every-test-hold-its-size.ipynb",
-   "14-validating-the-validator/07-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb",
-   "14-validating-the-validator/08-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb"
+   "14-validating-the-validator/08-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb",
+   "14-validating-the-validator/09-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb"
+  ],
+  "models-envelope": [
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb",
+   "14-validating-the-validator/07-from-test-results-to-risk-classes-deadlines-opinions-and-appetite.ipynb"
+  ],
+  "test-result": [
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb"
   ],
   "c01-variant": [
    "01-getting-started/01-install-the-engine-and-open-an-artifact.ipynb",
    "01-getting-started/02-a-first-testresult-on-a-real-slice.ipynb",
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb",
    "02-credit-scoring/01-the-scorecard-idea-woe-iv-and-points.ipynb",
    "02-credit-scoring/02-the-leakage-safe-fit-of-the-monotone-scorecard.ipynb",
    "02-credit-scoring/03-the-validation-battery-on-a-ladder-of-models.ipynb",
@@ -146,6 +210,7 @@
   ],
   "c01-models": [
    "01-getting-started/01-install-the-engine-and-open-an-artifact.ipynb",
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb",
    "02-credit-scoring/01-the-scorecard-idea-woe-iv-and-points.ipynb",
    "02-credit-scoring/02-the-leakage-safe-fit-of-the-monotone-scorecard.ipynb",
    "02-credit-scoring/06-challengers-against-the-scorecard.ipynb",
@@ -190,7 +255,11 @@
   "c05-models-sp": [
    "03-ratings-and-calibration/05-carrying-a-pd-curve-to-a-new-year.ipynb"
   ],
+  "c05-models-ldp": [
+   "03-ratings-and-calibration/06-low-default-portfolios-the-most-prudent-estimate.ipynb"
+  ],
   "c22-variant": [
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb",
    "02-credit-scoring/07-the-leakage-safe-protocol-per-case-with-gates.ipynb",
    "14-validating-the-validator/01-why-measure-a-test-size-power-and-monte-carlo-error.ipynb",
    "14-validating-the-validator/02-the-null-family-does-every-test-hold-its-size.ipynb",
@@ -198,9 +267,29 @@
    "14-validating-the-validator/04-default-clustering-where-the-binomial-test-is-misused.ipynb",
    "14-validating-the-validator/05-drift-the-psi-rules-their-benchmark-and-the-false-alarm-rate.ipynb",
    "14-validating-the-validator/06-discrimination-decay-leakage-broken-monotonicity-and-concentration.ipynb",
-   "14-validating-the-validator/07-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb",
-   "14-validating-the-validator/08-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb",
-   "14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb"
+   "14-validating-the-validator/07-from-test-results-to-risk-classes-deadlines-opinions-and-appetite.ipynb",
+   "14-validating-the-validator/08-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb",
+   "14-validating-the-validator/09-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb",
+   "14-validating-the-validator/10-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb"
+  ],
+  "c22-models": [
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb",
+   "14-validating-the-validator/07-from-test-results-to-risk-classes-deadlines-opinions-and-appetite.ipynb"
+  ],
+  "contract-family": [
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb"
+  ],
+  "contract-index": [
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb"
+  ],
+  "source-registry": [
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb"
+  ],
+  "licences": [
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb"
+  ],
+  "licence-manifest": [
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb"
   ],
   "api": [
    "01-getting-started/01-install-the-engine-and-open-an-artifact.ipynb",
@@ -209,6 +298,7 @@
   "readiness": [
    "01-getting-started/01-install-the-engine-and-open-an-artifact.ipynb",
    "01-getting-started/02-a-first-testresult-on-a-real-slice.ipynb",
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb",
    "02-credit-scoring/01-the-scorecard-idea-woe-iv-and-points.ipynb",
    "02-credit-scoring/02-the-leakage-safe-fit-of-the-monotone-scorecard.ipynb",
    "02-credit-scoring/03-the-validation-battery-on-a-ladder-of-models.ipynb",
@@ -316,9 +406,10 @@
    "14-validating-the-validator/04-default-clustering-where-the-binomial-test-is-misused.ipynb",
    "14-validating-the-validator/05-drift-the-psi-rules-their-benchmark-and-the-false-alarm-rate.ipynb",
    "14-validating-the-validator/06-discrimination-decay-leakage-broken-monotonicity-and-concentration.ipynb",
-   "14-validating-the-validator/07-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb",
-   "14-validating-the-validator/08-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb",
-   "14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb"
+   "14-validating-the-validator/07-from-test-results-to-risk-classes-deadlines-opinions-and-appetite.ipynb",
+   "14-validating-the-validator/08-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb",
+   "14-validating-the-validator/09-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb",
+   "14-validating-the-validator/10-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb"
   ],
   "c01-pd-rung": [
    "01-getting-started/01-install-the-engine-and-open-an-artifact.ipynb",
@@ -350,10 +441,13 @@
    "04-provisions/06-chile-cmf-b1-ifrs9-and-bde-annex9-on-one-portfolio.ipynb",
    "12-capital-and-stress/05-capital-plan-cet1-path-and-chilean-stack.ipynb"
   ],
+  "engine-provisions-api": [
+   "04-provisions/06-chile-cmf-b1-ifrs9-and-bde-annex9-on-one-portfolio.ipynb"
+  ],
   "c03-outputs": [
    "02-credit-scoring/04-out-of-time-cohorts-sme-pd-by-vintage.ipynb",
    "02-credit-scoring/07-the-leakage-safe-protocol-per-case-with-gates.ipynb",
-   "14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb"
+   "14-validating-the-validator/10-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb"
   ],
   "c03-models": [
    "02-credit-scoring/04-out-of-time-cohorts-sme-pd-by-vintage.ipynb",
@@ -381,6 +475,9 @@
    "05-lgd-and-ead/02-ead-and-the-credit-conversion-factor.ipynb",
    "05-lgd-and-ead/05-ccf-estimators-on-a-generator-with-known-truth.ipynb"
   ],
+  "engine-lgd-ead-api": [
+   "05-lgd-and-ead/03-the-lgd-ladder-ols-to-tobit.ipynb"
+  ],
   "c14-outputs": [
    "09-irrbb/01-a-balance-sheet-in-19-time-bands.ipynb",
    "09-irrbb/02-the-six-bcbs-shocks-step-by-step.ipynb",
@@ -407,6 +504,9 @@
   "c15-models": [
    "09-irrbb/06-chile-ran-21-13-annex-1.ipynb"
   ],
+  "engine-irrbb-api": [
+   "09-irrbb/02-the-six-bcbs-shocks-step-by-step.ipynb"
+  ],
   "c17-outputs": [
    "11-operational-risk/01-annual-loss-as-frequency-times-severity.ipynb",
    "11-operational-risk/02-truncated-severity-the-spliced-tail-and-the-threshold.ipynb",
@@ -421,6 +521,9 @@
    "11-operational-risk/01-annual-loss-as-frequency-times-severity.ipynb",
    "11-operational-risk/02-truncated-severity-the-spliced-tail-and-the-threshold.ipynb",
    "11-operational-risk/05-scenarios-credibility-and-the-standardised-measurement-approach.ipynb"
+  ],
+  "engine-oprisk-api": [
+   "11-operational-risk/04-the-single-loss-approximation-and-the-infinite-mean-zone.ipynb"
   ],
   "c10-outputs": [
    "06-portfolio-capital/01-the-vasicek-loss-distribution-of-a-large-portfolio.ipynb",
@@ -440,6 +543,9 @@
   "c10-models": [
    "06-portfolio-capital/07-portfolio-credit-models.ipynb"
   ],
+  "engine-portfolio-api": [
+   "06-portfolio-capital/08-an-engine-reconciled-to-its-anchors.ipynb"
+  ],
   "c11-outputs": [
    "07-market-risk/01-var-and-es-sign-convention-and-a-first-exceedance-count.ipynb",
    "07-market-risk/02-the-estimator-ladder.ipynb",
@@ -449,7 +555,7 @@
    "07-market-risk/06-frtb-desk-eligibility-pla-and-desk-backtest.ipynb",
    "07-market-risk/07-dynamic-semiparametric-es.ipynb",
    "07-market-risk/09-adaptive-conformal-recalibration-of-the-var.ipynb",
-   "14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb"
+   "14-validating-the-validator/10-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb"
   ],
   "c11-models": [
    "07-market-risk/02-the-estimator-ladder.ipynb",
@@ -461,6 +567,9 @@
   ],
   "c13-models": [
    "07-market-risk/06-frtb-desk-eligibility-pla-and-desk-backtest.ipynb"
+  ],
+  "engine-market-api": [
+   "07-market-risk/03-backtests-kupiec-christoffersen-duration-dynamic-quantile-and-the-basel-light.ipynb"
   ],
   "c16-outputs": [
    "10-liquidity/01-the-liquidity-ladder-nlp-and-survival-period.ipynb",
@@ -480,6 +589,9 @@
    "10-liquidity/04-scenarios-and-the-depositor-generator.ipynb",
    "10-liquidity/08-reverse-stress-as-a-multiplier.ipynb"
   ],
+  "engine-liquidity-api": [
+   "10-liquidity/04-scenarios-and-the-depositor-generator.ipynb"
+  ],
   "c02-outputs": [
    "02-credit-scoring/05-corporate-pd-across-one-to-five-year-horizons.ipynb",
    "02-credit-scoring/07-the-leakage-safe-protocol-per-case-with-gates.ipynb",
@@ -487,6 +599,9 @@
   ],
   "c02-models": [
    "02-credit-scoring/05-corporate-pd-across-one-to-five-year-horizons.ipynb"
+  ],
+  "c20-outputs": [
+   "13-ml-and-ai-risk/02-robustness-resilience-and-overfitting.ipynb"
   ],
   "c20-outputs-shift": [
    "13-ml-and-ai-risk/02-robustness-resilience-and-overfitting.ipynb",
@@ -505,11 +620,23 @@
   "c20-outputs-leakage": [
    "13-ml-and-ai-risk/01-is-the-sample-fit-to-validate.ipynb"
   ],
+  "c20-models": [
+   "13-ml-and-ai-risk/03-explanations-that-stay-put.ipynb"
+  ],
   "c21-outputs": [
    "13-ml-and-ai-risk/06-fair-lending-disparity-testing.ipynb",
    "13-ml-and-ai-risk/07-conditional-disparity-replication-and-situation-testing.ipynb",
    "13-ml-and-ai-risk/08-outcome-testing-toolkits.ipynb",
    "13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb"
+  ],
+  "c21-models": [
+   "13-ml-and-ai-risk/07-conditional-disparity-replication-and-situation-testing.ipynb"
+  ],
+  "engine-ml-api": [
+   "13-ml-and-ai-risk/03-explanations-that-stay-put.ipynb"
+  ],
+  "engine-fairness-api": [
+   "13-ml-and-ai-risk/06-fair-lending-disparity-testing.ipynb"
   ],
   "c18-outputs": [
    "12-capital-and-stress/01-adding-risks-sum-and-variance-covariance.ipynb",
@@ -543,27 +670,85 @@
    "12-capital-and-stress/07-validating-aggregation-and-stress.ipynb",
    "12-capital-and-stress/08-supervisory-models-and-model-risk.ipynb"
   ],
+  "engine-aggregation-api": [
+   "12-capital-and-stress/03-dependence-band-and-worst-case-var-bounds.ipynb"
+  ],
+  "engine-stress-api": [
+   "12-capital-and-stress/04-macro-paths-satellites-and-skewed-t.ipynb",
+   "12-capital-and-stress/05-capital-plan-cet1-path-and-chilean-stack.ipynb",
+   "12-capital-and-stress/07-validating-aggregation-and-stress.ipynb"
+  ],
   "c12-outputs": [
    "08-counterparty-and-regulatory-calculators/01-the-exposure-of-one-swap.ipynb",
    "08-counterparty-and-regulatory-calculators/02-collateral-the-margin-period-of-risk-and-initial-margin.ipynb",
    "08-counterparty-and-regulatory-calculators/03-cva-dva-and-wrong-way-risk.ipynb",
+   "08-counterparty-and-regulatory-calculators/04-sa-ccr-on-the-five-official-netting-sets.ipynb",
    "08-counterparty-and-regulatory-calculators/05-the-other-regulatory-calculators.ipynb",
    "08-counterparty-and-regulatory-calculators/06-validating-an-exposure-engine.ipynb",
    "08-counterparty-and-regulatory-calculators/07-the-reference-engine-ore-quantlib.ipynb",
    "08-counterparty-and-regulatory-calculators/08-exposure-reconciled-to-a-reference-engine.ipynb"
   ],
+  "c12-models": [
+   "08-counterparty-and-regulatory-calculators/06-validating-an-exposure-engine.ipynb"
+  ],
   "regulatory-calculators": [
    "08-counterparty-and-regulatory-calculators/04-sa-ccr-on-the-five-official-netting-sets.ipynb",
    "08-counterparty-and-regulatory-calculators/05-the-other-regulatory-calculators.ipynb"
+  ],
+  "engine-regulatory-api": [
+   "08-counterparty-and-regulatory-calculators/02-collateral-the-margin-period-of-risk-and-initial-margin.ipynb",
+   "08-counterparty-and-regulatory-calculators/03-cva-dva-and-wrong-way-risk.ipynb",
+   "08-counterparty-and-regulatory-calculators/04-sa-ccr-on-the-five-official-netting-sets.ipynb",
+   "08-counterparty-and-regulatory-calculators/05-the-other-regulatory-calculators.ipynb",
+   "08-counterparty-and-regulatory-calculators/06-validating-an-exposure-engine.ipynb",
+   "08-counterparty-and-regulatory-calculators/08-exposure-reconciled-to-a-reference-engine.ipynb"
+  ],
+  "engine-ccr-api": [
+   "08-counterparty-and-regulatory-calculators/02-collateral-the-margin-period-of-risk-and-initial-margin.ipynb",
+   "08-counterparty-and-regulatory-calculators/03-cva-dva-and-wrong-way-risk.ipynb",
+   "08-counterparty-and-regulatory-calculators/04-sa-ccr-on-the-five-official-netting-sets.ipynb",
+   "08-counterparty-and-regulatory-calculators/05-the-other-regulatory-calculators.ipynb",
+   "08-counterparty-and-regulatory-calculators/06-validating-an-exposure-engine.ipynb",
+   "08-counterparty-and-regulatory-calculators/08-exposure-reconciled-to-a-reference-engine.ipynb"
+  ],
+  "governance-inventory": [
+   "14-validating-the-validator/07-from-test-results-to-risk-classes-deadlines-opinions-and-appetite.ipynb"
+  ],
+  "governance-findings": [
+   "14-validating-the-validator/07-from-test-results-to-risk-classes-deadlines-opinions-and-appetite.ipynb"
+  ],
+  "governance-report": [
+   "14-validating-the-validator/07-from-test-results-to-risk-classes-deadlines-opinions-and-appetite.ipynb"
+  ],
+  "governance-appetite": [
+   "14-validating-the-validator/07-from-test-results-to-risk-classes-deadlines-opinions-and-appetite.ipynb"
+  ],
+  "engine-governance-api": [
+   "14-validating-the-validator/07-from-test-results-to-risk-classes-deadlines-opinions-and-appetite.ipynb"
   ]
  },
- "stages": {},
+ "stages": {
+  "evaluate": [
+   "01-getting-started/04-a-battery-on-your-own-scored-sample.ipynb",
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb"
+  ],
+  "export": [
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb"
+  ],
+  "ingest": [
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb"
+  ],
+  "split": [
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb"
+  ]
+ },
  "packages": {
   "riskvalidation": [
    "01-getting-started/01-install-the-engine-and-open-an-artifact.ipynb",
    "01-getting-started/02-a-first-testresult-on-a-real-slice.ipynb",
    "01-getting-started/03-policies-and-traffic-lights.ipynb",
    "01-getting-started/04-a-battery-on-your-own-scored-sample.ipynb",
+   "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb",
    "02-credit-scoring/01-the-scorecard-idea-woe-iv-and-points.ipynb",
    "02-credit-scoring/02-the-leakage-safe-fit-of-the-monotone-scorecard.ipynb",
    "02-credit-scoring/03-the-validation-battery-on-a-ladder-of-models.ipynb",
@@ -671,9 +856,10 @@
    "14-validating-the-validator/04-default-clustering-where-the-binomial-test-is-misused.ipynb",
    "14-validating-the-validator/05-drift-the-psi-rules-their-benchmark-and-the-false-alarm-rate.ipynb",
    "14-validating-the-validator/06-discrimination-decay-leakage-broken-monotonicity-and-concentration.ipynb",
-   "14-validating-the-validator/07-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb",
-   "14-validating-the-validator/08-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb",
-   "14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb"
+   "14-validating-the-validator/07-from-test-results-to-risk-classes-deadlines-opinions-and-appetite.ipynb",
+   "14-validating-the-validator/08-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb",
+   "14-validating-the-validator/09-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb",
+   "14-validating-the-validator/10-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb"
   ]
  }
 }

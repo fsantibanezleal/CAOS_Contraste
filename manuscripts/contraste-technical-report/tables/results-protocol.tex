@@ -1,0 +1,38 @@
+{\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{lrlrrr}
+\caption{The protocol of each case as the committed artifacts record it: the seed of the bake, the variant the application opens on, the number of variants, the test rows (one result of the engine for each test, model and segment) written over all its variants, and how many of those rows are decided by a $p$-value.}\label{tab:protocol-cases}\\
+\toprule
+Case & Seed & Default variant & Variants & Test rows & With a $p$-value \\
+\midrule
+\endfirsthead
+\toprule
+Case & Seed & Default variant & Variants & Test rows & With a $p$-value \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+C01 & 42 & holdout & 7 & 1{,}282 & 1{,}117 \\
+C02 & 42 & h1 & 6 & 676 & 604 \\
+C03 & 42 & fy2008-10 & 5 & 245 & 245 \\
+C04 & 42 & sp & 9 & 234 & 158 \\
+C05 & 42 & sp-2010 & 6 & 384 & 384 \\
+C06 & 42 & rd-2020-06 & 6 & 216 & 6 \\
+C07 & 42 & base & 6 & 66 & 0 \\
+C08 & 42 & dc-2009-10 & 6 & 156 & 156 \\
+C09 & 42 & level-3 & 6 & 192 & 144 \\
+C10 & 42 & commercial-industrial & 7 & 123 & 19 \\
+C11 & 42 & rates-2022 & 6 & 1{,}296 & 1{,}156 \\
+C12 & 42 & netting-set & 6 & 247 & 108 \\
+C13 & 13 & missing-basis & 6 & 18 & 0 \\
+C14 & 42 & vd-2022-q4 & 3 & 18 & 0 \\
+C15 & 42 & long-uf & 6 & 30 & 0 \\
+C16 & 42 & list-adverse & 6 & 39 & 0 \\
+C17 & 42 & xi-0-8 & 4 & 184 & 0 \\
+C18 & 42 & fed-2026-severely-adverse & 6 & 79 & 0 \\
+C20 & 42 & sgcd-seen & 6 & 254 & 181 \\
+C21 & 42 & pair-2023-24 & 6 & 570 & 336 \\
+C22 & 42 & null & 9 & 21 & 19 \\
+\end{longtable}
+}

@@ -38,7 +38,7 @@ MIN_DEFAULTS_LGD = 30
 CONVENTION = "mid-period"
 #: the staging policy: the multiplier schedule, the absolute floor and the threefold ratio are the contract's golden
 #: policy (engine-provisions-api, staging); 30 and 90 days are IFRS 9 5.5.11 and B5.5.37; no probation (the file has no
-#: cure dates and the reporting dates are a year apart)
+#: cure dates)
 POLICY = StagingPolicy(multiplier_schedule=((0.01, 4.0), (0.05, 2.5), (0.5, 1.5)), absolute_floor=0.005, threefold_ratio=3.0,
                        dpd_backstop=30, default_dpd=90, probation_months=0, low_credit_risk_pd=None)
 

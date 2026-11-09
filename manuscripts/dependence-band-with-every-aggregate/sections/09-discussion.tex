@@ -1,0 +1,83 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Why the band looks the way it does}
+\label{sec:discussion-why}
+
+The band of Banco Andino spans the interval from $\bdLowerDf$ to $\bdWorstDf$ of the headline, and the two ends are far from
+everything that a plausible dependence produces. The largest capital among the ten planted structures is $\bdTruthMaxOverHeadline$
+of the headline, reached by a $t$ copula with 3 degrees of freedom and a crisis matrix, and the worst case is $\bdWorstDf$.
+The reason is in the construction of the sharp bounds. The worst case moves the largest losses of each risk type into the
+scenarios where the other types have small ones, so that every scenario of the tail has nearly the same total
+(Figure~\ref{fig:rearrangement}); no positive dependence structure does that, and it is the structure that makes the value at risk
+exceed the sum of the values at risk by $\bdWorstOverComo$ percent. It is a bound that states what cannot be excluded without
+knowledge of the dependence, and the planted structures confirm that it is not a scenario. The lower bound is the mirror image, a
+structure in which the large losses never coincide, and the independent risks, at $\bdTruthDfGaussianIndependent$ of the
+headline, are still far above it.
+
+The interior rows describe the plausible structures, and what they cover is decided by the matrices. With the base matrix alone the
+five interior rows contain two of the ten structures; with the stressed matrix added they contain eight, and the interval grows
+by $\bdAblWidthStress$ of the capital. The matrix, not the family, is the first-order component, and Proposition~\ref{prop:sqrt}
+shows why for the square-root row: the effect of a correlation is the product of the two capital figures, so the pair of the largest
+marginals, credit and market, carries most of the movement. The family matters in a second order, through the tail dependence that
+Proposition~\ref{prop:tails} describes, and the experiment with the planted structures shows the order of magnitude: a Gaussian
+copula calibrated on the exact rank correlation of the structure is within $\bdKGaussMax$ percent for the five Gaussian-family structures and
+\bdKTailMin{} to \bdKTailMax{} percent below for the five with tail dependence.
+
+\subsection{Failure cases and negative results}
+\label{sec:discussion-failures}
+
+Two predictions were refuted and both are informative. The interior rows of the base matrix covered 2 of the 10 structures
+against the 75 percent predicted. The prediction assumed that the interior rows, which are five different aggregation
+methods, would bracket the plausible structures; in fact they bracket the plausible structures only when the matrix is right. A
+validator that reads the base band alone concludes that the aggregate is between CLP \bdGauss{} and \bdTFour{} billion (the Gaussian
+row to the $t$ row of 4 degrees of freedom), and eight of the ten planted structures, which a bank may
+reasonably worry about, lie outside that interval. The stress matrix makes the difference. This is a finding about the protocol:
+the band must carry the stressed matrix as a first-class component, which the rule of Section~\ref{sec:method-rule} does by naming
+the matrices as conventions of the same document.
+
+The second refutation, that more than half of the tests run on the Gaussian row alone, shows that the number of tests is not the
+measure of the protection that the band offers. Six tests verify arithmetic, units, consistency and a reference and run on any
+single row. The three that read the other rows are the ones that measure the dependence uncertainty, and those cannot run without the band.
+The refutation also gives a use for the table of Section~\ref{sec:ablation-tests}: it says which tests are protections against a
+single-figure report.
+
+Three other limits of the results are negative in a milder sense. The additivity of the Euler allocation holds to
+$\bdEulerMaxGap$ because it is an identity of the estimator; the test guards the implementation, and the information in the allocation
+is its sampling error, which has a standard deviation of $\bdShareSdMax$ percentage points for operational risk. The hypothesis that the sharp range
+covers every planted structure was predicted correctly and carries no information about the structures, as
+Proposition~\ref{prop:coverage} shows. And the $t$ curve is flat between 2.5 and 3 degrees of freedom within the noise, so the
+conjecture of monotonicity is supported on a grid that has one flat step.
+
+\subsection{What the band lets a validator say}
+\label{sec:discussion-validator}
+
+The band changes the form of the statement that a validator can make about an aggregate. Without it, the statement is that the
+aggregate is a figure from a method with a matrix. With it, the validator can say what share of the width belongs to the choice of
+method (the Gaussian and the $t$ rows differ by up to $\bdCopulaDiffFour$ percent, amber in the copula test), what share to
+the matrix (the stress moves the Gaussian row by $\bdGaussMove$ percent, amber in the stress test), and what share to the
+dependence that no copula of the set spans (the distance from the interior rows to the bounds). The model-risk measures of the band
+put numbers on the same: $\mathrm{AM}$ of $\bdAm$ percent says that the worst case is $\bdAm$ percent above the Gaussian figure,
+and $\mathrm{RM}$ of $\bdRm$ places it within the band.
+
+The findings also bear on what a bank should report as capital. The case keeps the simple sum as the headline, on the supervisory
+position that diversification between risk types is not recognised; the experiments show that the position is conservative for
+every planted structure with positive dependence, since the simple sum exceeds the capital of each by $\bdSumErrMin$ to $\bdSumErrMaxOther$ percent, except for
+the independent structure, where it exceeds it by $\bdSumMaxErr$ percent. A bank that did claim diversification would have to
+choose one row of the band, and the experiments give it a reason for the choice: the Gaussian row underestimates by $\bdGaussDepMin$ to $\bdGaussDepMax$ percent
+every planted structure with a stressed matrix or with tail dependence, seven of the ten, and the interior rows of the stressed matrix come closer: on these seven structures the Gaussian row of the stressed matrix falls short by
+$\bdGaussStressDepMin$ to $\bdGaussStressDepMax$ percent, against $\bdGaussDepMin$ to $\bdGaussDepMax$ percent below for the Gaussian row of the base matrix.
+
+\subsection{Relation to the published findings}
+\label{sec:discussion-literature}
+
+The overestimate of the additive rule over the Gaussian copula in the case, $\bdAdditiveOver$ percent, lies in the range of 30 to 40
+percent that Rosenberg and Schuermann report \citep{rosenberg2006}. The same authors find that the choice between a normal and a Student $t$ copula has a more modest effect
+on risk; in the case, the largest difference between a $t$ row and the Gaussian row is $\bdCopulaStat$ percent, against
+$\bdAdditiveOver$ percent between the simple sum and the Gaussian row. The excess of the worst value at risk over the comonotonic one,
+$\bdWorstOverComo$ percent here, is the phenomenon that Embrechts, Puccetti and R\"uschendorf describe and that makes the simple
+sum a non-bound \citep{epr2013}. The dependence of the capital on the degrees of freedom is that of the tail dependence of
+Demarta and McNeil \citep{demarta2005}. The Joint Forum's reluctance to rely on aggregation models \citep{jointforum2010} is, in
+these numbers, a reluctance to rely on one row: the band of a single case shows that the figures of the rows differ by amounts
+that no supervisor can ignore. None of these is a new finding. What the experiments add is the measurement of what the band contains
+when the structure is known, and the identification of the matrix as the component that decides it.

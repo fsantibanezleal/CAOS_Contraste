@@ -1,0 +1,90 @@
+\section{Experimental design}
+\label{sec:experimental-design}
+
+\subsection{Predictions and the observations that would refute them}
+\label{sec:ed-predictions}
+
+Eight predictions are stated, each with the observation that would refute it.
+They were set by the author and first written on 7 November 2026, after the committed measurement on which six of them are decided: its documents were baked between 6 and 31 October 2026.
+They are therefore not forecasts made before the data and no preregistration backs them.
+P2 and P7 were first written with the screen and restated to \cref{def:holds} in the revision that followed the pool of 200,000 repetitions, which is why P2 is decided on the cells or on the pool; P1 to P5 and P8 restate the acceptance criteria of the measurement and the properties it should have, and are checked on the committed record; P6 and P7 are decided by the two experiments added to the measurement, were written with them, and the record does not show whether they were written before the runs.
+The thresholds of P3 and P4 come from the design requirements of the measurement: P3 states the agreement criterion of requirement CT-303, and the threshold of P4 of 143 of 144 cells is the count that requirement CT-304 of the design documents records as observed, and its floor of 48 of 54 cells is the one that CT-304 sets because the count depends on the seed (\ynAgree{} of \ynTotal{} observed), so that P4 checks that the committed run still meets the reproduction recorded in the design and carries no predictive weight.
+A prediction that fails is a finding and is reported as one.
+\Cref{tab:predictions} lists them, and \cref{tab:outcomes} in \cref{sec:rs-hypotheses} reports each against its criterion. P1 and P2 state the content of the measurement and its main finding about the tests: that each test has its rates and that each holds its size. P3 and P4 state that the instrument reproduces what is known, the exact probabilities and the published studies. P5 to P8 state properties that the instrument and the measured tests should have if the protocol is sound: power that does not fall, counts that reproduce, a judgement that does not depend on the repetitions, and ladders that are long enough.
+P6 is decided by the first added experiment, the rerun of the committed cells, and P7 by the second, the fifty further blocks of every test; the third experiment, on the instrument, decides no prediction and supplies the exact calculations of the ablation.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{The eight predictions of the measurement, each with the observation that would refute it; P1 to P5 and P8 are checked on the committed measurement, which preceded their writing, and P6 and P7 are decided by the experiments added to the measurement.}
+\label{tab:predictions}
+\fitwidth{\begin{tabular}{p{0.8cm}p{7.0cm}p{6.2cm}}
+\toprule
+ID & Prediction & Refuted if \\
+\midrule
+P1 & each of the 21 tests has a size at 5\,\% and 1\,\% and each of 17 has a power curve over six severities, every rate with a standard error and a Wilson interval; the four transition tests have a size only & any test lacks its size or its curve, or any rate lacks its error \\
+P2 & each of the 21 tests holds its size at both levels, by \cref{def:holds}, on the committed cells and on the pool of 200,000 repetitions & any test does not hold its size on the cells or on the pool \\
+P3 & every simulated rate of the count tests agrees with its exact rejection probability, by \eqref{eq:agree} & any of the comparisons fails \\
+P4 & the rerun reproduces at least 143 of the 144 cells of the Basel Committee's study, at least 48 of the 54 cells of the stability study and the one rate of the nested-model study & fewer cells agree \\
+P5 & the measured power curves do not fall between neighbouring severities by more than 3.29 combined standard errors & any such fall \\
+P6 & every committed count reproduces exactly from the configuration and the seed of its cell & any count differs \\
+P7 & the judgement of a cell of 4,000 repetitions equals the judgement of the pool of 200,000 repetitions, by \cref{def:holds}, for every test & any test is judged differently \\
+P8 & the power curve of each of the 17 tests reaches 80\,\% at some severity of its ladder & any curve stays below 80\,\% \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\subsection{Data and provenance}
+\label{sec:ed-data}
+
+No external data enter the measurement.
+Every sample is drawn from a generator of the open engine \texttt{riskvalidation} 1.1.0, published under the MIT licence, with its configuration and its exact truth committed in the artifact of each family, so that the truth status of every result is that of a synthetic sample of known truth.
+The scenarios are those of the null and of the defect families of \cref{tab:design}.
+The calibration tests are measured on a portfolio of 1,000 obligors at 1\,\% for the count tests, on seven grades of 5 to 32 expected defaults each for the grade tests, on a logistic portfolio of 5,000 obligors with a mean probability of default of 5\,\% for the obligor-level tests, and on five annual cohorts of 1,000 obligors at 3\,\% for the multi-year tests.
+The discrimination tests use 150 defaulters and 4,850 survivors with a development AUC of 0.80; the stability tests use two samples of 1,000 binned at the deciles of the population; the migration tests use seven grades of 500 obligors, also at 2,000, and the concentration tests ten grades of 5,000 obligors with a coefficient of variation of 0.60 at development; the transition tests use a Markov chain of five grades and default with 1,000 obligors per grade over five annual snapshots.
+The only external numbers are the printed rates of three published simulation studies, read from the papers, which serve as references for the reruns.
+Each generator is a design choice, and the sample sizes and the severity ladders are the ones that the design of the measurement set from pilot runs, so that the targeted tests' power runs from their size towards one at the sample size of the family.
+
+\subsection{Methods compared}
+\label{sec:ed-methods}
+
+The methods that the measurement compares are of three kinds, and every one is run by the product on the same counts or the same samples.
+The first is the \nTests{} tests themselves, called exactly as a validator calls them: they are the objects of the measurement, and their sizes are compared with the level they claim and, for the count tests, with their exact probabilities.
+The second is the set of decisions that the protocol makes about a rate and that alternatives exist for: five interval estimators of a rate (Wilson, normal approximation, Agresti--Coull, Clopper--Pearson and Jeffreys, with the references of \cref{sec:rw-intervals}), computed on the committed counts of every row that has an exact probability and by exact calculation of their coverage; and four rules for judging a size, the naive rule that a rate above the level is oversized, the one-sided bound of \eqref{eq:bound} (the screen), the Wilson interval wholly above the level (the definition), and the exact value, applied to the same fifty replications of every test.
+The third is the published simulation studies of \cref{sec:pm-published}, rerun with the same harness on the same generators.
+
+\subsection{Metrics}
+\label{sec:ed-metrics}
+
+The primary metrics are the rejection rate of \eqref{eq:rate}, its standard error and Wilson interval \eqref{eq:se-wilson}, the exact probability \eqref{eq:mixture}, the agreement statistic \eqref{eq:agree}, the severity $\hat\sev_{0.8}$ of \eqref{eq:s80-hat}, and the pooled z of \eqref{eq:pooled-z}.
+The added experiments need three more.
+The coverage of an interval method $\mathcal I$ for a true rejection probability $p$ in $\nrep$ repetitions is
+\begin{equation}
+\mathrm{cov}(\mathcal I;p,\nrep)=\sum_{k=0}^{\nrep}\binom{\nrep}{k}p^k(1-p)^{\nrep-k}\,\indic\{p\in\mathcal I(k,\nrep)\},
+\label{eq:coverage}
+\end{equation}
+computed exactly, with nominal value 0.95.
+The calibration of the Monte Carlo standard error is the ratio, over the $B$ independent blocks of one cell, of the standard deviation of the block rates to the binomial standard error,
+\begin{equation}
+\kappa=\frac{\mathrm{sd}(\hat\rej_1,\dots,\hat\rej_B)}{\sqrt{\bar\rej(1-\bar\rej)/\nrep}},
+\label{eq:kappa}
+\end{equation}
+which is one when the standard error is right.
+The share of cells flagged as oversized by a rule (the naive rule, the screen and the definition), among the tests whose pooled size lies within the level and among those whose pooled size lies above it, measures the specificity and the sensitivity of the rule. The resolution of a cell, the excess over the level that the screen or the definition sees with probability 0.8, is computed by exact binomial sums and reported for each number of repetitions, because it is the quantity that says what a statement that a test holds its size excludes.
+
+\subsection{Repetitions, seeds and statistics}
+\label{sec:ed-statistics}
+
+A size cell has $\nrep=\nNullReps{}$ repetitions and a power cell $\nrep=\nPowerReps{}$; the seed of every cell is recorded in the artifact and derived from the seed of the case and the key of the cell.
+The first added experiment reruns the \nTests{} null cells with their committed seeds.
+The second measures each of the \nTests{} tests again in \nBlocks{} blocks of \nNullReps{} repetitions, each block with a seed derived from a sequence of integers made of a fixed entropy, the index of the test and the index of the block, so that no block shares a stream with the committed cell or with another block, and pools the blocks to \nRepsPooled{} repetitions per test.
+A test is placed in one of three groups from its pooled rate: within the level when the pooled rate does not exceed the level at either level, above the level when the lower Wilson limit of the pooled rate exceeds it at one level (the tests that \cref{def:holds} shows oversized), and in neither group otherwise.
+Cells of 1,000 and 2,000 repetitions are the slices of the blocks, which are valid simulations of that size because the repetitions are independent, and cells of 20,000 repetitions are groups of five blocks.
+The third experiment computes, by exact binomial sums, the probability that the bound flags a correct test and the probability that the agreement check detects a generator whose probability of default is wrong by a stated factor, and confirms the second in \agBlocks{} independent blocks of 4,000 repetitions for each factor.
+All intervals are Wilson intervals at 95\,\%, the bound uses $z_{0.999}$, the agreement check $3.29$, and no hypothesis of \cref{tab:predictions} is decided by a p-value: each is decided by a count against its criterion.
+
+\subsection{Planned ablations}
+\label{sec:ed-ablation}
+
+The protocol has four components that an alternative can replace, and \cref{sec:ablation} removes each in turn: the Wilson interval, replaced by each of the other four; the one-sided bound of the screen, replaced by the naive rule and by the interval of the definition; the exact value beside the simulation, removed; and the number of repetitions, reduced and increased.
+The component that secures one stream per repetition is a reproducibility property rather than a statistical one, and its contribution is the exact reproduction of \cref{sec:rs-seeds}, not an ablation. For each ablation the measure is stated in advance: the coverage and the containment of exact values for the interval, the share of cells flagged in each group for the rule, the probability of detecting a wrong generator and the excess seen for the exact value, and the resolution and the false flag probability for the number of repetitions. A component matters if its removal changes a measure by more than the Monte Carlo error of the measure.

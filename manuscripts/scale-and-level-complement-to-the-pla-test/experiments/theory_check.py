@@ -1,7 +1,7 @@
 """Independent simulation of the noise-free stale-volatility model of the Theory section, to separate the closed forms (population
 quantities) from the finite-window behaviour of a 250-day desk-year.
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/scale-and-level-complement-to-the-pla-test/experiments/theory_check.py
+    python manuscripts/scale-and-level-complement-to-the-pla-test/experiments/theory_check.py
 
 For each lag L the model HPL_t = sigma_t zeta_t, RTPL_t = sigma_{t-L} zeta_t (scale c = 1, no pricing noise) is simulated with the
 generator's volatility law (``VOL_PHI``, ``VOL_SD``); the Mincer-Zarnowitz slope and the Pearson correlation of the 20-day rolling

@@ -3,17 +3,29 @@
 % The four macros of the header standard; tools/zenodo/publish_revision.py patches them when it reserves the DOI.
 \newcommand{\doctype}{Preprint}
 \newcommand{\docversion}{v1.00.000}
-\newcommand{\docdate}{4 November 2026}
-\newcommand{\versiondoi}{10.5281/zenodo.0}
-\newcommand{\conceptdoi}{10.5281/zenodo.0}
+\newcommand{\docdate}{8 November 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.24053160}
+\newcommand{\conceptdoi}{10.5281/zenodo.24053159}
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
 \input{../_shared/preamble}
-\makeatletter
-\def\input@path{{sections/}}
-\makeatother
 
-\title{An anchored tipping-point PD under informative rating withdrawals}
+% Every number the prose quotes is read from the committed outputs by tables/make_tables.py and typeset with \nv{key}.
+\input{tables/numbers}
+\newcommand{\nv}[1]{\csname num@#1\endcsname}
+% The participle that names a rating that left the cohort during the year, as a macro so that the word has one spelling.
+\newcommand{\wdn}{withdrawn}
+\newcommand{\pth}[1]{\nolinkurl{#1}}
+\setlength{\tabcolsep}{4pt}
+\setlength{\emergencystretch}{2em}
+% Symbols of the notation table.
+\newcommand{\knum}{k}
+\newcommand{\inform}{\iota}
+\newcommand{\pdk}{\mathrm{PD}}
+\newcommand{\tip}{k^{*}}
+\newcommand{\Nn}{N}
+
+\title{An anchored tipping-point PD under informative rating withdrawals: conservative coverage on known truth, an anchored odds ratio unstable across years in S\&P's B and CCC to C grades and Fitch's B grade}
 \author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
 \small CAOS open-research programme, Santiago, Chile\\
 \small \texttt{fsantibanez@gmail.com}}
@@ -24,68 +36,60 @@
 \headerblock
 
 \begin{abstract}
-% ABSTRACT
+A rating that leaves a cohort during the year hides whether it would have defaulted. Removing it, keeping it or following it to the year end each fix one answer, and when withdrawal precedes default every answer understates the probability of default (PD).
+The paper states the PD of a grade as a function of the odds ratio $k$ of withdrawal for ratings that default, solves for the tipping $k$ at which a decision flips, and anchors $k$ on a second source that counts defaults differently.
+On rating paths generated from S\&P migration counts, with a true PD of \nv{truthB}\% for grade B and \nv{reps} repetitions per cell, the anchored interval covers it in \nv{h1.min}\% to 100\% of repetitions at informativeness 1, 3 and 9, against \nv{cov.pool.i9.industry}\% $\pm$ \nv{se.pool.i9.industry}\% for the removed estimate in the pooled design, at \nv{w.fy.i9.anchored} points wide against \nv{w.fy.i9.followed} for an oracle that follows every withdrawal.
+Manski's worst-case band covers as often or more often, at \nv{wr.fy.i9} to \nv{wr.x10.i9} times the width.
+On the agencies' cohorts the pooled anchored $k$ of S\&P's CCC to C is \nv{real.sp.CCC-C.k}, but fewer than 80\% of the annual cohorts hold it in their band for S\&P's grades B and CCC to C and Fitch's grade B. A definition gap that varies by year over each grade's observed range gives grade B a share of \nv{stab.i9.cdobs.B.share}\% and CCC to C \nv{stab.i9.cdobs.CCC-C.share}\%. The prediction is refuted by its stability clause and by its coverage clause against the Manski band.
 \end{abstract}
 
 \section{Introduction}
 \label{sec:introduction}
-
-% TEXT
+\input{sections/01-introduction}
 
 \section{Related work}
 \label{sec:related-work}
-
-% TEXT
+\input{sections/02-related-work}
 
 \section{Problem formulation}
 \label{sec:problem}
-
-% TEXT
+\input{sections/03-problem}
 
 \section{Proposed method}
 \label{sec:proposed-method}
-
-% TEXT
+\input{sections/04-method}
 
 \section{Theory}
 \label{sec:theory}
-
-% TEXT
+\input{sections/05-theory}
 
 \section{Experimental design}
 \label{sec:experimental-design}
-
-% TEXT
+\input{sections/06-design}
 
 \section{Results}
 \label{sec:results}
-
-% TEXT
+\input{sections/07-results}
 
 \section{Ablation}
 \label{sec:ablation}
-
-% TEXT
+\input{sections/08-ablation}
 
 \section{Discussion}
 \label{sec:discussion}
-
-% TEXT
+\input{sections/09-discussion}
 
 \section{Limitations}
 \label{sec:limitations}
-
-% TEXT
+\input{sections/10-limitations}
 
 \section{Reproducibility}
 \label{sec:reproducibility}
-
-% TEXT
+\input{sections/11-reproducibility}
 
 \section{Conclusions}
 \label{sec:conclusions}
-
-% TEXT
+\input{sections/12-conclusions}
 
 \bibliographystyle{plainnat}
 \bibliography{references}

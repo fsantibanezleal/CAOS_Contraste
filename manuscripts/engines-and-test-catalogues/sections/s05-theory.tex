@@ -1,0 +1,66 @@
+\section{Theory}
+\label{sec:theory}
+
+Four statements explain what the measurements of the next sections can and cannot show. They concern the relation of the Jeffreys test to the exact binomial test (Proposition~\ref{prop:sandwich}), the structure of the concentration statistic (Proposition~\ref{prop:hhi}), the exactness of the CreditRisk+ recursion and its closed-form checks (Proposition~\ref{prop:crp}), and the size of a defect that an independent simulation can see (Proposition~\ref{prop:power}). Each states its conditions and ends with what it implies for the experiments.
+
+\subsection{The Jeffreys test lies between two binomial tails}
+
+\begin{proposition}\label{prop:sandwich}
+Let $N\ge1$, $0\le D\le N$ integers and $\pi\in(0,1)$, and let $p_{\mathrm{J}}=I_\pi(D+\tfrac12,N-D+\tfrac12)$ be the Jeffreys $p$-value of \eqref{eq:jeffreys}. Then, with $X\sim\mathrm{Bin}(N,\pi)$,
+\begin{equation}
+  \Pr(X\ge D+1)\;\le\;p_{\mathrm{J}}\;\le\;\Pr(X\ge D),\qquad\text{so}\qquad 0\le \Pr(X\ge D)-p_{\mathrm{J}}\le\Pr(X=D).
+  \label{eq:sandwich}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+For integers $1\le a\le N$ the identity $\Pr(\mathrm{Bin}(N,\pi)\ge a)=I_\pi(a,N-a+1)$ holds (differentiate both sides in $\pi$, or integrate the order-statistic density of $N$ uniform draws), and $I_\pi(N+1,0)$ is read as $0$ and $I_\pi(0,N+1)$ as $1$. A $\mathrm{Beta}(a,b)$ variable is $G_a/(G_a+G_b)$ with independent Gamma variables of shape $a$ and $b$. Raising $a$ replaces $G_a$ by $G_a+G'$ with $G'\ge0$ independent, which raises the ratio; lowering $b$ lowers $G_b$ in the same way. Hence $I_\pi(a,b)$ is decreasing in $a$ and increasing in $b$. The pair $(D,N-D+1)$ has a smaller first and a larger second parameter than $(D+\tfrac12,N-D+\tfrac12)$, so $I_\pi(D,N-D+1)\ge p_{\mathrm{J}}$, and the left side is $\Pr(X\ge D)$. The pair $(D+1,N-D)$ has a larger first and a smaller second parameter, so $I_\pi(D+1,N-D)\le p_{\mathrm{J}}$, and the left side is $\Pr(X\ge D+1)$. The second form of \eqref{eq:sandwich} follows by subtracting and using $\Pr(X\ge D)-\Pr(X\ge D+1)=\Pr(X=D)$.
+\end{proof}
+
+The proposition has two consequences that the experiment of Section~\ref{sec:results} checks on real grades. The Jeffreys test rejects at any level $\alpha$ whenever the exact one-sided binomial test of $D$ against $\pi$ rejects, since $p_{\mathrm{J}}\le\Pr(X\ge D)$, so the generic test can never flag a grade that the ECB test passes. And the two tests can differ only where the binomial $p$-value lies in $[\alpha,\alpha+\Pr(X=D))$, an interval whose length is the probability mass at the observed count and tends to zero as $N$ grows at fixed $\pi$ (it is of order $1/\sqrt{N\pi(1-\pi)}$). The Jeffreys test is therefore not a different test in large grades; the difference is a small-sample property, and a validator who substitutes the binomial test is conservative in the direction of missing underestimation.
+
+\subsection{The concentration statistic is a monotone function of the Herfindahl--Hirschman index}
+
+\begin{proposition}\label{prop:hhi}
+For grade frequencies $R_i\ge0$, $\sum_iR_i=1$, over $K\ge2$ grades, let $H=\sum_iR_i^2$. Then $\mathrm{CV}^2=KH-1$, the index of \eqref{eq:hhi} is
+\begin{equation}
+  \mathrm{HI}=1-\frac{\ln N_{\mathrm{eff}}}{\ln K},\qquad N_{\mathrm{eff}}=\frac1H\in[1,K],
+  \label{eq:neff}
+\end{equation}
+so $\mathrm{HI}\in[0,1]$, $\mathrm{HI}=0$ exactly when the frequencies are uniform and $\mathrm{HI}=1$ exactly when one grade holds all the mass.
+\end{proposition}
+
+\begin{proof}
+Expanding the square, $\sum_i(R_i-1/K)^2=H-2/K+1/K=H-1/K$, so $\mathrm{CV}^2=K(H-1/K)=KH-1$ and $(\mathrm{CV}^2+1)/K=H$. Then $\mathrm{HI}=1+\ln H/\ln K=1-\ln(1/H)/\ln K$. By the Cauchy--Schwarz inequality $1/K\le H\le1$, with equality on the left iff all $R_i$ are equal and on the right iff one $R_i=1$; this gives the range and the two extreme cases.
+\end{proof}
+
+The proposition says that the ECB concentration test is a test on the effective number of grades $N_{\mathrm{eff}}$, and that the coefficient of variation, on which the test statistic is built, is the quantity $\sqrt{KH-1}$, which is zero for a uniform distribution. It explains the engine's behaviour at the edge: when the current frequencies are uniform, $\mathrm{CV}_{\mathrm{cur}}=0$ and the denominator of \eqref{eq:hhi} vanishes, so the statistic is undefined and the engine returns a result with no $p$-value and a note, as the instructions' undefined case requires. It also tells a reader that two portfolios with the same $N_{\mathrm{eff}}$ are indistinguishable to the index, whatever their grade layout.
+
+\subsection{The CreditRisk+ recursion is exact, and three of its consequences are closed forms}
+
+\begin{proposition}\label{prop:crp}
+In one sector with no idiosyncratic weight, let the loss in units be $X=\sum_i\nu_iM_i$ with $M_i\mid Y\sim\mathrm{Poisson}(p_iY)$ independent and $Y\sim\mathrm{Gamma}$ with mean $1$ and variance $\sigma^2$. Then (i) $\Pr(X=0)=(1+\sigma^2\mu)^{-1/\sigma^2}$; (ii) $\mathbb{E}[X]=\sum_i\nu_ip_i$ and $\mathrm{Var}(X)=\sum_i\nu_i^2p_i+\sigma^2\bigl(\sum_i\nu_ip_i\bigr)^2$; (iii) the probabilities $g_m$ satisfy the recursion \eqref{eq:crp} exactly.
+\end{proposition}
+
+\begin{proof}
+Conditioning on $Y$, $\mathbb{E}[z^X\mid Y]=\exp\{Y\,(Q(z)-\mu)\}$ with $Q(z)=\sum_j\mu_jz^j$ and $\mu=Q(1)$. The Gamma moment generating function $\mathbb{E}[e^{-tY}]=(1+\sigma^2t)^{-1/\sigma^2}$ with $t=\mu-Q(z)$ gives $G(z)=(1+\sigma^2\mu-\sigma^2Q(z))^{-1/\sigma^2}$. Since the sum in $Q$ starts at $j=1$, $Q(0)=0$ and $g_0=G(0)=c^{-1/\sigma^2}$, which is (i). For (ii), $\mathbb{E}[X\mid Y]=Y\sum_i\nu_ip_i$ and $\mathrm{Var}(X\mid Y)=Y\sum_i\nu_i^2p_i$, and the law of total variance with $\mathbb{E}Y=1$, $\mathrm{Var}Y=\sigma^2$ gives the two moments. For (iii), $G'/G=Q'/(c-\sigma^2Q)$, that is $(c-\sigma^2Q(z))G'(z)=Q'(z)G(z)$. The coefficient of $z^{m-1}$ on the left is $c\,m\,g_m-\sigma^2\sum_j\mu_j(m-j)g_{m-j}$ and on the right $\sum_jj\,\mu_jg_{m-j}$; equating them and solving for $g_m$ gives \eqref{eq:crp}.
+\end{proof}
+
+The three closed forms are what the portfolio experiment compares with the engine's recursion on the committed book, and the recursion of \eqref{eq:crp} is what the experiment implements independently, so that a defect in the engine's stable form and in its Panjer form would both appear against it. The proposition holds for integer losses on a finite grid; the mass $1-\sum_mg_m$ left beyond the grid is a truncation error that the experiment reports. It does not hold with several sectors or with an idiosyncratic weight, where the generating function has several Gamma factors and the recursion has more terms, and the checks of this paper do not cover that case.
+
+\subsection{How large a defect an independent simulation can see}
+
+\begin{proposition}\label{prop:power}
+Let $\bar f$ and $\bar g$ be the means of $R$ independent runs of a stochastic component and of its independent reference, with run-to-run standard deviations $\sigma_f$ and $\sigma_g$, and let a defect shift the mean of the component by $\vartheta$. Treat $z$ of \eqref{eq:zdiff} as normal with unit variance. The test that rejects when $|z|>c$ has power
+\begin{equation}
+  \pi(\vartheta)=1-\Phi\!\left(c-\frac{\vartheta}{s}\right)+\Phi\!\left(-c-\frac{\vartheta}{s}\right),\qquad s=\sqrt{\frac{\sigma_f^2+\sigma_g^2}{R}},
+  \label{eq:power}
+\end{equation}
+and the shift that it detects with probability at least $1-\beta$ is, up to the negligible lower tail, $\vartheta_{1-\beta}=(c+z_{1-\beta})\,s$.
+\end{proposition}
+
+\begin{proof}
+If $z\sim\mathcal{N}(\vartheta/s,1)$ then $\Pr(|z|>c)=\Pr(z>c)+\Pr(z<-c)$, which is \eqref{eq:power}. Setting the first term to $1-\beta$ and dropping the second, $c-\vartheta/s=-z_{1-\beta}$.
+\end{proof}
+
+The result is an approximation, since $z$ with $R=\mcReps$ runs is closer to a Student variable than to a normal one, and it needs the runs to be independent with finite variance. Its use is to turn a simulation comparison from a statement of agreement into a statement of resolution: with $c=3$, the cutoff of Hypothesis~H3, and $z_{1-\beta}=0.842$ for a power of $0.8$, the smallest shift that the comparison of Section~\ref{sec:results} detects is $\mcMddVarNinetyNine\,\%$ of the 99\,\% value at risk, $\mcMddEsNinetyNine\,\%$ of the 99\,\% expected shortfall, $\mcMddVarNinetyNineNine\,\%$ of the 99.9\,\% value at risk and $\mcMddEsNinetyNineNine\,\%$ of the 99.9\,\% expected shortfall. A defect smaller than these is, by the proposition, more likely than not to be missed by that comparison. Section~\ref{sec:ablation} sets the one sampler defect that it plants against these resolutions and runs it at the size of the main comparison; that is one defect, so it illustrates the proposition and does not test it over a range of sizes.
