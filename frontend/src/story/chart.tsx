@@ -1,7 +1,7 @@
 // The small drawing kit of the story views: linear scales, paths, date ticks and the one day control every dated view shares.
 // The views are SVGs the product owns (ADR-0082 rule 1: the domain's own diagram), sized from their measured box.
 import { formatNumber, prefersReducedMotion, runStagedTransition, useLinkedView, useShellLang } from '@fasl-work/caos-app-shell';
-import { useEffect, useRef, useState, type ChangeEvent, type PointerEvent, type ReactNode } from 'react';
+import { createContext, startTransition, useContext, useEffect, useRef, useState, type ChangeEvent, type PointerEvent, type ReactNode } from 'react';
 import type { Lang } from './text';
 
 export interface Size {
@@ -119,13 +119,40 @@ export function tickIndices(n: number, count: number): number[] {
 /** About `count` day indexes evenly spread over a range, ends included. */
 export const tickIndicesIn = (range: Range, count: number): number[] => tickIndices(range[1] - range[0] + 1, count).map((i) => i + range[0]);
 
-const monthYear = (iso: string, lang: Lang) => new Intl.DateTimeFormat(lang, { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00Z`));
-const fullDate = (iso: string, lang: Lang) => new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00Z`));
+// One formatter per language and kind, built on first use: a hidden data table labels every day of a window, and a formatter built per
+// call cost about 150 ms of the step into the Basel light (the live gate's G21 frame rate, 2026-11-10).
+const DATE_OPTIONS = {
+  monthYear: { month: 'short', year: 'numeric', timeZone: 'UTC' },
+  full: { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' },
+} as const satisfies Record<string, Intl.DateTimeFormatOptions>;
+const dateFormats = new Map<string, Intl.DateTimeFormat>();
+function dateFormat(kind: keyof typeof DATE_OPTIONS, lang: Lang): Intl.DateTimeFormat {
+  const key = `${kind}|${lang}`;
+  let f = dateFormats.get(key);
+  if (!f) {
+    f = new Intl.DateTimeFormat(lang, DATE_OPTIONS[kind]);
+    dateFormats.set(key, f);
+  }
+  return f;
+}
+const monthYear = (iso: string, lang: Lang) => dateFormat('monthYear', lang).format(new Date(`${iso}T00:00:00Z`));
+const fullDate = (iso: string, lang: Lang) => dateFormat('full', lang).format(new Date(`${iso}T00:00:00Z`));
 export const dayLabel = (iso: string | undefined, lang: Lang): string => (iso ? fullDate(iso, lang) : formatNumber(null, lang));
 export const monthLabel = (iso: string | undefined, lang: Lang): string => (iso ? monthYear(iso, lang) : '');
 
 export const pct = (v: number | null | undefined, lang: Lang, decimals = 2): string => formatNumber(v ?? null, lang, { percent: true, decimals });
-export const int = (v: number | null | undefined, lang: Lang): string => formatNumber(v ?? null, lang, { decimals: 0 });
+// a whole number's label, kept per language and value (a window's counts repeat from day to day; the shell's formatting is unchanged)
+const intLabels = new Map<string, string>();
+export const int = (v: number | null | undefined, lang: Lang): string => {
+  if (v === null || v === undefined || !Number.isFinite(v)) return formatNumber(v ?? null, lang, { decimals: 0 });
+  const key = `${lang}|${v}`;
+  let label = intLabels.get(key);
+  if (label === undefined) {
+    label = formatNumber(v, lang, { decimals: 0 });
+    if (intLabels.size < 50_000) intLabels.set(key, label);
+  }
+  return label;
+};
 
 /** The text cut to `max` characters with an ellipsis. */
 export const fit = (text: string, max: number): string => (text.length <= max ? text : `${text.slice(0, Math.max(1, max - 1)).trimEnd()}…`);
@@ -219,7 +246,19 @@ export function useBrush(opts: { l: number; r: number; range: Range; n: number; 
 }
 
 /** The data of a drawing as a table for a screen reader (rubric section 8, the data-table fallback): visually hidden, in reading order. */
+/**
+ * Whether a hidden data table builds its rows after its view has painted (the app) or at once (tests that read the markup). A dated
+ * view's table holds a row per day of the window, and building it in the same task as the view made the step into the Basel light
+ * drop frames (the live gate's G21 frame rate, 2026-11-10); in a transition React builds it in slices between frames.
+ */
+export const SrTableDefer = createContext(true);
+
 export function SrTable({ id, caption, head, rows }: { id: string; caption: string; head: readonly string[]; rows: readonly (readonly ReactNode[])[] }) {
+  const defer = useContext(SrTableDefer);
+  const [built, setBuilt] = useState(!defer);
+  useEffect(() => {
+    if (!built) startTransition(() => setBuilt(true));
+  }, [built]);
   return (
     <table className="story-sr" data-data-table={id}>
       <caption>{caption}</caption>
@@ -233,7 +272,7 @@ export function SrTable({ id, caption, head, rows }: { id: string; caption: stri
         </tr>
       </thead>
       <tbody>
-        {rows.map((row, i) => (
+        {(built ? rows : []).map((row, i) => (
           <tr key={i}>
             {row.map((c, j) =>
               j === 0 ? (

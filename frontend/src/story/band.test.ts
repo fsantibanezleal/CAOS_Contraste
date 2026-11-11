@@ -3,7 +3,7 @@
 // reserved a fixed 86 px (130 px on a phone) for the shell 0.23 cards; 0.24.0's cards carry their state word and are taller.
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { FIRST_FRAME_BAND, PHONE_DRAWING_FLOOR, bandOf, storyStageFloor } from './band';
+import { BAND_HOLD_MS, FIRST_FRAME_BAND, PHONE_DRAWING_FLOOR, bandOf, storyStageFloor } from './band';
 
 const source = (rel: string) => readFileSync(new URL(rel, import.meta.url), 'utf8');
 
@@ -48,5 +48,19 @@ describe('the header band of the story stage', () => {
     expect(fixedBand(story, css.replace('padding-top: var(--story-band, 86px)', 'padding-top: 86px'))).toEqual(
       ['a bare pixel padding of the drawing', 'the drawing is not padded by the band property'],
     );
+  });
+
+  it('holds the stale marker longer than the frame in which the callout layer still carries the anchors of the band before', () => {
+    // measured at /story/recalibrate 390 x 844 (2026-11-10): the band went from 130 to 146 px and the anchors followed about 60 ms later
+    expect(BAND_HOLD_MS).toBeGreaterThanOrEqual(120);
+  });
+
+  it('adversarial: the stage declares itself stale until the band has held, through the readiness contract', () => {
+    const story = source('../pages/Story.tsx');
+    expect(story).toMatch(/useStaleUntilBandHolds\(boxEl, measured, BAND_HOLD_MS\)/);
+    expect(story).toMatch(/const boxRef = useCallback\(\(el: HTMLDivElement \| null\) => \{ ref\(el\); boxEl\.current = el; \}, \[ref\]\);/);
+    expect(story).toMatch(/<div ref=\{boxRef\} className="story-stage-box"/);
+    // the marker is set on the element, never through a render: a render of the stage box rebuilds the whole drawing
+    expect(source('./band.ts')).toMatch(/useLayoutEffect\(\(\) => \{[\s\S]*setAttribute\('data-stale', '1'\)[\s\S]*removeAttribute\('data-stale'\)/);
   });
 });

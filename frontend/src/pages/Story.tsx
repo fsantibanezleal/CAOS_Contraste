@@ -7,7 +7,7 @@
 // and model (`from`, or the C11 case). A callout's colour is a rule of its number: a breach count against the count its level
 // expects, the same on every step; a model the confidence set never ranked is "not ranked", never "out".
 import { SceneCallouts, StoryFrame, useLinkedView, useShellLang, useStageSize, type SceneCalloutDef, type StoryStep } from '@fasl-work/caos-app-shell';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { useGovernanceDocs, useWindowDocs } from '../story/data';
 import { CrisisView, crisisGeometry } from '../story/CrisisView';
@@ -16,7 +16,7 @@ import { FlowView, flowGeometry, type MarketInfo } from '../story/FlowView';
 import { CrisisPanel, DecisionPanel, InventoryPanel, LightPanel, RecalibrationPanel, Unavailable, WINDOW_IDS, WindowPicker } from '../story/Panels';
 import { RecalibrationView, recalibrationGeometry } from '../story/RecalibrationView';
 import { TrafficLightView, lightGeometry } from '../story/TrafficLightView';
-import { bandOf, storyStageFloor } from '../story/band';
+import { BAND_HOLD_MS, bandOf, storyStageFloor, useStaleUntilBandHolds } from '../story/band';
 import { fullRange, int, pct, useEasedCount, type Range, type Size } from '../story/chart';
 import { exitTarget } from '../story/exit';
 import {
@@ -42,6 +42,11 @@ function StageBox({ build, onBand }: { build: (draw: Size, at: (px: number, py: 
   const [ref, size] = useStageSize();
   const [measured, setMeasured] = useState(0);
   const band = bandOf(measured, size.width || 1000);
+  // stale until the measured band has held: for a frame after it changes the callout layer still carries the anchors of the band before
+  const boxEl = useRef<HTMLDivElement | null>(null);
+  // one stable ref for the shell's size observer and the marker (a new callback each render would detach and attach the observer)
+  const boxRef = useCallback((el: HTMLDivElement | null) => { ref(el); boxEl.current = el; }, [ref]);
+  useStaleUntilBandHolds(boxEl, measured, BAND_HOLD_MS);
   const draw: Size = { width: size.width, height: Math.max(0, size.height - band) };
   const ready = draw.width > 120 && draw.height > 160;
   const box = ready ? draw : { width: 900, height: 480 };
@@ -49,7 +54,7 @@ function StageBox({ build, onBand }: { build: (draw: Size, at: (px: number, py: 
   const at = (px: number, py: number) => ({ x: clamp01(px / box.width), y: clamp01((band + py) / total, Math.min(0.9, (band + 18) / total), 0.97) });
   const built = build(box, at);
   return (
-    <div ref={ref} className="story-stage-box" style={{ ['--story-band' as string]: `${band}px` }}>
+    <div ref={boxRef} className="story-stage-box" style={{ ['--story-band' as string]: `${band}px` }}>
       <SceneCallouts items={built.callouts} placement="header" className="story-callouts" onLayout={({ bandHeight }) => { const whole = Math.ceil(bandHeight); setMeasured(whole); onBand?.(whole); }} />
       <div className="story-drawing">{ready ? built.drawing : null}</div>
     </div>
