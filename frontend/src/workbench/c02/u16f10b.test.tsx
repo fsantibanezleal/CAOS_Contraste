@@ -167,3 +167,17 @@ describe('U16-R3 c03 on the committed C02 documents', () => {
     expect(text(html(<StabilityView sel={selOf(h1)} />))).toContain('la luz de una fila de PSI o CSI es su valor p de chi cuadrado');
   });
 });
+
+describe('the transfer bars mount once, on the settled set of cells (live gate G20, 2026-11-10)', () => {
+  afterEach(() => setLang('en'));
+
+  it('while the other files load, the bars box holds the loading line and no chart, so a zoom is never reset by late cells', () => {
+    // the BarChart resets its zoom when its set of bar ids changes; the cells grow from the loaded file's row to all 25 as the other
+    // files arrive, and on the live origin they arrived after the reader's + key (G20 "the + key does not zoom the chart")
+    const markup = html(<TransferView sel={selOf(h1)} />);
+    const box = markup.slice(markup.indexOf('data-block="transfer-bars"'));
+    expect(box).toContain('data-state="loading"');
+    expect(box).not.toContain('data-chart-kind="bars"');
+    expect(markup).toContain('data-table="transfer"'); // the matrix is drawn from the loaded file meanwhile
+  });
+});

@@ -44,6 +44,9 @@ export function TransferView({ sel }: { sel: C02Sel | null }) {
   const manifest = sel?.data.manifest;
   const all = useArtifact<VariantArtifact[]>((s) => (manifest ? loadAllVariants(manifest, s) : new Promise(() => undefined)), [manifest?.case_id]);
   if (!sel || !o || !focus) return <Pending />;
+  // the bars mount once, on the settled set: the BarChart resets its zoom when its bar ids change, and the other files' cells
+  // arrive after the loaded file's (on the live origin after a reader's + key, G20 2026-11-10)
+  const settled = all.state !== 'loading';
   const others = all.state === 'ready' ? (all.data as unknown as Array<VariantArtifact<C02Outputs>>).flatMap((v) => (v.outputs.kind === 'horizon' ? v.outputs.transfer.cells : [])) : [];
   const seen = new Set<string>();
   // the cell of a model, not of a rung code: the code P4 names both LightGBM and XGBoost
@@ -117,13 +120,17 @@ export function TransferView({ sel }: { sel: C02Sel | null }) {
               drawing's height is definite and the bars fill it */}
           <div className="ct-stack-rest" data-caos-flow="" data-block="transfer-bars" style={{ display: 'flex', flexDirection: 'column' }}>
             <div className="ct-stack-chart" style={{ minHeight: TRANSFER_MIN, '--ct-chart-min': TRANSFER_MIN } as CSSProperties}>
-              <BarChart
-                title={{ en: 'AUC of the rung by fitted and scored horizon', es: 'AUC del peldaño por horizonte ajustado y puntuado' }}
-                height="fill"
-                orientation="horizontal"
-                data={transferBars(cells)}
-                axis={{ label: { en: 'AUC on the scored holdout', es: 'AUC en la muestra reservada puntuada' }, format: { decimals: 3 }, range: [0, 1] }}
-              />
+              {settled ? (
+                <BarChart
+                  title={{ en: 'AUC of the rung by fitted and scored horizon', es: 'AUC del peldaño por horizonte ajustado y puntuado' }}
+                  height="fill"
+                  orientation="horizontal"
+                  data={transferBars(cells)}
+                  axis={{ label: { en: 'AUC on the scored holdout', es: 'AUC en la muestra reservada puntuada' }, format: { decimals: 3 }, range: [0, 1] }}
+                />
+              ) : (
+                <Pending />
+              )}
             </div>
           </div>
         </div>
