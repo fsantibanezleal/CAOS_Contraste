@@ -49,9 +49,46 @@ def pc(x: float, d: int = 1) -> str:
     return f"{100 * x:.{d}f}"
 
 
+def stack(value: str, interval: str) -> str:
+    """A value with its interval on a second paragraph of the same cell (a ``p`` column), so that no cell wraps in the middle of an interval."""
+    return raw(f"{value}\\par [{interval}]")
+
+
+def N(w: float) -> str:
+    """A right-aligned numeric column of width ``w`` cm whose header wraps."""
+    return f">{{\\raggedleft\\arraybackslash}}p{{{w}cm}}"
+
+
+def L(w: float) -> str:
+    """A left-aligned text column of width ``w`` cm."""
+    return f">{{\\raggedright\\arraybackslash}}p{{{w}cm}}"
+
+
+def panels(path: pathlib.Path, parts: list[tuple[str, list[str] | str, list[list], str]], *, caption: str, label: str, digits: int = 1) -> None:
+    """Write one table environment that stacks several tabulars (panels (a), (b), ...) under one caption, so that a table too wide for the
+    text block is split by columns instead of being scaled down. Each part is ``(title, header, rows, align)``."""
+    def cell(v) -> str:
+        if isinstance(v, str) and (v.startswith("$") or v.startswith("\\")):
+            return v
+        return figkit.fmt(v, digits)
+
+    lines = ["\\begin{table*}[htbp]", "\\centering", f"\\caption{{{caption}}}", f"\\label{{{label}}}"]
+    for k, (title, header, rows, align) in enumerate(parts):
+        if k:
+            lines.append("\\medskip")
+        lines.append("{\\raggedright\\textit{(" + chr(97 + k) + ") " + title + "}\\par}\\smallskip")
+        head = header if isinstance(header, str) else " & ".join(header) + " \\\\"
+        lines += [f"\\begin{{tabular}}{{{align}}}", "\\toprule", head, "\\midrule"]
+        lines += [" & ".join(cell(v) for v in r) + " \\\\" for r in rows]
+        lines += ["\\bottomrule", "\\end{tabular}", "\\par"]
+    lines += ["\\end{table*}", ""]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+
+
 def pci(m: dict, key: str = "ever") -> str:
     lo, hi = m[f"{key}_ci"]
-    return raw(f"{pc(m[key])} [{pc(lo)}, {pc(hi)}]")
+    return stack(pc(m[key]), f"{pc(lo)}, {pc(hi)}")
 
 
 def day(v: float | None, horizon: int = 1000) -> str:
@@ -62,7 +99,7 @@ def med(m: dict, horizon: int = 1000) -> str:
     lo, hi = m["median_ci"]
     if m["median_day"] is None:
         return raw(f"$>${horizon:,}")
-    return raw(f"{m['median_day']:.0f} [{day(lo, horizon)}, {day(hi, horizon)}]")
+    return stack(f"{m['median_day']:.0f}", f"{day(lo, horizon)}, {day(hi, horizon)}")
 
 
 def sc(sid: str) -> dict:
@@ -95,7 +132,7 @@ def t_main() -> None:
     figkit.table(
         OUT / "main-results.tex",
         ["Rule", "Size, \\%", "Power by day 250, \\% (x3)", "Median day (x3)", "Power by day 250, \\% (x4)", "Median day (x4)"],
-        rows, align="p{5.6cm}rrrrr", wide=True, label="tab:main-results",
+        rows, align=L(4.3) + N(2.0) * 5, wide=True, label="tab:main-results",
         caption=(f"Every rule read every day on {n_reps:,} streams of 1,000 days from the generator of known truth at a VaR level of 1\\,\\%: "
                  "size is the share of correct-model streams rejected at some day, power by day 250 the share of streams with a hit rate three (x3) "
                  "or four (x4) times too high rejected by day 250, and the median day is the median first-rejection day over all streams "
@@ -111,7 +148,7 @@ def t_clustering() -> None:
             ("kupiec_calibrated", "Kupiec, all days so far, simulated critical value")]
     rows = [[raw(label)] + [pci(sc(sid)[key]) for sid, _ in cols] for key, label in keys]
     figkit.table(
-        OUT / "clustering.tex", ["Rule"] + [raw(c) for _, c in cols], rows, align="p{6.2cm}rrrr", wide=True, label="tab:clustering",
+        OUT / "clustering.tex", ["Rule"] + [raw(c) for _, c in cols], rows, align=L(5.4) + N(2.2) * 4, wide=True, label="tab:clustering",
         caption=("Share of 1,000-day streams rejected at some day, in percent, when the hit rate is right (1\\,\\%) and a hit follows a hit with "
                  "probability $q$ (0.1, 0.2, 0.4), for the proposed clustering monitors, the rate monitor and the fixed-window tests read daily. "
                  f"{H['meta']['reps']:,} streams per column; brackets are 95\\,\\% Wilson intervals. The first column is the size of each rule, "
@@ -119,26 +156,32 @@ def t_clustering() -> None:
 
 
 def t_x3() -> None:
-    rows = []
+    delay_rows, cost_rows = [], []
     for name, lab in (("x3", "Two-sided, 3"), ("x4", "Two-sided, 4"), ("x3_upper", "Upper side, 3"), ("x4_upper", "Upper side, 4")):
         f = X3["factors"][name]
         lo, hi = f["pooled_median_ci"]
-        rows.append([raw(f"{lab}"), f"{f['seed_median_mean']:.1f}", f"{f['seed_median_sd']:.1f}",
-                     raw(f"{pc(f['share_of_seeds_below_window'], 0)}"), raw(f"{f['pooled_median']:.1f} [{lo:.0f}, {hi:.0f}]"),
-                     f"{f['pooled_traffic_light_median']:.0f}",
-                     raw(f"{100 * f['pooled_power_cost']:.1f} $\\pm$ {100 * f['pooled_power_cost_se']:.1f}"),
-                     raw(f"{100 * f['seed_power_cost_mean']:.1f} $\\pm$ {100 * f['seed_power_cost_sd']:.1f}")])
+        delay_rows.append([raw(f"{lab}"), f"{f['seed_median_mean']:.1f}", f"{f['seed_median_sd']:.1f}",
+                           raw(f"{pc(f['share_of_seeds_below_window'], 0)}"), stack(f"{f['pooled_median']:.1f}", f"{lo:.0f}, {hi:.0f}"),
+                           f"{f['pooled_traffic_light_median']:.0f}"])
+        cost_rows.append([raw(f"{lab}"),
+                          raw(f"{100 * f['pooled_power_cost']:.1f} $\\pm$ {100 * f['pooled_power_cost_se']:.1f}"),
+                          raw(f"{100 * f['seed_power_cost_mean']:.1f} $\\pm$ {100 * f['seed_power_cost_sd']:.1f}")])
     s = X3["meta"]
-    figkit.table(
+    panels(
         OUT / "x3-seeds.tex",
-        ["Monitor, hit-rate factor", "Mean of seed medians", "SD of seed medians", "Seeds with median below 250, \\%",
-         "Pooled median [95\\% CI]", "Traffic-light median", "Power cost, points ($\\pm$ SE)", "Per-seed power cost, points ($\\pm$ SD)"],
-        rows, align="rrrrrrrr", wide=True, label="tab:x3-seeds",
+        [("Delay: the median first-rejection day",
+          ["Monitor, hit-rate factor", "Mean of seed medians", "SD of seed medians", "Seeds with median below 250, \\%",
+           "Pooled median [95\\% CI]", "Traffic-light median"],
+          delay_rows, L(3.0) + N(2.0) + N(1.8) + N(2.4) + N(2.6) + N(2.0)),
+         ("Power cost: Kupiec power of one reading at day 250 minus the e-process power by day 250, in points",
+          ["Monitor, hit-rate factor", "Pooled, points ($\\pm$ SE)", "Per seed, points ($\\pm$ SD)"],
+          cost_rows, L(3.0) + N(3.4) + N(3.4))],
+        label="tab:x3-seeds",
         caption=(f"The two-sided and the upper-side rate e-process at a hit rate three and four times too high on {s['seeds']} independent seed sequences of {s['reps']:,} streams "
                  f"({s['seeds'] * s['reps']:,} streams per factor): the median first-rejection day of each seed with its mean and standard deviation, "
                  "the share of seeds whose median is below the 250-day window, the median of the pooled streams with a bootstrap interval, the "
                  "traffic-light median, and the power cost, the Kupiec power of one reading at day 250 minus the e-process power by day 250, "
-                 "pooled with its standard error and per seed with its standard deviation."))
+                 "pooled with its standard error and per seed with its standard deviation. Panel (a) gives the delay columns and panel (b) the power cost."))
 
 
 def verdict_word(ok: bool) -> str:
@@ -245,7 +288,7 @@ def t_size_matched() -> None:
         OUT / "size-matched.tex",
         ["Hit-rate factor", "Kupiec power, two-sided, \\%", "Kupiec power, upper tail, \\%", "Best test at the e-process size, \\%",
          "Rate e-process by day 250, \\% [95\\% CI]", "Upper-side e-process by day 250, \\% [95\\% CI]"],
-        rows, align="rrrrrr", wide=True, label="tab:size-matched",
+        rows, align=N(1.4) + N(2.1) * 2 + N(2.4) + N(2.5) * 2, wide=True, label="tab:size-matched",
         caption=(f"Exact power at day 250 and a VaR level of 1\\,\\% (expected count 2.5): the Kupiec test has a size of {pc(sm['kupiec_size'])}\\,\\% "
                  f"two-sided, of which {pc(sm['kupiec_upper_size'], 2)}\\,\\% lies in the upper tail that rejects an understated VaR (it rejects from "
                  f"{sm['kupiec_smallest_rejecting_count']} exceptions); the most powerful test, randomised, at the size {pc(sm['e_process_size_by_window'], 2)}\\,\\% "
@@ -258,14 +301,17 @@ def t_ablation_grid() -> None:
     names = {"full": "Full two-sided grid, $0.25$ to $10$", "upper": "Upper half, $1.5$ to $10$", "upper-low": "Upper alternatives $1.5$ to $4$",
              "upper-high": "Upper alternatives $3$ to $10$", "single-1.5": "Single alternative $1.5\\alpha$", "single-2": "Single alternative $2\\alpha$",
              "single-3": "Single alternative $3\\alpha$", "single-4": "Single alternative $4\\alpha$", "single-10": "Single alternative $10\\alpha$"}
-    rows = []
+    rows_a, rows_b = [], []
     for vid, label in names.items():
-        rows.append([raw(label), pci(g["null"][vid]), pci(g["rate-x2"][vid]), pci(g["rate-x3"][vid], "by"), med(g["rate-x3"][vid]),
-                     pci(g["rate-x4"][vid], "by"), med(g["rate-x4"][vid]), med(g["rate-x6"][vid])])
-    figkit.table(
+        rows_a.append([raw(label), pci(g["null"][vid]), pci(g["rate-x2"][vid]), pci(g["rate-x3"][vid], "by"), med(g["rate-x3"][vid])])
+        rows_b.append([raw(label), pci(g["rate-x4"][vid], "by"), med(g["rate-x4"][vid]), med(g["rate-x6"][vid])])
+    panels(
         OUT / "ablation-grid.tex",
-        ["Mixture grid", "Size, \\%", "Power x2, \\%", "Power by 250 x3, \\%", "Median day x3", "Power by 250 x4, \\%", "Median day x4", "Median day x6"],
-        rows, align="p{4.4cm}rrrrrrr", wide=True, label="tab:ablation-grid",
+        [("Size, and a hit rate two and three times too high",
+          ["Mixture grid", "Size, \\%", "Power x2, \\%", "Power by 250 x3, \\%", "Median day x3"], rows_a, L(4.6) + N(2.2) * 4),
+         ("A hit rate four and six times too high",
+          ["Mixture grid", "Power by 250 x4, \\%", "Median day x4", "Median day x6"], rows_b, L(4.6) + N(2.4) * 3)],
+        label="tab:ablation-grid",
         caption=(f"Ablation of the mixture over alternative hit rates of the rate monitor on {AB['meta']['reps']:,} streams of 1,000 days per scenario: "
                  "the full grid, its upper half, the upper half cut at its low and high ends, and each single alternative, which is the likelihood-ratio e-process "
                  "of one hit rate. Size and power (x2) are shares ever rejected; power by day 250 and median days are for hit rates three (x3), four (x4) "
@@ -283,7 +329,7 @@ def t_ablation_battery() -> None:
     figkit.table(
         OUT / "ablation-battery.tex",
         ["Combination", "Size, \\%", "Rate x3, \\%", "Clustering $q=0.2$, \\%", "Clustering $q=0.4$, \\%", "Median day, $q=0.4$"],
-        rows, align="p{5.4cm}rrrrr", wide=True, label="tab:ablation-battery",
+        rows, align=L(4.4) + N(2.0) * 5, wide=True, label="tab:ablation-battery",
         caption=("Ablation of the combination of the two VaR monitors that read the same stream, on "
                  f"{AB['meta']['reps']:,} streams of 1,000 days per scenario: share of streams ever rejected, in percent, when the model is right (size), "
                  "when the hit rate is three times too high, and when hits cluster at the right rate. The product is shown to measure its size, "
@@ -302,7 +348,7 @@ def t_ablation_pd() -> None:
     figkit.table(
         OUT / "ablation-pd.tex",
         ["Rule", "Every PD right (size)", "Every PD $\\times 1.05$", "Every PD $\\times 1.1$", "Every PD $\\times 1.25$", "10\\,\\% grade $\\times 1.3$"],
-        rows, align="p{5.8cm}rrrrr", wide=True, label="tab:ablation-pd",
+        rows, align=L(3.9) + N(2.05) * 5, wide=True, label="tab:ablation-pd",
         caption=(f"Ablation of the PD monitor of five grades over ten years on {AB['meta']['pd_reps']:,} histories per column from the generator of default "
                  "counts with no asset correlation: share of histories ever rejected, in percent with 95\\,\\% Wilson intervals, for the grades combined by product or by average, "
                  "two-sided or upper, with coarser grids, and for the chi-square test across grades read once or every year."))
@@ -318,7 +364,7 @@ def t_pd_results() -> None:
     figkit.table(
         OUT / "pd-results.tex",
         ["PD scaling", "Product, \\%", "Average, \\%", "Chi-square at year 10, \\%", "Chi-square every year, \\%", "Average upper, by year 3, \\%"],
-        rows, align="p{3.6cm}rrrrr", wide=True, label="tab:pd-results",
+        rows, align=L(3.2) + N(2.2) * 5, wide=True, label="tab:pd-results",
         caption=("Defaults against the predicted PD of five grades (0.5 to 10\\,\\%), 2,000 obligors per grade and year, ten years, "
                  f"{AB['meta']['pd_reps']:,} histories per row from the generator of default counts: share of histories rejected at some year by the "
                  "PD e-process combined by product or by average, by the chi-square test across grades on the cumulative counts read once at year 10, "
@@ -326,23 +372,28 @@ def t_pd_results() -> None:
 
 
 def t_c11(level: str, label: str, name: str, cap_level: str) -> None:
-    rows = []
+    rows_a, rows_b = [], []
     for w, wd in C11["windows"].items():
         s = wd["levels"][level]["summary"]
         light = s["traffic_light"]
-        rows.append([raw(w), f"{wd['n_days']}", f"{s['expected']:.1f}", f"{s['e_rate']['flagged']}", day_s(s["e_rate"]["median_day"]),
-                     f"{s['e_wwz']['flagged']}", f"{s['kupiec_end']['flagged']}", f"{s['kupiec_cumulative']['flagged']}",
-                     day_s(s["kupiec_cumulative"]["median_day"]), (f"{light['flagged']}" if wd["n_days"] >= 250 and level == "0.01" else "--"),
-                     (day_s(light["median_day"]) if wd["n_days"] >= 250 and level == "0.01" else "--")])
-    figkit.table(
+        rows_a.append([raw(w), f"{wd['n_days']}", f"{s['expected']:.1f}", f"{s['e_rate']['flagged']}", day_s(s["e_rate"]["median_day"]),
+                       f"{s['e_wwz']['flagged']}"])
+        rows_b.append([raw(w), f"{s['kupiec_end']['flagged']}", f"{s['kupiec_cumulative']['flagged']}",
+                       day_s(s["kupiec_cumulative"]["median_day"]), (f"{light['flagged']}" if wd["n_days"] >= 250 and level == "0.01" else "--"),
+                       (day_s(light["median_day"]) if wd["n_days"] >= 250 and level == "0.01" else "--")])
+    panels(
         OUT / name,
-        ["Window", "Days", "Expected exceptions", "E-process flags", "Median day", "E-backtest flags", "Kupiec at end flags",
-         "Kupiec daily flags", "Median day", "Traffic light flags", "Median day"],
-        rows, align="lrrrrrrrrrr", wide=True, label=label,
+        [("The rate e-process and the e-backtest",
+          ["Window", "Days", "Expected exceptions", "E-process flags", "Median day", "E-backtest flags"], rows_a,
+          L(3.2) + N(1.5) + N(2.6) + N(2.2) + N(1.8) + N(2.4)),
+         ("The Kupiec test and the traffic light",
+          ["Window", "Kupiec at end flags", "Kupiec daily flags", "Median day", "Traffic light flags", "Median day"], rows_b,
+          L(3.2) + N(2.4) + N(2.4) + N(1.8) + N(2.4) + N(1.8))],
+        label=label,
         caption=(f"The 18 models of the case on market risk in each of its six windows at the {cap_level} level: the number of models each rule flags at some day, "
                  "and the median first-flag day among the models it flags. The rules are the rate e-process, the e-backtest of Wang, Wang and Ziegel (2022), "
                  "the Kupiec test once at the end of the window (the eligibility gate), the Kupiec test on all days so far read daily from day 50, and the "
-                 "Basel traffic light, which needs 250 days (a dash where the window is shorter or the level is not the 99\\,\\% one). No truth is known in these windows."))
+                 "Basel traffic light, which needs 250 days (a dash where the window is shorter or the level is not the 99\\,\\% one). Panel (a) gives the first two rules and panel (b) the others. No truth is known in these windows."))
 
 
 def day_s(v: float | None) -> str:
@@ -350,22 +401,27 @@ def day_s(v: float | None) -> str:
 
 
 def t_c03() -> None:
-    rows = []
+    rows_a, rows_b = [], []
     for stem, c in C03["cohorts"].items():
         fy = ", ".join(f"{v['fiscal_year']}" for v in c["vintages"])
         rej = ", ".join("--" if v["rejection_month"] is None else str(v["rejection_month"]) for v in c["vintages"])
         light = ", ".join(str(v["five_year_light"]) for v in c["vintages"])
         dflt = ", ".join(f"{v['defaults']:,}/{v['predicted_defaults']:,.0f}" for v in c["vintages"])
         a, p = c["average"], c["product"]
-        rows.append([raw(stem.replace("fy", "FY")), raw(fy), raw(dflt), raw(rej), raw(light),
-                     "--" if a["rejection_month"] is None else str(a["rejection_month"]),
-                     "--" if p["rejection_month"] is None else str(p["rejection_month"]),
-                     f"{a['max_log_e']:,.1f}"])
-    figkit.table(
+        cohort = raw(stem.replace("fy", "FY"))
+        rows_a.append([cohort, raw(fy), raw(dflt)])
+        rows_b.append([cohort, raw(rej), raw(light),
+                       "--" if a["rejection_month"] is None else str(a["rejection_month"]),
+                       "--" if p["rejection_month"] is None else str(p["rejection_month"]),
+                       f"{a['max_log_e']:,.1f}"])
+    panels(
         OUT / "c03.tex",
-        ["Cohort", "Vintages", "Charge-offs / predicted", "Month rejected, each", "Five-year light, each", "Month, average", "Month, product",
-         "Largest $\\log E$, average"],
-        rows, align="llllllrr", wide=True, label="tab:c03", digits=1,
+        [("The vintages and their charge-offs",
+          ["Cohort", "Vintages", "Charge-offs / predicted, one pair per vintage"], rows_a, L(2.0) + L(3.4) + L(8.6)),
+         ("The months at which the monitor rejects",
+          ["Cohort", "Month rejected, each vintage", "Five-year light, each vintage", "Month, average", "Month, product", "Largest $\\log E$, average"],
+          rows_b, L(2.0) + L(3.0) + L(4.0) + N(1.6) + N(1.6) + N(2.2))],
+        label="tab:c03", digits=1,
         caption=("The PD e-process read at the ages 12, 24, 36, 48 and 60 months on the five cohorts of SBA 7(a) loans of the case on small-business credit, "
                  "from the committed vintage curves: the charge-offs observed over the observed ages against the charge-offs the predicted curve implies, the first age at which "
                  "each vintage and the cohort reject, and the light of the binomial test read once at the five-year mark. A dash means the monitor never reached 20."))
@@ -379,7 +435,7 @@ def t_pd_correlation() -> None:
     figkit.table(
         OUT / "pd-correlation.tex",
         ["Asset correlation $\\rho$", "Product, \\%", "Average, \\%", "Average, upper, \\%", "Chi-square at year 10, \\%", "Chi-square every year, \\%"],
-        rows, align="rrrrrr", wide=True, label="tab:pd-correlation",
+        rows, align=N(1.8) + N(2.1) * 5, wide=True, label="tab:pd-correlation",
         caption=(f"Share of {PC['meta']['reps']:,} ten-year histories of five grades, with the predicted PD equal to the true PD, rejected at some year when "
                  "the defaults of a year share one systematic factor of asset correlation $\\rho$: the PD e-processes, whose null is binomial with no correlation, "
                  "and the chi-square test across grades. The first row has no correlation and is the size under the null of both families."))
@@ -398,7 +454,7 @@ def t_theory_delay() -> None:
         OUT / "theory-delay.tex",
         ["Hit-rate factor $m$", "$1000\\,\\mathrm{KL}(m\\alpha\\|\\alpha)$", "Time $\\log 20/\\mathrm{KL}$", "Time with the mixture penalty", "Measured median, matched single alternative",
          "Measured median, mixture"],
-        rows, align="rrrrrr", wide=True, label="tab:theory-delay",
+        rows, align=N(1.4) + N(2.5) + N(2.0) + N(2.1) + N(2.6) * 2, wide=True, label="tab:theory-delay",
         caption=("The first-order delay of the e-process at a VaR level of 1\\,\\%: the Kullback-Leibler divergence per day of the true hit rate from the null, in thousandths "
                  "of a nat, the number of days a log-optimal bet needs to reach the threshold $\\log 20$, the same with the penalty $\\log K$ of a mixture of $K=8$ "
                  "alternatives, and the measured median first-rejection days (95\\,\\% bootstrap intervals) of the single-alternative e-process whose alternative is the true hit rate "
@@ -417,7 +473,7 @@ def t_null_expectation() -> None:
                  raw(f"{pc_['hits_rate_times_cluster']['max_expectation']:.0f}"), "--"])
     figkit.table(
         OUT / "null-expectation.tex", ["Process", "Largest departure of $\\mathbb E[E_t]$ from 1 over $t\\le 12$", "$\\mathbb E[E_{12}]$"], rows,
-        align="p{7.4cm}rr", wide=False, label="tab:null-expectation", digits=12,
+        align=L(7.0) + N(3.8) + N(3.2), wide=False, label="tab:null-expectation", digits=12,
         caption=(f"Exact null expectation of each process by enumeration of all {ne['sequences']:,} hit sequences of {ne['T']} days at a VaR level of "
                  f"{ne['alpha']}: the largest departure of the expectation from 1 over the {ne['T']} days is at the level of floating-point error for every valid "
                  "process, and the last row shows the largest expectation of the product of two e-processes read on the same stream over ten days, which is not an e-process."))
@@ -437,7 +493,7 @@ def t_agreement() -> None:
     figkit.table(
         OUT / "agreement.tex",
         ["Scenario", "Rule", "This run, ever, \\%", "Committed run, ever, \\%", "Difference, points", "This run, median day", "Committed run, median day"],
-        rows, align="llrrrrr", wide=True, label="tab:agreement", digits=1,
+        rows, align=L(1.8) + L(3.4) + N(1.8) * 5, wide=True, label="tab:agreement", digits=1,
         caption=("Agreement of this study with the committed document of the product (seed 42, 2,000 streams per scenario, same generator and engine release): "
                  "the share of streams ever rejected and the median first-rejection day of three rules in four scenarios, the difference being the Monte Carlo "
                  "error of two independent runs of 2,000 streams (about one point at the middle of the range)."))
@@ -445,7 +501,7 @@ def t_agreement() -> None:
 
 def pdci(m: dict) -> str:
     lo, hi = m["ever_ci"]
-    return raw(f"{pc(m['ever'])} [{pc(lo)}, {pc(hi)}]")
+    return stack(pc(m["ever"]), f"{pc(lo)}, {pc(hi)}")
 
 
 def t_pd_comparators() -> None:
@@ -460,7 +516,7 @@ def t_pd_comparators() -> None:
         OUT / "pd-comparators.tex",
         ["$\\rho$", "Average e-process", "Binomial per grade", "Jeffreys per grade", "Vasicek, $0.12$ assumed",
          "Vasicek, true $\\rho$", "Vasicek, true $\\rho$, read once", "Chi-square, simulated critical value"],
-        rows, align="p{0.8cm}" + ">{\\raggedleft\\arraybackslash}p{1.9cm}" * 7, wide=True, label="tab:pd-comparators",
+        rows, align=N(1.0) + N(1.85) * 7, wide=True, label="tab:pd-comparators",
         caption=(f"The PD e-process and the PD tests of the engine on the same {m['reps']:,} histories as \\cref{{tab:pd-correlation}} (predicted PD equal to the true PD, defaults of a year sharing "
                  "a systematic factor of asset correlation $\\rho$): share of histories rejected at some year, in percent with 95\\,\\% Wilson intervals. "
                  "The per-grade tests (the exact binomial test, the Jeffreys test, and the binomial test under the Vasicek one-factor mixture with the correlation assumed or the "
@@ -472,37 +528,45 @@ def t_pd_comparators() -> None:
 def t_pd_equal_size() -> None:
     eq = PDC["equal_size_chi2"]
     names = {"all-x1": "1 (size)", "all-x1.05": "1.05", "all-x1.1": "1.1", "all-x1.25": "1.25", "grade5-x1.3": "10\\% grade only, 1.3"}
-    rows = []
+    rows_a, rows_b = [], []
     for sid, lab in names.items():
         a, v = AB["pd_combine"][sid]["average"], eq["scenarios"][sid]
-        def trio(m: dict) -> str:
-            lo, hi = m["ever_ci"]
-            return raw(f"{pc(m['ever'])} [{pc(lo)}, {pc(hi)}] / {pc(m['by3'])} / {day_s(m['median_year_among_detected'])}")
 
-        cells = [raw(lab), trio(a), trio(v["chi2_sim"]), trio(v["chi2_matched"]),
-                 pdci(v["binomial"]["every_year"]), pdci(v["vasicek_assumed"]["every_year"])]
-        rows.append(cells)
+        def trio(m: dict) -> list:
+            return [pci(m), pc(m["by3"]), day_s(m["median_year_among_detected"])]
+
+        rows_a.append([raw(lab)] + trio(a) + trio(v["chi2_sim"]))
+        rows_b.append([raw(lab)] + trio(v["chi2_matched"]) + [pdci(v["binomial"]["every_year"]), pdci(v["vasicek_assumed"]["every_year"])])
     size = AB["pd_combine"]["all-x1"]["average"]
     size_lo, size_hi = size["ever_ci"]
-    figkit.table(
+    sub = r"Ever, \% & By year 3, \% & Median year"
+    head_a = (r"PD scaling & \multicolumn{3}{c}{Average e-process} & \multicolumn{3}{c}{Chi-square, 5\,\% size} \\ "
+              r"\cmidrule(lr){2-4}\cmidrule(lr){5-7}" + f" & {sub} & {sub} " + r"\\")
+    head_b = (r"PD scaling & \multicolumn{3}{c}{Chi-square, size of the e-process} & Binomial per grade & Vasicek, $0.12$ assumed \\ "
+              r"\cmidrule(lr){2-4}" + f" & {sub} & Ever, " + r"\% & Ever, \% \\")
+    panels(
         OUT / "pd-equal-size.tex",
-        [r"PD scaling", r"Average e-process", r"Chi-square, 5\,\% size", r"Chi-square, size of the e-process", r"Binomial per grade, ever", r"Vasicek, $0.12$ assumed, ever"],
-        rows, align=r"p{2.0cm}" + r">{\raggedleft\arraybackslash}p{3.7cm}" * 3 + r">{\raggedleft\arraybackslash}p{2.6cm}" * 2, wide=True, label="tab:pd-equal-size",
+        [("Average e-process and the chi-square rule at a size of 5\\,\\%", head_a, rows_a, L(2.6) + (N(2.2) + N(1.6) + N(1.6)) * 2),
+         ("Chi-square rule at the size of the e-process, and the two per-grade tests of the engine", head_b, rows_b,
+          L(2.6) + N(2.2) + N(1.6) + N(1.6) + N(2.2) + N(2.4))],
+        label="tab:pd-equal-size",
         caption=(rf"Detection of a PD that is too low by the average PD e-process and by the chi-square test across grades read every year with a simulated constant critical value, "
                  rf"at a size of 5\,\% and at the size the average e-process measured ({pc(eq['matched_size'])}\,\%, {round(eq['matched_size'] * AB['meta']['pd_reps'])} of {AB['meta']['pd_reps']:,} histories, "
                  rf"a 95\,\% Wilson interval of [{pc(size_lo)}, {pc(size_hi)}]), on {AB['meta']['pd_reps']:,} histories per row (the histories of "
-                 r"\cref{tab:pd-results}, no asset correlation). The first three rule columns give the share of histories rejected within ten years (\%) with its 95\,\% Wilson interval, "
-                 r"the share rejected by year 3 (\%) and the median year of rejection among the histories rejected, separated by slashes. The last two columns give the share rejected within ten years (\%) "
+                 r"\cref{tab:pd-results}, no asset correlation). Each of the three rules gives, in three columns, the share of histories rejected within ten years (\%) with its 95\,\% Wilson interval beneath, "
+                 r"the share rejected by year 3 (\%) and the median year of rejection among the histories rejected. The last two columns of panel (b) give the share rejected within ten years (\%) "
                  r"with its interval by the engine's binomial test per grade and by its Vasicek-corrected binomial test with a correlation of 0.12 assumed, each read every year with a Bonferroni split over the 50 grade-years."))
 
 
-def fit(path: pathlib.Path) -> None:
-    """Scale a table that is wider than the text block to the line width (graphicx ``\\resizebox``); the numbers are untouched."""
+def finish(path: pathlib.Path) -> None:
+    """Set a table at 9 pt with a narrow column gap. A table is never scaled to the text block (no ``\\resizebox``): a table wider than the
+    block is built with ``p`` columns whose headers wrap, or split into panels, so its text keeps the size of the text around it."""
     text = path.read_text(encoding="utf-8")
     if "\\resizebox" in text:
-        return
-    text = text.replace("\\begin{tabular}", "\\resizebox{\\linewidth}{!}{%\n\\begin{tabular}", 1)
-    text = text.replace("\\end{tabular}", "\\end{tabular}}", 1)
+        raise SystemExit(f"{path.name}: a table is never scaled with resizebox")
+    text = text.replace("\\small\n", "\\footnotesize\n", 1)
+    text = text.replace("\\centering\n", "\\centering\n\\footnotesize\n\\setlength{\\tabcolsep}{3pt}\n", 1) if "\\footnotesize" not in text else \
+        text.replace("\\footnotesize\n", "\\footnotesize\n\\setlength{\\tabcolsep}{3pt}\n", 1)
     path.write_text(text, encoding="utf-8", newline="\n")
 
 
@@ -514,7 +578,7 @@ def main() -> None:
     t_c11("0.025", "tab:c11-975", "c11-975.tex", "97.5\\,\\%")
     t_c03(); t_pd_correlation(); t_theory_delay(); t_null_expectation(); t_agreement(); t_pd_comparators(); t_pd_equal_size()
     for tex in sorted(OUT.glob("*.tex")):
-        fit(tex)
+        finish(tex)
     print("tables written:", len(list(OUT.glob("*.tex"))))
 
 

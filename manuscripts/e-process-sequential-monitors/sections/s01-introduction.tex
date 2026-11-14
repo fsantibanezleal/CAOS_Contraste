@@ -44,10 +44,10 @@ e-backtest, and two e-processes of the textbook kind (\cref{sec:experimental-des
 (\cref{tab:hypotheses,tab:pd-correlation,tab:pd-comparators,tab:pd-equal-size}).
 \end{enumerate}
 
-The main result is a trade. Read every day over 1,000 days, the rate e-process rejects a correct model in \nNullSizeE\,\% of \nReps\ series (95\,\% interval \nNullSizeELo\ to \nNullSizeEHi\,\%)
+The main result is a trade, quoted here from the main run of \nReps\ streams (the abstract quotes the pooled replication of \nSeedsCount\ seeds, which \cref{tab:x3-seeds} gives). In the main run, read every day over 1,000 days, the rate e-process rejects a correct model in \nNullSizeE\,\% of \nReps\ series (95\,\% interval \nNullSizeELo\ to \nNullSizeEHi\,\%)
 where the repeated Kupiec test and the traffic light reject in \nNullSizeKupCum\ to \nNullSizeKupTrail\,\%, and it detects a hit rate four times too high at a median of
 \nMedFourE\ days, inside the 250-day window that the traffic light needs before it can speak at all. The price is power at a fixed horizon: by day 250 it detects a hit rate
-three times too high in \nByThreeE\,\% of the series against \nShotThree\,\% for one Kupiec reading. A one-sided monitor of the direction a supervisor penalises cuts that cost to \nCostThreeEUp\ points in the same run
+three times too high in \nByThreeE\,\% of the series against \nShotThree\,\% for one Kupiec reading. A one-sided monitor of the direction a supervisor penalises cuts that cost to \nCostThreeEUp\ points in the same run. On the pooled replication the median at a hit rate four times too high is \nSeedsFourMed\ days, the power cost at three times is \nSeedsThreeCost\ points and that of the upper-side monitor \nSeedsUpThreeCost\ points
 (\cref{sec:ablation}); that variant was chosen after the two-sided results were known and needs a prospective confirmation (\cref{sec:discussion-negative}).
 
 \Cref{sec:related-work} places the work among the published methods, \cref{sec:problem} states the problem, \cref{sec:proposed-method} the monitors and \cref{sec:theory} their theory.

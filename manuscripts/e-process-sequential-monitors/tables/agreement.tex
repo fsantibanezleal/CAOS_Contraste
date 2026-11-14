@@ -1,10 +1,10 @@
 \begin{table*}[htbp]
 \centering
-\small
+\footnotesize
+\setlength{\tabcolsep}{3pt}
 \caption{Agreement of this study with the committed document of the product (seed 42, 2,000 streams per scenario, same generator and engine release): the share of streams ever rejected and the median first-rejection day of three rules in four scenarios, the difference being the Monte Carlo error of two independent runs of 2,000 streams (about one point at the middle of the range).}
 \label{tab:agreement}
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{llrrrrr}
+\begin{tabular}{>{\raggedright\arraybackslash}p{1.8cm}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedleft\arraybackslash}p{1.8cm}>{\raggedleft\arraybackslash}p{1.8cm}>{\raggedleft\arraybackslash}p{1.8cm}>{\raggedleft\arraybackslash}p{1.8cm}>{\raggedleft\arraybackslash}p{1.8cm}}
 \toprule
 Scenario & Rule & This run, ever, \% & Committed run, ever, \% & Difference, points & This run, median day & Committed run, median day \\
 \midrule
@@ -21,5 +21,5 @@ Scenario & Rule & This run, ever, \% & Committed run, ever, \% & Difference, poi
 \relax cluster 0.4 & \relax Kupiec, last 250 days & 94.9 & 95.0 & -0.2 & 357 & 365 \\
 \relax cluster 0.4 & \relax Traffic light & 68.3 & 66.8 & +1.5 & 622 & 670 \\
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table*}
