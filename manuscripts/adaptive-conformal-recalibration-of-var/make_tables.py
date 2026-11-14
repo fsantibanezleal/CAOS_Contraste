@@ -31,19 +31,47 @@ def pc(x, d=1):
     return f"{100 * x:+.{d}f}\\%"
 
 
+def wrap_header(h, width, align):
+    """A header cell broken into short lines (outside math) with makecell, so that a table is as narrow as its data and is not shrunk."""
+    words, cur, depth = [], "", 0
+    for ch in h:
+        if ch == "$":
+            depth ^= 1
+        if ch == " " and not depth:
+            words.append(cur)
+            cur = ""
+        else:
+            cur += ch
+    words.append(cur)
+    lines, line = [], ""
+    for w in words:
+        if line and len(line) + 1 + len(w) > width:
+            lines.append(line)
+            line = w
+        else:
+            line = f"{line} {w}" if line else w
+    lines.append(line)
+    lines = [("\\relax " + x) if x.startswith("[") else x for x in lines]
+    if len(lines) == 1:
+        return lines[0]
+    return "\\makecell[b" + align + "]{" + " \\\\ ".join(lines) + "}"
+
+
 def T(name, header, rows, **kw):
-    """``figkit.table`` with the cells that carry LaTeX passed through, and the tabular fitted to the text width."""
+    """``figkit.table`` with the cells that carry LaTeX passed through, the header wrapped, and the tabular fitted to the text width."""
+    al = [c for c in kw.get("align", "l" * len(header)) if c in "lrc"]
+    header = [wrap_header(h, 13, a) for h, a in zip(header, al)]
     rows = [[("\\relax " + c) if isinstance(c, str) and ("\\" in c or "$" in c) and not c.startswith(("$", "\\")) else c for c in r] for r in rows]
     path = figkit.table(OUT / f"{name}.tex", header, rows, **kw)
     text = path.read_text(encoding="utf-8")
-    text = text.replace("\\begin{tabular}", "\\begin{adjustbox}{max width=\\textwidth}\n\\begin{tabular}", 1)
-    text = text.replace("\\end{tabular}", "\\end{tabular}\n\\end{adjustbox}", 1)
+    text = text.replace("\\begin{tabular}", "{\\footnotesize\\setlength{\\tabcolsep}{4pt}\n\\begin{adjustbox}{max width=\\textwidth}\n\\begin{tabular}", 1)
+    text = text.replace("\\end{tabular}", "\\end{tabular}\n\\end{adjustbox}}", 1)
     path.write_text(text, encoding="utf-8", newline="\n")
     return path
 
 
 def main_results():
-    rows = []
+    rows, rows2 = [], []
     for w in common.STRESS:
         for m in common.WRAPPED3:
             for a in common.LEVELS:
@@ -51,14 +79,17 @@ def main_results():
                 u, v = r["unwrapped"], r["wrapped"]
                 lo, hi = r["hit_ci_wrapped"]
                 rows.append([WN[w], MN[m], f"{100 * a:g}", f"{u['n_hits']}", f"{v['n_hits']} ({100 * v['hit_rate']:.1f}; {100 * lo:.1f}--{100 * hi:.1f})",
-                             f"{p(u['kupiec_p'])} / {p(v['kupiec_p'])}", f"{p(u['cc_p'])} / {p(v['cc_p'])}", p(v["independence_p"]),
-                             f"{pc(r['fz0_change'])} [{pc(r['ci95'][0])}, {pc(r['ci95'][1])}]"])
-    T("main-results", ["Window", "Model", "Level (\\%)", "Hits U", "Hits W (rate \\%; 95\\% Wilson)", "Kupiec $p$ U / W", "CC $p$ U / W", "Indep. $p$ W",
-                       "FZ0 change [95\\% CI]"], rows, align="llrrlllll", wide=True,
+                             f"{p(u['kupiec_p'])} / {p(v['kupiec_p'])}", f"{p(u['cc_p'])} / {p(v['cc_p'])}", p(v["independence_p"])])
+                rows2.append([WN[w], MN[m], f"{100 * a:g}", f"{pc(r['fz0_change'])} [{pc(r['ci95'][0])}, {pc(r['ci95'][1])}]"])
+    T("main-results", ["Window", "Model", "Level (\\%)", "Hits U", "Hits W (rate \\%; 95\\% Wilson)", "Kupiec $p$ U / W", "CC $p$ U / W", "Indep. $p$ W"],
+      rows, align="llrrlllr",
       caption="Unwrapped (U) and wrapped (W) value at risk of three ladder models in the three stress windows of C11, at tail levels 1\\% and 2.5\\%: hits, the "
-              "hit rate of the wrapped model with its 95\\% Wilson interval, the p-values of the Kupiec and conditional coverage (CC) tests, the Christoffersen "
-              "independence p-value of the wrapped model and the relative change of the mean FZ0 score with a 95\\% moving-block bootstrap interval (positive is "
-              "worse). The windows hold 504, 104 and 249 forecast days.", label="tab:main-results")
+              "hit rate of the wrapped model with its 95\\% Wilson interval, the p-values of the Kupiec and conditional coverage (CC) tests and the Christoffersen "
+              "independence p-value of the wrapped model. The windows hold 504, 104 and 249 forecast days. The change of the score of the same cells is in "
+              "\\cref{tab:main-score}.", label="tab:main-results")
+    T("main-score", ["Window", "Model", "Level (\\%)", "FZ0 change [95\\% CI]"], rows2, align="llrl",
+      caption="Relative change of the mean FZ0 score of the wrapped against the unwrapped model, for the cells of \\cref{tab:main-results}, with a 95\\% moving-block "
+              "bootstrap interval (positive is worse).", label="tab:main-score")
 
 
 def hypotheses():
