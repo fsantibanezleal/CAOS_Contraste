@@ -27,6 +27,9 @@ from typing import Any
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "_shared"))
 import figkit  # noqa: E402
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from _halfup import fixed, percent, install as _halfup_install  # noqa: E402
+_halfup_install(figkit)
 
 OUT = HERE
 ROOT = figkit.ROOT
@@ -94,7 +97,7 @@ MACROS: dict[str, tuple[str, str]] = {}
 def put(name: str, value: Any, source: str, digits: int | None = None) -> None:
     """Register the macro ``\\mk<name>`` with the text of ``value`` and the artifact it was read from."""
     if isinstance(value, float) and digits is not None:
-        text = f"{value:.{digits}f}"
+        text = f"{fixed(value, digits)}"
     elif isinstance(value, int) and not isinstance(value, bool):
         text = f"{value:,}".replace(",", "{,}") if abs(value) >= 10000 else str(value)
     else:
@@ -103,7 +106,7 @@ def put(name: str, value: Any, source: str, digits: int | None = None) -> None:
 
 
 def pct(x: float, digits: int = 1) -> str:
-    return f"{100.0 * x:.{digits}f}"
+    return percent(x, digits)
 
 
 def load() -> dict[str, Any]:
@@ -261,12 +264,12 @@ def t_selection(D: dict) -> None:
     rows = []
     h = D["hyper"]
     for name, g in sorted(h["grid"].items()):
-        cands = ", ".join(f"{c['value']:g}: {c['score']:.2f}" for c in g["candidates"])
+        cands = ", ".join(f"{c['value']:g}: {fixed(c['score'], 2)}" for c in g["candidates"])
         rows.append([f"\\texttt{{{name.replace('_', chr(92) + '_')}}}", MSHORT[g["model"]], cands,
                      f"{h['selected'][name]:g}"])
     n = D["nethyper"]
     for name, g in sorted(n["grid"].items()):
-        cands = ", ".join(f"{c['value']:g}: {c['score']:.2f}" for c in g["candidates"])
+        cands = ", ".join(f"{c['value']:g}: {fixed(c['score'], 2)}" for c in g["candidates"])
         rows.append([f"\\texttt{{{name.replace('_', chr(92) + '_')}}}", MSHORT[g["model"]], cands,
                      f"{n['selected'][name]:g}"])
     _table(
@@ -287,7 +290,7 @@ def t_windows(D: dict) -> None:
         c1, c2 = champion(D, w, 0.01), champion(D, w, 0.025)
 
         def cell(c: str | None, a: float) -> str:
-            return "none" if c is None else f"{MSHORT[c]} ({fz0(D, w, c, a):.3f})"
+            return "none" if c is None else f"{MSHORT[c]} ({fixed(fz0(D, w, c, a), 3)})"
 
         rows.append([WLABEL[w], o["window"]["asset_class"], n_days(D, w), f"{elig}", cell(c1, 0.01),
                      cell(c2, 0.025), f"{mcs(D, w, 0.01)['n_in_set']}", f"{mcs(D, w, 0.025)['n_in_set']}"])
@@ -303,7 +306,7 @@ def t_windows(D: dict) -> None:
 
 def t_exceed(D: dict) -> None:
     rows = []
-    exp = ["Expected"] + [f"{level(models(D, w)['hs-250'], 0.01)['expected_exceedances']:.1f}" for w in WINDOWS]
+    exp = ["Expected"] + [f"{fixed(level(models(D, w)['hs-250'], 0.01)['expected_exceedances'], 1)}" for w in WINDOWS]
     for mid in MNAME:
         r = [MSHORT[mid]]
         for w in WINDOWS:
@@ -358,12 +361,12 @@ def t_nn(D: dict) -> None:
         c1, c2 = champion(D, w, 0.01), champion(D, w, 0.025)
 
         def best(c: str | None, a: float) -> str:
-            return "--" if c is None else f"{fz0(D, w, c, a):.3f}"
+            return "--" if c is None else f"{fixed(fz0(D, w, c, a), 3)}"
 
-        rows.append([WLABEL[w], "yes" if m["eligible"] else "no", f"{b1['n_exceedances']} ({b1['expected_exceedances']:.1f})",
-                     "$<0.001$" if kp < 0.0005 else f"{kp:.3f}",
-                     f"{b1['fz0_mean']:.3f}", best(c1, 0.01), "yes" if in_set(D, w, 0.01, "nn-fz") else "no",
-                     f"{b2['fz0_mean']:.3f}", best(c2, 0.025), "yes" if in_set(D, w, 0.025, "nn-fz") else "no"])
+        rows.append([WLABEL[w], "yes" if m["eligible"] else "no", f"{b1['n_exceedances']} ({fixed(b1['expected_exceedances'], 1)})",
+                     "$<0.001$" if kp < 0.0005 else f"{fixed(kp, 3)}",
+                     f"{fixed(b1['fz0_mean'], 3)}", best(c1, 0.01), "yes" if in_set(D, w, 0.01, "nn-fz") else "no",
+                     f"{fixed(b2['fz0_mean'], 3)}", best(c2, 0.025), "yes" if in_set(D, w, 0.025, "nn-fz") else "no"])
     _table(
         OUT / "market-nn.tex",
         ["Window", "Eligible", "Exc. 1\\% (exp.)", "Kupiec $p$", "FZ0 1\\%", "Best 1\\%", "Set 1\\%", "FZ0 2.5\\%", "Best 2.5\\%", "Set 2.5\\%"],
@@ -380,7 +383,7 @@ def t_rough(D: dict) -> None:
     for w in WINDOWS:
         r = [WLABEL[w]]
         for mid in ids:
-            r.append(f"{roughness(level(models(D, w)[mid], 0.01)['var']):.3f}")
+            r.append(f"{fixed(roughness(level(models(D, w)[mid], 0.01)['var']), 3)}")
         rows.append(r)
     _table(
         OUT / "market-rough.tex",
@@ -394,8 +397,8 @@ def t_rough(D: dict) -> None:
 def t_traffic(D: dict) -> None:
     rows = []
     for r in D["ladder"]["fit"]["traffic_light"]["rows"]:
-        rows.append([f"{r['exceptions']}", r["zone"], f"{r['frtb_multiplier']:.2f}", f"{r['us_multiplier']:.2f}",
-                     f"{r['cumulative_probability_pct']:.2f}"])
+        rows.append([f"{r['exceptions']}", r["zone"], f"{fixed(r['frtb_multiplier'], 2)}", f"{fixed(r['us_multiplier'], 2)}",
+                     f"{fixed(r['cumulative_probability_pct'], 2)}"])
     _table(
         OUT / "market-traffic.tex",
         ["Exceptions in 250 days", "Zone", "FRTB multiplier", "US multiplication factor", "Cumulative probability (\\%)"],
@@ -444,8 +447,8 @@ def t_sizepower(D: dict) -> list[dict]:
     for r in out:
         sc = r["scenario"].split(";")[0] if ";" in r["scenario"] else r["scenario"]
         nm = tn(r["test"])
-        rows.append([nm, r["scenario"], f"{100 * r['size']['rate']:.1f} [{100 * r['size']['wilson_low']:.1f}, {100 * r['size']['wilson_high']:.1f}]",
-                     f"{100 * r['power']['rate']:.1f} [{100 * r['power']['wilson_low']:.1f}, {100 * r['power']['wilson_high']:.1f}]"])
+        rows.append([nm, r["scenario"], f"{percent(r['size']['rate'], 1)} [{percent(r['size']['wilson_low'], 1)}, {percent(r['size']['wilson_high'], 1)}]",
+                     f"{percent(r['power']['rate'], 1)} [{percent(r['power']['wilson_low'], 1)}, {percent(r['power']['wilson_high'], 1)}]"])
     _table(
         OUT / "market-sizepower.tex",
         ["Test", "Sample, level and alternative", "Size (\\%)", "Power (\\%)"],
@@ -465,8 +468,8 @@ def t_pla(D: dict) -> None:
         det = o["detection"]
         n = det["n_replications"]
         sp, ks = o["pla"]["spearman"], o["pla"]["ks"]
-        rows.append([VLABEL[v], f"{sp['mean']:.3f} ({sp['sd']:.3f})", f"{ks['mean']:.3f} ({ks['sd']:.3f})", f"{z['green']}", f"{z['amber']}",
-                     f"{z['red']}", f"{100 * det['share_amber_or_red']:.1f} [{100 * det['ci_low']:.1f}, {100 * det['ci_high']:.1f}]"])
+        rows.append([VLABEL[v], f"{fixed(sp['mean'], 3)} ({fixed(sp['sd'], 3)})", f"{fixed(ks['mean'], 3)} ({fixed(ks['sd'], 3)})", f"{z['green']}", f"{z['amber']}",
+                     f"{z['red']}", f"{percent(det['share_amber_or_red'], 1)} [{percent(det['ci_low'], 1)}, {percent(det['ci_high'], 1)}]"])
     _table(
         OUT / "market-pla.tex",
         ["Variant", "Spearman, mean (sd)", "KS, mean (sd)", "Green", "Amber", "Red", "Amber or red (\\%)"],
@@ -485,8 +488,8 @@ def t_desk(D: dict) -> None:
         n = o["detection"]["n_replications"]
         d99 = next(r for r in o["desk_backtest"] if abs(r["alpha"] - 0.01) < 1e-12)
         d975 = next(r for r in o["desk_backtest"] if abs(r["alpha"] - 0.025) < 1e-12)
-        rows.append([VLABEL[v], f"{d99['exceptions']['mean']:.1f} ({d99['exceptions']['sd']:.1f})", f"{100 * d99['share_over_limit']:.1f}",
-                     f"{d975['exceptions']['mean']:.1f} ({d975['exceptions']['sd']:.1f})", f"{100 * d975['share_over_limit']:.1f}",
+        rows.append([VLABEL[v], f"{fixed(d99['exceptions']['mean'], 1)} ({fixed(d99['exceptions']['sd'], 1)})", f"{percent(d99['share_over_limit'], 1)}",
+                     f"{fixed(d975['exceptions']['mean'], 1)} ({fixed(d975['exceptions']['sd'], 1)})", f"{percent(d975['share_over_limit'], 1)}",
                      f"{det['spearman_flagged']}", f"{det['ks_flagged']}", f"{det['desk_backtest_flagged']}"])
     _table(
         OUT / "market-desk.tex",
@@ -505,8 +508,8 @@ def t_truth(D: dict) -> None:
         o = D["c13"][v]["outputs"]
         k = o["known_deficiency"]
         par = ", ".join(f"{p['name'].replace('_', ' ')} {p['value']:g}" for p in k["parameters"]) or "--"
-        rows.append([VLABEL[v], par, k["intended_to_fail"], f"{known_pearson(D, v):.3f}",
-                     f"{D['c13'][v]['outputs']['pla']['spearman']['mean']:.3f}"])
+        rows.append([VLABEL[v], par, k["intended_to_fail"], f"{fixed(known_pearson(D, v), 3)}",
+                     f"{fixed(D['c13'][v]['outputs']['pla']['spearman']['mean'], 3)}"])
     _table(
         OUT / "market-truth.tex",
         ["Variant", "Planted parameter", "Statistic meant to fail", "Population Pearson", "Mean Spearman"],
@@ -567,7 +570,7 @@ def numbers(D: dict) -> None:
         put(f"NnFzA{s}", b1["fz0_mean"], f"data/derived/C11/{w}.json nn-fz by_level[0].fz0_mean", 3)
         put(f"NnFzB{s}", b2["fz0_mean"], f"data/derived/C11/{w}.json nn-fz by_level[1].fz0_mean", 3)
         kp = test_row(D, w, "market.kupiec_pof", "nn-fz", 0.01)["p_value"]
-        put(f"NnKup{s}", "$<0.001$" if kp < 0.0005 else f"{kp:.3f}", f"data/derived/C11/{w}.json kupiec p-value nn-fz 1%")
+        put(f"NnKup{s}", "$<0.001$" if kp < 0.0005 else f"{fixed(kp, 3)}", f"data/derived/C11/{w}.json kupiec p-value nn-fz 1%")
         put(f"NnElig{s}", "yes" if m["eligible"] else "no", f"data/derived/C11/{w}.json nn-fz eligible")
         put(f"NnRoughA{s}", roughness(b1["var"]), f"data/derived/C11/{w}.json nn-fz by_level[0].var (script)", 3)
         put(f"GjrRoughA{s}", roughness(level(models(D, w)["gjr-t"], 0.01)["var"]), f"data/derived/C11/{w}.json gjr-t by_level[0].var (script)", 3)
@@ -638,8 +641,8 @@ def numbers(D: dict) -> None:
     put("Signif", f"{100 * cmp0['significance']:g}", "data/derived/C11/rates-2022.json outputs.comparison.significance")
     put("HacLags", cmp0["hac_lags"], "data/derived/C11/rates-2022.json outputs.comparison.hac_lags")
     ref = lad["fit"]["es_reference"]
-    put("ZRefYellow", f"{-ref['yellow']:.2f}", f"{src_l} fit.es_reference.yellow")
-    put("ZRefRed", f"{-ref['red']:.1f}", f"{src_l} fit.es_reference.red")
+    put("ZRefYellow", f"{fixed(-ref['yellow'], 2)}", f"{src_l} fit.es_reference.yellow")
+    put("ZRefRed", f"{fixed(-ref['red'], 1)}", f"{src_l} fit.es_reference.red")
     put("ZRefN", ref["n_days"], f"{src_l} fit.es_reference.n_days")
     put("ZRefAlpha", f"{100 * ref['alpha']:g}", f"{src_l} fit.es_reference.alpha")
     t0 = D["win"]["equity-2007-09"]["tests"][0]
@@ -668,9 +671,9 @@ def numbers(D: dict) -> None:
     for r in rows:
         if r["exceptions"] in words:
             w_ = words[r["exceptions"]]
-            put(f"Tl{w_}Cum", f"{r['cumulative_probability_pct']:.2f}", f"{src_l} fit.traffic_light.rows")
-            put(f"Tl{w_}Mult", f"{r['frtb_multiplier']:.2f}", f"{src_l} fit.traffic_light.rows")
-            put(f"Tl{w_}Us", f"{r['us_multiplier']:.2f}", f"{src_l} fit.traffic_light.rows")
+            put(f"Tl{w_}Cum", f"{fixed(r['cumulative_probability_pct'], 2)}", f"{src_l} fit.traffic_light.rows")
+            put(f"Tl{w_}Mult", f"{fixed(r['frtb_multiplier'], 2)}", f"{src_l} fit.traffic_light.rows")
+            put(f"Tl{w_}Us", f"{fixed(r['us_multiplier'], 2)}", f"{src_l} fit.traffic_light.rows")
     # C13
     put("CRep", D["c13"]["none"]["outputs"]["generator"]["n_replications"], "data/derived/C13/none.json outputs.generator.n_replications")
     put("CWin", D["c13"]["none"]["outputs"]["generator"]["window_days"], "data/derived/C13/none.json outputs.generator.window_days")

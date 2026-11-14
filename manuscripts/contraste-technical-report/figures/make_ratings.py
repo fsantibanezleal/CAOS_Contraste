@@ -129,8 +129,8 @@ def fig_ttc(R) -> None:
     for i, pf in enumerate(eng["portfolios"]):
         path = 100 * np.array(pf["pd_path"])
         ax.plot(np.arange(len(path)), path, label=labels[pf["name"]], **{**S[i], "marker": None})
-    ax.axhline(100 * eng["ttc_pd"]["recomputed"], color="0.0", linewidth=0.7, linestyle=(0, (1, 2)))
-    ax.text(len(eng["portfolios"][0]["pd_path"]) - 1, 100 * eng["ttc_pd"]["recomputed"], " TTC portfolio PD", va="bottom", ha="right", fontsize=7)
+    # the reference level is named in the legend, not in the plot, where the curves ran through its label
+    ax.axhline(100 * eng["ttc_pd"]["recomputed"], color="0.0", linewidth=0.7, linestyle=(0, (1, 2)), label="TTC portfolio PD")
     ax.set_xlabel("projection year")
     ax.set_ylabel("portfolio default rate (%)")
     ax.legend(fontsize=7, frameon=False)

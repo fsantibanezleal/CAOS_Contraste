@@ -182,15 +182,17 @@ def fig_conformal(A: dict, out: pathlib.Path) -> None:
 def fig_band(A: dict, out: pathlib.Path) -> None:
     import matplotlib.pyplot as plt
 
-    fig, ax = plt.subplots(figsize=(W, 3.0))
+    fig, ax = plt.subplots(figsize=(W, 3.6))
     rows = A["band"]
-    lab = [f"{r['method']}" + (f"\n$\\nu$={r['nu']:g}" if r["nu"] else "") for r in rows]
+    # horizontal bars: the long method names ("variance-covariance", "gaussian-copula") read on the vertical axis without overprinting
+    lab = [f"{r['method']}" + (f" ($\\nu$={r['nu']:g})" if r["nu"] else "") for r in rows]
     vals = [r["capital_clp_m"] / 1000 for r in rows]
     cols = ["0.1" if r["status"] == "headline-capital" else "0.75" for r in rows]
-    ax.bar(range(len(rows)), vals, color=cols, edgecolor="black", linewidth=0.5)
-    ax.set_xticks(range(len(rows)))
-    ax.set_xticklabels(lab, fontsize=6.3)
-    ax.set_ylabel("Capital (CLP billion)")
+    ax.barh(range(len(rows)), vals, color=cols, edgecolor="black", linewidth=0.5)
+    ax.set_yticks(range(len(rows)))
+    ax.set_yticklabels(lab, fontsize=7)
+    ax.invert_yaxis()
+    ax.set_xlabel("Capital (CLP billion)")
     fig.tight_layout()
     figkit.save(fig, out, "proposed-band")
 
@@ -208,8 +210,14 @@ def fig_oprisk(A: dict, out: pathlib.Path) -> None:
                 ys.append(r["iqr_over_truth"])
         ax.plot(xs, ys, label=f"tail index {doc['tail_index']:g}", **figkit.STYLES[i])
     ax.set_xticks(range(4))
-    ax.set_xticklabels([c["id"] for c in A["c17"]["xi-0-96"]["cells"]], fontsize=7.5)
-    ax.set_xlabel("History length in years and collection threshold in EUR thousand (cell)")
+    import re
+
+    def cell_label(cid: str) -> str:
+        m = re.fullmatch(r"y(\d+)-h(\d+)", cid)
+        return f"{m.group(1)} years,\nEUR {int(m.group(2)):,}" if m else cid
+
+    ax.set_xticklabels([cell_label(c["id"]) for c in A["c17"]["xi-0-96"]["cells"]], fontsize=7.5)
+    ax.set_xlabel("Cell: history length and collection threshold")
     ax.set_ylabel("Interquartile range over the truth")
     ax.legend(frameon=False, fontsize=7)
     fig.tight_layout()

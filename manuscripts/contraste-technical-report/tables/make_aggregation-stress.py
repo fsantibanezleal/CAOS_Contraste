@@ -21,6 +21,9 @@ import sys
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "_shared"))
 import figkit  # noqa: E402
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from _halfup import fixed, percent, install as _halfup_install  # noqa: E402
+_halfup_install(figkit)
 
 OUT = HERE
 PREFIX = "aggregation-stress-"
@@ -47,7 +50,7 @@ def macro(name: str, text: str, src: str) -> None:
 
 def f(x: float, nd: int = 2) -> str:
     """A plain decimal; the minus sign is typeset as a math minus so that it never breaks a line."""
-    return f"{x:.{nd}f}".replace("-", "$-$")
+    return f"{fixed(x, nd)}".replace("-", "$-$")
 
 
 def bn(x: float) -> float:
@@ -112,7 +115,7 @@ def build_band() -> None:
         assert r["method"] == s["method"] and r["nu"] == s["nu"]
         se = "--" if r["mc_se_clp_m"] is None else f(bn(r["mc_se_clp_m"]), 1)
         se_s = "--" if s["mc_se_clp_m"] is None else f(bn(s["mc_se_clp_m"]), 1)
-        nu = "--" if r["nu"] is None else f"{r['nu']:.0f}"
+        nu = "--" if r["nu"] is None else f"{fixed(r['nu'], 0)}"
         rows.append([names[r["method"]], nu, f(bn(r["capital_clp_m"]), 1), se, f(r["diversification_factor"], 3), f(bn(s["capital_clp_m"]), 1), se_s])
     write("band", ["Row", "$\\nu$", "Capital", "MC s.e.", "Factor", "Stressed capital", "MC s.e."], rows,
           caption="The dependence band of case C18 over the same four marginals of Banco Andino at one year and 99.9 percent: economic capital of each row in "
@@ -160,13 +163,13 @@ def build_band() -> None:
     macro("GridPoints", n_(grid["points"]), f"{MOD_SRC} fit.aggregation.quantile_grid.convention.points")
     macro("GridZ", f"{grid['z_max']}", f"{MOD_SRC} fit.aggregation.quantile_grid.convention.z_max")
     macro("GridStep", f"{grid['z_step']}", f"{MOD_SRC} fit.aggregation.quantile_grid.convention.z_step")
-    macro("NuSet", ", ".join(f"{v:.0f}" for v in AGG["nu_set"]["values"]), f"{BASE_SRC} outputs.aggregation.nu_set.values")
+    macro("NuSet", ", ".join(f"{fixed(v, 0)}" for v in AGG["nu_set"]["values"]), f"{BASE_SRC} outputs.aggregation.nu_set.values")
     order = AGG["correlation"]["order"]
     mat = AGG["correlation"]["matrix"]
-    body = " \\\\ ".join(" & ".join(f"{v:.1f}" for v in row) for row in mat)
+    body = " \\\\ ".join(" & ".join(f"{fixed(v, 1)}" for v in row) for row in mat)
     macro("CorrMatrix", BS + "begin{pmatrix} " + body + " " + BS + "end{pmatrix}", f"{BASE_SRC} outputs.aggregation.correlation.matrix")
     macro("CorrOrder", ", ".join(order), f"{BASE_SRC} outputs.aggregation.correlation.order")
-    body_s = " \\\\ ".join(" & ".join(f"{v:.1f}" for v in row) for row in TCOP["outputs"]["correlation_stress"]["aggregation"]["correlation"]["matrix"])
+    body_s = " \\\\ ".join(" & ".join(f"{fixed(v, 1)}" for v in row) for row in TCOP["outputs"]["correlation_stress"]["aggregation"]["correlation"]["matrix"])
     macro("CorrStressMatrix", BS + "begin{pmatrix} " + body_s + " " + BS + "end{pmatrix}",
           "C18/t-copula-baseline.json outputs.correlation_stress.aggregation.correlation.matrix")
     # the marginals

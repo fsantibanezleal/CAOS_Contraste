@@ -21,6 +21,9 @@ import numpy as np
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "_shared"))
 import figkit  # noqa: E402
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from _halfup import fixed, percent, install as _halfup_install  # noqa: E402
+_halfup_install(figkit)
 
 AGENCIES = (("sp", "S&P"), ("moodys", "Moody's"), ("fitch", "Fitch"))
 GRADES = ("AAA", "AA", "A", "BBB", "BB", "B", "CCC-C")
@@ -71,16 +74,16 @@ def name(*parts: Any) -> str:
 
 
 def pct(x: float | None, d: int = 2) -> str:
-    return "--" if x is None else f"{100 * x:.{d}f}"
+    return "--" if x is None else percent(x, d)
 
 
 def pm_pct(x: float, ci: tuple[float, float]) -> str:
     """A share in percent with the half-width of its interval, to one decimal."""
-    return f"${100 * x:.1f}\\pm{100 * (ci[1] - ci[0]) / 2:.1f}$"
+    return f"${percent(x, 1)}\\pm{percent((ci[1] - ci[0]) / 2, 1)}$"
 
 
 def pm(x: float, e: float, d: int = 2) -> str:
-    return f"${100 * x:.{d}f}\\pm{100 * e:.{d}f}$"
+    return f"${fixed(100 * x, d)}\\pm{fixed(100 * e, d)}$"
 
 
 def wilson(k: int, n: int, z: float = 1.959963984540054) -> tuple[float, float]:
@@ -139,16 +142,16 @@ def compute() -> dict[str, Any]:
         return float(np.corrcoef(a[m], b[m])[0, 1])
 
     R["z_corr"] = {"bb_b": corr(zbb["z"], zb["z"]), "b_ccc": corr(zb["z"], zc["z"]), "bb_ccc": corr(zbb["z"], zc["z"])}
-    num[name("zcorr", "bb", "b")] = f"{R['z_corr']['bb_b']:.2f}"
-    num[name("zcorr", "b", "ccc")] = f"{R['z_corr']['b_ccc']:.2f}"
-    num[name("zcorr", "bb", "ccc")] = f"{R['z_corr']['bb_ccc']:.2f}"
+    num[name("zcorr", "bb", "b")] = f"{fixed(R['z_corr']['bb_b'], 2)}"
+    num[name("zcorr", "b", "ccc")] = f"{fixed(R['z_corr']['b_ccc'], 2)}"
+    num[name("zcorr", "bb", "ccc")] = f"{fixed(R['z_corr']['bb_ccc'], 2)}"
     for aid, rec in agencies.items():
         for g in ZGRADES:
             zz = rec["z"][g]
-            num[name("z", aid, GRADES[g], "mean")] = f"{zz['mean']:.2f}"
-            num[name("z", aid, GRADES[g], "sd")] = f"{zz['sd']:.2f}"
+            num[name("z", aid, GRADES[g], "mean")] = f"{fixed(zz['mean'], 2)}"
+            num[name("z", aid, GRADES[g], "sd")] = f"{fixed(zz['sd'], 2)}"
             num[name("z", aid, GRADES[g], "n")] = str(zz["n"])
-            num[name("z", aid, GRADES[g], "rho")] = f"{zz['rho']:.3f}"
+            num[name("z", aid, GRADES[g], "rho")] = f"{fixed(zz['rho'], 3)}"
         num[name("cohorts", aid)] = str(len(rec["labels"]))
         for gi, g in enumerate(GRADES):
             num[name("lra", aid, g)] = pct(rec["lra"]["rate"][gi], 3)
@@ -160,9 +163,9 @@ def compute() -> dict[str, Any]:
     hi_year = lambda zz: sp["labels"][int(np.nanargmax(zz["z"]))]  # noqa: E731
     for g in ZGRADES:
         zz = sp["z"][g]
-        num[name("z", "sp", GRADES[g], "min")] = f"{np.nanmin(zz['z']):.2f}"
+        num[name("z", "sp", GRADES[g], "min")] = f"{fixed(np.nanmin(zz['z']), 2)}"
         num[name("z", "sp", GRADES[g], "minyear")] = lo_year(zz)
-        num[name("z", "sp", GRADES[g], "max")] = f"{np.nanmax(zz['z']):.2f}"
+        num[name("z", "sp", GRADES[g], "max")] = f"{fixed(np.nanmax(zz['z']), 2)}"
         num[name("z", "sp", GRADES[g], "maxyear")] = hi_year(zz)
     # the grades' PIT PD at a two-standard-deviation bad year, as the model maps it
     for g in ZGRADES:
@@ -175,23 +178,23 @@ def compute() -> dict[str, Any]:
     gap = sp["out"]["definition_gap"]["d4_over_d2"]
     for gi, g in enumerate(GRADES):
         if gap[gi] is not None:
-            num[name("gap", "dfour", g)] = f"{gap[gi]:.2f}"
+            num[name("gap", "dfour", g)] = f"{fixed(gap[gi], 2)}"
     for aid, rec in agencies.items():
         gens = rec["out"]["generators"]
         for k in ("em", "diagonal", "weighted", "jlt"):
-            num[name("l1", aid, k)] = f"{gens[k]['l1']:.4f}"
+            num[name("l1", aid, k)] = f"{fixed(gens[k]['l1'], 4)}"
         num[name("emit", aid)] = str(gens["em"]["iterations"])
         emb = rec["out"]["embedding"]
         num[name("unreach", aid)] = str(len(emb["theorem3"]["c"]))
-        num[name("sconv", aid)] = f"{emb['S']:.3f}"
-        num[name("det", aid)] = f"{emb['det']:.3f}"
-        num[name("proddiag", aid)] = f"{emb['prod_diagonal']:.3f}"
+        num[name("sconv", aid)] = f"{fixed(emb['S'], 3)}"
+        num[name("det", aid)] = f"{fixed(emb['det'], 3)}"
+        num[name("proddiag", aid)] = f"{fixed(emb['prod_diagonal'], 3)}"
     g_sp = sp["out"]["generators"]
     for k in ("em", "diagonal", "weighted", "jlt"):
         num[name("pifive", k)] = pct(g_sp[k]["pd_5y"][6])
         num[name("pione", k)] = pct(g_sp[k]["pd_1y"][6], 3)
     num[name("pifive", "cohort")] = pct(g_sp["cohort_power"]["pd_5y"][6])
-    num[name("sp", "homog", "stat")] = f"{sp['out']['homogeneity']['annual']['statistic']:.0f}"
+    num[name("sp", "homog", "stat")] = f"{fixed(sp['out']['homogeneity']['annual']['statistic'], 0)}"
     num[name("sp", "homog", "dof")] = str(sp["out"]["homogeneity"]["annual"]["dof"])
 
     # ---- C04, the known-truth Markov family: the estimators against the generator's truth
@@ -204,18 +207,18 @@ def compute() -> dict[str, Any]:
     num[name("mk", "snap")] = str(mk["design"]["years"])
     truth = est["cohort"]["truth"]
     for gi in (0, 1, 2, 6):
-        num[name("mk", "truth", GRADES[gi])] = f"{1e4 * truth[gi]:.2f}"
+        num[name("mk", "truth", GRADES[gi])] = f"{fixed(1e4 * truth[gi], 2)}"
         num[name("mk", "zero", GRADES[gi])] = pct(est["cohort"]["zero"][gi]["rate"], 0)
-        num[name("mk", "oy", GRADES[gi])] = f"{rung['obligor_years'][gi]:.0f}"
+        num[name("mk", "oy", GRADES[gi])] = f"{fixed(rung['obligor_years'][gi], 0)}"
     for k, _ in ESTIMATORS:
         for gi in (0, 1, 5, 6):
-            num[name("mk", k, GRADES[gi], "rmse")] = f"{1e4 * est[k]['rmse'][gi]:.1f}"
-            num[name("mk", k, GRADES[gi], "se")] = f"{1e4 * est[k]['empirical_se'][gi]:.1f}"
+            num[name("mk", k, GRADES[gi], "rmse")] = f"{fixed(1e4 * est[k]['rmse'][gi], 1)}"
+            num[name("mk", k, GRADES[gi], "se")] = f"{fixed(1e4 * est[k]['empirical_se'][gi], 1)}"
     ratios = [abs(est[k]["bias"][0] / est[k]["bias_mcse"][0]) for k in ("em", "diagonal", "weighted")]
-    num[name("mk", "bias", "se", "min")] = f"{min(ratios):.1f}"
-    num[name("mk", "bias", "se", "max")] = f"{max(ratios):.1f}"
+    num[name("mk", "bias", "se", "min")] = f"{fixed(min(ratios), 1)}"
+    num[name("mk", "bias", "se", "max")] = f"{fixed(max(ratios), 1)}"
     num[name("mk", "emconv")] = pct(rung["em"]["converged"]["rate"], 0)
-    num[name("mk", "emiter")] = f"{rung['em']['iterations_mean']:.1f}"
+    num[name("mk", "emiter")] = f"{fixed(rung['em']['iterations_mean'], 1)}"
 
     # ---- C04, the published answers (Israel et al., Schuermann and Hanson, Engelmann)
     pub = figkit.doc("C04/published.json")["outputs"]
@@ -247,7 +250,7 @@ def compute() -> dict[str, Any]:
     R["eng_cells"] = eng_cells
     num[name("eng", "cells")] = str(len(eng_cells))
     num[name("eng", "ident")] = str(sum(1 for a, b, d in eng_cells if abs(a - b) <= 0.5 * 10 ** -d + 1e-12))
-    num[name("eng", "maxgap")] = f"{max(abs(a - b) for a, b, _ in eng_cells):.5f}"
+    num[name("eng", "maxgap")] = f"{fixed(max(abs(a - b) for a, b, _ in eng_cells), 5)}"
     num[name("eng", "years")] = str(len(eng["portfolios"][0]["pd_path"]))
 
     # ---- C05, the S&P calibration to 2010 and 2011 (Tasche 2013) and the low-default example (Pluto and Tasche)
@@ -263,24 +266,24 @@ def compute() -> dict[str, Any]:
             num[name("cal", YT[y], AS[aid], "ar")] = pct(a["accuracy_ratio"], 1)
             num[name("cal", YT[y], AS[aid], "p")] = pct(pv[aid]["p_value"], 1)
             num[name("cal", YT[y], AS[aid], "rw")] = pct(d["impact"][f"rw_{aid}"]["value"], 1)
-            num[name("cal", YT[y], AS[aid], "stat")] = f"{pv[aid]['statistic']:.1f}"
+            num[name("cal", YT[y], AS[aid], "stat")] = f"{fixed(pv[aid]['statistic'], 1)}"
         num[name("cal", YT[y], "obs")] = pct(o["pd1"], 3)
         num[name("cal", YT[y], "ar", "obs")] = pct(o["ar1"], 1)
         num[name("cal", YT[y], "n")] = f"{o['n_obligors']:,}".replace(",", "\\,")
         num[name("cal", YT[y], "d")] = str(o["n_defaults"])
         num[name("cal", YT[y], "spread")] = pct(d["impact"]["rw_spread_case1"]["value"], 1)
         num[name("cal", YT[y], "stale")] = pct(d["impact"]["rw_stale_vs_slr"]["value"], 1)
-        num[name("cal", YT[y], "cpd")] = f"{o['approaches']['A3-spd']['constants']['c_pd']:.4f}"
+        num[name("cal", YT[y], "cpd")] = f"{fixed(o['approaches']['A3-spd']['constants']['c_pd'], 4)}"
         c = o["approaches"]["A4-slr"]["constants"]
-        num[name("cal", YT[y], "clr")] = f"{c['c_lr']:.4f}"
-        num[name("cal", YT[y], "lrlo")] = f"{c['bracket_low']:.4f}"
-        num[name("cal", YT[y], "lrhi")] = f"{c['bracket_high']:.4f}"
+        num[name("cal", YT[y], "clr")] = f"{fixed(c['c_lr'], 4)}"
+        num[name("cal", YT[y], "lrlo")] = f"{fixed(c['bracket_low'], 4)}"
+        num[name("cal", YT[y], "lrhi")] = f"{fixed(c['bracket_high'], 4)}"
         num[name("cal", YT[y], "mcse", "max")] = pct(max(t["extras"]["mc_standard_error"] for t in pv.values()), 2)
     q = cal[2010]["o"]["qmm0"]
-    num[name("qmm", "alpha")] = f"{q['alpha']:.4f}"
-    num[name("qmm", "beta")] = f"{q['beta']:.4f}"
-    num[name("qmm", "alpha", "start")] = f"{q['start'][0]:.3f}"
-    num[name("qmm", "beta", "start")] = f"{q['start'][1]:.3f}"
+    num[name("qmm", "alpha")] = f"{fixed(q['alpha'], 4)}"
+    num[name("qmm", "beta")] = f"{fixed(q['beta'], 4)}"
+    num[name("qmm", "alpha", "start")] = f"{fixed(q['start'][0], 3)}"
+    num[name("qmm", "beta", "start")] = f"{fixed(q['start'][1], 3)}"
     num[name("qmm", "pd")] = pct(cal[2010]["o"]["pd0"], 3)
     num[name("qmm", "ar")] = pct(cal[2010]["o"]["ar0"], 2)
     num[name("grades", "tasche")] = str(len(cal[2010]["o"]["grades"]))
@@ -288,7 +291,7 @@ def compute() -> dict[str, Any]:
     # the case-3 profile tests (an output of the case, not a registered test)
     for y in (2010, 2011):
         for aid, t in cal[y]["o"]["case3_profile_tests"].items():
-            num[name("c3", YT[y], AS[aid], "p")] = f"{t['p_value']:.4f}"
+            num[name("c3", YT[y], AS[aid], "p")] = f"{fixed(t['p_value'], 4)}"
 
     # golden reproductions: Tasche (2013) tables 5 to 9, counted against the engine's tolerances
     gold: dict[str, Any] = {}
@@ -315,11 +318,11 @@ def compute() -> dict[str, Any]:
         num[name("gold", label, "n")] = str(n)
         num[name("gold", label, "ident")] = str(ident)
         num[name("gold", label, "ok")] = str(ok)
-        num[name("gold", label, "max")] = f"{mx:.4f}"
+        num[name("gold", label, "max")] = f"{fixed(mx, 4)}"
     num[name("gold", "eight", "n")] = str(gold["t8"][0])
-    num[name("gold", "eight", "max")] = f"{gold['t8'][1]:.3f}"
+    num[name("gold", "eight", "max")] = f"{fixed(gold['t8'][1], 3)}"
     num[name("gold", "sevenp", "n")] = str(gold["t7p"][0])
-    num[name("gold", "sevenp", "max")] = f"{gold['t7p'][1]:.2f}"
+    num[name("gold", "sevenp", "max")] = f"{fixed(gold['t7p'][1], 2)}"
 
     ldp = figkit.doc("C05/ldp-published.json")
     lo = ldp["outputs"]
@@ -331,11 +334,11 @@ def compute() -> dict[str, Any]:
     R["ldp_tables"] = byt
     num[name("pt", "cells")] = str(len(cells))
     num[name("pt", "ident")] = str(sum(1 for c in cells if abs(c["gap"]) < 1e-9))
-    num[name("pt", "maxgap")] = f"{max(abs(c['gap']) for c in cells):.2f}"
+    num[name("pt", "maxgap")] = f"{fixed(max(abs(c['gap']) for c in cells), 2)}"
     t8 = byt[8]
     num[name("pt", "eight", "n")] = str(len(t8))
     num[name("pt", "eight", "low")] = str(sum(1 for c in t8 if abs(c["gap"] + 0.01) < 1e-9))
-    num[name("pt", "eight", "max")] = f"{max(c['printed'] - c['ours'] for c in t8):.4f}"
+    num[name("pt", "eight", "max")] = f"{fixed(max(c['printed'] - c['ours'] for c in t8), 4)}"
     assert all(c["gap"] <= 1e-9 for c in t8), "table 8: a recomputed cell above its print"
     ind, cor = lo["bounds"]["independent"], lo["bounds"]["correlated"]
     gam = lo["gammas"]
@@ -345,11 +348,11 @@ def compute() -> dict[str, Any]:
             num[name("ldp", "cor", GT[g], a)] = pct(cor[gi][ai], 2)
     su = lo["bounds"]["scaled_upper_bound"]
     for gi, g in enumerate(gam):
-        num[name("ldp", "k", GT[g])] = f"{su[gi]['k']:.2f}"
+        num[name("ldp", "k", GT[g])] = f"{fixed(su[gi]['k'], 2)}"
     num[name("ldp", "expert", "A")] = pct(lo["expert_pd"][0], 2)
     num[name("ldp", "expert", "B")] = pct(lo["expert_pd"][1], 2)
     num[name("ldp", "expert", "C")] = pct(lo["expert_pd"][2], 2)
-    num[name("ldp", "rho")] = f"{100 * lo['rho']:.0f}"
+    num[name("ldp", "rho")] = f"{percent(lo['rho'], 0)}"
     for k, v in ldp["impact"].items():
         num[name("ldp", k)] = pct(v["value"], 1)
     sim = figkit.doc("C05/ldp-sim-0.json")["outputs"]
@@ -361,12 +364,12 @@ def compute() -> dict[str, Any]:
             for row in kt["coverage"][kind][grade]:
                 num[name("cov", kind, grade, GT[row["gamma"]])] = pct(row["coverage"], 1)
         num[name("sim", "true", grade)] = pct(sim["true_pd"][LDP_GRADES.index(grade)], 2)
-    num[name("sim", "overdisp", "model")] = f"{kt['overdispersion']['variance_model']:.2f}"
-    num[name("sim", "overdisp", "sim")] = f"{kt['overdispersion']['variance_simulated']:.2f}"
-    num[name("sim", "overdisp", "ind")] = f"{kt['overdispersion']['variance_independent']:.2f}"
-    num[name("sim", "rho", "hat")] = f"{100 * kt['overdispersion']['rho_moment_estimate']:.1f}"
+    num[name("sim", "overdisp", "model")] = f"{fixed(kt['overdispersion']['variance_model'], 2)}"
+    num[name("sim", "overdisp", "sim")] = f"{fixed(kt['overdispersion']['variance_simulated'], 2)}"
+    num[name("sim", "overdisp", "ind")] = f"{fixed(kt['overdispersion']['variance_independent'], 2)}"
+    num[name("sim", "rho", "hat")] = f"{percent(kt['overdispersion']['rho_moment_estimate'], 1)}"
     r1 = kt["coverage"]["independent"]["C"][2]
-    num[name("sim", "ratio", "med")] = f"{r1['ratio_median']:.1f}"
+    num[name("sim", "ratio", "med")] = f"{fixed(r1['ratio_median'], 1)}"
     for variant in ("ldp-sim-0", "ldp-sim-1", "ldp-sim-3"):
         s = figkit.doc(f"C05/{variant}.json")["outputs"]
         num[name("simdef", variant)] = str(sum(s["defaults"]))
@@ -394,8 +397,8 @@ def compute() -> dict[str, Any]:
     num[name("cz", "hold", "rows")] = f"{c02['pooled']['hold_rows']:,}".replace(",", "\\,")
     num[name("cz", "hold", "events")] = f"{c02['pooled']['hold_events']:,}".replace(",", "\\,")
     halves = [100 * (c02[h]["challenger"][c]["wilson"][1] - c02[h]["challenger"][c]["wilson"][0]) / 2 for h in HORIZONS for c, _ in CHALLENGERS]
-    num[name("cz", "half", "min")] = f"{min(halves):.1f}"
-    num[name("cz", "half", "max")] = f"{max(halves):.1f}"
+    num[name("cz", "half", "min")] = f"{fixed(min(halves), 1)}"
+    num[name("cz", "half", "max")] = f"{fixed(max(halves), 1)}"
     for h in HORIZONS:
         for cid, _ in CHALLENGERS:
             num[name("cz", HT[h], CS[cid])] = pct(c02[h]["challenger"][cid]["grade_disagreement_share"], 1)
@@ -409,7 +412,7 @@ def compute() -> dict[str, Any]:
     num[name("ms", "grades")] = str(len(ms["grades"]))
     num[name("ms", "first")] = pct(ms["upper"][0], 2)
     num[name("ms", "tenth")] = pct(ms["upper"][10], 1)
-    num[name("ms", "ratio")] = f"{ms['upper'][1] / ms['upper'][0]:.2f}"
+    num[name("ms", "ratio")] = f"{fixed(ms['upper'][1] / ms['upper'][0], 2)}"
     num[name("rv", "version")] = agencies["sp"]["version"]
     num[name("cz", "other", "min")] = pct(min(c02[h]["challenger"][c]["grade_disagreement_share"] for h in HORIZONS
                                               for c, _ in CHALLENGERS if c != "P2a-l1"), 1)
@@ -441,13 +444,13 @@ def compute() -> dict[str, Any]:
             slope = np.sqrt(1.0 - zz["rho"]) / (np.sqrt(zz["rho"]) * norm.pdf(norm.ppf(p0)))
             zz["samp_sd"] = float(slope * np.sqrt(p0 * (1.0 - p0) / n_med))
             zz["n_med"] = n_med
-            num[name("z", aid, GRADES[g], "samp")] = f"{zz['samp_sd']:.2f}"
+            num[name("z", aid, GRADES[g], "samp")] = f"{fixed(zz['samp_sd'], 2)}"
             num[name("z", aid, GRADES[g], "nmed")] = f"{n_med:,.0f}"
     # the tables of Pluto and Tasche that the acceptance criterion names (tables 1, 2, 3, 4 and 7)
     spec = [c for t in (1, 2, 3, 4, 7) for c in byt[t]]
     num[name("pt", "spec", "n")] = str(len(spec))
     num[name("pt", "spec", "ident")] = str(sum(1 for c in spec if abs(c["gap"]) < 1e-9))
-    num[name("pt", "spec", "max")] = f"{max(abs(c['gap']) for c in spec):.2f}"
+    num[name("pt", "spec", "max")] = f"{fixed(max(abs(c['gap']) for c in spec), 2)}"
     return R
 
 
@@ -479,8 +482,8 @@ def _z_table(R: dict[str, Any], out: pathlib.Path) -> None:
     for aid, label in AGENCIES:
         for g in ZGRADES:
             zz = R["agencies"][aid]["z"][g]
-            rows.append([label, GRADES[g], pct(zz["ttc"], 2), f"{zz['rho']:.3f}", f"{zz['n']} of {zz['cohorts']}",
-                         f"${zz['mean']:.2f}$", f"{zz['sd']:.2f}", f"{zz['samp_sd']:.2f}", f"{zz['pit_error']:.1e}"])
+            rows.append([label, GRADES[g], pct(zz["ttc"], 2), f"{fixed(zz['rho'], 3)}", f"{zz['n']} of {zz['cohorts']}",
+                         f"${fixed(zz['mean'], 2)}$", f"{fixed(zz['sd'], 2)}", f"{fixed(zz['samp_sd'], 2)}", f"{zz['pit_error']:.1e}"])
     figkit.table(
         out / "ratings-zfactor.tex", header, rows, align="llrrrrrrr", wide=True,
         caption=("Credit-cycle factor implied by the yearly default rate of the three speculative grades with a default in most cohorts: "
@@ -501,11 +504,11 @@ def _est_table(R: dict[str, Any], out: pathlib.Path) -> None:
         row: list[Any] = [label]
         for gi in (0, 1, 5, 6):
             e = est[k]
-            row.append(f"${1e4 * e['bias'][gi]:+.1f}\\pm{1e4 * e['bias_mcse'][gi]:.1f}$")
-            row.append(f"{1e4 * e['rmse'][gi]:.1f}")
+            row.append(f"${1e4 * e['bias'][gi]:+.1f}\\pm{fixed(1e4 * e['bias_mcse'][gi], 1)}$")
+            row.append(f"{fixed(1e4 * e['rmse'][gi], 1)}")
         rows.append(row)
     truth = est["cohort"]["truth"]
-    rows.append(["True one-year PD"] + sum(([f"{1e4 * truth[gi]:.2f}", ""] for gi in (0, 1, 5, 6)), []))
+    rows.append(["True one-year PD"] + sum(([f"{fixed(1e4 * truth[gi], 2)}", ""] for gi in (0, 1, 5, 6)), []))
     figkit.table(
         out / "ratings-estimators.tex", header, rows, align="lrrrrrrrr", wide=True,
         caption=("Bias with its Monte Carlo standard error and root mean squared error, in basis points, of the one-year PD of four grades "
@@ -520,9 +523,9 @@ def _gen_table(R: dict[str, Any], out: pathlib.Path) -> None:
     for aid, label in AGENCIES:
         o = R["agencies"][aid]["out"]
         g = o["generators"]
-        rows.append([label, f"{o['embedding']['S']:.3f}", str(len(o["embedding"]["theorem3"]["c"])),
-                     f"{g['em']['l1']:.4f}", f"{g['diagonal']['l1']:.4f}", f"{g['weighted']['l1']:.4f}",
-                     f"{g['jlt']['l1']:.4f}", str(g["em"]["iterations"])])
+        rows.append([label, f"{fixed(o['embedding']['S'], 3)}", str(len(o["embedding"]["theorem3"]["c"])),
+                     f"{fixed(g['em']['l1'], 4)}", f"{fixed(g['diagonal']['l1'], 4)}", f"{fixed(g['weighted']['l1'], 4)}",
+                     f"{fixed(g['jlt']['l1'], 4)}", str(g["em"]["iterations"])])
     figkit.table(
         out / "ratings-generators.tex", header, rows, align="lrrrrrrr", wide=True,
         caption=("Embedding diagnostics of the pooled annual matrix of each agency and the L1 distance between the matrix and the exponential "
@@ -581,7 +584,7 @@ def _cov_table(R: dict[str, Any], out: pathlib.Path) -> None:
         for kind in ("independent", "correlated", "scaled"):
             for g in LDP_GRADES:
                 c = kt["coverage"][kind][g][gi]
-                row.append(f"{100 * c['coverage']:.1f}")
+                row.append(f"{percent(c['coverage'], 1)}")
         rows.append(row)
     figkit.table(
         out / "ratings-ldp-coverage.tex", header, rows, align="lrrrrrrrrr", wide=True,
@@ -601,13 +604,13 @@ def _gold_table(R: dict[str, Any], out: pathlib.Path) -> None:
     for label, tabs in groups:
         cells = [c for t in tabs for c in byt[t]]
         rows.append([label, str(len(cells)), str(sum(1 for c in cells if abs(c["gap"]) < 1e-9)), "--",
-                     f"{max(abs(c['gap']) for c in cells):.2f} pp"])
+                     f"{fixed(max(abs(c['gap']) for c in cells), 2)} pp"])
     for key, label, unit in (("t5", "Tasche, table 5 (smoothed curve, 2009)", ""), ("t6", "Tasche, table 6 (implied default profile, 2009)", ""),
                              ("t7", "Tasche, table 7 (136 forecast cells)", "")):
         n, ident, ok, mx = g[key]
-        rows.append([label, str(n), str(ident), str(ok), f"{mx:.4f}"])
-    rows.append(["Tasche, table 8 (case 3 forecast PD)", str(g["t8"][0]), "--", "--", f"{g['t8'][1]:.3f} pp"])
-    rows.append(["Tasche, table 7, p-values", str(g["t7p"][0]), "--", "--", f"{g['t7p'][1]:.2f} pp"])
+        rows.append([label, str(n), str(ident), str(ok), f"{fixed(mx, 4)}"])
+    rows.append(["Tasche, table 8 (case 3 forecast PD)", str(g["t8"][0]), "--", "--", f"{fixed(g['t8'][1], 3)} pp"])
+    rows.append(["Tasche, table 7, p-values", str(g["t7p"][0]), "--", "--", f"{fixed(g['t7p'][1], 2)} pp"])
     irw = R["pub"]["irw"]["rows"]
     rows.append(["Israel, Rosenthal and Wei, nine distances", str(len(irw)), str(sum(1 for r in irw if r["agrees"])), "--", "--"])
     sr = R["pub"]["sr190"]["rows"]
@@ -615,7 +618,7 @@ def _gold_table(R: dict[str, Any], out: pathlib.Path) -> None:
     cells = R["eng_cells"]
     rows.append(["Engelmann (2024), TTC portfolio, PD and path extremes", str(len(cells)),
                  str(sum(1 for a, b, d in cells if abs(a - b) <= 0.5 * 10 ** -d + 1e-12)), "--",
-                 f"{max(abs(a - b) for a, b, _ in cells):.5f}"])
+                 f"{fixed(max(abs(a - b) for a, b, _ in cells), 5)}"])
     figkit.table(
         out / "ratings-golden.tex", header, rows, align="lrrrr", wide=True,
         caption=("Printed values of the five papers the engine reproduces for these methods, recomputed from the committed inputs: the cells "

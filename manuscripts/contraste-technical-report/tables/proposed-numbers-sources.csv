@@ -445,6 +445,7 @@ pxPpTwelveMinHi,"manuscripts/instability-of-operational-risk-capital/tables/numb
 pxPpTwelveMinLo,"manuscripts/instability-of-operational-risk-capital/tables/numbers.tex","spMinLo"
 pxPpTwelvePer,"manuscripts/instability-of-operational-risk-capital/tables/numbers.tex","nPer"
 pxPpTwelveRed,"manuscripts/instability-of-operational-risk-capital/tables/numbers.tex","redTotal"
+pxPpTwelveShErr,"manuscripts/instability-of-operational-risk-capital/tables/numbers.tex","thShareMaxErr"
 pxPpTwelveThErr,"manuscripts/instability-of-operational-risk-capital/tables/numbers.tex","thSdMaxErr"
 pxPpTwelveYrsMax,"manuscripts/instability-of-operational-risk-capital/tables/numbers.tex","yrsMax"
 pxPpTwelveYrsMin,"manuscripts/instability-of-operational-risk-capital/tables/numbers.tex","yrsMin"

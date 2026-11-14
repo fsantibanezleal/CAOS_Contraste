@@ -32,6 +32,9 @@ from typing import Any
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "_shared"))
 import figkit  # noqa: E402
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from _halfup import fixed, percent, install as _halfup_install  # noqa: E402
+_halfup_install(figkit)
 
 OUT = HERE
 C22 = "data/derived/C22"
@@ -73,12 +76,12 @@ def c22(name: str) -> dict:
 
 
 def pct(x: float, d: int = 2) -> str:
-    return f"{100 * x:.{d}f}"
+    return percent(x, d)
 
 
 def rate_cell(r: dict, d: int = 2) -> str:
     """A rejection rate with its Monte Carlo standard error, in percent."""
-    return f"${100 * r['rate']:.{d}f}\\pm{100 * r['se']:.{d}f}$"
+    return f"${fixed(100 * r['rate'], d)}\\pm{fixed(100 * r['se'], d)}$"
 
 
 def sim_index(doc: dict) -> dict[str, dict]:
@@ -119,7 +122,7 @@ def macro(name: str, value: Any, source: str) -> None:
 
 
 def num(x: float, d: int = 4) -> str:
-    return f"{x:.{d}f}"
+    return f"{fixed(x, d)}"
 
 
 def write_numbers() -> None:
@@ -265,8 +268,8 @@ def table_published(G: dict) -> list[dict]:
     macro("vtYnTotal", yn["total"], "outputs.golden total")
     macro("vtYnRuns", f"{yn['runs_published']:,}".replace(",", "{,}"), "golden runs_published")
     macro("vtDmRuns", f"{dm['runs_published']:,}".replace(",", "{,}"), "golden runs_published")
-    macro("vtDmPublished", f"{dm['cells'][0]['published']:.3f}", "data/derived/C22/leakage.json demler cell published")
-    macro("vtDmMeasured", f"{dm['cells'][0]['measured']:.3f}", "demler cell measured")
+    macro("vtDmPublished", f"{fixed(dm['cells'][0]['published'], 3)}", "data/derived/C22/leakage.json demler cell published")
+    macro("vtDmMeasured", f"{fixed(dm['cells'][0]['measured'], 3)}", "demler cell measured")
     nn = [c for c in wp["cells"] if "normal" in c["row"]]
     tl = [c for c in wp["cells"] if "traffic" in c["row"]]
     macro("vtWpNormalAgree", sum(c["agrees"] for c in nn), "cells whose row names the normal test")
@@ -278,7 +281,7 @@ def table_published(G: dict) -> list[dict]:
     macro("vtYnInner", len(inner), "Yurdakul-Naranjo cells strictly between 0 and 1")
     per_rule = len(yn["cells"]) // 3
     macro("vtYnIndep", per_rule, "Yurdakul-Naranjo independent runs: the three rules share the draws of each (row, shift) run")
-    macro("vtYnSeOfMean", f"{1 / math.sqrt(per_rule):.2f}", "1/sqrt(cells per rule): the standard error of a mean z of 0 over one rule's independent cells")
+    macro("vtYnSeOfMean", f"{fixed(1 / math.sqrt(per_rule), 2)}", "1/sqrt(cells per rule): the standard error of a mean z of 0 over one rule's independent cells")
     emit(OUT / "validation-tests-published.tex",
                  ["Published study", "Test or rule", "Published runs", "Cells", "Agree", "Largest $|z|$", "Mean $z$"], rows,
                  caption=("The published simulation studies rerun by the product, cell by cell: for each table of each study and each test or rule, "
@@ -340,11 +343,11 @@ def table_size() -> None:
     macro("vtChiThin", pct(r05(idx["pd.chi2_grades@thin"])["rate"], 2), "null.json pd.chi2_grades@thin")
     macro("vtPsiSmallRule", pct(r05(idx["stability.psi@n100"])["rate"], 2), "null.json stability.psi@n100 (benchmark at 5%)")
     est = d["outputs"]["estimators"]["auc"]
-    macro("vtAucCover", f"{100 * est['coverage']:.1f}", "outputs.estimators.auc.coverage")
-    macro("vtAucBias", f"{est['bias']:.4f}", "outputs.estimators.auc.bias")
-    macro("vtAucEmpSe", f"{est['empirical_se']:.4f}", "outputs.estimators.auc.empirical_se")
-    macro("vtAucModelSe", f"{est['model_se']:.4f}", "outputs.estimators.auc.model_se")
-    macro("vtAucExactSe", f"{est['exact_se']:.4f}", "outputs.estimators.auc.exact_se")
+    macro("vtAucCover", f"{percent(est['coverage'], 1)}", "outputs.estimators.auc.coverage")
+    macro("vtAucBias", f"{fixed(est['bias'], 4)}", "outputs.estimators.auc.bias")
+    macro("vtAucEmpSe", f"{fixed(est['empirical_se'], 4)}", "outputs.estimators.auc.empirical_se")
+    macro("vtAucModelSe", f"{fixed(est['model_se'], 4)}", "outputs.estimators.auc.model_se")
+    macro("vtAucExactSe", f"{fixed(est['exact_se'], 4)}", "outputs.estimators.auc.exact_se")
     emit(OUT / "validation-tests-size.tex", ["Test", "Null scenario", "Size 5\\%", "Size 1\\%", "Exact 5\\%", "Exact 1\\%"], rows,
                  stretch=0.88, caption=(f"The size of the tests of the catalogue on data whose null holds at its boundary, from {wanted[0]['n_rep']:,} independent "
                           "repetitions: the rejection rate in percent at the 5 and 1 percent levels with its Monte Carlo standard error, and the exact rejection "
@@ -572,7 +575,9 @@ def md_rows(text: str, first_cell: str) -> list[list[str]]:
 
 
 def clean_md(s: str) -> str:
-    return s.replace("`", "").replace("**", "")
+    s = s.replace("`", "").replace("**", "")
+    # the engine documents name their development units and rounds; a published table does not
+    return re.sub(r"\s*\((?:U\d+-[A-Z]\d*|this round)\)", "", s)
 
 
 def tables_engine_docs(docs: pathlib.Path) -> None:
@@ -581,8 +586,8 @@ def tables_engine_docs(docs: pathlib.Path) -> None:
     for c in md_rows(ml, "Test"):
         if len(c) < 9:
             continue
-        rows.append([idcell(clean_md(c[0])), clean_md(c[1]), f"${100 * float(c[2]):.2f}\\pm{100 * float(c[3]):.2f}$", clean_md(c[5]),
-                     f"${100 * float(c[6]):.2f}\\pm{100 * float(c[7]):.2f}$"])
+        rows.append([idcell(clean_md(c[0])), clean_md(c[1]), f"${percent(float(c[2]), 2)}\\pm{percent(float(c[3]), 2)}$", clean_md(c[5]),
+                     f"${percent(float(c[6]), 2)}\\pm{percent(float(c[7]), 2)}$"])
     sizes = [float(c[2]) for c in md_rows(ml, "Test") if len(c) >= 9]
     powers = [float(c[6]) for c in md_rows(ml, "Test") if len(c) >= 9]
     macro("vtMlConditions", len(rows), "docs/ml/08_size-and-power.md the measured table rows")
@@ -625,7 +630,7 @@ def table_c20(D: dict[str, dict]) -> None:
         ids = sorted({t["test_id"].replace("ml.", "") for t in d["tests"] if t["test_id"].startswith("ml.")} |
                      {t["test_id"] for t in d["tests"] if t["test_id"].startswith("stability.")})
         rows.append([n, ", ".join(fn(i) for i in ids), c["green"], c["amber"], c["red"], c["not_evaluated"],
-                     f"{100 * d['impact']['decision_flip_share']['value']:.1f}"])
+                     f"{percent(d['impact']['decision_flip_share']['value'], 1)}"])
     macro("vtCtwentyRed", tot["red"], "C20 variants: ml.* rows with a red light")
     macro("vtCtwentyAmber", tot["amber"], "C20 variants: ml.* rows with an amber light")
     macro("vtCtwentyGreen", tot["green"], "C20 variants: ml.* rows with a green light")
@@ -652,52 +657,52 @@ def table_c20_stats(D: dict[str, dict]) -> None:
         t = find(D[var], tid, seg, model)
         rows.append([label, var, cell(t), t["light"]])
 
-    gap = lambda t: f"{t['metric']:.4f}"
+    gap = lambda t: f"{fixed(t['metric'], 4)}"
     add("sgcd-seen", "ml.overfit", None, None, "Overfit gap (train minus holdout AUC), LightGBM, German", gap)
     add("fed-shift", "ml.overfit", None, None, "Overfit gap, LightGBM, Polish", gap)
     add("perturbation-grid", "ml.overfit", None, None, "Overfit gap, LightGBM, Taiwan", gap)
     add("seed-sweep", "ml.overfit", None, "P4-xgboost-taiwan", "Overfit gap, XGBoost, Taiwan", gap)
     add("perturbation-grid", "ml.robustness", "preset-eps-0.1", None, "AUC loss at noise scale 0.1, inputs perturbed", gap)
     add("perturbation-grid", "ml.robustness", "control-zeros-kept:preset-eps-0.1", None, "AUC loss at noise scale 0.1, control run", gap)
-    add("seed-sweep", "ml.seed_stability", None, "P4-lightgbm-taiwan", "AUC standard deviation over 20 seeds, LightGBM", lambda t: f"{t['metric']:.5f}")
-    add("seed-sweep", "ml.seed_stability", None, "P4-xgboost-taiwan", "AUC standard deviation over 20 seeds, XGBoost", lambda t: f"{t['metric']:.5f}")
-    add("seed-sweep", "ml.reason_code_stability", None, "P4-lightgbm-taiwan", "Top-four reason overlap over 100 refits, LightGBM", lambda t: f"{t['metric']:.3f}")
-    add("seed-sweep", "ml.reason_code_stability", None, "P4-xgboost-taiwan", "Top-four reason overlap over 100 refits, XGBoost", lambda t: f"{t['metric']:.3f}")
-    add("seed-sweep", "ml.effect_agreement", None, "P4-lightgbm-taiwan", "Spearman rho of SHAP importance and ALE range, LightGBM", lambda t: f"{t['metric']:.3f}")
-    add("seed-sweep", "ml.effect_agreement", None, "P4-xgboost-taiwan", "Spearman rho of SHAP importance and ALE range, XGBoost", lambda t: f"{t['metric']:.3f}")
+    add("seed-sweep", "ml.seed_stability", None, "P4-lightgbm-taiwan", "AUC standard deviation over 20 seeds, LightGBM", lambda t: f"{fixed(t['metric'], 5)}")
+    add("seed-sweep", "ml.seed_stability", None, "P4-xgboost-taiwan", "AUC standard deviation over 20 seeds, XGBoost", lambda t: f"{fixed(t['metric'], 5)}")
+    add("seed-sweep", "ml.reason_code_stability", None, "P4-lightgbm-taiwan", "Top-four reason overlap over 100 refits, LightGBM", lambda t: f"{fixed(t['metric'], 3)}")
+    add("seed-sweep", "ml.reason_code_stability", None, "P4-xgboost-taiwan", "Top-four reason overlap over 100 refits, XGBoost", lambda t: f"{fixed(t['metric'], 3)}")
+    add("seed-sweep", "ml.effect_agreement", None, "P4-lightgbm-taiwan", "Spearman rho of SHAP importance and ALE range, LightGBM", lambda t: f"{fixed(t['metric'], 3)}")
+    add("seed-sweep", "ml.effect_agreement", None, "P4-xgboost-taiwan", "Spearman rho of SHAP importance and ALE range, XGBoost", lambda t: f"{fixed(t['metric'], 3)}")
     add("seed-sweep", "ml.additivity", None, "P4-lightgbm-taiwan", "Largest Shapley additivity gap, LightGBM", lambda t: sci(t["metric"]))
     add("seed-sweep", "ml.additivity", None, "P4-xgboost-taiwan", "Largest Shapley additivity gap, XGBoost", lambda t: sci(t["metric"]))
     lk = D["leakage-planted"]
     rows.append(["Single-feature AUC of the planted future column", "leakage-planted",
-                 f"{lk['outputs']['screen']['single_feature_auc']['max_auc']:.4f}", "red"])
-    rows.append(["Resemblance AUC, development against out-of-time", "leakage-planted", f"{lk['outputs']['screen']['resemblance_auc']:.3f}", "green"])
+                 f"{fixed(lk['outputs']['screen']['single_feature_auc']['max_auc'], 4)}", "red"])
+    rows.append(["Resemblance AUC, development against out-of-time", "leakage-planted", f"{fixed(lk['outputs']['screen']['resemblance_auc'], 3)}", "green"])
     fs = D["fed-shift"]
     sr = find(fs, "ml.shift_resilience")
-    rows.append(["AUC drop on the worst subsample against the development-only reference", "fed-shift", f"{sr['metric']:.4f}", sr["light"]])
+    rows.append(["AUC drop on the worst subsample against the development-only reference", "fed-shift", f"{fixed(sr['metric'], 4)}", sr["light"]])
     for t in fs["tests"]:
         if t["test_id"] == "ml.conformal_coverage" and t["segment"] in ("window:baseline", "window:pooled"):
-            rows.append([f"Conformal coverage of the 90 percent sets, {t['segment'].replace('window:', '')} window", "fed-shift", f"{t['metric']:.3f}", t["light"]])
-    macro("vtC20LeakAuc", f"{lk['outputs']['screen']['single_feature_auc']['max_auc']:.4f}", "C20/leakage-planted.json outputs.screen.single_feature_auc.max_auc")
-    macro("vtC20DevAuc", f"{lk['outputs']['performance']['development_auc']:.4f}", "C20/leakage-planted.json outputs.performance.development_auc")
-    macro("vtC20DecAuc", f"{lk['outputs']['performance']['decision_time_auc']:.4f}", "C20/leakage-planted.json outputs.performance.decision_time_auc")
+            rows.append([f"Conformal coverage of the 90 percent sets, {t['segment'].replace('window:', '')} window", "fed-shift", f"{fixed(t['metric'], 3)}", t["light"]])
+    macro("vtC20LeakAuc", f"{fixed(lk['outputs']['screen']['single_feature_auc']['max_auc'], 4)}", "C20/leakage-planted.json outputs.screen.single_feature_auc.max_auc")
+    macro("vtC20DevAuc", f"{fixed(lk['outputs']['performance']['development_auc'], 4)}", "C20/leakage-planted.json outputs.performance.development_auc")
+    macro("vtC20DecAuc", f"{fixed(lk['outputs']['performance']['decision_time_auc'], 4)}", "C20/leakage-planted.json outputs.performance.decision_time_auc")
     macro("vtC20LeakViol", f"{lk['outputs']['screen']['temporal_order']['violations']:,}".replace(",", "{,}"), "leakage-planted.json outputs.screen.temporal_order.violations")
-    macro("vtC20ResAuc", f"{lk['outputs']['screen']['resemblance_auc']:.3f}", "leakage-planted.json outputs.screen.resemblance_auc")
+    macro("vtC20ResAuc", f"{fixed(lk['outputs']['screen']['resemblance_auc'], 3)}", "leakage-planted.json outputs.screen.resemblance_auc")
     pg = D["perturbation-grid"]
-    macro("vtC20RobLoss", f"{find(pg, 'ml.robustness', 'preset-eps-0.1')['metric']:.4f}", "perturbation-grid.json ml.robustness preset-eps-0.1")
+    macro("vtC20RobLoss", f"{fixed(find(pg, 'ml.robustness', 'preset-eps-0.1')['metric'], 4)}", "perturbation-grid.json ml.robustness preset-eps-0.1")
     macro("vtC20RobCtl", f"{find(pg, 'ml.robustness', 'control-zeros-kept:preset-eps-0.1')['metric']:.4f}", "perturbation-grid.json control")
     ssw = D["seed-sweep"]
-    macro("vtC20SeedFlip", f"{100 * ssw['outputs']['rows'][0]['grade_assignment_changed_share']:.1f}", "seed-sweep.json rows[0].grade_assignment_changed_share (LightGBM)")
-    macro("vtC20SeedTau", f"{ssw['outputs']['rows'][0]['attribution_rank_tau']['mean']:.3f}", "seed-sweep.json rows[0].attribution_rank_tau.mean")
-    macro("vtC20SeedMean", f"{ssw['outputs']['rows'][0]['auc']['mean']:.4f}", "seed-sweep.json rows[0].auc.mean")
-    macro("vtC20SeedSd", f"{find(ssw, 'ml.seed_stability', None, 'P4-lightgbm-taiwan')['metric']:.4f}", "seed-sweep.json ml.seed_stability LightGBM metric")
-    macro("vtC20ReasonLgbm", f"{find(ssw, 'ml.reason_code_stability', None, 'P4-lightgbm-taiwan')['metric']:.3f}", "seed-sweep.json ml.reason_code_stability LightGBM metric")
-    macro("vtC20ReasonXgb", f"{find(ssw, 'ml.reason_code_stability', None, 'P4-xgboost-taiwan')['metric']:.3f}", "seed-sweep.json ml.reason_code_stability XGBoost metric")
+    macro("vtC20SeedFlip", f"{percent(ssw['outputs']['rows'][0]['grade_assignment_changed_share'], 1)}", "seed-sweep.json rows[0].grade_assignment_changed_share (LightGBM)")
+    macro("vtC20SeedTau", f"{fixed(ssw['outputs']['rows'][0]['attribution_rank_tau']['mean'], 3)}", "seed-sweep.json rows[0].attribution_rank_tau.mean")
+    macro("vtC20SeedMean", f"{fixed(ssw['outputs']['rows'][0]['auc']['mean'], 4)}", "seed-sweep.json rows[0].auc.mean")
+    macro("vtC20SeedSd", f"{fixed(find(ssw, 'ml.seed_stability', None, 'P4-lightgbm-taiwan')['metric'], 4)}", "seed-sweep.json ml.seed_stability LightGBM metric")
+    macro("vtC20ReasonLgbm", f"{fixed(find(ssw, 'ml.reason_code_stability', None, 'P4-lightgbm-taiwan')['metric'], 3)}", "seed-sweep.json ml.reason_code_stability LightGBM metric")
+    macro("vtC20ReasonXgb", f"{fixed(find(ssw, 'ml.reason_code_stability', None, 'P4-xgboost-taiwan')['metric'], 3)}", "seed-sweep.json ml.reason_code_stability XGBoost metric")
     macro("vtC20AddXgb", sci(find(ssw, 'ml.additivity', None, 'P4-xgboost-taiwan')['metric']), "seed-sweep.json ml.additivity XGBoost metric")
     macro("vtC20CovPooled", f"{[t for t in fs['tests'] if t['test_id'] == 'ml.conformal_coverage' and t['segment'] == 'window:pooled'][0]['metric']:.3f}", "fed-shift.json ml.conformal_coverage window:pooled metric")
     macro("vtC20CovBase", f"{[t for t in fs['tests'] if t['test_id'] == 'ml.conformal_coverage' and t['segment'] == 'window:baseline'][0]['metric']:.3f}", "fed-shift.json ml.conformal_coverage window:baseline metric")
-    macro("vtC20SrDrop", f"{sr['metric']:.4f}", "fed-shift.json ml.shift_resilience metric")
-    macro("vtC20SrP", f"{sr['p_value']:.3f}", "fed-shift.json ml.shift_resilience p_value")
-    macro("vtC20SrNullP95", f"{sr['extras']['null_p95']:.4f}", "fed-shift.json ml.shift_resilience extras.null_p95")
+    macro("vtC20SrDrop", f"{fixed(sr['metric'], 4)}", "fed-shift.json ml.shift_resilience metric")
+    macro("vtC20SrP", f"{fixed(sr['p_value'], 3)}", "fed-shift.json ml.shift_resilience p_value")
+    macro("vtC20SrNullP95", f"{fixed(sr['extras']['null_p95'], 4)}", "fed-shift.json ml.shift_resilience extras.null_p95")
     macro("vtC20SrPerm", sr["extras"]["shift_permutations"], "fed-shift.json ml.shift_resilience extras.shift_permutations")
     macro("vtC20SrN", sr["n"], "fed-shift.json ml.shift_resilience n")
     emit(OUT / "validation-tests-c20-stats.tex", ["Statistic", "Variant", "Value", "Light"], rows,
@@ -731,19 +736,19 @@ def table_c21() -> list[dict]:
     P = [c21_pair(p) for p in C21_PAIRS]
     rows = []
     for p in P:
-        rows.append([p["pair"], p["rows_fit"], p["rows_confirm"], f"{100 * p['r1']:.1f}", f"{100 * p['r2']:.1f}", f"${100 * p['gap']:+.1f}$".replace("+", ""),
-                     f"{p['or']:.2f} [{p['or_lo']:.2f}, {p['or_hi']:.2f}]", f"{p['rep']:.2f}"])
+        rows.append([p["pair"], p["rows_fit"], p["rows_confirm"], f"{percent(p['r1'], 1)}", f"{percent(p['r2'], 1)}", f"${100 * p['gap']:+.1f}$".replace("+", ""),
+                     f"{fixed(p['or'], 2)} [{fixed(p['or_lo'], 2)}, {fixed(p['or_hi'], 2)}]", f"{fixed(p['rep'], 2)}"])
     macro("vtC21Pairs", len(P), "C21 variants pair-*")
-    macro("vtC21GapMin", f"{min(abs(p['gap']) for p in P) * 100:.1f}", "pair-*.json fair.two_proportion_z Black vs White metric (min abs)")
-    macro("vtC21GapMax", f"{max(abs(p['gap']) for p in P) * 100:.1f}", "same (max abs)")
-    macro("vtC21OrMin", f"{min(p['or'] for p in P):.2f}", "pair-*.json fair.conditional_disparity odds ratio (min)")
-    macro("vtC21OrMax", f"{max(p['or'] for p in P):.2f}", "same (max)")
+    macro("vtC21GapMin", f"{percent(min(abs(p['gap']) for p in P), 1)}", "pair-*.json fair.two_proportion_z Black vs White metric (min abs)")
+    macro("vtC21GapMax", f"{percent(max(abs(p['gap']) for p in P), 1)}", "same (max abs)")
+    macro("vtC21OrMin", f"{fixed(min(p['or'] for p in P), 2)}", "pair-*.json fair.conditional_disparity odds ratio (min)")
+    macro("vtC21OrMax", f"{fixed(max(p['or'] for p in P), 2)}", "same (max)")
     macro("vtC21RowsMin", f"{min(p['rows_fit'] for p in P):,}".replace(",", "{,}"), "pair-*.json outputs.scope.rows_fit (min)")
     macro("vtC21RowsMax", f"{max(p['rows_confirm'] for p in P):,}".replace(",", "{,}"), "pair-*.json outputs.scope.rows_confirm (max)")
-    macro("vtC21StMin", f"{100 * min(p['st_share'] for p in P):.1f}", "pair-*.json fair.situation_testing metric (min)")
-    macro("vtC21StMax", f"{100 * max(p['st_share'] for p in P):.1f}", "same (max)")
-    macro("vtC21RepMin", f"{min(p['rep'] for p in P):.2f}", "pair-*.json fair.replication size ratio (min)")
-    macro("vtC21RepMax", f"{max(p['rep'] for p in P):.2f}", "same (max)")
+    macro("vtC21StMin", f"{percent(min(p['st_share'] for p in P), 1)}", "pair-*.json fair.situation_testing metric (min)")
+    macro("vtC21StMax", f"{percent(max(p['st_share'] for p in P), 1)}", "same (max)")
+    macro("vtC21RepMin", f"{fixed(min(p['rep'] for p in P), 2)}", "pair-*.json fair.replication size ratio (min)")
+    macro("vtC21RepMax", f"{fixed(max(p['rep'] for p in P), 2)}", "same (max)")
     macro("vtC21ZRed", sum(p["z_red"] for p in P), "pair-*.json fair.two_proportion_z rows with a red light")
     macro("vtC21ZN", sum(p["z_n"] for p in P), "pair-*.json fair.two_proportion_z rows")
     macro("vtC21RepAmber", sum(p["rep_amber"] for p in P), "pair-*.json fair.replication rows with an amber light")
@@ -754,7 +759,7 @@ def table_c21() -> list[dict]:
     macro("vtC21StAmber", sum(p["st_light"] == "amber" for p in P), "pair-*.json fair.situation_testing rows with an amber light")
     macro("vtC21First", P[0]["pair"], "first pair")
     macro("vtC21Last", P[-1]["pair"], "last pair")
-    macro("vtC21Bw1819gap", f"{abs(P[0]['gap']) * 100:.1f}", "pair-2018-19.json Black vs White gap")
+    macro("vtC21Bw1819gap", f"{percent(abs(P[0]['gap']), 1)}", "pair-2018-19.json Black vs White gap")
     emit(OUT / "validation-tests-c21-pairs.tex",
                  ["Pair", "Rows fit", "Rows confirm", "Black (\\%)", "White (\\%)", "Gap (pp)", "Odds ratio [95\\% interval]", "Size ratio"], rows,
                  caption=("Case C21, Black or African American applicants against White applicants in each fit and confirmation year pair of the Delaware "
@@ -765,7 +770,7 @@ def table_c21() -> list[dict]:
     rows2 = []
     for p in P:
         rows2.append([p["pair"], f"{p['z_red']} of {p['z_n']}", f"{p['air_amber']} of {p['air_n']}", f"{p['cd_n']}",
-                      f"{p['rep_amber']} of {p['rep_n']}", f"{100 * p['st_share']:.1f}", f"{p['st_sig']:,} of {p['st_n']:,}"])
+                      f"{p['rep_amber']} of {p['rep_n']}", f"{percent(p['st_share'], 1)}", f"{p['st_sig']:,} of {p['st_n']:,}"])
     emit(OUT / "validation-tests-c21-lights.tex",
                  ["Pair", "z red", "4/5 amber", "Models", "Repl. amber", "Situation (\\%)", "Significant"],
                  rows2,

@@ -24,6 +24,8 @@ import figkit  # noqa: E402
 _spec = importlib.util.spec_from_file_location("mk_tables", HERE.parent / "tables" / "make_market.py")
 T = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(T)  # type: ignore[union-attr]
+#: window labels for a figure: the TeX double hyphen of the table labels becomes an en dash
+WL = {w: T.WLABEL[w].replace("--", chr(0x2013)) for w in T.WINDOWS}
 
 W = 6.3  # text width in inches
 HATCH = ["", "//", "..", "xx"]
@@ -49,7 +51,7 @@ def fig_hitrate(D: dict, out: pathlib.Path) -> None:
         ax.plot(i, r, marker="D", color="black", markersize=6, linestyle="none", zorder=3)
     ax.axhline(1.0, color="0.2", linestyle="--", linewidth=0.8)
     ax.set_xticks(range(len(T.WINDOWS)))
-    ax.set_xticklabels([T.WLABEL[w].replace(" ", "\n", 1) for w in T.WINDOWS])
+    ax.set_xticklabels([WL[w].replace(" ", "\n", 1) for w in T.WINDOWS])
     ax.set_ylabel("Exceedances over expected (99% VaR)")
     ax.set_xlim(-0.6, len(T.WINDOWS) - 0.4)
     ax.set_ylim(0, None)
@@ -88,7 +90,7 @@ def fig_fz0(D: dict, out: pathlib.Path) -> None:
                     ax.text(j, i, f"{mat[i, j]:.2f}", ha="center", va="center", fontsize=6,
                             color="white" if dark else "black", fontweight="bold" if elig[i, j] else "normal")
         ax.set_xticks(range(len(T.WINDOWS)))
-        ax.set_xticklabels([T.WLABEL[w].replace(" ", "\n", 1) for w in T.WINDOWS], fontsize=6)
+        ax.set_xticklabels([WL[w].replace(" ", "\n", 1) for w in T.WINDOWS], fontsize=6)
         ax.set_title(title)
         ax.set_yticks(range(len(ids)))
         ax.set_yticklabels([T.MSHORT[m] for m in ids], fontsize=7)
@@ -132,7 +134,7 @@ def fig_rates(D: dict, out: pathlib.Path) -> None:
 def fig_z2(D: dict, out: pathlib.Path) -> None:
     import matplotlib.pyplot as plt
 
-    fig, axes = plt.subplots(1, 2, figsize=(W, 2.9))
+    fig, axes = plt.subplots(1, 2, figsize=(W, 3.9))
     picks = (("equity-2007-09", "awhs", 0.01), ("rates-2022", "awhs", 0.025))
     for ax, (w, mid, a) in zip(axes, picks):
         e = next(x for x in D["win"][w]["outputs"]["es_backtests"] if x["model_id"] == mid and abs(x["alpha"] - a) < 1e-12)
@@ -142,9 +144,9 @@ def fig_z2(D: dict, out: pathlib.Path) -> None:
         ax.axvline(e["realised"], color="black", linewidth=1.4, label=f"realised {e['realised']:.2f}")
         ax.axvline(e["critical_5pct"], color="0.3", linestyle="--", linewidth=1.0, label=f"5% critical {e['critical_5pct']:.2f}")
         ax.axvline(e["critical_0_01pct"], color="0.3", linestyle=":", linewidth=1.0, label=f"0.01% critical {e['critical_0_01pct']:.2f}")
-        ax.set_title(f"{T.WLABEL[w]}, {T.MSHORT[mid]}, {100 * a:g}%", fontsize=8)
+        ax.set_title(f"{WL[w]}, {T.MSHORT[mid]}, {100 * a:g}%", fontsize=8)
         ax.set_xlabel("$Z_2$ statistic")
-        ax.legend(frameon=False, fontsize=6.5, loc="upper right")
+        ax.legend(frameon=False, fontsize=6.5, loc="upper center", bbox_to_anchor=(0.5, -0.24))
     axes[0].set_ylabel("Share of simulated paths")
     fig.tight_layout()
     figkit.save(fig, out, "market-z2null")
@@ -259,7 +261,7 @@ def fig_sizepower(D: dict, out: pathlib.Path) -> None:
     for p in pairs:
         s = p["alt"]
         lab = s["study"]["label"]["en"]
-        labels.append(f"{T.TEST_NAME[p['test']].replace('$', '')}, {lab}")
+        labels.append(f"{T.TEST_NAME[p['test']]}, {lab}")
     axes[0].set_yticks(range(len(pairs)))
     axes[0].set_yticklabels(labels, fontsize=6)
     axes[0].invert_yaxis()
