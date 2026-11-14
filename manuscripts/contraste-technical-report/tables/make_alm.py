@@ -126,7 +126,7 @@ def light_cell(t: dict, nd: int = 4, key: str = "statistic") -> str:
 #: Tables that were shrunk to 5.4 to 5.7 pt by the fit-to-width box: they are set at 8 pt with wrapped text columns instead.
 R = ">{\\raggedleft\\arraybackslash}"
 SET_AT_SIZE = {
-    "alm-accept.tex": ("lllrrrl", "p{1.9cm}p{3.7cm}" + R + "p{1.7cm}" + R + "p{2.0cm}" + R + "p{2.1cm}" + R + "p{1.3cm}p{1.0cm}"),
+    "alm-accept.tex": ("lllrrrl", "p{1.9cm}p{3.3cm}" + R + "p{1.7cm}" + R + "p{2.0cm}" + R + "p{2.1cm}" + R + "p{1.4cm}p{1.3cm}"),
     "alm-c16-params.tex": ("llrlrrrr", "p{1.9cm}p{2.5cm}" + R + "p{1.4cm}p{2.1cm}" + R + "p{1.6cm}" + R + "p{1.6cm}" + R + "p{1.3cm}" + R + "p{1.3cm}"),
 }
 

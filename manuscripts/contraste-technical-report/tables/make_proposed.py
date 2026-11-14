@@ -370,6 +370,7 @@ def build() -> dict:
     put("twelveRedRows", sum(1 for tt in rows12 if tt["light"] == "red"), ("data/derived/C17/xi-*.json", "tests oprisk.capital_stability light"))
     put("twelveRows", len(rows12), ("data/derived/C17/xi-*.json", "tests oprisk.capital_stability"))
     put("twelveRungs", len({tt["model_id"] for tt in rows12}), ("data/derived/C17/xi-*.json", "tests oprisk.capital_stability model_id"))
+    put("twelveMeanCorrRows", sum(1 for tt in rows12 if tt["model_id"] == "sla-mean-corrected"), ("data/derived/C17/xi-*.json", "tests oprisk.capital_stability with model_id sla-mean-corrected"))
     share = {}
     for tag in ("xi-0-96", "xi-1-1"):
         share[tag] = [x["share_at_least_one"] for c in A["c17"][tag]["cells"] for x in c["threshold_stability"]

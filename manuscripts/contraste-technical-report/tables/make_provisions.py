@@ -314,7 +314,7 @@ def tables_c07() -> None:
     figkit.table(OUT / "provisions-t-c07.tex", ["Scenario", "CMF B-1", "IFRS 9", "BdE Annex 9", "IFRS 9 / B-1", "BdE / B-1"], rows,
                  caption=("Provision of the synthetic bank Banco Andino under the three regimes in the six scenarios of case C07, in CLP "
                           "billion: the CMF B-1 comparable total, the probability-weighted IFRS 9 expected credit loss with overlays and the "
-                          "Banco de Espana Annex 9 coverage, with the ratios of the last two to the first; the bank is synthetic, calibrated to "
+                          "Banco de España Annex 9 coverage, with the ratios of the last two to the first; the bank is synthetic, calibrated to "
                           "CMF aggregates."),
                  label="tab:prov-c07", digits=3)
     base = figkit.doc("C07/base.json")
@@ -365,7 +365,7 @@ def tables_c07() -> None:
     figkit.table(OUT / "provisions-t-c07-stage.tex",
                  ["Stage or category", "IFRS 9 exposure", "IFRS 9 ECL", "Coverage (\\%)", "Annex 9 exposure", "Annex 9 provision",
                   "Coverage (\\%)"], rows,
-                 caption=("The IFRS 9 stages and the Banco de Espana Annex 9 categories mapped onto them, for Banco Andino in the base "
+                 caption=("The IFRS 9 stages and the Banco de España Annex 9 categories mapped onto them, for Banco Andino in the base "
                           "scenario of case C07: exposure and loss allowance in CLP billion and the coverage of the exposure in per cent; the "
                           "two classifications place different amounts in each stage because Annex 9 assigns a category by days past due, "
                           "forbearance and watch list."),
