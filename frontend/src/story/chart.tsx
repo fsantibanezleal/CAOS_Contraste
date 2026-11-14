@@ -141,18 +141,7 @@ export const dayLabel = (iso: string | undefined, lang: Lang): string => (iso ? 
 export const monthLabel = (iso: string | undefined, lang: Lang): string => (iso ? monthYear(iso, lang) : '');
 
 export const pct = (v: number | null | undefined, lang: Lang, decimals = 2): string => formatNumber(v ?? null, lang, { percent: true, decimals });
-// a whole number's label, kept per language and value (a window's counts repeat from day to day; the shell's formatting is unchanged)
-const intLabels = new Map<string, string>();
-export const int = (v: number | null | undefined, lang: Lang): string => {
-  if (v === null || v === undefined || !Number.isFinite(v)) return formatNumber(v ?? null, lang, { decimals: 0 });
-  const key = `${lang}|${v}`;
-  let label = intLabels.get(key);
-  if (label === undefined) {
-    label = formatNumber(v, lang, { decimals: 0 });
-    if (intLabels.size < 50_000) intLabels.set(key, label);
-  }
-  return label;
-};
+export const int = (v: number | null | undefined, lang: Lang): string => formatNumber(v ?? null, lang, { decimals: 0 });
 
 /** The text cut to `max` characters with an ellipsis. */
 export const fit = (text: string, max: number): string => (text.length <= max ? text : `${text.slice(0, Math.max(1, max - 1)).trimEnd()}…`);
