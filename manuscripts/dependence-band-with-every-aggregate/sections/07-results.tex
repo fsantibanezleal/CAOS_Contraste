@@ -62,11 +62,11 @@ for the lower bound. Every row has another row more than 75 percent away from it
 
 \emph{Invariance of the bounds (H5).} The stress that raises the market-credit correlation to 0.8 leaves the lower bound and the
 worst case unchanged to the precision of the documents, as Proposition~\ref{prop:bracket} requires, while the Gaussian row moves by
-$\bdGaussMove$ percent in the committed documents (the rebuilt means in Table~\ref{tab:main-results} show $+0.126$): above the 10
-percent of the prediction. The $t$ rows move less, by $\bdTFourMove$ percent for 4 degrees of freedom, $\bdTEightMove$ percent
-for 8 and $\bdTThirtyMove$ percent for 30, and the square-root row by $\bdVcMove$ percent. The ordering is that of the tail
+$\bdGaussMoveRb$ percent in the rebuilt means of Table~\ref{tab:main-results} ($\bdGaussMove$ percent between the committed documents): above the 10
+percent of the prediction. The $t$ rows move less, by $\bdTFourMoveRb$ percent for 4 degrees of freedom, $\bdTEightMoveRb$ percent
+for 8 and $\bdTThirtyMoveRb$ percent for 30, and the square-root row by $\bdVcMoveRb$ percent (the column Change of the table). The ordering is that of the tail
 dependence: the stress adds least where the $t$ copula already has the most tail dependence, and most where the copula has
-almost none. After the stress the interior rows, CLP \bdGaussStress{} to \bdTFourStress{} billion, are still below the headline.
+almost none. After the stress the interior rows, CLP \bdStressRbMin{} to \bdStressRbMax{} billion in the rebuilt means of the table, are still below the headline.
 
 \subsection{The \texorpdfstring{$t$}{t} row as a function of the degrees of freedom}
 \label{sec:results-nu}
@@ -100,7 +100,7 @@ standard error of every capital is at most CLP \bdTruthSeMax{} billion.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.92\textwidth]{figures/truth-errors}
+\includegraphics[width=\textwidth]{figures/truth-errors}
 \caption{Relative error in percent of seven single-figure methods against the planted capital of each of the ten structures: the simple sum, the square-root row, the Gaussian copula row, the $t$ rows with 4 and 30 degrees of freedom, the hybrid quantile and the Gaussian copula calibrated on the structure itself. The shaded band marks errors within 5 percent; each marker is one method on one structure.}
 \label{fig:truth-errors}
 \end{figure}

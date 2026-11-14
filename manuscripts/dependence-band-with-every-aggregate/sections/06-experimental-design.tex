@@ -144,9 +144,11 @@ reports the measured value beside the threshold.
 \subsection{Ablations planned}
 \label{sec:design-ablation}
 
-Four components of the protocol are removed one at a time and the loss is measured on the planted structures. The sharp bounds are
-removed, leaving the five interior rows of both matrices. The stressed matrix is removed, leaving the interior rows of the base
-matrix. The $t$ rows are removed, leaving the square-root rule and the Gaussian row. And each row is used alone, as a single figure,
+The components of the protocol are removed and the loss is measured on the planted structures. The sharp bounds are removed, leaving the
+five interior rows of both matrices, the reference interval of the ablation. From that reference the stressed matrix is removed,
+leaving the interior rows of the base matrix, or the $t$ rows are removed, leaving the square-root rule and the Gaussian row of both
+matrices; a removal of the stressed matrix or of the $t$ rows from the full band, with the bounds kept, is measured as well. The $t$ rows
+are also removed together with the stressed matrix, and used alone. And each row is used alone, as a single figure,
 with its coverage at the tolerance of 5 percent. The component that is not an interval, the common horizon and level, is ablated
 by reading one marginal at another level (H6), and the checks are ablated by removing the rows each reads (H7). The Euler
 allocation is compared with the allocation by stand-alone expected shortfall, which does not add up. Each ablation is evaluated on
