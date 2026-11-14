@@ -765,22 +765,22 @@ def build_acceptance() -> None:
         rows.append(["Standardised shocks", label[k], f"{srp['printed'][k]}".replace("-", "$-$"), f"{fixed(srp['values'][k], 4)}".replace("-", "$-$"),
                      f"{fixed(srp['deviations'][k], 5)}", f"{tol}", "pass" if srp["deviations"][k] <= tol else "fail"])
     worst = max(t["metric"] for d in DATES for t in d14[d]["tests"] if t["test_id"] == "irrbb.eve_sum_of_parts")
-    rows.append(["Economic value", "Sum of parts against whole, largest relative residual over three dates", "0", num_tex(worst, 2), num_tex(worst, 2), "1e-09", "pass" if worst <= 1e-9 else "fail"])
+    rows.append(["Economic value", "Sum of parts against whole, largest relative residual over three dates", "0", num_tex(worst, 2), num_tex(worst, 2), num_tex(1e-09, 0), "pass" if worst <= 1e-9 else "fail"])
     t = test_of(c15("long-uf"), "irrbb.cmf_annex1_goldens")
     rows.append(["Annex 1", "Worked cases of the Chilean standard reproduced (pairs, table rows, charge, Hoja 10)", f"{t['n']} of {t['n']}", f"{t['n'] - len(t['extras']['failed'])} of {t['n']}", str(t["statistic"]), "0", "pass" if t["light"] == "green" else "fail"])
     l = c16("list-adverse")
     g = test_of(l, "liq.list_compounding_golden")
     printed_dev = abs(g["metric"] - ECB_PRINTED_CUMULATIVE)
     rows.append(["Run-off compounding", "Cumulative outflow after 125 days at 0.103258 per cent a day, against the value the ECB prints", f"{ECB_PRINTED_CUMULATIVE}",
-                 f"{fixed(g['metric'], 6)}", num_tex(printed_dev, 2), "5e-05", "pass" if printed_dev <= ECB_PRINTED_TOLERANCE else "fail"])
-    rows.append(["Run-off compounding", "The same, against the closed form rounded to six decimals", "0.121148", f"{fixed(g['metric'], 6)}", num_tex(g["statistic"], 2), "5e-07",
+                 f"{fixed(g['metric'], 6)}", num_tex(printed_dev, 2), num_tex(5e-05, 0), "pass" if printed_dev <= ECB_PRINTED_TOLERANCE else "fail"])
+    rows.append(["Run-off compounding", "The same, against the closed form rounded to six decimals", "0.121148", f"{fixed(g['metric'], 6)}", num_tex(g["statistic"], 2), num_tex(5e-07, 0),
                  "pass" if g["light"] == "green" else "fail"])
     adv = l["outputs"]["path"]["survival"]["day"]
     ext = c16("list-extreme")["outputs"]["path"]["survival"]["day"]
     m = test_of(c16("list-extreme"), "liq.survival_monotone_in_severity")
     rows.append(["Survival period", f"Survival period shortens with severity: Adverse {adv} days, Extreme {ext} days", "non-increasing", f"{adv} then {ext}", f"{fixed(m['statistic'], 0)}", "0", "pass" if m["light"] == "green" else "fail"])
     nlp = max(test_of(c16(v), "liq.nlp_identity")["statistic"] for v in ("list-adverse", "list-extreme", "fast-run", "htm-losses"))
-    rows.append(["Net liquidity position", "Identity of the position with capacity less cumulative net outflow, four ladders", "0", num_tex(nlp, 2), num_tex(nlp, 2), "1e-06", "pass" if nlp <= 1e-6 else "fail"])
+    rows.append(["Net liquidity position", "Identity of the position with capacity less cumulative net outflow, four ladders", "0", num_tex(nlp, 2), num_tex(nlp, 2), num_tex(1e-06, 0), "pass" if nlp <= 1e-6 else "fail"])
     tbl("accept",
         ["Component", "Check", "Reference", "Computed", "Deviation", "Tolerance", "Outcome"], rows,
         caption="The acceptance checks of the two methods run on the committed documents: the worked example of the standardised shocks of the Basel Committee, the sum of parts of the economic value, "
