@@ -59,6 +59,8 @@
 }
 /* a detail of a row under its first cell (the input a test row tests) */
 .ct-row-detail { display: block; margin-top: 0.15rem; font-size: 0.78rem; color: var(--color-fg-subtle); }
+/* the detail on the line of the name (a table whose rows are many and short); it wraps below the name when the column is narrower */
+.ct-row-detail.ct-row-detail-inline { display: inline; margin: 0 0 0 0.4rem; }
 /* a text cell breaks between words, so a number stays whole (gate G19); a long reference (a DOI, a URL, code) inside it breaks
    anywhere, so it does not widen its table past the card (R2b c09 B2) */
 .caos-table td.ct-text { overflow-wrap: break-word; }

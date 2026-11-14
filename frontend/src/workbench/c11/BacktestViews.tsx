@@ -151,8 +151,12 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
   // the axis takes in every mark: a Z2 far from the null is drawn at its place, with the histogram between. The bars are drawn at
   // the bin centres, so a mark between the outer edge and the outer centre extends the axis too (R2b c12 M1: a Z2 of 1.0, the last
   // edge, fell outside an axis that ended at the last centre, in 45 of 168 states)
-  const { xs, front } = z2Axis(centers, marks.map((m) => m.x));
-  const counts: Array<number | null> = xs.map((_, i) => (i >= front && i < front + centers.length ? h.counts[i - front] : null));
+  // The chart is a point chart: its keyboard cursor snaps to the nearest point that holds a value (shell 0.26.0, G20: Home then ArrowRight
+  // must read two different points), so the points are the bins alone and the room for the marks is the axis range.
+  const { xs: axis } = z2Axis(centers, marks.map((m) => m.x));
+  const xs = centers;
+  const counts: number[] = h.counts;
+  const range: [number, number] = [axis[0], axis[axis.length - 1]];
   const test = testsOf(sel, o, sel.model, esAlpha).find((t) => t.test_id === 'market.acerbi_szekely');
   return (
     <ViewsRow>
@@ -169,7 +173,7 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
           chart={
             <UPlotChart
               height="fill"
-              x={{ values: xs, label: { en: 'Z2 statistic', es: 'Estadístico Z2' }, format: { decimals: 2 } }}
+              x={{ values: xs, label: { en: 'Z2 statistic', es: 'Estadístico Z2' }, format: { decimals: 2 }, range }}
               y={{ label: { en: 'Draws per bin', es: 'Simulaciones por tramo' }, format: { decimals: 0 } }}
               series={[{ label: { en: 'Null distribution (one point per bin)', es: 'Distribución nula (un punto por tramo)' }, values: counts, color: '--color-accent', mode: 'points', size: 7 }]}
               marks={marks}

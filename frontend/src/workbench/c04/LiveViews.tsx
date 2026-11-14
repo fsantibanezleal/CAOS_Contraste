@@ -780,7 +780,9 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
   const missing = rows.filter((r) => r.result && r.result.average === null);
   const failed = rows.filter((r) => !r.result);
   const axisName = (r: CapitalRow, l: Lang) => (AXIS_NAME[r.key] ?? twice(r.label))[l];
-  const x = padded(drawnRows.length);
+  // a point chart: its keyboard cursor snaps to the nearest point that holds a value (shell 0.26.0, G20: Home then ArrowRight must read two
+  // different points), so the first and last positions are real points and the half step of room at each end is the axis range
+  const x = Array.from({ length: drawnRows.length }, (_, i) => i + 1);
   // one point per drawn row at its position, numbered as on the axis (two pairs of rows share a colour)
   const series: ChartSeries[] = drawnRows.map((r, i) => ({
     label: { en: keyLabel(i + 1, axisName(r, 'en'), pick(r.label, 'en')), es: keyLabel(i + 1, axisName(r, 'es'), pick(r.label, 'es')) },
@@ -796,7 +798,7 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
     mode: 'points',
     size: 13,
   });
-  const chartSeries = drawable(series).map(pad);
+  const chartSeries = drawable(series);
   // the tall screen's second drawing: every drawn row's risk weight grade by grade (generators dashed), and the chosen
   // grade's spread across them
   const byGrade = drawable(
@@ -848,7 +850,7 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
         {chartSeries.length ? (
           <UPlotChart
             height="fill"
-            x={{ values: x, label: { en: 'PD definition or generator, numbered as in the key', es: 'Definición de PD o generador, numerada como en la leyenda' }, format: { decimals: 0 } }}
+            x={{ values: x, label: { en: 'PD definition or generator, numbered as in the key', es: 'Definición de PD o generador, numerada como en la leyenda' }, format: { decimals: 0 }, range: [0.5, drawnRows.length + 0.5] }}
             y={{ label: { en: 'Risk weight, share of EAD (log scale)', es: 'Ponderador, fracción de la EAD (escala log.)' }, log: true, format: { percent: true, digits: 3 } }}
             series={chartSeries}
           />

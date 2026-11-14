@@ -478,6 +478,17 @@ export interface EbmShape {
   categories?: Array<{ code: string; label: Bi }>;
 }
 
+/** The share of the cut's size that a term with a single cut draws its first bin to the left of the cut: it has no second bin to take
+ * a width from, so the width is a tenth of the cut's absolute value (one unit when the cut is zero). */
+export const SINGLE_CUT_WIDTH_SHARE = 0.1;
+
+/** The width at which the first bin (every value below the first cut) is drawn left of the first cut: the width of the second bin,
+ * the distance between the first two cuts; with a single cut, `SINGLE_CUT_WIDTH_SHARE` of its absolute value, or one unit at zero. */
+export function firstBinWidth(cuts: readonly number[]): number {
+  if (cuts.length >= 2) return cuts[1] - cuts[0];
+  return Math.abs(cuts[0]) * SINGLE_CUT_WIDTH_SHARE || 1;
+}
+
 /**
  * The six strongest main effects as panels. A continuous term plots each bin at its left edge; a categorical term plots
  * each category at its own code (the key of `categories`, whose value is the bin of the score): the code of a category is
@@ -500,8 +511,10 @@ export function ebmShapes(ex: EbmExport, fit?: { features?: Array<{ name: string
       const unit = declared === 'DM' ? { en: 'DM', es: 'DM' } : unitName(declared);
       if (lv.kind === 'continuous') {
         const cuts = lv.cuts ?? [];
-        // bin k (1..cuts+1) covers [cut_(k-1), cut_k); plot each bin at its left edge, the first at the first cut
-        const x = [cuts[0] - 1e-9, ...cuts];
+        // bin k (1..cuts+1) covers [cut_(k-1), cut_k); plot each bin at its left edge, and the first bin (every value below the first
+        // cut, which has no left edge) one bin width to the left of the first cut, so that no two points share an x (the keyboard readout
+        // of the first two points differs; shell 0.26.0 G20) and the card's note says where it is drawn
+        const x = [cuts[0] - firstBinWidth(cuts), ...cuts];
         const label = (l: 'en' | 'es') => (unit ? `${termName(term.name, l)} (${unit[l]})` : termName(term.name, l));
         return { name: term.name, x, y: scores.slice(1, cuts.length + 2), categorical: false, xLabel: { en: label('en'), es: label('es') } };
       }
@@ -531,6 +544,7 @@ export function EbmView({ sel }: { sel: Selection | null }) {
   const prov = provenanceOf(sel.data.variant.provenance.truth_status);
   const pairs = (l: 'en' | 'es') => ex.terms.filter((t) => t.features.length === 2).map((t) => termName(t.name, l));
   const categorical = ebmShapes(ex, fit, 'categorical').length;
+  const single = shapes.some((s) => s.x.length === 2);
   return (
     <ViewsRow shares={[2, 1]}>
       <PlotCard
@@ -540,8 +554,8 @@ export function EbmView({ sel }: { sel: Selection | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: `Each panel is one term's contribution to the log-odds of default over its bins; their sum plus the intercept is the model.${categorical ? ` The ${categorical === 1 ? 'categorical input is' : `${categorical} categorical inputs are`} in the next view, one bar per category.` : ''} Pairwise terms: ${pairs('en').join('; ') || 'none'}.`,
-          es: `Cada panel es la contribución de un término al logaritmo de la razón de probabilidades de incumplimiento sobre sus tramos; su suma más el intercepto es el modelo.${categorical ? ` ${categorical === 1 ? 'La variable categórica está' : `Las ${categorical} variables categóricas están`} en la vista siguiente, una barra por categoría.` : ''} Términos de pares: ${pairs('es').join('; ') || 'ninguno'}.`,
+          en: `Each panel is one term's contribution to the log-odds of default over its bins; their sum plus the intercept is the model. The first bin, every value below the first cut, is drawn one bin width to the left of the first cut.${single ? ' A term with a single cut has no second bin to take the width from: its first bin is drawn a tenth of the cut to the left.' : ''}${categorical ? ` The ${categorical === 1 ? 'categorical input is' : `${categorical} categorical inputs are`} in the next view, one bar per category.` : ''} Pairwise terms: ${pairs('en').join('; ') || 'none'}.`,
+          es: `Cada panel es la contribución de un término al logaritmo de la razón de probabilidades de incumplimiento sobre sus tramos; su suma más el intercepto es el modelo. El primer tramo, todo valor bajo el primer corte, se dibuja un ancho de tramo a la izquierda del primer corte.${single ? ' Un término con un solo corte no tiene segundo tramo del cual tomar el ancho: su primer tramo se dibuja una décima del corte a la izquierda.' : ''}${categorical ? ` ${categorical === 1 ? 'La variable categórica está' : `Las ${categorical} variables categóricas están`} en la vista siguiente, una barra por categoría.` : ''} Términos de pares: ${pairs('es').join('; ') || 'ninguno'}.`,
         }}
       >
         <div className="ct-grid6-fill" data-caos-flow="" data-views="6">
