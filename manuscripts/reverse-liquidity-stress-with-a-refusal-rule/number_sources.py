@@ -15,7 +15,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent
 SECTION = {
     "main": "Abstract", "s01-introduction": "1 Introduction", "s02-related-work": "2 Related work", "s03-problem": "3 Problem formulation",
-    "s04-proposed-method": "4 Proposed method", "s05-theory": "5 Theory", "s06-experimental-design": "6 Experimental design", "s07-results": "7 Results",
+    "s04-proposed-method": "4 The reverse stress rule", "s05-theory": "5 Theory", "s06-experimental-design": "6 Experimental design", "s07-results": "7 Results",
     "s08-ablation": "8 Ablation", "s09-discussion": "9 Discussion", "s10-limitations": "10 Limitations", "s11-reproducibility": "11 Reproducibility",
     "s12-conclusions": "12 Conclusions",
 }

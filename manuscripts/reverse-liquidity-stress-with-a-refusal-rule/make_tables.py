@@ -33,6 +33,22 @@ def tab(caption: str, label: str, body: list[str], align: str, header: str, star
                       f"\\begin{{tabular}}{{{align}}}", "\\toprule", header + " \\\\", "\\midrule", *body, "\\bottomrule", "\\end{tabular}", f"\\end{{{env}}}", ""])
 
 
+def sci(x: float, d: int = 2) -> str:
+    """A number in scientific notation as a LaTeX product with a power of ten, never an e-exponent that can break across lines."""
+    mant, exp = f"{x:.{d}e}".split("e")
+    return f"${mant}\\times10^{{{int(exp)}}}$"
+
+
+def ci2(r: dict, d: int = 1) -> str:
+    """A rate with its interval on two explicit lines, so that an interval never wraps inside a cell."""
+    return f"\\begin{{tabular}}[t]{{@{{}}l@{{}}}}{mn.pc(r['rate'], d)}\\\\({mn.pc(r['lo'], d)} to {mn.pc(r['hi'], d)})\\end{{tabular}}"
+
+
+def sci2(e: dict) -> str:
+    """A median with its interval on two explicit lines."""
+    return f"\\begin{{tabular}}[t]{{@{{}}l@{{}}}}{sci(e['est'])}\\\\({sci(e['lo'])} to {sci(e['hi'])})\\end{{tabular}}"
+
+
 def day(x) -> str:
     return "survives" if x is None else str(x)
 
@@ -73,7 +89,7 @@ def notation() -> None:
         ("$e$, $\\tau$", "signed relative error of an answer $\\hat m$, and its threshold-property indicator", "1"),
     ]
     body = [f"{a} & {b} & {c} \\\\" for a, b, c in rows]
-    write("notation", tab("Notation of the reverse stress: every symbol of the problem formulation, the method and the theory with its meaning and unit, the money unit being that of the balance sheet it is applied to (thousands of US dollars for case C16).",
+    write("notation", tab("Notation of the reverse stress: every symbol of the problem formulation, the method and the theory with its meaning and unit, the money unit being that of the balance sheet it is applied to (thousands of US dollars for the committed bank).",
                           "tab:notation", body, "lp{9.2cm}l", "Symbol & Meaning & Unit"))
 
 
@@ -90,13 +106,13 @@ def design() -> None:
 
 def main_results() -> None:
     m = K["methods"]
-    names = [("proposed", "proposed solver"), ("grid_case", "scan of the case grid"), ("grid_fine", "scan of a fine grid"),
+    names = [("proposed", "engine solver"), ("grid_case", "scan of the case grid"), ("grid_fine", "scan of a fine grid"),
              ("brent_sp", "Brent on the survival period"), ("bisect_no_refusal", "bisection without refusal")]
     a = []
     for k, lab in names:
         x = m[k]
-        a.append(f"{lab} & {ci(x['false_answer_on_refused'])} & {ci(x['miss_on_solved'])} & {ci(x['threshold_property_on_solved'])} & "
-                 f"{x['abs_rel_error_median']['est']:.1e} & {x['evals_mean_solved']:.1f} & {x['time_us_median'] / 1000:.2f} \\\\")
+        a.append(f"{lab} & {ci2(x['false_answer_on_refused'])} & {ci2(x['miss_on_solved'])} & {ci2(x['threshold_property_on_solved'])} & "
+                 f"{sci(x['abs_rel_error_median']['est'], 1)} & {x['evals_mean_solved']:.1f} & {x['time_us_median'] / 1000:.2f} \\\\")
     for k, nm in (("proposed", "P"), ("grid_case", "G"), ("grid_fine", "F"), ("brent_sp", "B"), ("bisect_no_refusal", "N")):
         pass
     b = []
@@ -106,34 +122,34 @@ def main_results() -> None:
         if en["status"] == "solved":
             b.append(f"{lab} & {day(e['base_sp'])} & {e['cap']:.1f} & {en['multiplier']:.6f} & {en['sp_at']} & {day(en['sp_just_below'])} \\\\")
         else:
-            b.append(f"{lab} & {day(e['base_sp'])} ({e['horizon']}-day horizon) & {e['cap']:.1f} & refused, no number & -- & -- \\\\")
-    cap = ("Main results. Panel A: the proposed solver and four comparators scored against the independent oracle on 20,000 instances of the seeded corpus; "
+            b.append(f"{lab} & {day(e['base_sp'])} ({e['horizon']}-day horizon) & {e['cap']:.1f} & \\mbox{{refused, no number}} & -- & -- \\\\")
+    cap = ("Main results. Panel A: the engine solver and four comparators scored against the independent oracle on 20,000 instances of the seeded corpus; "
            "rates in per cent with 95\\% Wilson intervals, median absolute relative error of the multiplier on solved instances, mean forward evaluations per solved instance and median time per call; the scans call the engine's own forward function, which is slower per evaluation than the lighter function the solver and Brent's method call, so the cost is compared by evaluations. "
-           "Panel B: the same solver on the three committed bases of case C16 at a target of 30 days, with the survival period reached at the multiplier and just below it.")
+           "Panel B: the same solver on the three committed bases of the bank at a target of 30 days, with the survival period reached at the multiplier and just below it.")
     text = "\n".join(["\\begin{table*}[htbp]", "\\centering", "\\small", "\\setlength{\\tabcolsep}{3pt}", f"\\caption{{{cap}}}", "\\label{tab:main-results}",
-                      "\\begin{tabular}{p{2.8cm}p{2.3cm}p{2.3cm}p{2.3cm}p{1.5cm}p{1.6cm}p{1.1cm}}", "\\toprule",
+                      "\\begin{tabular}{p{3.1cm}p{2.3cm}p{2.3cm}p{2.3cm}p{1.8cm}p{1.6cm}p{1.0cm}}", "\\toprule",
                       "\\multicolumn{7}{l}{\\textit{Panel A: corpus of synthetic banks}} \\\\",
                       "Method & answers where refused (\\%) & no answer where solved (\\%) & threshold property (\\%) & median $|$rel. error$|$ & evaluations & ms per call \\\\",
                       "\\midrule", *a, "\\bottomrule", "\\end{tabular}", "", "\\medskip", "",
-                      "\\begin{tabular}{p{3.0cm}p{3.0cm}p{1.4cm}p{2.3cm}p{1.8cm}p{2.3cm}}", "\\toprule", "\\multicolumn{6}{l}{\\textit{Panel B: committed bases of case C16, target of 30 days}} \\\\",
-                      "Base & base SP (days) & cap & multiplier $m^\\ast$ & SP at $m^\\ast$ & SP at $m^\\ast-10^{-6}$ \\\\", "\\midrule", *b, "\\bottomrule", "\\end{tabular}", "\\end{table*}", ""])
+                      "\\begin{tabular}{p{2.8cm}p{3.2cm}p{1.2cm}p{3.0cm}p{2.0cm}p{2.6cm}}", "\\toprule", "\\multicolumn{6}{l}{\\textit{Panel B: committed bases of the bank, target of 30 days}} \\\\",
+                      "Base & base SP (days) & cap & multiplier $m^\\ast$ & SP at $m^\\ast$ & SP at \\mbox{$m^\\ast-10^{-6}$} \\\\", "\\midrule", *b, "\\bottomrule", "\\end{tabular}", "\\end{table*}", ""])
     write("main-results", text)
 
 
 def spread() -> None:
     """Spread of the rates over the five corpora and bootstrap intervals of the median error (the statistics of the experimental design)."""
     m = K["methods"]
-    names = [("proposed", "proposed solver"), ("grid_case", "scan of the case grid"), ("grid_fine", "scan of a fine grid"),
+    names = [("proposed", "engine solver"), ("grid_case", "scan of the case grid"), ("grid_fine", "scan of a fine grid"),
              ("brent_sp", "Brent on the survival period"), ("bisect_no_refusal", "bisection without refusal")]
     body = []
     for k, lab in names:
         x = m[k]
         e = x["abs_rel_error_median"]
         body.append(f"{lab} & {pc(x['false_answer_on_refused']['sd_over_corpora'], 2)} & {pc(x['miss_on_solved']['sd_over_corpora'], 2)} & "
-                    f"{pc(x['threshold_property_on_solved']['sd_over_corpora'], 2)} & {e['est']:.2e} ({e['lo']:.2e} to {e['hi']:.2e}) \\\\")
+                    f"{pc(x['threshold_property_on_solved']['sd_over_corpora'], 2)} & {sci2(e)} \\\\")
     write("spread", tab("Spread of the rates of Panel A of \\cref{tab:main-results} over the five corpora of 1,000 banks, as the standard deviation of the rate of a corpus in percentage points, "
                         "and the median absolute relative error with its 95\\% bootstrap percentile interval (1,000 resamples of the solved instances).",
-                        "tab:spread", body, "p{3.8cm}p{2.2cm}p{2.2cm}p{2.2cm}p{4.4cm}",
+                        "tab:spread", body, "p{4.1cm}p{2.0cm}p{2.0cm}p{2.0cm}p{4.5cm}",
                         "Method & SD, answers where refused & SD, no answer where solved & SD, threshold property & median $|$rel. error$|$ (95\\% interval)", star=True))
 
 
@@ -158,7 +174,7 @@ def theory_checks() -> None:
 
 def ablation() -> None:
     m = K["methods"]
-    rows = [("proposed solver (all components)", "proposed"), ("without the cap on the scaled rates", "uncapped"), ("without the refusal rule", "bisect_no_refusal"),
+    rows = [("engine solver (all components)", "proposed"), ("without the cap on the scaled rates", "uncapped"), ("without the refusal rule", "bisect_no_refusal"),
             ("without the continuous window function (Brent on SP)", "brent_sp"), ("without upward rounding and the neighbour check", "nearest"),
             ("without inflows and flows outside the segments", "raw_capacity")]
     body = []
@@ -166,7 +182,7 @@ def ablation() -> None:
         x = m[k]
         body.append(f"{lab} & {pc(x['false_answer_on_refused']['rate'])} & {pc(x['miss_on_solved']['rate'])} & {pc(x['threshold_property_on_solved']['rate'])} & "
                     f"{pc(x['answered_beyond_cap']['rate'], 2)} & {x['abs_rel_error_median']['est']:.1e} \\\\")
-    write("ablation", tab("Ablation on the corpus of 20,000 instances: each row removes one component of the proposed solver; the columns are the share of refused instances answered with a number, "
+    write("ablation", tab("Ablation on the corpus of 20,000 instances: each row removes one component of the engine solver; the columns are the share of refused instances answered with a number, "
                           "the share of solved instances left without a number, the share of solved instances whose multiplier is a threshold, the share of all instances answered with a multiplier above the cap, and the median relative error.",
                           "tab:ablation", body, "p{4.4cm}p{1.9cm}p{1.9cm}p{1.9cm}p{1.9cm}p{1.9cm}", "Variant & answer if refused (\\%) & no answer if solved (\\%) & threshold (\\%) & beyond cap (\\%) & median rel. error", star=True))
 
@@ -192,7 +208,7 @@ def band() -> None:
         for hc in ("low", "central", "high"):
             lo = [r for r in b["haircut_x_monetisation"] if r["haircut"] == hc and r["monetisation"] == "slow"][0]
             body.append(row(f"joint: haircut {hc} and slow monetisation", lo, c0))
-    write("band", tab("Sensitivity of the threshold multiplier at a target of 30 days to the conventions of case C16: the haircut band of 0.05, the immediate and slow monetisation schedules, "
+    write("band", tab("Sensitivity of the threshold multiplier at a target of 30 days to the conventions of the committed bank: the haircut band of 0.05, the immediate and slow monetisation schedules, "
                       "the placement of the uninsured balance, and the three corners of the joint band that use the slow schedule; the last column is the survival period at the multiplier, "
                       "which is the target wherever the round trip is exact and falls short of it where the slow schedule turns the threshold into a step; a refusal is stated, never a number.",
                       "tab:band", body, "lrrr", "Convention changed & Multiplier & Change (\\%) & SP at $m^\\ast$"))
@@ -206,7 +222,7 @@ def labelled() -> None:
             body.append(f"{r['bank']} {r['year']} & {r['days']} & {r['observed']:.2f} & beyond the 5-day ladder & -- & -- \\\\")
         else:
             body.append(f"{r['bank']} {r['year']} ({r['role']}) & {r['days']} & {r['observed']:.2f} & {r['modelled']:.4f} & {r['ratio']:.3f} & {r['light']} \\\\")
-    write("labelled-run", tab("The fast-run base calibrated on the Table A.1 rows dated before 2023 and scored on the rows of the run: the modelled cumulative outflow share at the horizon of each row, "
+    write("labelled-run", tab("The fast-run base calibrated on the rows dated before 2023 of Table A.1 of the Basel Committee's report on the 2023 turmoil \\citep{bcbs555} and scored on the rows of the run: the modelled cumulative outflow share at the horizon of each row, "
                               "its ratio to the observed share and the light of the case design (green from 0.8, amber from 0.5); rows with a horizon beyond the 5-day ladder are not scored.",
                               "tab:labelled-run", body, "lccccc", "Row & Days & Observed & Modelled & Ratio & Light"))
 
