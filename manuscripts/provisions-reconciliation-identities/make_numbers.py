@@ -166,6 +166,7 @@ put("efourMixedMax", f"{cl['mixed']['max']:.2f}")
 put("efourGhErr", sci(sw["gauss_hermite_error_max"]))
 so = sw["second_order"]
 put("efourSecondN", num(so["n"]))
+put("efourSecondExcluded", num(so["excluded_index_at_most_1e-6"]))
 put("efourSecondWithin", pct(so["within_25pct"]))
 put("efourSecondQFive", f"{so['ratio_q05']:.2f}")
 put("efourSecondQFifty", f"{so['ratio_q50']:.3f}")
