@@ -94,7 +94,7 @@ def fig_scale(grid: list, scale: list) -> None:
         axes[0].plot(range(4), [100 * cells[x]["treatments"][t]["coverage"][B] for x in xs], label=name, **S[j])
     axes[0].axhline(95, color="0.6", lw=0.6, ls=":")
     axes[0].set_ylabel("coverage of the true PD, grade B (%)")
-    axes[0].legend(frameon=False, fontsize=7, loc="center left")
+    axes[0].legend(frameon=False, fontsize=7, loc="center right", bbox_to_anchor=(1.0, 0.68))
     for j, (t, name) in enumerate((("anchored", "anchored interval"), ("followed", "followed (oracle)"),
                                    ("identified", "Manski band"))):
         axes[1].plot(range(4), [100 * cells[x]["treatments"][t]["width"][B] for x in xs], label=name, **S[j])
@@ -104,6 +104,7 @@ def fig_scale(grid: list, scale: list) -> None:
     for ax in axes:
         ax.set_xticks(range(4), [f"$\\times{x}$" for x in xs])
         ax.set_xlabel("cohort size relative to the case's")
+    fig.tight_layout(w_pad=2.5)
     figkit.save(fig, HERE, "fig-scale")
 
 
@@ -199,7 +200,8 @@ def fig_tipping(sp: dict, fi: dict) -> None:
     ax.set_xlabel("odds ratio $k$ (log scale)")
     ax.plot([], [], "o", color="0", label="pooled anchored $k$ with its band")
     ax.plot([], [], "D", color="0", mfc="white", label="tipping $k^*$ to the next grade")
-    ax.legend(frameon=False, fontsize=7, loc="lower right")
+    ax.legend(frameon=False, fontsize=7, loc="upper center", bbox_to_anchor=(0.4, -0.2))
+    fig.tight_layout()
     figkit.save(fig, HERE, "fig-tipping")
 
 

@@ -60,6 +60,11 @@ def spct(x: float, d: int = 1) -> str:
     return f"{100.0 * x:+.{d}f}"
 
 
+def mnus(text: str) -> str:
+    """A signed value printed with a minus sign instead of a hyphen-minus."""
+    return text.replace("-", "$-$")
+
+
 def fix(rows):
     """A string cell that mixes text and math (or holds a command) is passed through figkit as it is: prefix it with a
     harmless command so that figkit does not escape its backslashes and dollar signs."""
@@ -356,11 +361,11 @@ def main() -> None:
         ["H2'", "followed (oracle) coverage at $\\iota=9$, reported apart as the product fixes it",
          "; ".join(f"{pct(cells[(d, 9.0)]['treatments']['followed']['coverage'][B], 0)}" for d in ("fy", "pool", "x10")), "under 50", "fails in all three"],
         ["H3", "anchored minus the best of the other treatments, the Manski band included, at $\\iota=9$",
-         "; ".join(f"{100 * (cells[(d, 9.0)]['treatments']['anchored']['coverage'][B] - max(cells[(d, 9.0)]['treatments'][t]['coverage'][B] for t in ('industry', 'unfollowed', 'followed', 'identified'))):+.1f}"
-                   for d in ("fy", "pool", "x10")), "above 0", "fails"],
+         mnus("; ".join(f"{100 * (cells[(d, 9.0)]['treatments']['anchored']['coverage'][B] - max(cells[(d, 9.0)]['treatments'][t]['coverage'][B] for t in ('industry', 'unfollowed', 'followed', 'identified'))):+.1f}"
+                   for d in ("fy", "pool", "x10"))), "above 0", "fails"],
         ["H3 sub", "the same against removed, kept and followed only",
-         "; ".join(f"{100 * (cells[(d, 9.0)]['treatments']['anchored']['coverage'][B] - max(cells[(d, 9.0)]['treatments'][t]['coverage'][B] for t in ('industry', 'unfollowed', 'followed'))):+.1f}"
-                   for d in ("fy", "pool", "x10")), "above 0", "holds"],
+         mnus("; ".join(f"{100 * (cells[(d, 9.0)]['treatments']['anchored']['coverage'][B] - max(cells[(d, 9.0)]['treatments'][t]['coverage'][B] for t in ('industry', 'unfollowed', 'followed'))):+.1f}"
+                   for d in ("fy", "pool", "x10"))), "above 0", "holds"],
         ["H4", "share of cohorts whose band holds the pooled $k$, S\\&P grade B and CCC to C",
          f"{pct(next(g for g in sp['withdrawal_bounds']['grades'] if g['grade'] == 'B')['stability']['share_cohorts_containing_pooled_k'], 0)}; "
          f"{pct(next(g for g in sp['withdrawal_bounds']['grades'] if g['grade'] == 'CCC-C')['stability']['share_cohorts_containing_pooled_k'], 0)}",
@@ -523,7 +528,7 @@ def main() -> None:
         caption="Anchored withdrawal bounds on the agencies' real cohorts of ESMA's central repository, the default page as the second source of the "
                 "transition page: the pooled PD with withdrawals removed, the anchored PD with its interval, the pooled anchored odds ratio with its band, "
                 "the cohorts whose band contains it, and the tipping odds ratio that moves the grade to the next one.",
-        label="tab:real", align="llrp{2.4cm}p{2.6cm}rr", size=bs + "footnotesize")
+        label="tab:real", align="llr>{\\raggedright\\arraybackslash}p{2.4cm}>{\\raggedright\\arraybackslash}p{2.6cm}rr", size=bs + "footnotesize")
 
     # decisions
     rows = []
