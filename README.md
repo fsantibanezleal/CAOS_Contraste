@@ -91,6 +91,29 @@ engines and their licences are in [docs/frameworks.md](docs/frameworks.md); the 
 the gate that fails when it is violated, is [docs/design/SDD.md](docs/design/SDD.md); the architecture pages are in
 [docs/architecture.md](docs/architecture.md).
 
+## Publications
+
+The technical report and a manuscript for each method and measurement Contraste proposes, on Zenodo, each under its own
+concept DOI (it always opens the latest version):
+
+- Technical report: [Contraste: validating bank risk models on twenty-one public and synthetic cases, with the size of the validation tests measured under the null and their power on planted defects](https://doi.org/10.5281/zenodo.24053151)
+- Manuscript: [Adaptive conformal recalibration of value at risk in market stress windows: hit rates move towards the target on ten models, and the back-tests accept the wrapped runs too easily](https://doi.org/10.5281/zenodo.24053155)
+- Manuscript: [An anchored tipping-point PD under informative rating withdrawals: conservative coverage on known truth, an anchored odds ratio unstable across years in S&P's B and CCC to C grades and Fitch's B grade](https://doi.org/10.5281/zenodo.24053159)
+- Manuscript: [A test that flags a behavioural assumption changed at a limit breach: every change at a breach flagged, with 17 to 66% false flags, on stated parameters, and weak ranking on re-estimated ones, which a calibrated tolerance corrects for a lengthening made at a breach date and not for a weight override](https://doi.org/10.5281/zenodo.24053161)
+- Manuscript: [The default definition as part of the PD: informative withdrawals and thin grades](https://doi.org/10.5281/zenodo.24053164)
+- Manuscript: [The dependence band reported with every capital aggregate: what it covers on planted dependence structures](https://doi.org/10.5281/zenodo.24053167)
+- Manuscript: [Anytime-valid e-process monitors for VaR back-tests at a cost in power, and a PD monitor that loses its size under correlated defaults and its power to a chi-square rule](https://doi.org/10.5281/zenodo.24053173)
+- Manuscript: [Holding an open validation engine to outside references: five ECB statistics, a credit-portfolio engine, an IRRBB engine and twelve planted defects](https://doi.org/10.5281/zenodo.24053177)
+- Manuscript: [The instability of loss-distribution-approach operational-risk capital measured on independent synthetic histories of known truth](https://doi.org/10.5281/zenodo.24053183)
+- Manuscript: [A leakage-safe validation protocol per case with invariance gates: the bias of the holdout AUC under fitting-path leaks, their detection by the gates, and what validation tests see of a development-only leak](https://doi.org/10.5281/zenodo.24053185)
+- Manuscript: [Three corrections to model-validation tests (conformal coverage, shift resilience, situation testing): the false-alarm rate each removes and the power each costs, measured on planted data](https://doi.org/10.5281/zenodo.24053187)
+- Manuscript: [Reconciliation identities as acceptance tests of an expected credit loss allowance: detection limits on a public loan book, overlays kept apart, the convex region of scenario weighting and three provisioning regimes on one synthetic bank](https://doi.org/10.5281/zenodo.24053189)
+- Manuscript: [Reconciling a model-validation engine against reference engines and printed answers: measured agreement, listed gaps and the size and power of the acceptance rule](https://doi.org/10.5281/zenodo.24053198)
+- Manuscript: [Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run](https://doi.org/10.5281/zenodo.24053204)
+- Manuscript: [A scale-and-level complement to the FRTB profit and loss attribution test](https://doi.org/10.5281/zenodo.24053206)
+- Manuscript: [Twelve of 21 credit-risk validation tests hold their size on 200,000 null repetitions: a measurement of size and power on generators of known truth](https://doi.org/10.5281/zenodo.24053208)
+- Manuscript: [The Unidad de Fomento as its own currency in the standardised measures of interest rate risk in the banking book: what each component adds](https://doi.org/10.5281/zenodo.24053214)
+
 ## Data and licences
 
 Every source is declared with its licence class (mirror-allowed, derived-only, link-only, unusable) and the
