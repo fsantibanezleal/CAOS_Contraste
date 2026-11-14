@@ -5228,7 +5228,7 @@
   "source": "run-times.json:python"
  },
  "nProductRelease": {
-  "value": "1.00.000",
+  "value": "1.00.001",
   "source": "VERSION (repository root)"
  }
 }
