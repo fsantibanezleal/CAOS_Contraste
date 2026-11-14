@@ -33,6 +33,8 @@ def pc(x, d=1):
 
 def wrap_header(h, width, align):
     """A header cell broken into short lines (outside math) with makecell, so that a table is as narrow as its data and is not shrunk."""
+    if "\n" in h:  # explicit line breaks written by the caller are kept as they are
+        return "\\makecell[b" + align + "]{" + " \\\\ ".join(h.split("\n")) + "}"
     words, cur, depth = [], "", 0
     for ch in h:
         if ch == "$":
@@ -81,7 +83,7 @@ def main_results():
                 rows.append([WN[w], MN[m], f"{100 * a:g}", f"{u['n_hits']}", f"{v['n_hits']} ({100 * v['hit_rate']:.1f}; {100 * lo:.1f}--{100 * hi:.1f})",
                              f"{p(u['kupiec_p'])} / {p(v['kupiec_p'])}", f"{p(u['cc_p'])} / {p(v['cc_p'])}", p(v["independence_p"])])
                 rows2.append([WN[w], MN[m], f"{100 * a:g}", f"{pc(r['fz0_change'])} [{pc(r['ci95'][0])}, {pc(r['ci95'][1])}]"])
-    T("main-results", ["Window", "Model", "Level (\\%)", "Hits U", "Hits W (rate \\%; 95\\% Wilson)", "Kupiec $p$ U / W", "CC $p$ U / W", "Indep. $p$ W"],
+    T("main-results", ["Window", "Model", "Level (\\%)", "Hits U", "Hits W\n(rate \\%;\n95\\% Wilson)", "Kupiec $p$\nU / W", "CC $p$ U / W", "Indep. $p$ W"],
       rows, align="llrrlllr",
       caption="Unwrapped (U) and wrapped (W) value at risk of three ladder models in the three stress windows of C11, at tail levels 1\\% and 2.5\\%: hits, the "
               "hit rate of the wrapped model with its 95\\% Wilson interval, the p-values of the Kupiec and conditional coverage (CC) tests and the Christoffersen "

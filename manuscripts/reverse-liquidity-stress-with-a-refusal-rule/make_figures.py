@@ -136,7 +136,7 @@ def fig_labelled() -> None:
 
 
 def fig_band() -> None:
-    fig, ax = plt.subplots(1, 2, figsize=(6.6, 3.1), layout="constrained", gridspec_kw={"width_ratios": [1.0, 1.55]})
+    fig, ax = plt.subplots(1, 2, figsize=(6.6, 3.1), layout="constrained", gridspec_kw={"width_ratios": [1.0, 2.3]})
     for i, b in enumerate(("list-adverse", "list-extreme")):
         rows = C["band"][b]["uninsured_share"]
         ax[0].plot([r["uninsured_share"] for r in rows], [r["multiplier"] for r in rows], label=LABEL[b], **S[i])
@@ -162,19 +162,19 @@ def fig_band() -> None:
                 x = g + (si - 1) * width
                 if v is None:
                     ax[1].bar(x, 0.0, width=width, color=greys[sch])
-                    ax[1].text(x, 0.04, "refused", rotation=90, fontsize=7, ha="center", va="bottom", bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.6})
+                    ax[1].text(x, 0.04, "refused", rotation=90, fontsize=7.6, ha="center", va="bottom", bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.6})
                 else:
                     ax[1].bar(x, v, width=width, color=greys[sch], hatch=hatches[sch], edgecolor="0.0", linewidth=0.4)
                     ymax = max(ymax, v)
     ax[1].set_xticks(centres)
-    ax[1].set_xticklabels(group_labels, fontsize=7)
+    ax[1].set_xticklabels(group_labels, fontsize=7.6)
     ax[1].set_xlabel("haircut band", labelpad=14)
     for centre, name in ((1.0, "LiST Adverse base"), (5.0, "LiST Extreme base")):
-        ax[1].annotate(name, xy=(centre, 0.0), xycoords=("data", "axes fraction"), xytext=(0, -16), textcoords="offset points", ha="center", va="top", fontsize=7)
+        ax[1].annotate(name, xy=(centre, 0.0), xycoords=("data", "axes fraction"), xytext=(0, -16), textcoords="offset points", ha="center", va="top", fontsize=7.6)
     ax[1].set_ylabel("threshold multiplier at T = 30")
     ax[1].set_ylim(0.0, ymax * 1.08)
     handles = [plt.Rectangle((0, 0), 1, 1, facecolor=greys[s], hatch=hatches[s], edgecolor="0.0", linewidth=0.4) for s in schedules]
-    ax[1].legend(handles, [f"{s} monetisation" for s in schedules], frameon=False, fontsize=7, loc="upper center", bbox_to_anchor=(0.5, -0.26), ncol=3)
+    ax[1].legend(handles, list(schedules), title="monetisation schedule", title_fontsize=7.6, frameon=False, fontsize=7.6, loc="upper center", bbox_to_anchor=(0.5, -0.26), ncol=3)
     figkit.save(fig, OUT, "band")
 
 

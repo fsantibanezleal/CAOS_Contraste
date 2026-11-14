@@ -127,11 +127,11 @@ def main_results() -> None:
            "rates in per cent with 95\\% Wilson intervals, median absolute relative error of the multiplier on solved instances, mean forward evaluations per solved instance and median time per call; the scans call the engine's own forward function, which is slower per evaluation than the lighter function the solver and Brent's method call, so the cost is compared by evaluations. "
            "Panel B: the same solver on the three committed bases of the bank at a target of 30 days, with the survival period reached at the multiplier and just below it.")
     text = "\n".join(["\\begin{table*}[htbp]", "\\centering", "\\small", "\\setlength{\\tabcolsep}{3pt}", f"\\caption{{{cap}}}", "\\label{tab:main-results}",
-                      "\\begin{tabular}{p{3.1cm}p{2.3cm}p{2.3cm}p{2.3cm}p{1.8cm}p{1.6cm}p{1.0cm}}", "\\toprule",
+                      "\\begin{tabular}{p{2.6cm}p{2.5cm}p{2.0cm}p{2.5cm}p{1.7cm}p{1.75cm}p{1.0cm}}", "\\toprule",
                       "\\multicolumn{7}{l}{\\textit{Panel A: corpus of synthetic banks}} \\\\",
                       "Method & answers where refused (\\%) & no answer where solved (\\%) & threshold property (\\%) & median $|$rel. error$|$ & evaluations & ms per call \\\\",
                       "\\midrule", *a, "\\bottomrule", "\\end{tabular}", "", "\\medskip", "",
-                      "\\begin{tabular}{p{2.8cm}p{3.2cm}p{1.2cm}p{3.0cm}p{2.0cm}p{2.6cm}}", "\\toprule", "\\multicolumn{6}{l}{\\textit{Panel B: committed bases of the bank, target of 30 days}} \\\\",
+                      "\\begin{tabular}{p{2.8cm}p{2.9cm}p{1.2cm}p{3.0cm}p{1.8cm}p{2.5cm}}", "\\toprule", "\\multicolumn{6}{l}{\\textit{Panel B: committed bases of the bank, target of 30 days}} \\\\",
                       "Base & base SP (days) & cap & multiplier $m^\\ast$ & SP at $m^\\ast$ & SP at \\mbox{$m^\\ast-10^{-6}$} \\\\", "\\midrule", *b, "\\bottomrule", "\\end{tabular}", "\\end{table*}", ""])
     write("main-results", text)
 

@@ -75,6 +75,11 @@ def fix(rows):
     return out
 
 
+def hd(al: str, *lines: str) -> str:
+    """A header cell on explicit lines, so that a narrow column is not as wide as its header."""
+    return "\\begin{tabular}[b]{@{}" + al + "@{}}" + " \\\\ ".join(lines) + "\\end{tabular}"
+
+
 def tbl(path, header, rows, size=None, **kw):
     """figkit's booktabs table; ``size`` replaces the default font command (a wide table is set smaller)."""
     out = figkit.table(path, header, fix(rows), **kw)
@@ -524,11 +529,11 @@ def main() -> None:
                          f"{tp['k']:.1f}" if tp and tp["k"] is not None else "--"])
     tbl(
         out / "tab-real.tex",
-        ["Agency", "Grade", "PD removed (\\%)", "Anchored PD (\\%)", "Pooled $k$ (band)", "Cohorts holding it", "Tipping $k$"], rows,
+        ["Agency", "Grade", hd("r", "PD removed", "(\\%)"), "Anchored PD (\\%)", "Pooled $k$ (band)", hd("r", "Cohorts", "holding it"), "Tipping $k$"], rows,
         caption="Anchored withdrawal bounds on the agencies' real cohorts of ESMA's central repository, the default page as the second source of the "
                 "transition page: the pooled PD with withdrawals removed, the anchored PD with its interval, the pooled anchored odds ratio with its band, "
                 "the cohorts whose band contains it, and the tipping odds ratio that moves the grade to the next one.",
-        label="tab:real", align="llr>{\\raggedright\\arraybackslash}p{2.4cm}>{\\raggedright\\arraybackslash}p{2.6cm}rr", size=bs + "footnotesize")
+        label="tab:real", align="llrllrr", size=bs + "footnotesize" + bs + "setlength{" + bs + "tabcolsep}{3.5pt}")
 
     # decisions
     rows = []

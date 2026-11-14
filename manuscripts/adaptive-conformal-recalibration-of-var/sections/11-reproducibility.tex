@@ -14,6 +14,7 @@ Every number of the text is generated. The script \texttt{make\_numbers.py} writ
 \item[\texttt{e7\_dispersion.py}] the dispersion of the hit count and the size of the tests on wrapped runs (\cref{sec:results-dispersion}); it reads \texttt{e2\_wrap\_ladder.json} and \texttt{e5\_generators.json}, and its own draws use \texttt{default\_rng} with the seed list \seedBase{}, 7 or 8, and the indices of the row.
 \end{description}
 \begingroup\footnotesize
+\begin{minipage}{\linewidth}
 \begin{verbatim}
 EXP=manuscripts/adaptive-conformal-recalibration-of-var/experiments
 CACHE=$CAOS_TEMP_ROOT/contraste-adaptive-conformal
@@ -25,6 +26,7 @@ python $EXP/e5_generators.py --workers 28
 python $EXP/e6_theory.py
 python $EXP/e7_dispersion.py
 \end{verbatim}
+\end{minipage}\par\medskip
 \endgroup
 The scripts \texttt{make\_numbers.py}, \texttt{make\_tables.py} and \texttt{make\_figures.py}, which sit in the manuscript folder, are run from the repository root without arguments after the experiments.
 The bootstrap uses circular blocks of 10 days and 2,000 draws with the seed \seedBase{} plus a fixed integer per window, model and level. The cost of the experiments was measured on a workstation with 32 logical cores: the wrapped runs of ten models in six windows (the heavy part is the daily refit of the GARCH, GJR, EGARCH and extreme-value models) took 168 seconds of wall time with 28 worker processes from an empty run cache. The ablation took 439 seconds, the score-space recalibrations 130 seconds and the generators 176 seconds in a first run, and 90, 16 and 31 seconds in a repeat that reused the cached parsed returns and fits, the times each script records in its output; the numerical checks of the theory took 613 seconds, measured outside the script. A repeat of experiments 2, 3, 5 and 6 reproduces the stored outputs. The score-space recalibrations take 32 seconds, and \texttt{check\_e4\_baseline.py} verifies that each comparator run scores the pair of its own VaR and ES; the dispersion experiment takes under two minutes. Each script finishes in under 30 minutes. The step of the wrapper, 0.005, and the band, $[0.001, 0.25]$, are the defaults of the engine and appear nowhere else as parameters.
