@@ -267,7 +267,7 @@ def e3_numbers_tables() -> dict:
                      f"{v['closed_form']['cur_auc']:.3f}", ratio(v["auc_test"]["rate"], 1), ratio(v["csi_test"]["rate"], 1),
                      ratio(v["resemblance_flag"]["rate"], 1), ratio(v["single_feature_flag"]["rate"], 1)])
     table(TAB / "tab-planted-leak.tex",
-                 ["Leak $s$", "Dev. AUC sim.", "Dev. AUC Prop.", "Current AUC sim.", "Current AUC Prop.", "AUC test power",
+                 ["Leak $\\delta$", "Dev. AUC sim.", "Dev. AUC Prop.", "Current AUC sim.", "Current AUC Prop.", "AUC test power",
                   "CSI power", "Resemblance power", "Single-feature flag"], rows,
                  caption=(f"The leak planted by the engine generator (150 defaulters and 4,850 survivors per sample, {d['reps']} repetitions per "
                           f"level): simulated mean AUC in development and at decision time beside the closed forms of Proposition 4, and "

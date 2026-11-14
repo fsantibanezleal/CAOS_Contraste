@@ -48,7 +48,8 @@ def write(name: str, header, rows, *, caption: str, label: str, align: str, font
     lines += [" & ".join(str(c) for c in r) + r" \\" for r in rows]
     lines += [r"\bottomrule", r"\end{tabular}}", rf"\end{{{env}}}"]
     if sideways:
-        lines = [r"\begin{landscape}", *lines, r"\end{landscape}"]
+        # deferred to the next page break, so the text fills the page it is cited on instead of leaving it mostly blank
+        lines = [r"\afterpage{\begin{landscape}", *lines, r"\end{landscape}}"]
     lines.append("")
     OUT.mkdir(exist_ok=True)
     (OUT / f"{name}.tex").write_text(NL.join(lines), encoding="utf-8", newline=NL)
