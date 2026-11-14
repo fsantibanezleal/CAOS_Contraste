@@ -975,7 +975,7 @@
     {
       "kind": "manuscript",
       "concept_doi": "10.5281/zenodo.24053161",
-      "title": "A test that flags a behavioural assumption changed at a limit breach: every change at a breach flagged, with 17 to 66% false flags, on stated parameters, and weak ranking on re-estimated ones that a calibrated tolerance corrects",
+      "title": "A test that flags a behavioural assumption changed at a limit breach: every change at a breach flagged, with 17 to 66% false flags, on stated parameters, and weak ranking on re-estimated ones, which a calibrated tolerance corrects for a lengthening made at a breach date and not for a weight override",
       "version": "1.00.000",
       "covers": [
         "BS-8"

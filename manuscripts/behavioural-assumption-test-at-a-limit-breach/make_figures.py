@@ -49,7 +49,7 @@ def fig_history() -> None:
     ax.text(0.2, core.WAM_MAX + 0.08, "cap of the tranche grid, 5 years", fontsize=7, color="0.3")
     ticks = list(range(0, rb["n_fits"], 4))
     ax.set_xticks(ticks, [rb["fit_dates"][i][:7] for i in ticks], rotation=30, ha="right")
-    ax.set_ylabel("Fitted weighted average maturity (years)")
+    ax.set_ylabel("Fitted WAM (years)", labelpad=8)
     ax.set_xlabel("Quarter of the fit (16 quarters ending there)")
     ax.set_ylim(0.5, 5.6)
     ax2 = axes[1]
@@ -142,7 +142,7 @@ def fig_fitted_power() -> None:
     ys = ("0.5", "1.0", "2.0", "4.0")
     xs = [float(y) for y in ys]
     dets = ("engine", "tolerance", "mannwhitney", "welch", "fisher", "shift", "shift_at_breach")
-    names = {"engine": "proposed test", "tolerance": "calibrated tolerance", "mannwhitney": "Mann--Whitney", "welch": "Welch", "fisher": "Fisher exact",
+    names = {"engine": f"proposed test (uncalibrated, {R3['matched']['0.25']['null']['engine']['rate'] * 100:.0f}% false flags)", "tolerance": "calibrated tolerance", "mannwhitney": "Mann--Whitney", "welch": "Welch", "fisher": "Fisher exact",
              "shift": "level-shift test", "shift_at_breach": "level-shift test, break on a breach date"}
     # figkit holds six styles; the seventh detector takes a marker and a dash pattern of its own
     styles = list(S) + [{"color": "0.25", "linestyle": (0, (3, 1, 1, 1, 1, 1)), "marker": "P"}]
