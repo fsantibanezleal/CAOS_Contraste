@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import pathlib
 import sys
+from decimal import ROUND_HALF_UP, Decimal
 
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
@@ -23,20 +24,32 @@ PM = r"$\pm$"
 
 
 def pc(x: float, d: int = 1) -> str:
-    return f"{100 * x:.{d}f}"
+    """A rate in percent, rounded half up on its decimal value (a rate of 0.6355 prints 63.6, as in the technical report)."""
+    return f"{(Decimal(repr(float(x))) * 100).quantize(Decimal(1).scaleb(-d), rounding=ROUND_HALF_UP):f}"
 
 
 def ci(lo: float, hi: float, d: int = 2) -> str:
     return f"[{pc(lo, d)}, {pc(hi, d)}]"
 
 
-def write(name: str, header, rows, *, caption: str, label: str, align: str, font: str = SMALL, wide: bool = False) -> None:
-    """A booktabs table; every cell is LaTeX already (the callers format the numbers and escape the text)."""
-    env = "table*" if wide else "table"
+def write(name: str, header, rows, *, caption: str, label: str, align: str, font: str = SMALL, wide: bool = False,
+          sideways: bool = False) -> None:
+    """A booktabs table; every cell is LaTeX already (the callers format the numbers and escape the text).
+
+    ``header`` is one list of cells, or a list of lists for a grouped head (a string in it is a raw rule line, such as a cmidrule).
+    ``sideways`` sets the table on a landscape page (a ``table`` inside ``landscape``, whose text block is the page height), so that
+    a wide table is set at its own size instead of being scaled down to the portrait text width.
+    """
+    env = "table" if sideways else "table*" if wide else "table"
+    head = header if isinstance(header[0], list) else [header]
+    head_lines = [h if isinstance(h, str) else " & ".join(h) + r" \\" for h in head]
     lines = [rf"\begin{{{env}}}[htbp]", r"\centering", font, rf"\caption{{{caption}}}", rf"\label{{{label}}}",
-             rf"\fitwidth{{\begin{{tabular}}{{{align}}}", r"\toprule", " & ".join(header) + r" \\", r"\midrule"]
+             rf"\fitwidth{{\begin{{tabular}}{{{align}}}", r"\toprule", *head_lines, r"\midrule"]
     lines += [" & ".join(str(c) for c in r) + r" \\" for r in rows]
-    lines += [r"\bottomrule", r"\end{tabular}}", rf"\end{{{env}}}", ""]
+    lines += [r"\bottomrule", r"\end{tabular}}", rf"\end{{{env}}}"]
+    if sideways:
+        lines = [r"\begin{landscape}", *lines, r"\end{landscape}"]
+    lines.append("")
     OUT.mkdir(exist_ok=True)
     (OUT / f"{name}.tex").write_text(NL.join(lines), encoding="utf-8", newline=NL)
 
@@ -60,7 +73,7 @@ def design() -> None:
     write("design", ["Family", "Severity unit", "Ladder", "Tests measured", "Sims", "Repetitions", "Generators"], rows,
           caption="The eight families of the measurement: the defect planted, the unit and values of its severity ladder, the tests measured, "
                   "and the number of simulations, seeded repetitions and generators of known truth in each family (credit-family tests only).",
-          label="tab:design", align="llllrrr", font=FOOT, wide=True)
+          label="tab:design", align="llllrrr", font=FOOT, wide=True, sideways=True)
 
 
 def yn(b: bool) -> str:
@@ -85,7 +98,7 @@ def main_results() -> None:
                   r"test has one; then three judgements: the screen of Algorithm 1 on the cell of 4,000 repetitions, the definition of holding a size on the same "
                   r"cell, and the definition on the pool of 50 further blocks (200,000 repetitions, \cref{tab:seed-replication}). By the definition a test "
                   r"holds its size unless its exact rejection probability, or the Wilson interval of its rate, lies above the level at 5\% or at 1\%.",
-          label="tab:main-results", align="lrlrlcccc", font=FOOT, wide=True)
+          label="tab:main-results", align="lrlrlcccc", font=FOOT, wide=True, sideways=True)
 
 
 def power_summary() -> None:
@@ -104,10 +117,10 @@ def power_summary() -> None:
             reach = f"{s['x']:.3g} [{s['x_low']:.3g}, {hi}]"
         rows.append([A.NAME[t], f"{unit} ({xs[0]} to {xs[-1]})", *pw, reach])
     write("power-summary", ["Test", "Defect and ladder (severity 0 to 5)", "0", "1", "2", "3", "4", "5", rf"Setting at 80{PCT} power [95{PCT}]"], rows,
-          caption=r"Measured power at 5\%, in percent, of the 17 tests with a power curve at the six severities 0 to 5 of the ladder of the "
-                  r"defect planted for each (2,000 repetitions per severity), and the setting of the ladder at which the interpolated curve first reaches 80\% "
+          caption=r"Measured power at 5\%, in percent, of the 17 tests with a power curve at the six points 0 to 5 of the ladder of the "
+                  r"defect planted (point 0 is the null) for each (2,000 repetitions per severity), and the setting of the ladder at which the interpolated curve first reaches 80\% "
                   r"with the interval given by the Wilson limits of the points.",
-          label="tab:power-summary", align="llrrrrrrl", font=FOOT, wide=True)
+          label="tab:power-summary", align="llrrrrrrl", font=FOOT, wide=True, sideways=True)
 
 
 def reproductions() -> None:
@@ -116,9 +129,9 @@ def reproductions() -> None:
         dis = "; ".join(f"{c['row']}, {c['column']}: printed {c['published']:.3g}, measured {c['measured']:.4g}"
                         for c in r["disagreeing"]).replace("%", PCT).replace(">", "$>$").replace("_", r"\_") or "none"
         rows.append([r["title"], f"{r['runs_published']:,} / {r['runs']:,}", f"{r['agree']} of {r['total']}", f"{r['mean_z']:+.2f}", dis])
-    write("reproductions", ["Published study", "Runs: printed / ours", "Cells agreeing", "Mean z", "Cells that disagree"], rows,
+    write("reproductions", ["Published study", "Runs: printed / ours", "Cells agreeing", "Mean z, all cells", "Cells that disagree"], rows,
           caption=r"The three published simulation studies rerun by the measurement: the runs of the study and of the rerun, the cells whose printed "
-                  r"rate agrees with the measured one within 3.29 pooled standard errors, the mean z of the differences, and each cell that disagrees.",
+                  r"rate agrees with the measured one within 3.29 pooled standard errors, the mean z of the differences over all cells of the study (a cell whose printed rate is 0 or 1 included), and each cell that disagrees.",
           label="tab:reproductions", align="p{4.2cm}rrrp{5.3cm}", font=FOOT, wide=True)
 
 
@@ -158,7 +171,7 @@ def seed_replication() -> None:
                   r"the one-sided bound and by the rule that a rate above the level is oversized, and the judgement of the committed cell and of the pool by "
                   r"the screen of Algorithm 1 and by the definition of holding a size (a test does not hold its size when its exact rejection probability, or the Wilson interval "
                   r"of its rate, lies above the level at 5\% or at 1\%).",
-          label="tab:seed-replication", align="lrlcrrlcc", font=FOOT, wide=True)
+          label="tab:seed-replication", align="lrlcrrlcc", font=FOOT, wide=True, sideways=True)
 
 
 EXT_NAME = {
@@ -220,13 +233,16 @@ def resolution() -> None:
         else:
             row += ["--"] * 6
         rows.append(row)
-    write("resolution", ["Repetitions", rf"Screen sees, 5{PCT}", rf"Screen sees, 1{PCT}", rf"Definition sees, 5{PCT}", rf"Definition sees, 1{PCT}",
-                         "Within: naive", "Within: screen", "Within: definition", "Above: naive", "Above: screen", "Above: definition"], rows,
+    write("resolution", [["", r"\multicolumn{4}{c}{Excess detected (points)}", r"\multicolumn{3}{c}{Cells flagged, tests within the level (\%)}",
+                          r"\multicolumn{3}{c}{Cells flagged, tests above the level (\%)}"],
+                         r"\cmidrule(lr){2-5}\cmidrule(lr){6-8}\cmidrule(lr){9-11}",
+                         ["Repetitions", rf"Screen, 5{PCT}", rf"Screen, 1{PCT}", rf"Definition, 5{PCT}", rf"Definition, 1{PCT}",
+                          "Naive", "Screen", "Definition", "Naive", "Screen", "Definition"]], rows,
           caption=r"Resolution of a size measurement by the number of repetitions: the excess over the level (percentage points) that the one-sided bound "
                   r"of the screen and the Wilson interval of the definition detect with probability 0.8, and the share of cells (percent) flagged by the naive "
                   r"rule, the screen and the definition among the 10 tests whose pooled size is within the level and among the 9 whose pooled size is "
                   r"above it.",
-          label="tab:resolution", align="lrrrrrrrrrr", font=FOOT, wide=True)
+          label="tab:resolution", align="lrrrrrrrrrr", font=FOOT, wide=True, sideways=True)
 
 
 def main() -> int:

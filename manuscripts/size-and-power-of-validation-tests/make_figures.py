@@ -26,6 +26,11 @@ OUT = HERE / "figures"
 ST = figkit.STYLES
 
 
+def fn(name: str) -> str:
+    """A test name as a figure draws it: the LaTeX double hyphen of the tables becomes an en dash."""
+    return name.replace("--", "–")
+
+
 def new(rows: int = 1, cols: int = 1, w: float = 6.3, h: float = 3.0, **kw):
     import matplotlib.pyplot as plt
 
@@ -62,7 +67,7 @@ def size_forest() -> None:
         ax.set_xlabel(f"rejection rate at the {int(a * 100)}% level (%)")
         ax.set_xlim(-0.2 * a * 100, max(100 * A.bound(a, 4000) * 1.6, 100 * max(r[lv]["hi"] for r in tbl) * 1.05))
     axes[0].set_yticks(ys)
-    axes[0].set_yticklabels([r["name"] for r in tbl])
+    axes[0].set_yticklabels([fn(r["name"]) for r in tbl])
     fig.tight_layout()
     figkit.save(fig, OUT, "size_forest")
 
@@ -78,7 +83,7 @@ def p_histograms() -> None:
         h = np.array(r["p_histogram"])
         ax.bar(np.arange(20) / 20 + 0.025, h, width=0.05, color="0.55", edgecolor="0.2", lw=0.4)
         ax.axhline(h.sum() / 20, color="0.0", lw=0.8, ls="--")
-        ax.set_title(A.NAME[k.split("@")[0]], fontsize=7)
+        ax.set_title(fn(A.NAME[k.split("@")[0]]), fontsize=7)
         ax.tick_params(labelsize=6)
     for ax in axes[1]:
         ax.set_xlabel("p-value")
@@ -94,7 +99,7 @@ def power_calibration() -> None:
               ("grades-obligors", [("pd.chi2_grades", "grades"), ("pd.default_profile", "grades"), ("pd.hosmer_lemeshow", "obligors"),
                                    ("pd.spiegelhalter", "obligors")], "grades and obligor level"),
               ("years", ["pd.normal_multiperiod", "pd.traffic_lights"], "five annual cohorts")]
-    fig, axes = new(1, 3, 6.5, 2.7, sharey=True)
+    fig, axes = new(1, 3, 6.5, 3.4, sharey=True)
     for ax, (_, tests, title) in zip(axes, groups):
         for i, t in enumerate(tests):
             test, panel = (t, "portfolio" if t.startswith(("pd.binomial", "pd.jeffreys")) else "years") if isinstance(t, str) else t
@@ -107,7 +112,7 @@ def power_calibration() -> None:
         ax.axhline(5, color="0.6", lw=0.6)
         ax.set_title(title, fontsize=7.5)
         ax.set_xlabel("true PD / PD applied")
-        ax.legend([A.NAME[t if isinstance(t, str) else t[0]] for t in tests], fontsize=5.8, loc="lower right", frameon=False)
+        ax.legend([fn(A.NAME[t if isinstance(t, str) else t[0]]) for t in tests], fontsize=7, loc="upper center", bbox_to_anchor=(0.5, -0.27), frameon=False)
     axes[0].set_ylabel("rejection rate at 5% (%)")
     fig.tight_layout()
     figkit.save(fig, OUT, "power_calibration")
@@ -115,7 +120,7 @@ def power_calibration() -> None:
 
 def clustering_size() -> None:
     cur = A.curves("clustering", "size")
-    fig, ax = new(1, 1, 5.2, 3.2)
+    fig, ax = new(1, 1, 6.4, 3.2)
     tests = [("pd.binomial", "portfolio"), ("pd.jeffreys", "portfolio"), ("pd.binomial_vasicek", "portfolio"), ("pd.chi2_grades", "grades"),
              ("pd.hosmer_lemeshow", "obligors"), ("pd.spiegelhalter", "obligors"), ("pd.normal_multiperiod", "years"),
              ("pd.traffic_lights", "years")]
@@ -123,13 +128,13 @@ def clustering_size() -> None:
         rows = cur[(t, p)]
         x = [100 * r["x"] for r in rows]
         y, _ = wilson_err(rows)
-        ax.plot(x, 100 * y, label=A.NAME[t], **ST[i % 6], ms=3)
+        ax.plot(x, 100 * y, label=fn(A.NAME[t]), **ST[i % 6], ms=3)
         if t == "pd.binomial":
             ax.plot(x, [100 * r["exact"]["p<0.05"] for r in rows], color="0.0", lw=0.7, ls=":")
     ax.axhline(5, color="0.5", lw=0.7)
     ax.set_xlabel("asset correlation of the defaults (%), PDs right")
     ax.set_ylabel("rejection rate at 5% (%)")
-    ax.legend(fontsize=6, ncol=2, frameon=False, loc="upper right")
+    ax.legend(fontsize=7, frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5))
     fig.tight_layout()
     figkit.save(fig, OUT, "clustering_size")
 
@@ -158,7 +163,7 @@ def psi_bands() -> None:
 
 
 def power_families() -> None:
-    fig, axes = new(2, 3, 6.6, 4.4, sharey=True)
+    fig, axes = new(2, 3, 6.6, 6.4, sharey=True)
     panels = [
         ("discrimination-decay", [("disc.auc_vs_initial", "ecb", "ECB test"), ("disc.delong", "delong", "DeLong")], "AUC drop", None),
         ("leakage", [("disc.auc_vs_initial", "auc", "AUC test"), ("stability.csi", "feature", "CSI of the leak")], "shift of the leaked feature", None),
@@ -186,7 +191,7 @@ def power_families() -> None:
                 i += 1
         ax.axhline(5, color="0.6", lw=0.6)
         ax.set_xlabel(xl, fontsize=7)
-        ax.legend(fontsize=5.5, frameon=False, loc="lower right")
+        ax.legend(fontsize=7, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.30))
     for ax in axes[:, 0]:
         ax.set_ylabel("rejection rate at 5% (%)")
     fig.tight_layout()
@@ -208,7 +213,7 @@ def seed_spread() -> None:
     ax.axvline(5, color="0.3", lw=0.9)
     ax.axvline(100 * A.bound(0.05, 4000), color="0.3", lw=0.9, ls="--")
     ax.set_yticks(ys)
-    ax.set_yticklabels([A.NAME[t] for t in A.TEST_ORDER])
+    ax.set_yticklabels([fn(A.NAME[t]) for t in A.TEST_ORDER])
     ax.set_xlabel("rejection rate at 5% (%)")
     ax.text(0.99, 0.01, "grey: 50 blocks of 4,000; bar: pooled; diamond: committed cell", transform=ax.transAxes, fontsize=6.5, ha="right")
     fig.tight_layout()
@@ -280,10 +285,10 @@ def hhi_bound() -> None:
         y = np.array([np.nan if v is None else v for v in s["y"]], dtype=float)
         ax.plot(x[: len(y)], y, label=s["label"]["en"], **{k: v for k, v in ST[i].items() if k != "marker"})
     ax.axhline(float(stats.norm.ppf(0.95)), color="0.0", lw=0.9, ls="--")
-    ax.text(0.01, float(stats.norm.ppf(0.95)) + 0.03, "5% critical value 1.645", ha="left", fontsize=6.5, transform=ax.get_yaxis_transform())
+    ax.text(0.99, float(stats.norm.ppf(0.95)) + 0.03, "5% critical value 1.645", ha="right", fontsize=7, transform=ax.get_yaxis_transform())
     ax.set_xlabel("coefficient of variation of the current grade frequencies")
     ax.set_ylabel("ECB statistic")
-    ax.legend(fontsize=6.5, frameon=False, loc="center right")
+    ax.legend(fontsize=7, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.2))
     fig.tight_layout()
     figkit.save(fig, OUT, "hhi_bound")
 

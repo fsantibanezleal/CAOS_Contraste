@@ -12,6 +12,7 @@ import json
 import math
 import pathlib
 import re
+from decimal import ROUND_HALF_UP, Decimal
 
 import numpy as np
 from scipy import stats
@@ -41,7 +42,8 @@ def i(x: float) -> str:
 
 
 def pc(x: float, d: int = 1) -> str:
-    return f"{100 * x:.{d}f}"
+    """A rate in percent, rounded half up on its decimal value (a rate of 0.6355 prints 63.6, as in the technical report)."""
+    return f"{(Decimal(repr(float(x))) * 100).quantize(Decimal(1).scaleb(-d), rounding=ROUND_HALF_UP):f}"
 
 
 def fx(x: float, d: int = 3) -> str:
@@ -267,6 +269,12 @@ def build() -> None:
     reg("hhiPeak", fx(peak, 2), peak, "max over c of sqrt(K-1)(c-CV0)/(c sqrt(0.5+c^2)), K=10, CV0=0.6")
     reg("hhiAllIn", fx(math.sqrt(9) * (3 - 0.6) / (3 * math.sqrt(9.5)), 2), 0, "same at c = sqrt(K-1)")
     reg("hhiAllInP", fx(float(stats.norm.sf(math.sqrt(9) * (3 - 0.6) / (3 * math.sqrt(9.5)))), 2), 0, "upper normal tail of the all-in statistic")
+    hist = {r["key"]: r["p_histogram"] for r in A.doc("null")["outputs"]["simulations"]}
+    hh = [k for k, v in enumerate(hist["rating.hhi@null"]) if v]
+    reg("hhiPLo", fx(hh[0] / 20, 2), hh[0], "lower edge of the first non-empty bin of the p-value histogram of rating.hhi@null (20 bins)")
+    reg("hhiPHi", fx((hh[-1] + 1) / 20, 2), hh[-1], "upper edge of the last non-empty bin of the same histogram")
+    mg = hist["rating.migration_ztests@null"]
+    reg("migTopBin", pc(mg[-1] / sum(mg), 1), mg[-1], "share of the migration z-tests' null p-values in the last bin (0.95 to 1), rating.migration_ztests@null")
     reg("zCrit", fx(float(stats.norm.ppf(0.95)), 3), 0, "norm.ppf(0.95)")
     # ---- s80
     s80 = {t: A.severity_at_power(A.main_curve(t)) for t in A.HAS_POWER}
@@ -292,6 +300,7 @@ def build() -> None:
     reg("ynTotal", str(rep["drift"]["total"]), 0, "same")
     reg("ynRuns", i(rep["drift"]["runs"]), 0, "same")
     reg("ynMeanZ", fx(rep["drift"]["mean_z_interior"], 2), 0, "mean z of the cells strictly between 0 and 1")
+    reg("ynMeanZAll", f"{rep['drift']['mean_z']:+.2f}", 0, "mean z over all cells of the stability study (the value of the reproductions table)")
     reg("ynInterior", str(rep["drift"]["interior"]), 0, "cells with a published rate strictly between 0 and 1")
     reg("demlerRuns", i(rep["leakage"]["runs"]), 0, "leakage.json golden")
     dm = A.doc("leakage")["outputs"]["golden"][0]["cells"][0]
