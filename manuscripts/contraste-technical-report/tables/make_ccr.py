@@ -74,9 +74,11 @@ def sci(x: float) -> str:
 
 #: Tables that the fit-to-width box shrank to 5.8 pt: they are set at 8 pt with wrapped, right-aligned columns instead.
 _R = ">{\\raggedleft\\arraybackslash}"
+_L = ">{\\raggedright\\arraybackslash}"
 SET_AT_SIZE = {
     "ccr-t-ore.tex": ("lrrrrrrrrc", "p{2.3cm}" + _R + "p{1.2cm}" + _R + "p{1.2cm}" + _R + "p{1.0cm}" + _R + "p{1.4cm}" + _R + "p{1.4cm}" + _R + "p{1.0cm}"
                       + _R + "p{1.5cm}" + _R + "p{1.1cm}c"),
+    "ccr-t-params.tex": ("llll", _L + "p{5.4cm}" + _L + "p{3.7cm}" + _L + "p{2.7cm}" + _L + "p{3.4cm}"),
     "ccr-t-cre99.tex": ("lrrrrrcc", "p{4.4cm}" + _R + "p{0.9cm}" + _R + "p{1.5cm}" + _R + "p{1.6cm}" + _R + "p{1.5cm}" + _R + "p{1.2cm}p{1.2cm}p{1.6cm}"),
 }
 

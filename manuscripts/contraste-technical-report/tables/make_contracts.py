@@ -412,7 +412,8 @@ def subsection(row: dict[str, str]) -> str:
     lines.append("")
     if schema:
         if props:
-            lines += ["{\\small", "\\begin{longtable}{p{0.18\\textwidth}p{0.17\\textwidth}p{0.09\\textwidth}p{0.15\\textwidth}p{0.27\\textwidth}}",
+            lines += ["{\\small\\setlength{\\tabcolsep}{4pt}",
+                      "\\begin{longtable}{p{0.18\\textwidth}>{\\raggedright\\arraybackslash}p{0.20\\textwidth}p{0.09\\textwidth}p{0.15\\textwidth}p{0.27\\textwidth}}",
                       f"\\caption{{The top-level fields of the contract \\texttt{{{figkit.tex_escape(cid)}}}: the name, the JSON "
                       f"type, the unit, the range or the values and the description, as the schema file holds them.}}"
                       f"\\label{{tab:contract-{cid}}}\\\\",
@@ -489,7 +490,7 @@ def _token_breaks(token: str) -> str:
                 ch == BS and token[i + 1:i + 2] == "_" and i > 0):
             out.append(BREAK)
             run = 0
-        elif identifier and run >= 8 and ch.isalnum() and i < len(token) - 1:
+        elif identifier and run >= 16 and ch.isalnum() and i < len(token) - 1:
             out.append(BREAK)
             run = 0
         out.append(ch)

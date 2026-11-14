@@ -1,10 +1,10 @@
 \begin{table}[htbp]
 \centering
-\small
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
 \caption{The parameters of case C12 as the artifacts record them: the Hull-White coefficients estimated at the curve date with their standard errors, and the conventions of the synthetic book, the CSA, the credit curve, the initial margin and the backtest.}
 \label{tab:ccr-params}
-\fitwidth{%
-\begin{tabular}{llll}
+\begin{tabular}{>{\raggedright\arraybackslash}p{5.4cm}>{\raggedright\arraybackslash}p{3.7cm}>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}p{3.4cm}}
 \toprule
 Parameter & Value & Unit & Status \\
 \midrule
@@ -35,5 +35,5 @@ Simulated backtests for critical values & 1,000 & backtests & convention \\
 Agreement threshold with the reference engine & 2 & combined standard errors & convention \\
 Agreement threshold of the closed-form checks & 3 & standard errors & convention \\
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table}

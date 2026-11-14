@@ -22,7 +22,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "_shared"))
 import figkit  # noqa: E402
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from _halfup import fixed, percent, install as _halfup_install  # noqa: E402
+from _halfup import fixed, percent, sci, install as _halfup_install  # noqa: E402
 _halfup_install(figkit)
 
 AGENCIES = (("sp", "S&P"), ("moodys", "Moody's"), ("fitch", "Fitch"))
@@ -158,7 +158,7 @@ def compute() -> dict[str, Any]:
             num[name("lraTwo", aid, g)] = pct(rec["lra"]["rate"][gi], 2)
     pit_max = max(rec["z"][g]["pit_error"] for rec in agencies.values() for g in ZGRADES)
     R["pit_max_error"] = pit_max
-    num[name("pit", "max", "error")] = f"{pit_max:.1e}"
+    num[name("pit", "max", "error")] = sci(pit_max, 1)
     lo_year = lambda zz: sp["labels"][int(np.nanargmin(zz["z"]))]  # noqa: E731
     hi_year = lambda zz: sp["labels"][int(np.nanargmax(zz["z"]))]  # noqa: E731
     for g in ZGRADES:
@@ -420,10 +420,10 @@ def compute() -> dict[str, Any]:
     for aid, rec in agencies.items():
         o = rec["out"]
         p = np.array(o["pooled"]["matrix"], dtype=float)
-        num[name("rowsum", aid)] = f"{np.max(np.abs(p.sum(axis=1) - 1.0)):.0e}"
+        num[name("rowsum", aid)] = sci(float(np.max(np.abs(p.sum(axis=1) - 1.0))), 0)
         for k in ("em", "diagonal", "weighted", "jlt"):
             q = np.array(o["generators"][k]["generator"], dtype=float)
-            num[name("genrow", aid, k)] = f"{np.max(np.abs(q.sum(axis=1))):.0e}"
+            num[name("genrow", aid, k)] = sci(float(np.max(np.abs(q.sum(axis=1)))), 0)
         for gi in (0, 6):
             for k in ("em", "diagonal", "weighted", "jlt"):
                 num[name("pifive", aid, GRADES[gi], k)] = pct(o["generators"][k]["pd_5y"][gi], 3)
@@ -483,7 +483,7 @@ def _z_table(R: dict[str, Any], out: pathlib.Path) -> None:
         for g in ZGRADES:
             zz = R["agencies"][aid]["z"][g]
             rows.append([label, GRADES[g], pct(zz["ttc"], 2), f"{fixed(zz['rho'], 3)}", f"{zz['n']} of {zz['cohorts']}",
-                         f"${fixed(zz['mean'], 2)}$", f"{fixed(zz['sd'], 2)}", f"{fixed(zz['samp_sd'], 2)}", f"{zz['pit_error']:.1e}"])
+                         f"${fixed(zz['mean'], 2)}$", f"{fixed(zz['sd'], 2)}", f"{fixed(zz['samp_sd'], 2)}", sci(zz["pit_error"], 1)])
     figkit.table(
         out / "ratings-zfactor.tex", header, rows, align="llrrrrrrr", wide=True,
         caption=("Credit-cycle factor implied by the yearly default rate of the three speculative grades with a default in most cohorts: "
@@ -657,9 +657,23 @@ def numbers(R: dict[str, Any], out: pathlib.Path) -> pathlib.Path:
     return path
 
 
+#: Tables that the fit-to-width box shrank to 6 pt: they are set at 8 pt with wrapped, right-aligned columns instead.
+_R = ">{\\raggedleft\\arraybackslash}"
+_L = ">{\\raggedright\\arraybackslash}"
+SET_AT_SIZE = {
+    "ratings-calibration.tex": ("lrrrrrrrr", _L + "p{4.3cm}" + (_R + "p{1.1cm}" + _R + "p{1.1cm}" + _R + "p{1.6cm}" + _R + "p{1.2cm}") * 2),
+}
+
+
 def fit_width(path: pathlib.Path) -> None:
     """Wrap the tabular of a table file in a box that shrinks it to the line width when it is wider (never enlarges it)."""
     text = path.read_text(encoding="utf-8")
+    if path.name in SET_AT_SIZE:
+        old_spec, new_spec = SET_AT_SIZE[path.name]
+        text = text.replace("\\small\n", "\\scriptsize\n\\setlength{\\tabcolsep}{2.5pt}\n", 1)
+        text = text.replace("\\begin{tabular}{" + old_spec + "}", "\\begin{tabular}{" + new_spec + "}", 1)
+        path.write_text(text, encoding="utf-8", newline="\n")
+        return
     if "\\resizebox" in text or "\\fitwidth" in text:
         return
     text = text.replace("\\begin{tabular}", "\\fitwidth{%\n\\begin{tabular}", 1)
