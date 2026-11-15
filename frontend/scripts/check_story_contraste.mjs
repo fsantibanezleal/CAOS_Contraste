@@ -61,7 +61,7 @@ if (!base) {
 }
 
 const errors = [];
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
 const watch = (page) => {
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });

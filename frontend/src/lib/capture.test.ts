@@ -66,7 +66,7 @@ async function expectedViews(caseId: string, variantIndex: number | null = null)
   const serveModule = '@fasl-work/caos-app-shell/serve'; // plain JavaScript in the shell, no types
   const { servePages } = (await import(/* @vite-ignore */ serveModule)) as { servePages: (dir: string, base: string) => Promise<{ url: string; close: () => Promise<void> }> };
   const server = await servePages(dist, '/');
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ args: ['--no-proxy-server'] });
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
     // Playwright's 30 s default per action is sized for an idle machine. Inside the whole vitest run (639 files on every core) a
