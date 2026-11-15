@@ -63,6 +63,21 @@ The interest rate is recorded only from the FY2008 approvals: the earlier loans 
 Between R minus 12 months and R each loan is continuing, repaid, charged off or new; the rules are the module text of
 `rollforward.py`. The engine builds the rows and judges the identities on the contract's tolerance basis.
 
+## The S-4 intervals (CT-518 to CT-520)
+
+The S-4 hypothesis (`backtest.S4_HYPOTHESIS`, written before the run) is judged by two point differences at each reporting date and by a
+count of the dates where both favour PC-Hazard. Beside that verdict, which stays the rule as written, each date's models document carries
+`fit.s4_bootstrap`: the loan-level evaluation bootstrap of the two differences (`s4_bootstrap.py`, the resampling of `cases/bootstrap.py`).
+The out-of-time accounts (those with a full 36-month life) are resampled with replacement, as many as there are, 1,000 times with the seed
+of the bake; the predictions of Cox and PC-Hazard are held fixed, so the interval is the sampling noise of the comparison on this book and
+not the uncertainty of the fits. A replicate is a weighted sample of the accounts (the count of times each is drawn): the integrated Brier
+score is `ifrs9.lifetime_pd_backtest` of the engine on the predicted mean and the Kaplan-Meier estimate of the resample, and the decile gap is
+the deciles of the resample by predicted risk against the Aalen-Johansen estimate of each decile, with Kaplan-Meier and Aalen-Johansen taken
+with integer weights (checked against the unweighted estimators on the expanded sample, and the replicate that draws every account once
+against `s4_evaluation`, which the bake asserts before it writes an interval). The interval is the 2.5 and 97.5 percentiles of the replicate
+differences. A date with fewer than 30 defaults followed, a date where the rung was not fitted, and a measure with no observed horizon give a
+null interval with its reason. `fit.s4_bootstrap.overall` counts the dates where the hypothesis holds with both intervals excluding zero.
+
 ## Decisions taken without the owner (to confirm)
 
 - No management overlay is invented for the public portfolio (the overlays array is empty).
