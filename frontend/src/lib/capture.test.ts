@@ -69,6 +69,11 @@ async function expectedViews(caseId: string, variantIndex: number | null = null)
   const browser = await chromium.launch();
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+    // Playwright's 30 s default per action is sized for an idle machine. Inside the whole vitest run (639 files on every core) a
+    // tab click on a chart-heavy case waited past it while the renderer was starved, and the same file alone passed in 110 s
+    // (the 1.00.001 verdict run, 2026-11-15). The read is unchanged; only the wait for each action is longer.
+    page.setDefaultTimeout(120_000);
+    page.setDefaultNavigationTimeout(120_000);
     await page.goto(`${server.url}app?case=${caseId}`, { waitUntil: 'load' });
     await page.waitForSelector('[data-case-workbench] .tablist [role="tab"]');
     if (variantIndex !== null) {
@@ -118,7 +123,7 @@ describe.skipIf(!runnable)('the capture tool on two cases at one capture', () =>
     }
     expect(new Set(rows.filter((r) => r.captured).map((r) => r.case))).toEqual(new Set(['C01', 'C02']));
     expect(rows.every((r) => r.route === '/app' && r.capture.id === '1280x800-light-en')).toBe(true);
-  }, 120_000);
+  }, 600_000);
 
   it('names an existing PNG for every row, with a deterministic name from the view', () => {
     for (const r of rows.filter((x) => x.captured)) {
