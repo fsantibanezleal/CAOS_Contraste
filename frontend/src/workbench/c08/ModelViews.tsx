@@ -51,6 +51,67 @@ function NoRows({ sel, title, why }: { sel: C08Sel; title: { en: string; es: str
   );
 }
 
+type MlBenchmark = NonNullable<ReturnType<typeof outputsOf>>['ml_benchmark'];
+
+/** Whether an interval lies on one side of zero, in words (a null stays "not available"). */
+const yesNo = (v: boolean | null, lang: 'en' | 'es') => (v === null ? formatNumber(null, lang) : pick(v ? { en: 'yes', es: 'sí' } : { en: 'no', es: 'no' }, lang));
+
+/**
+ * S-5 beside the verdict: the RMSE difference of the better of the random forest and the neural network against each of the six models
+ * before them and against the best of the six, each with its 95 percent bootstrap interval (positive: the forest or the network is lower).
+ * The numbers are the document's (`outputs.ml_benchmark`); a model that was not fitted has no comparison, with its reason.
+ */
+function MlIntervals({ sel, boot }: { sel: C08Sel; boot: MlBenchmark }) {
+  const lang = useShellLang();
+  const o = boot.overall;
+  const label = (id: string) => rungLabel(sel, id);
+  const row = (key: string, name: { en: string; es: string }, d: MlBenchmark['against_best']) => (
+    <tr key={key} data-ml-row={key} data-excludes-zero={String(d.excludes_zero)}>
+      <td className="ct-text">{pick(name, lang)}</td>
+      <td><MaybeNumber value={d.difference} reason={d.difference === null && d.reason ? pick(d.reason, lang) : null} format={(v) => d4(v, lang)} /></td>
+      <td><MaybeNumber value={d.lo} reason={d.difference !== null && d.reason ? pick(d.reason, lang) : null} format={(v) => d4(v, lang)} /></td>
+      <td><MaybeNumber value={d.hi} reason={null} format={(v) => d4(v, lang)} /></td>
+      <td>{yesNo(d.excludes_zero, lang)}</td>
+    </tr>
+  );
+  const best = boot.against_best;
+  return (
+    <div data-block="ml-benchmark">
+      <table className="caos-table ct-wrap-head" data-table="ml-intervals">
+        <thead>
+          <tr>
+            <th className="ct-text">{pick({ en: 'RMSE gain of the better of the random forest and the neural network against', es: 'Mejora de RMSE del mejor entre el bosque aleatorio y la red neuronal frente a' }, lang)}</th>
+            <th>{pick({ en: 'Gain', es: 'Mejora' }, lang)}</th>
+            <th>{pick({ en: '95% interval, lower', es: 'Intervalo de 95 %, inferior' }, lang)}</th>
+            <th>{pick({ en: '95% interval, upper', es: 'Intervalo de 95 %, superior' }, lang)}</th>
+            <th>{pick({ en: 'Excludes zero', es: 'Excluye el cero' }, lang)}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {row('best', best.rung_id === null ? { en: 'the best of the six earlier models', es: 'el mejor de los seis modelos anteriores' } : {
+            en: `the best of the six earlier models (${pick(label(best.rung_id), 'en')})`,
+            es: `el mejor de los seis modelos anteriores (${pick(label(best.rung_id), 'es')})`,
+          }, best)}
+          {boot.against.map((d) => row(d.rung_id ?? 'none', label(d.rung_id ?? ''), d))}
+        </tbody>
+      </table>
+      <p className="ct-note" data-note="ml-bootstrap-method" style={{ whiteSpace: 'normal' }}>{pick(boot.method, lang)}</p>
+      {boot.evaluated ? null : (
+        <p className="ct-note" data-reason="ml-bootstrap" style={{ whiteSpace: 'normal' }}>{boot.reason ? pick(boot.reason, lang) : ''}</p>
+      )}
+      <p className="ct-note" data-note="ml-bootstrap-count" style={{ whiteSpace: 'normal' }}>
+        {pick(
+          {
+            en: `Over all test cohorts the hypothesis holds in ${o.wins} of ${o.evaluable} evaluable cohorts; in ${o.wins_excluding_zero} of those ${o.wins} the interval against the best of the six excludes zero. The verdict is the rule written before the run; the intervals do not change it.`,
+            es: `En todas las cohortes de prueba la hipótesis se cumple en ${o.wins} de ${o.evaluable} cohortes evaluables; en ${o.wins_excluding_zero} de esas ${o.wins} el intervalo frente al mejor de los seis excluye el cero. El veredicto es la regla escrita antes de la corrida; los intervalos no lo cambian.`,
+          },
+          lang,
+        )}
+      </p>
+    </div>
+  );
+}
+
 /** The LGD models on the test cohort: error, rank correlation and the calibration gap, and the tests the engine returned. */
 export function RungsView({ sel }: { sel: C08Sel | null }) {
   const lang = useShellLang();
@@ -110,6 +171,7 @@ export function RungsView({ sel }: { sel: C08Sel | null }) {
             </tbody>
           </table>
           <U6TestsTable variant={withPortfolioScope(sel.data.variant, lang)} modelLabel={(id) => pick(label(id), lang)} />
+          <MlIntervals sel={sel} boot={o.ml_benchmark} />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>

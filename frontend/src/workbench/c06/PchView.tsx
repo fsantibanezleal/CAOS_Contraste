@@ -8,7 +8,7 @@ import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { MaybeNumber, pct, unionX } from './format';
 import { PCT_AXIS, rungName } from './ValidationViews';
-import { outputsOf, type C06Sel } from './selection';
+import { fitOf, outputsOf, type C06Fit, type C06Sel } from './selection';
 
 interface DecileCell {
   months: number;
@@ -45,6 +45,19 @@ interface PchRecord {
   details?: { evaluated?: boolean; decile_calibration?: DecileCell[]; evaluation?: PchEvaluation; training?: { best_epoch: number; epochs_run: number; holdout_loans: number; train_loans: number } };
 }
 
+/** The bootstrap block of the models document (`fit.s4_bootstrap`): the interval of each S-4 difference and the count over the dates. */
+export type PchBootstrap = NonNullable<C06Fit['s4_bootstrap']>;
+
+const MEASURE_TEXT: Record<string, BiText> = {
+  integrated_brier: { en: 'Integrated Brier score', es: 'Puntaje de Brier integrado' },
+  mean_decile_gap: { en: 'Mean absolute decile gap against Aalen-Johansen', es: 'Brecha absoluta media por decil frente a Aalen-Johansen' },
+};
+
+/** The `fit.s4_bootstrap` block of the date's models document, or null when the document has none. */
+export function bootstrapOf(sel: Pick<C06Sel, 'data'> | null): PchBootstrap | null {
+  return fitOf(sel)?.s4_bootstrap ?? null;
+}
+
 const HORIZON_COLOR: Record<number, ShellColorToken> = { 12: '--color-accent', 24: '--color-warn', 36: '--color-magenta' };
 
 /** The model records of the models artifact that the S-4 evaluation lives in. */
@@ -64,6 +77,56 @@ const CRITERIA: Array<{ key: keyof PchEvaluation['criteria']; label: BiText }> =
   { key: 'higher_c_index', label: { en: 'Higher c-index (reported, not in the verdict)', es: 'Índice c mayor (se informa, no entra en el veredicto)' } },
 ];
 const yesNo = (v: boolean | null): BiText => (v === null ? { en: 'not observed', es: 'sin observar' } : v ? { en: 'yes', es: 'sí' } : { en: 'no', es: 'no' });
+
+/** Each S-4 difference with its interval beside it, and the count of the dates where the hypothesis holds with both intervals excluding zero. */
+function IntervalPanel({ boot }: { boot: PchBootstrap }) {
+  const lang = useShellLang();
+  const o = boot.overall;
+  const brier = (v: number) => formatNumber(v, lang, { decimals: 5 });
+  return (
+    <div data-block="pch-bootstrap">
+      <table className="caos-table ct-wrap-head" data-table="pch-interval">
+        <thead>
+          <tr>
+            <th className="ct-text">{pick({ en: 'Difference, PC-Hazard minus Cox', es: 'Diferencia, PC-Hazard menos Cox' }, lang)}</th>
+            <th>{pick({ en: 'Difference', es: 'Diferencia' }, lang)}</th>
+            <th>{pick({ en: '95% interval, lower', es: 'Intervalo de 95 %, inferior' }, lang)}</th>
+            <th>{pick({ en: '95% interval, upper', es: 'Intervalo de 95 %, superior' }, lang)}</th>
+            <th>{pick({ en: 'Excludes zero', es: 'Excluye el cero' }, lang)}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {boot.differences.map((d) => {
+            const fmt = d.measure === 'integrated_brier' ? brier : (v: number) => pct(v, lang, 3);
+            const why = d.reason ? pick(d.reason, lang) : null;
+            return (
+              <tr key={d.measure} data-measure={`interval-${d.measure}`} data-excludes-zero={String(d.excludes_zero)}>
+                <td className="ct-text">{pick(MEASURE_TEXT[d.measure] ?? { en: d.measure, es: d.measure }, lang)}</td>
+                <td><MaybeNumber value={d.difference} reason={d.difference === null ? why : null} format={fmt} /></td>
+                <td><MaybeNumber value={d.lo} reason={d.difference !== null ? why : null} format={fmt} /></td>
+                <td><MaybeNumber value={d.hi} reason={null} format={fmt} /></td>
+                <td>{d.excludes_zero === null ? formatNumber(null, lang) : pick(yesNo(d.excludes_zero), lang)}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <p className="ct-note" data-note="pch-bootstrap-method" style={{ whiteSpace: 'normal' }}>{pick(boot.method, lang)}</p>
+      {boot.evaluated ? null : (
+        <p className="ct-note" data-reason="pch-bootstrap" style={{ whiteSpace: 'normal' }}>{boot.reason ? pick(boot.reason, lang) : ''}</p>
+      )}
+      <p className="ct-note" data-note="pch-bootstrap-count" style={{ whiteSpace: 'normal' }}>
+        {pick(
+          {
+            en: `Over all reporting dates the hypothesis holds at ${o.holds_at} of ${o.evaluable} evaluable dates; at ${o.holds_excluding_zero} of those ${o.holds_at} both intervals exclude zero. The verdict is the rule written before the run; the intervals do not change it.`,
+            es: `En todas las fechas de reporte la hipótesis se cumple en ${o.holds_at} de ${o.evaluable} fechas evaluables; en ${o.holds_excluding_zero} de esas ${o.holds_at} ambos intervalos excluyen el cero. El veredicto es la regla escrita antes de la corrida; los intervalos no lo cambian.`,
+          },
+          lang,
+        )}
+      </p>
+    </div>
+  );
+}
 
 export function PchView({ sel }: { sel: C06Sel | null }) {
   const lang = useShellLang();
@@ -96,6 +159,7 @@ export function PchView({ sel }: { sel: C06Sel | null }) {
     { label: { en: `Cox, ${h} m`, es: `Cox, ${h} m` }, values: gap(coxRows, h), color: HORIZON_COLOR[h] ?? ('--color-accent' as ShellColorToken), width: 1.8, dash: [6, 3] },
   ]);
   const names = { pch: pick(rungName(sel, 'L3-pch'), lang), cox: pick(rungName(sel, 'L2-cox'), lang) };
+  const boot = bootstrapOf(sel);
   const verdictKey = String(ev.holds_at_date) as 'true' | 'false' | 'null';
   return (
     <>
@@ -176,6 +240,7 @@ export function PchView({ sel }: { sel: C06Sel | null }) {
                 )}
               </li>
             </ul>
+            {boot ? <IntervalPanel boot={boot} /> : null}
           </div>
         </PlotCard>
       </ViewsRow>
