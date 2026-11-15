@@ -9,6 +9,7 @@ import { LIGHT_TEXT } from '../../lib/policy';
 import { testName } from '../c20/U14Common';
 import { modelName, segmentName } from '../names';
 import { es } from './localise';
+import { markRefs } from '../../lib/refs';
 
 // a regulation citation ("29 CFR 1607.4(D)"), a row of a regulation's annex ("row 10.2", "fila 10.2") and the arithmetic of rows a
 // label names ("(4.4+4.5+4.6)", "(8%+7.1+7.2)", "(6-7.2)", "(1.1 - 5)"): references kept as the source writes them
@@ -21,11 +22,12 @@ const TOKEN = new RegExp(`(${CITATION.source})|(${RANGE.source})|(${CODE.source}
 
 /** A string with its citations marked as not to be translated and its ranges kept on one line. */
 export function Marked({ children }: { children: string }): ReactNode {
+  const lang = useShellLang();
   const parts: ReactNode[] = [];
   let at = 0;
   for (const m of children.matchAll(TOKEN)) {
     const i = m.index ?? 0;
-    if (i > at) parts.push(children.slice(at, i));
+    if (i > at) parts.push(<Fragment key={`p${at}`}>{markRefs(children.slice(at, i), lang)}</Fragment>);
     parts.push(
       m[3] ? (
         <code key={i} translate="no" lang="en">{m[0]}</code>
@@ -37,7 +39,7 @@ export function Marked({ children }: { children: string }): ReactNode {
     );
     at = i + m[0].length;
   }
-  if (at < children.length) parts.push(children.slice(at));
+  if (at < children.length) parts.push(<Fragment key="tail">{markRefs(children.slice(at), lang)}</Fragment>);
   return <Fragment>{parts}</Fragment>;
 }
 

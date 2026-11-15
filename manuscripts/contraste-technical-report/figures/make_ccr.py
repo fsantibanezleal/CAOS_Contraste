@@ -196,19 +196,21 @@ def calibration_sensitivity() -> None:
 
     ns = out("netting-set")
     t = np.asarray(ns["exposure"]["time_grid_years"])
-    fig, ax = plt.subplots(1, 2, figsize=(7.4, 3.0))
+    fig, ax = plt.subplots(1, 2, figsize=(7.4, 3.5))
     names = {"base": "Base", "a-plus-1se": "a plus one s.e.", "a-minus-1se": "a minus one s.e.",
              "sigma-plus-1se": "sigma plus one s.e.", "sigma-minus-1se": "sigma minus one s.e."}
     for k, r in enumerate(ns["calibration_sensitivity"]):
-        ax[0].plot(t, r["ee"]["values"], label=names[r["case"]], markevery=3, **figkit.STYLES[k])
-        ax[1].plot(t, r["pfe"]["values"], label=names[r["case"]], markevery=3, **figkit.STYLES[k])
+        ax[0].plot(t, np.asarray(r["ee"]["values"]) / 1e6, label=names[r["case"]], markevery=3, **figkit.STYLES[k])
+        ax[1].plot(t, np.asarray(r["pfe"]["values"]) / 1e6, label=names[r["case"]], markevery=3, **figkit.STYLES[k])
     ax[0].set_title("(a) Expected exposure")
     ax[1].set_title("(b) Potential future exposure at 95%")
     for a in ax:
         a.set_xlabel("Time from the valuation date (years)")
-    ax[0].set_ylabel("USD, netting set")
-    ax[0].legend(frameon=False, fontsize=6.5, loc="upper left")
-    fig.tight_layout()
+    ax[0].set_ylabel("USD million, netting set")
+    # one legend under both panels: no label sits on a curve
+    handles, labels = ax[0].get_legend_handles_labels()
+    fig.legend(handles, labels, frameon=False, fontsize=6.5, ncol=5, loc="lower center")
+    fig.tight_layout(rect=(0, 0.08, 1, 1))
     figkit.save(fig, HERE, "ccr-sensitivity")
 
 
@@ -218,13 +220,13 @@ def girr() -> None:
     ns = out("netting-set")
     tenors = figkit.doc("C12/models-hw1f-treasury-2000-2025.json")["fit"]["girr_parameters"]["tenors_years"]
     x = np.arange(len(tenors))
-    fig, ax = plt.subplots(1, 2, figsize=(7.4, 3.0))
+    fig, ax = plt.subplots(1, 2, figsize=(7.4, 3.8))
     ax[0].bar(x, np.asarray(ns["girr"]["weighted_sensitivities"]) / 1e3, color="0.35", edgecolor="0.0", linewidth=0.6)
     ax[0].set_xticks(x)
     ax[0].set_xticklabels([f"{t:g}" for t in tenors])
     ax[0].set_xlabel("GIRR tenor (years)")
     ax[0].set_ylabel("Weighted sensitivity (USD thousand)")
-    ax[0].set_title("(a) Netting set, weights divided by sqrt 2")
+    ax[0].set_title(r"(a) Netting set, weights divided by $\sqrt{2}$")
     names = ["single-swap", "netting-set"]
     sc = ["low", "medium", "high"]
     w = 0.25
@@ -237,7 +239,7 @@ def girr() -> None:
     ax[1].set_ylabel("Bucket charge (USD thousand)")
     ax[1].set_title("(b) Charge by correlation scenario")
     ax[1].set_ylim(0, 800)
-    ax[1].legend(frameon=False, fontsize=6.5, loc="upper center", ncol=3)
+    ax[1].legend(frameon=False, fontsize=6.5, loc="upper center", ncol=1, bbox_to_anchor=(0.5, -0.16))
     fig.tight_layout()
     figkit.save(fig, HERE, "ccr-girr")
 

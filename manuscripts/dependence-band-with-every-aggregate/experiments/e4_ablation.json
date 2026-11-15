@@ -297,7 +297,7 @@
    "missed": []
   },
   {
-   "variant": "without the sharp bounds (interior rows, base and stressed matrix)",
+   "variant": "bounds removed (interior rows, base and stressed matrix)",
    "kind": "interval",
    "low": 488070.9283676742,
    "high": 584399.6546551468,
@@ -311,7 +311,7 @@
    ]
   },
   {
-   "variant": "without the stressed matrix (interior rows of the base matrix)",
+   "variant": "bounds and stressed matrix removed (interior rows of the base matrix)",
    "kind": "interval",
    "low": 488070.9283676742,
    "high": 546940.3267302664,
@@ -331,7 +331,7 @@
    ]
   },
   {
-   "variant": "without the t copula rows (square-root rule and Gaussian copula, base matrix)",
+   "variant": "bounds, stressed matrix and t copula rows removed (square-root rule and Gaussian copula, base matrix)",
    "kind": "interval",
    "low": 488070.9283676742,
    "high": 528106.3388493821,
@@ -489,7 +489,7 @@
    }
   },
   {
-   "variant": "without the t copula rows, with the stressed matrix (square-root rule and Gaussian copula, both matrices)",
+   "variant": "bounds and t copula rows removed (square-root rule and Gaussian copula, both matrices)",
    "kind": "interval",
    "low": 488070.9283676742,
    "high": 568520.4605747111,
@@ -506,7 +506,7 @@
    ]
   },
   {
-   "variant": "t copula rows only (4, 8 and 30 degrees of freedom, both matrices)",
+   "variant": "bounds, square-root rule and Gaussian copula removed (t copula rows only, both matrices)",
    "kind": "interval",
    "low": 498751.7239500787,
    "high": 584399.6546551468,
@@ -520,7 +520,29 @@
     "t3-crisis",
     "regime-mixture"
    ]
+  },
+  {
+   "variant": "stressed matrix removed from the full band (bounds and the interior rows of the base matrix)",
+   "kind": "interval",
+   "low": 118508.51353539355,
+   "high": 823346.9923477678,
+   "covered": 10,
+   "of": 10,
+   "share": 1.0,
+   "median_width_over_truth": 1.262549949453728,
+   "missed": []
+  },
+  {
+   "variant": "t copula rows removed from the full band (bounds, square-root rule and Gaussian copula, both matrices)",
+   "kind": "interval",
+   "low": 118508.51353539355,
+   "high": 823346.9923477678,
+   "covered": 10,
+   "of": 10,
+   "share": 1.0,
+   "median_width_over_truth": 1.262549949453728,
+   "missed": []
   }
  ],
- "seconds": 79
+ "seconds": 29
 }

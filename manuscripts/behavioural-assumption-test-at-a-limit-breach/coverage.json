@@ -6,6 +6,8 @@
     "tab:fitted-power",
     "tab:constructed",
     "tab:c14-history",
+    "tab:weight-override-auc",
+    "tab:anticipation",
     "fig:operating-points"
   ],
   "claims": {

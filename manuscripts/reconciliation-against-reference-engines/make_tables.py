@@ -164,10 +164,10 @@ def main() -> None:
                  "C2 and C3"])
     for r in rt["defect_relative"]:
         flags = [k for k in ("C1", "C2", "C3") if r["flag"][f"{k}_binomial"]]
-        rows.append([R("Relative error $\\epsilon$ in SciPy"), sci(r["eps"], 0), "$0$" if r["C1_binomial"] == 0 else sci(r["C1_binomial"]),
+        rows.append([R("Relative error $\\epsilon$ in SciPy"), f"$10^{{{int(round(__import__('math').log10(r['eps'])))}}}$", "$0$" if r["C1_binomial"] == 0 else sci(r["C1_binomial"]),
                      "$0$" if r["C2_binomial"] == 0 else sci(r["C2_binomial"]), sci(r["C3_binomial"]), " and ".join(flags) if flags else "none"])
-    write_table("routes-defects.tex", [(None, ["Planted defect", "Size", "C1 reuse", "C2 same library", "C3 independent", "Flagged by"], rows,
-                                        f"{XL}{P(1.2, 'l')}{P(1.9, 'l')}{P(2.1, 'l')}{P(2.3, 'l')}{P(2.2, 'l')}")],
+    write_table("routes-defects.tex", [(None, ["Planted defect", "Relative size", "C1 reuse", "C2 same library", "C3 independent", "Flagged by"], rows,
+                                        f"{XL}{P(1.6, 'l')}{P(1.8, 'l')}{P(2.1, 'l')}{P(2.3, 'l')}{P(2.2, 'l')}")],
                 caption="Largest difference between the defective engine's binomial p-value and three kinds of reference on the grid of 36 cases, for a tail convention moved by one and for a "
                         "relative error planted inside SciPy; a defect is flagged when the difference exceeds the tolerance of $10^{-9}$.",
                 label="tab:routes-defects")
@@ -302,9 +302,9 @@ def main() -> None:
         ["R3", "the product's rule passes at least half of the seeds, uncollateralised variants", nm["nPredRthree"]["value"], "fixed before the replicates"],
         ["R4", "the 10-day collateralised variant fails on every seed, mean largest $\\lvert z\\rvert$ above 5", nm["nPredRfour"]["value"], "fixed before the replicates"],
         ["R5", "CVA $z$ of that variant below $-5$ on at least 7 of 8 seeds", nm["nPredRfive"]["value"], "fixed before the replicates"],
-        ["M1", "maximum-T rules: size between 3 and 8 percent on both variants", nm["nPredMone"]["value"], "written after the review and before the maximum-T run, by file times only"],
-        ["M2", "maximum-T rule with pair-aware errors: power against a 2 percent volatility error at least that of the bound 3.18; it holds by construction, because the estimated bound is below 3.18 on the same statistic, and is no evidence", nm["nPredMtwo"]["value"], "written after the review and before the maximum-T run, by file times only"],
-        ["M3", "maximum-T rule with product errors: power against that error below the pair-aware one", nm["nPredMthree"]["value"], "written after the review and before the maximum-T run, by file times only"],
+        ["M1", "maximum-T rules: size between 3 and 8 percent on both variants", nm["nPredMone"]["value"], "written after the first measurement and before the maximum-T run, by file times only"],
+        ["M2", "maximum-T rule with pair-aware errors: power against a 2 percent volatility error at least that of the bound 3.18; it holds by construction, because the estimated bound is below 3.18 on the same statistic, and is no evidence", nm["nPredMtwo"]["value"], "written after the first measurement and before the maximum-T run, by file times only"],
+        ["M3", "maximum-T rule with product errors: power against that error below the pair-aware one", nm["nPredMthree"]["value"], "written after the first measurement and before the maximum-T run, by file times only"],
     ]
     write_table("outcomes.tex", [
         ("A. The hypotheses of the design document", ["Hypothesis", "Outcome", "Evidence"], rows, f"l{P(3.2, 'l')}{XL}"),

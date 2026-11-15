@@ -18,6 +18,7 @@ import { evidenceText } from '../names';
 import { Pending } from '../Pending';
 import { COUNT_TESTS, curves, excessOf, isC22, rateOf, rowKeyOf, rule, seriesStyle, useLiveCurves, useLivePortfolio, type C22Sel, type C22Variant } from './selection';
 import { CODE_BREAKS_STYLE, codeBreaks } from './codeBreaks';
+import { markRefs } from '../../lib/refs';
 
 const LIVE = 'live' as const;
 const pct = (lang: 'en' | 'es', v: number | null | undefined, decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
@@ -627,7 +628,7 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
             <tbody>
               {v.tests.map((t, i) => (
                 <tr key={`${t.test_id}-${i}`}>
-                  <td className="ct-text" title={t.test_id}>{pick(testName(t.test_id), lang)}</td>
+                  <td className="ct-text" title={t.test_id}>{markRefs(pick(testName(t.test_id), lang), lang)}</td>
                   {/* the engine's configuration key, marked as code as the Generators appendix lists it (the ruling of 2026-10-24); the
                       dataset of the row, so the One report's segment (R5 ruling 2) */}
                   <td className="ct-text" data-segment={t.model_id ?? undefined}><code translate="no">{t.model_id}</code></td>

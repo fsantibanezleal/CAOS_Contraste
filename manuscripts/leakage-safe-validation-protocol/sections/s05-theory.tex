@@ -50,35 +50,35 @@ The bound is for the worst case, in which the estimates are independent. Configu
 
 \subsection{A leak that exists only in development}
 
-The planted leak of the engine's generator is the case in which a feature carries the outcome in development and is noise at decision time. Let the score be $S=w_1G+w_2F$, where $G\sim\mathcal N(d\,y,1)$ is the genuine feature and $F$ an independent feature that is $\mathcal N(s\,y,1)$ in development and $\mathcal N(0,1)$ at decision time.
+The planted leak of the engine's generator is the case in which a feature carries the outcome in development and is noise at decision time. Let the score be $S=w_1G+w_2F$, where $G\sim\mathcal N(d\,y,1)$ is the genuine feature and $F$ an independent feature that is $\mathcal N(\delta\,y,1)$ in development and $\mathcal N(0,1)$ at decision time.
 
 \begin{proposition}[AUC of a score with a planted leak]
 \label{prop:leakauc}
 In development, and at decision time, the AUC of $S$ is
 \begin{equation}
-\AUC_{\mathrm{dev}}=\Phi\!\left(\frac{w_1d+w_2s}{\sqrt{2(w_1^2+w_2^2)}}\right),\qquad
+\AUC_{\mathrm{dev}}=\Phi\!\left(\frac{w_1d+w_2\delta}{\sqrt{2(w_1^2+w_2^2)}}\right),\qquad
 \AUC_{\mathrm{cur}}=\Phi\!\left(\frac{w_1d}{\sqrt{2(w_1^2+w_2^2)}}\right),
 \label{eq:leakauc}
 \end{equation}
-where $\Phi$ is the standard normal distribution function. The development AUC is largest for $w\propto(d,s)$, where it equals $\Phi\bigl(\sqrt{(d^2+s^2)/2}\bigr)$, and the decision-time AUC of that score is $\Phi\bigl(d^2/\sqrt{2(d^2+s^2)}\bigr)$, which is below the AUC $\Phi(d/\sqrt2)$ of the genuine feature alone whenever $s>0$. For equal weights, $\AUC_{\mathrm{dev}}=\Phi((d+s)/2)$ and $\AUC_{\mathrm{cur}}=\Phi(d/2)$.
+where $\Phi$ is the standard normal distribution function. The development AUC is largest for $w\propto(d,\delta)$, where it equals $\Phi\bigl(\sqrt{(d^2+\delta^2)/2}\bigr)$, and the decision-time AUC of that score is $\Phi\bigl(d^2/\sqrt{2(d^2+\delta^2)}\bigr)$, which is below the AUC $\Phi(d/\sqrt2)$ of the genuine feature alone whenever $\delta>0$. For equal weights, $\AUC_{\mathrm{dev}}=\Phi((d+\delta)/2)$ and $\AUC_{\mathrm{cur}}=\Phi(d/2)$.
 \end{proposition}
 \begin{proof}
-The score difference $S_1-S_0$ between a defaulter and a survivor is normal with mean $w_1d+w_2s$ in development, $w_1d$ at decision time, and variance $2(w_1^2+w_2^2)$, so the AUC $\Prob(S_1-S_0>0)$ is $\Phi(\mu/\sqrt{2(w_1^2+w_2^2)})$ with the mean $\mu$ of the case. By the Cauchy-Schwarz inequality $w_1d+w_2s\le\sqrt{d^2+s^2}\sqrt{w_1^2+w_2^2}$, with equality at $w\propto(d,s)$, which gives the maximum; substituting $w_1/\sqrt{w_1^2+w_2^2}=d/\sqrt{d^2+s^2}$ gives the decision-time AUC. The AUC of the genuine feature alone is the case $w_2=0$. The comparison follows from $d/\sqrt{d^2+s^2}<1$.
+The score difference $S_1-S_0$ between a defaulter and a survivor is normal with mean $w_1d+w_2\delta$ in development, $w_1d$ at decision time, and variance $2(w_1^2+w_2^2)$, so the AUC $\Prob(S_1-S_0>0)$ is $\Phi(\mu/\sqrt{2(w_1^2+w_2^2)})$ with the mean $\mu$ of the case. By the Cauchy-Schwarz inequality $w_1d+w_2\delta\le\sqrt{d^2+\delta^2}\sqrt{w_1^2+w_2^2}$, with equality at $w\propto(d,\delta)$, which gives the maximum; substituting $w_1/\sqrt{w_1^2+w_2^2}=d/\sqrt{d^2+\delta^2}$ gives the decision-time AUC. The AUC of the genuine feature alone is the case $w_2=0$. The comparison follows from $d/\sqrt{d^2+\delta^2}<1$.
 \end{proof}
-At $d=1$ and $s=1$ with equal weights, the development AUC is $\Phi(1)=\nv{e3.s1.0.devcf}$ and the decision-time AUC $\Phi(\tfrac12)=\nv{e3.s1.0.curcf}$: the leak inflates the development AUC by $\nv{e3.s1.0.infl}$, and the model is worse at decision time than the genuine feature alone, whose AUC is $\Phi(1/\sqrt2)=\nv{th.opt.1.0.clean}$. The test that compares the current AUC with its development value sees the whole gap. The index that compares the distribution of the leaked feature between development and a reference sees a much smaller quantity.
+At $d=1$ and $\delta=1$ with equal weights, the development AUC is $\Phi(1)=\nv{e3.s1.0.devcf}$ and the decision-time AUC $\Phi(\tfrac12)=\nv{e3.s1.0.curcf}$: the leak inflates the development AUC by $\nv{e3.s1.0.infl}$, and the model is worse at decision time than the genuine feature alone, whose AUC is $\Phi(1/\sqrt2)=\nv{th.opt.1.0.clean}$. The test that compares the current AUC with its development value sees the whole gap. The index that compares the distribution of the leaked feature between development and a reference sees a much smaller quantity.
 
 \begin{proposition}[Stability index of the leaked feature]
 \label{prop:psi}
-Let the leaked feature be $\mathcal N(0,1)$ for survivors and $\mathcal N(s,1)$ for the share $\pi$ of defaulters, and let the reference sample be $\mathcal N(0,1)$. For a binning with reference probabilities $p_b$ and defaulter probabilities $r_b=\Phi(e_b-s)-\Phi(e_{b-1}-s)$, the population stability index of the mixture is
+Let the leaked feature be $\mathcal N(0,1)$ for survivors and $\mathcal N(\delta,1)$ for the share $\pi$ of defaulters, and let the reference sample be $\mathcal N(0,1)$. For a binning with reference probabilities $p_b$ and defaulter probabilities $r_b=\Phi(e_b-\delta)-\Phi(e_{b-1}-\delta)$, the population stability index of the mixture is
 \begin{equation}
-\mathrm{PSI}=\pi^2\sum_b\frac{(r_b-p_b)^2}{p_b}+O(\pi^3),\qquad\text{and, for fine bins, }\ \mathrm{PSI}\approx\pi^2\bigl(e^{s^2}-1\bigr).
+\mathrm{PSI}=\pi^2\sum_b\frac{(r_b-p_b)^2}{p_b}+O(\pi^3),\qquad\text{and, for fine bins, }\ \mathrm{PSI}\approx\pi^2\bigl(e^{\delta^2}-1\bigr).
 \label{eq:psi}
 \end{equation}
 \end{proposition}
 \begin{proof}
-The mixture has bin probabilities $m_b=p_b+\pi(r_b-p_b)$. With $x_b=\pi(r_b-p_b)/p_b$ the index is $\sum_b(m_b-p_b)\ln(m_b/p_b)=\sum_bp_bx_b\ln(1+x_b)=\sum_bp_b\bigl(x_b^2-\tfrac12x_b^3+\dots\bigr)$, and the quadratic term is the first term of~\eqref{eq:psi}. For fine bins $\sum_b(r_b-p_b)^2/p_b$ tends to the chi-square divergence between $\mathcal N(s,1)$ and $\mathcal N(0,1)$, which is $e^{s^2}-1$.
+The mixture has bin probabilities $m_b=p_b+\pi(r_b-p_b)$. With $x_b=\pi(r_b-p_b)/p_b$ the index is $\sum_b(m_b-p_b)\ln(m_b/p_b)=\sum_bp_bx_b\ln(1+x_b)=\sum_bp_b\bigl(x_b^2-\tfrac12x_b^3+\dots\bigr)$, and the quadratic term is the first term of~\eqref{eq:psi}. For fine bins $\sum_b(r_b-p_b)^2/p_b$ tends to the chi-square divergence between $\mathcal N(\delta,1)$ and $\mathcal N(0,1)$, which is $e^{\delta^2}-1$.
 \end{proof}
-The index of two samples of 5,000 rows each, binned in ten deciles, has an expectation of $(B-1)(1/5000+1/5000)=\nv{th.psi.null}$ when the two samples agree \citep{yurdakul2020}. With the generator's share $\pi=0.03$ the second-order form gives $\nv{th.psi.1.0.binned_chi2_form}$ at $s=1$, below that level: the leak is invisible to the index. The binned form is within 11\% of the exact index of the engine at every $s$ up to 3 (\nv{th.psi.3.0.binned_chi2_form} against \nv{th.psi.3.0.engine_psi} at $s=3$); the continuous form is within 13\% up to $s=0.5$ and diverges beyond it (\nv{th.psi.3.0.continuous_form} at $s=3$), because the decile grid cannot resolve the tails that the exponential describes. The simulated index under no leak has a mean of \nv{e3.s0.0.psi}, which agrees with the expectation.
+The index of two samples of 5,000 rows each, binned in ten deciles, has an expectation of $(B-1)(1/5000+1/5000)=\nv{th.psi.null}$ when the two samples agree \citep{yurdakul2020}. With the generator's share $\pi=0.03$ the second-order form gives $\nv{th.psi.1.0.binned_chi2_form}$ at $\delta=1$, below that level: the leak is invisible to the index. The binned form is within 11\% of the exact index of the engine at every $\delta$ up to 3 (\nv{th.psi.3.0.binned_chi2_form} against \nv{th.psi.3.0.engine_psi} at $\delta=3$); the continuous form is within 13\% up to $\delta=0.5$ and diverges beyond it (\nv{th.psi.3.0.continuous_form} at $\delta=3$), because the decile grid cannot resolve the tails that the exponential describes. The simulated index under no leak has a mean of \nv{e3.s0.0.psi}, which agrees with the expectation.
 
 \subsection{Detection of a discrete choice by repeated perturbation}
 

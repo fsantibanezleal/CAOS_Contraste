@@ -17,6 +17,9 @@ import sys
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "_shared"))
 import figkit  # noqa: E402
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from _halfup import fixed, percent, install as _halfup_install  # noqa: E402
+_halfup_install(figkit)
 
 OUT = HERE
 MACROS: dict[str, str] = {}
@@ -52,7 +55,7 @@ def macro(name: str, text: str) -> None:
 
 def f(x: float, nd: int = 2) -> str:
     """A plain decimal; a minus sign is typeset as a math minus so that it never breaks a line."""
-    s = f"{x:.{nd}f}"
+    s = f"{fixed(x, nd)}"
     return s.replace("-", "$-$")
 
 
@@ -67,7 +70,7 @@ def bn_m(x: float, nd: int = 2) -> float:
 
 
 def pct(x: float, nd: int = 1) -> str:
-    return f(100.0 * x, nd)
+    return f(float(percent(x, nd)), nd)
 
 
 def c14(date: str) -> dict:
@@ -120,12 +123,28 @@ def light_cell(t: dict, nd: int = 4, key: str = "statistic") -> str:
     return RAW + f"{mark} ({num_tex(v, nd)})"
 
 
+#: Tables that were shrunk to 5.4 to 5.7 pt by the fit-to-width box: they are set at 8 pt with wrapped text columns instead.
+R = ">{\\raggedleft\\arraybackslash}"
+SET_AT_SIZE = {
+    "alm-accept.tex": ("lllrrrl", "p{1.9cm}p{3.3cm}" + R + "p{1.7cm}" + R + "p{2.0cm}" + R + "p{2.1cm}" + R + "p{1.4cm}p{1.3cm}"),
+    "alm-c16-params.tex": ("llrlrrrr", "p{1.9cm}p{2.5cm}" + R + "p{1.4cm}p{2.1cm}" + R + "p{1.6cm}" + R + "p{1.6cm}" + R + "p{1.3cm}" + R + "p{1.3cm}"),
+}
+
+
 def fit_width() -> None:
     """Wrap the tabular of every generated table in a box that shrinks it to the text width when it is wider."""
     for p in OUT.glob("alm-*.tex"):
         if p.name == "alm-numbers.tex":
             continue
         s = p.read_text(encoding="utf-8")
+        if p.name in SET_AT_SIZE:
+            old_spec, new_spec = SET_AT_SIZE[p.name]
+            s = s.replace("\\small\n", "\\footnotesize\n\\setlength{\\tabcolsep}{3pt}\n", 1)
+            # the wrapped columns break a heading themselves: a stacked heading (a box that never wraps) would overhang its column
+            s = re.sub(r"\\shortstack\{([^{}]*)\}", lambda m: m.group(1).replace("\\\\", " "), s)
+            s = s.replace("\\begin{tabular}{" + old_spec + "}", "\\begin{tabular}{" + new_spec + "}", 1)
+            p.write_text(s, encoding="utf-8", newline="\n")
+            continue
         if "\\resizebox" in s or "\\fitwidth" in s:
             continue
         s = s.replace("\\begin{tabular}", "\\fitwidth{%\n\\begin{tabular}", 1)
@@ -203,8 +222,8 @@ def build_c14() -> None:
     for d in DATES:
         e = docs[d]["outputs"]["ear_evar"]
         for lv in e["levels"]:
-            rows_ear.append([DATE_LABEL[d], f(100 * lv["level"], 0), f(bn_k(e["base_nii"])), f"${bn_k(lv['ear']):.3f}\\pm{bn_k(lv['ear_se']):.4f}$",
-                             f(bn_k(e["base_eve"])), f"${bn_k(lv['evar']):.3f}\\pm{bn_k(lv['evar_se']):.4f}$"])
+            rows_ear.append([DATE_LABEL[d], f(100 * lv["level"], 0), f(bn_k(e["base_nii"])), f"${fixed(bn_k(lv['ear']), 3)}\\pm{fixed(bn_k(lv['ear_se']), 4)}$",
+                             f(bn_k(e["base_eve"])), f"${fixed(bn_k(lv['evar']), 3)}\\pm{fixed(bn_k(lv['evar_se']), 4)}$"])
     tbl("c14-ear",
         ["Date", "Level (\\%)", "Base NII (USD bn)", "EaR $\\pm$ s.e. (USD bn)", "Base EVE (USD bn)", "EVaR $\\pm$ s.e. (USD bn)"],
         rows_ear,
@@ -296,9 +315,9 @@ def build_c14() -> None:
         e = o["ear_evar"]
         l99 = next(x for x in e["levels"] if abs(x["level"] - 0.99) < 1e-9)
         macro(f"CEar{k}", f(bn_k(l99["ear"]), 3))
-        macro(f"CEarSe{k}", f"{bn_k(l99['ear_se']):.4f}")
+        macro(f"CEarSe{k}", f"{fixed(bn_k(l99['ear_se']), 4)}")
         macro(f"CEvar{k}", f(bn_k(l99["evar"]), 2))
-        macro(f"CEvarSe{k}", f"{bn_k(l99['evar_se']):.4f}")
+        macro(f"CEvarSe{k}", f"{fixed(bn_k(l99['evar_se']), 4)}")
         dyn = {s["scenario"]: s for s in o["dynamic_nii"]["scenarios"]}
         macro(f"CDynUp{k}", f(bn_k(dyn["parallel-up"]["delta_vs_base"]), 3))
         macro(f"CDynDown{k}", f(bn_k(dyn["parallel-down"]["delta_vs_base"]), 3))
@@ -346,14 +365,14 @@ def build_c14() -> None:
     macro("CRetailTransMatCap", f(cats["retail-transactional"]["core_maturity_cap_years"], 1))
     # the standard worked example of the shock shapes, produced by the engine through the test
     srp = test_of(docs["2022-q2"], "irrbb.srp31_92_goldens")["extras"]
-    macro("SrpAlpha", f"{srp['values']['alpha_short']:.4f}")
-    macro("SrpShortUp", f"{srp['values']['short-up']:.2f}")
-    macro("SrpSteepener", f"{srp['values']['steepener']:.2f}")
-    macro("SrpFlattener", f"{srp['values']['flattener']:.2f}".replace("-", "$-$"))
-    macro("SrpDevAlpha", f"{srp['deviations']['alpha_short']:.5f}")
-    macro("SrpDevMax", f"{max(srp['deviations'].values()):.4f}")
-    macro("SrpTolBp", f"{srp['thresholds']['tolerance_bp']:.2f}")
-    macro("SrpTolScalar", f"{srp['thresholds']['tolerance_scalar']:.4f}")
+    macro("SrpAlpha", f"{fixed(srp['values']['alpha_short'], 4)}")
+    macro("SrpShortUp", f"{fixed(srp['values']['short-up'], 2)}")
+    macro("SrpSteepener", f"{fixed(srp['values']['steepener'], 2)}")
+    macro("SrpFlattener", f"{fixed(srp['values']['flattener'], 2)}".replace("-", "$-$"))
+    macro("SrpDevAlpha", f"{fixed(srp['deviations']['alpha_short'], 5)}")
+    macro("SrpDevMax", f"{fixed(max(srp['deviations'].values()), 4)}")
+    macro("SrpTolBp", f"{fixed(srp['thresholds']['tolerance_bp'], 2)}")
+    macro("SrpTolScalar", f"{fixed(srp['thresholds']['tolerance_scalar'], 4)}")
     # the replicating portfolio
     vdate = {"2021-q4": "2021-12-31", "2022-q2": "2022-06-30", "2022-q4": "2022-12-31"}
     for d in DATES:
@@ -412,8 +431,8 @@ def build_c15() -> None:
         o = docs[v]["outputs"]
         for e in o["ear_evar"]:
             lv = next(x for x in e["levels"] if abs(x["level"] - 0.99) < 1e-9)
-            rows3.append([C15_LABEL[v], e["leg"], f(bn_m(e["base_nii"]), 1), f"${bn_m(lv['ear']):.3f}\\pm{bn_m(lv['ear_se']):.4f}$",
-                          f(bn_m(e["base_eve"]), 1), f"${bn_m(lv['evar']):.3f}\\pm{bn_m(lv['evar_se']):.4f}$"])
+            rows3.append([C15_LABEL[v], e["leg"], f(bn_m(e["base_nii"]), 1), f"${fixed(bn_m(lv['ear']), 3)}\\pm{fixed(bn_m(lv['ear_se']), 4)}$",
+                          f(bn_m(e["base_eve"]), 1), f"${fixed(bn_m(lv['evar']), 3)}\\pm{fixed(bn_m(lv['evar_se']), 4)}$"])
     tbl("c15-ear",
         ["Variant", "Leg", "Base NII (CLP bn)", "EaR 99\\% $\\pm$ s.e. (CLP bn)", "Base EVE (CLP bn)", "EVaR 99\\% $\\pm$ s.e. (CLP bn)"],
         rows3,
@@ -472,7 +491,7 @@ def build_c15() -> None:
     for leg, name in (("CLP", "Clp"), ("UR", "Ur")):
         lv = next(x for x in ear[leg]["levels"] if abs(x["level"] - 0.99) < 1e-9)
         macro(f"DEvar{name}", f(bn_m(lv["evar"]), 2))
-        macro(f"DEvarSe{name}", f"{bn_m(lv['evar_se']):.4f}")
+        macro(f"DEvarSe{name}", f"{fixed(bn_m(lv['evar_se']), 4)}")
     # the cmf annex 1 golden and the sum-of-parts tests, from the case
     t = test_of(docs["long-uf"], "irrbb.cmf_annex1_goldens")
     macro("DAnnexCases", str(t["n"]))
@@ -649,15 +668,15 @@ def build_c16() -> None:
     macro("LDepDom", f(bn_k(dep["depdom"]), 1))
     macro("LUnaDom", pct(dep["uninsured_share_of_depdom"], 1))
     macro("LUnaDep", pct(dep["uninsured_share_of_dep"], 1))
-    macro("LGoldenMetric", f"{test_of(docs['list-adverse'], 'liq.list_compounding_golden')['metric']:.6f}")
+    macro("LGoldenMetric", f"{fixed(test_of(docs['list-adverse'], 'liq.list_compounding_golden')['metric'], 6)}")
     macro("LGoldenStat", sci(test_of(docs["list-adverse"], "liq.list_compounding_golden")["statistic"], 1))
     macro("LGoldenTol", sci(docs["list-adverse"]["outputs"]["conventions"]["list_compounding_tolerance"]["value"], 0))
     for v, key in (("list-adverse", "Adv"), ("list-extreme", "Ext")):
         segs = docs[v]["outputs"]["path"]["ladder"]["segments"]
         macro(f"LCorp{key}", pct(segs[1]["cumulative_outflow_share"][-1], 1))
-        macro(f"LCorpRate{key}", f"{segs[1]['parameters'][0]['value']:.8f}")
+        macro(f"LCorpRate{key}", f"{fixed(segs[1]['parameters'][0]['value'], 8)}")
         macro(f"LRetail{key}", pct(segs[0]["cumulative_outflow_share"][-1], 1))
-        macro(f"LRetailRate{key}", f"{segs[0]['parameters'][0]['value']:.8f}")
+        macro(f"LRetailRate{key}", f"{fixed(segs[0]['parameters'][0]['value'], 8)}")
     macro("LCorpBalance", f(bn_k(adv["path"]["ladder"]["segments"][1]["opening_balance"]), 1))
     macro("LRetailBalance", f(bn_k(adv["path"]["ladder"]["segments"][0]["opening_balance"]), 1))
     macro("LFinBalance", f(bn_k(adv["path"]["ladder"]["segments"][2]["opening_balance"]), 1))
@@ -711,8 +730,8 @@ def build_c16() -> None:
     macro("LSvbModelled", pct(rows_["svb-2023"]["modelled_share"], 1))
     macro("LSvbObserved", pct(rows_["svb-2023"]["observed_share"], 0))
     macro("LNrModelled", pct(rows_["northern-rock-2007"]["modelled_share"], 1))
-    macro("LFastQ", f"{docs['fast-run']['outputs']['scoring']['svb_anchor']['implied_daily_rate']:.6f}")
-    macro("LSvbImpliedRate", f"{docs['fast-run']['outputs']['scoring']['svb_anchor']['implied_daily_rate']:.4f}")
+    macro("LFastQ", f"{fixed(docs['fast-run']['outputs']['scoring']['svb_anchor']['implied_daily_rate'], 6)}")
+    macro("LSvbImpliedRate", f"{fixed(docs['fast-run']['outputs']['scoring']['svb_anchor']['implied_daily_rate'], 4)}")
     z = test_of(docs["fast-run"], "liq.runoff_vs_generator_truth")
     macro("LGenZ", f(z["statistic"], 2))
     macro("LGenN", str(z["n"]))
@@ -724,7 +743,7 @@ def build_c16() -> None:
     macro("LReverseTarget", str(c5["reverse_target_days"]["value"]))
     macro("LCallReports", "3")
     fr = docs["fast-run"]["outputs"]["path"]["ladder"]["segments"][1]["parameters"][0]["value"]
-    macro("LFastRate", f"{fr:.6f}")
+    macro("LFastRate", f"{fixed(fr, 6)}")
     macro("LSvbRateRatio", f(docs["fast-run"]["outputs"]["scoring"]["svb_anchor"]["implied_daily_rate"] / fr, 1))
     macro("LFastTwoDaySegment", pct(1 - (1 - fr) ** 2, 1))
     cb = adv["cbc"]["classes"]
@@ -743,25 +762,25 @@ def build_acceptance() -> None:
     label = {"alpha_short": "Short-rate scalar at 3.5 years", "short-up": "Short-up shock for 100 bp (bp)", "steepener": "Steepener (bp)", "flattener": "Flattener (bp)"}
     for k in ("alpha_short", "short-up", "steepener", "flattener"):
         tol = srp["thresholds"]["tolerance_scalar"] if k == "alpha_short" else srp["thresholds"]["tolerance_bp"]
-        rows.append(["Standardised shocks", label[k], f"{srp['printed'][k]}".replace("-", "$-$"), f"{srp['values'][k]:.4f}".replace("-", "$-$"),
-                     f"{srp['deviations'][k]:.5f}", f"{tol}", "pass" if srp["deviations"][k] <= tol else "fail"])
+        rows.append(["Standardised shocks", label[k], f"{srp['printed'][k]}".replace("-", "$-$"), f"{fixed(srp['values'][k], 4)}".replace("-", "$-$"),
+                     f"{fixed(srp['deviations'][k], 5)}", f"{tol}", "pass" if srp["deviations"][k] <= tol else "fail"])
     worst = max(t["metric"] for d in DATES for t in d14[d]["tests"] if t["test_id"] == "irrbb.eve_sum_of_parts")
-    rows.append(["Economic value", "Sum of parts against whole, largest relative residual over three dates", "0", num_tex(worst, 2), num_tex(worst, 2), "1e-09", "pass" if worst <= 1e-9 else "fail"])
+    rows.append(["Economic value", "Sum of parts against whole, largest relative residual over three dates", "0", num_tex(worst, 2), num_tex(worst, 2), num_tex(1e-09, 0), "pass" if worst <= 1e-9 else "fail"])
     t = test_of(c15("long-uf"), "irrbb.cmf_annex1_goldens")
     rows.append(["Annex 1", "Worked cases of the Chilean standard reproduced (pairs, table rows, charge, Hoja 10)", f"{t['n']} of {t['n']}", f"{t['n'] - len(t['extras']['failed'])} of {t['n']}", str(t["statistic"]), "0", "pass" if t["light"] == "green" else "fail"])
     l = c16("list-adverse")
     g = test_of(l, "liq.list_compounding_golden")
     printed_dev = abs(g["metric"] - ECB_PRINTED_CUMULATIVE)
     rows.append(["Run-off compounding", "Cumulative outflow after 125 days at 0.103258 per cent a day, against the value the ECB prints", f"{ECB_PRINTED_CUMULATIVE}",
-                 f"{g['metric']:.6f}", num_tex(printed_dev, 2), "5e-05", "pass" if printed_dev <= ECB_PRINTED_TOLERANCE else "fail"])
-    rows.append(["Run-off compounding", "The same, against the closed form rounded to six decimals", "0.121148", f"{g['metric']:.6f}", num_tex(g["statistic"], 2), "5e-07",
+                 f"{fixed(g['metric'], 6)}", num_tex(printed_dev, 2), num_tex(5e-05, 0), "pass" if printed_dev <= ECB_PRINTED_TOLERANCE else "fail"])
+    rows.append(["Run-off compounding", "The same, against the closed form rounded to six decimals", "0.121148", f"{fixed(g['metric'], 6)}", num_tex(g["statistic"], 2), num_tex(5e-07, 0),
                  "pass" if g["light"] == "green" else "fail"])
     adv = l["outputs"]["path"]["survival"]["day"]
     ext = c16("list-extreme")["outputs"]["path"]["survival"]["day"]
     m = test_of(c16("list-extreme"), "liq.survival_monotone_in_severity")
-    rows.append(["Survival period", f"Survival period shortens with severity: Adverse {adv} days, Extreme {ext} days", "non-increasing", f"{adv} then {ext}", f"{m['statistic']:.0f}", "0", "pass" if m["light"] == "green" else "fail"])
+    rows.append(["Survival period", f"Survival period shortens with severity: Adverse {adv} days, Extreme {ext} days", "non-increasing", f"{adv} then {ext}", f"{fixed(m['statistic'], 0)}", "0", "pass" if m["light"] == "green" else "fail"])
     nlp = max(test_of(c16(v), "liq.nlp_identity")["statistic"] for v in ("list-adverse", "list-extreme", "fast-run", "htm-losses"))
-    rows.append(["Net liquidity position", "Identity of the position with capacity less cumulative net outflow, four ladders", "0", num_tex(nlp, 2), num_tex(nlp, 2), "1e-06", "pass" if nlp <= 1e-6 else "fail"])
+    rows.append(["Net liquidity position", "Identity of the position with capacity less cumulative net outflow, four ladders", "0", num_tex(nlp, 2), num_tex(nlp, 2), num_tex(1e-06, 0), "pass" if nlp <= 1e-6 else "fail"])
     tbl("accept",
         ["Component", "Check", "Reference", "Computed", "Deviation", "Tolerance", "Outcome"], rows,
         caption="The acceptance checks of the two methods run on the committed documents: the worked example of the standardised shocks of the Basel Committee, the sum of parts of the economic value, "

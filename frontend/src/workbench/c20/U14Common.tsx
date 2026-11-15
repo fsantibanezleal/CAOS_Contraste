@@ -10,6 +10,7 @@ import { engineNote, referenceIn, segmentLabels, type Bi } from '../c03/U6Shared
 import { dropPlanTags } from '../c14/localise';
 import { modelName, testText, type NameContext } from '../names';
 import { es as c20Text } from './localise';
+import { markRefs } from '../../lib/refs';
 
 export type Lang = 'en' | 'es';
 
@@ -213,7 +214,7 @@ export function U14TestsTable({ tests, modelLabel, only, caseId = '', models }: 
               return (
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                   <td className="ct-text">
-                    {pick(testName(t.test_id), lang)}
+                    {markRefs(pick(testName(t.test_id), lang), lang)}
                     {segments[i] ? <span className="ct-row-detail" data-segment={t.segment}>{pick(segments[i]!, lang)}</span> : null}
                   </td>
                   <td className="ct-text ct-wide-only">{t.model_id === null ? '-' : modelText(t.model_id)}</td>
@@ -223,7 +224,7 @@ export function U14TestsTable({ tests, modelLabel, only, caseId = '', models }: 
                   </td>
                   {/* the engine's note in the language, else the row's reference where the language has it (R3 c03 B1 and m11: an empty note
                       is no note) */}
-                  <td className="ct-text">{t.notes ? engineNote(t.notes, lang) : referenceIn(t, lang) ?? ''}</td>
+                  <td className="ct-text">{markRefs(t.notes ? engineNote(t.notes, lang) : referenceIn(t, lang) ?? '', lang)}</td>
                 </tr>
               );
             })}

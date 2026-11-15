@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 // Fix round 4 (U16-F10), from the third capture review (R3) on rc3, on the committed documents. Each test fails on the
 // defect it names.
 import { afterEach, describe, expect, it } from 'vitest';
@@ -43,13 +44,15 @@ describe('U16-F10', () => {
     });
   }
 
-  it("a document day is drawn at the reader's local midnight, so the shell formats it as that day in any zone (R3 c12 B1, c15 B1)", () => {
+  it('a document day is drawn at its UTC midnight, which the shell time axis (UTC by default from 0.26.0) reads as that day in any zone (R3 c12 B1, c15 B1)', () => {
     for (const day of ['2021-12-31', '2022-01-03', '2024-02-29', '2025-06-30']) {
       const d = new Date(daySeconds(day) * 1000);
-      const local = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      expect(local).toBe(day);
-      expect(d.getHours()).toBe(0);
+      expect(d.toISOString().slice(0, 10)).toBe(day);
+      expect(d.getUTCHours()).toBe(0);
     }
+    // the UTC default of the axis is a property of the pinned shell: on 0.25.0 the axis read the browser's zone
+    const pin = (JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')) as { dependencies: Record<string, string> }).dependencies['@fasl-work/caos-app-shell'];
+    expect(pin.split('.').map(Number)[1]).toBeGreaterThanOrEqual(26);
   });
   for (const v of variantIds('C12')) {
     it(`C12 (${v}): the collateral range holds the document's collateral, a negative one included (R3 c13 BL5)`, () => {

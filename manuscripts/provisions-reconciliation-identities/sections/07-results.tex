@@ -3,10 +3,15 @@
 
 \Cref{tab:main-results} gives the main comparison; the subsections read it experiment by experiment, and \cref{tab:outcomes} lists the outcome of every prediction and reproduction.
 
+\input{tables/main-results}
+
 \subsection{Detection and the limit of the test}
 \label{sec:res-detection}
 
 On the six committed tables the twelve identities close with a largest relative residual of \eoneCleanRel{} of the gross total, and none is flagged (\cref{tab:data}).
+
+\input{tables/data}
+
 Planted at \eoneCases{} locations per class, defects of seven classes are flagged in \eoneAboveFullK{} of \eoneAboveFullN{} cases at 1.01 times the limit and in \eoneBelowFullK{} of \eoneBelowFullN{} cases at 0.99 times the limit, over all eight classes: the transition is a step at the limit (\cref{fig:power}a).
 The bisected detection limit is the limit itself within \eoneThrDev{} over \eoneBisected{} bisections per class, as Proposition~\ref{prop:limit} states, so on these books a defect is named from \eoneCleanLimitLow{} to \eoneCleanLimitHigh{} USD.
 The stage arithmetic and the pooled row detect \eoneAboveStageK{} of the \eoneAboveStageN{} cases, three classes (an allowance movement, an allowance closing and a gross-amount movement), and none of the four classes that live outside the stage tables: an amount reallocated between stages, a waterfall line, the waterfall closing and the stage ECL (\cref{fig:power}b).
@@ -15,7 +20,7 @@ The negative control, an amount booked under another line, is flagged in \eoneMi
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{power}
-\caption{Detection of planted defects on the six committed C06 dates. Panel (a) shows the share flagged against the size of the defect in multiples of the limit, pooled over seven defect classes, for the twelve identities, the stage roll-forwards alone and the pooled row, with 95\% Wilson bands. Panel (b) shows the share flagged at ten times the limit, by class and by method, including the full set with one identity family left out.}
+\caption{Detection of planted defects on the six committed C06 dates. Panel (a) shows the share flagged against the size of the defect in multiples of the limit, pooled over seven defect classes, for the twelve identities, the stage roll-forwards alone and the pooled row, with 95\% Wilson bands. Panel (b) shows the share flagged at ten times the limit, by class and by method, including the full set with one identity family left out. In panel (b) a column headed with a minus sign leaves out one family: allow., the allowance roll-forward; gross, the gross amount roll-forward; closes, the waterfall closes; equals, the waterfall equals the stage closings; lines, the waterfall lines equal the stage movements; ECL tie, the stage closing equals the ECL plus overlays.}
 \label{fig:power}
 \end{figure}
 
@@ -63,7 +68,7 @@ On the synthetic bank the two committed overlays are \ethreeSevenOverlay{} milli
 
 Of \efourDraws{} draws, \efourConvexN{} have every factor in the convex region and none has a negative index (smallest \efourConvexMin{}); \efourConcaveN{} have every factor in the concave region and none has a positive index (largest \efourConcaveMax{}); \efourMixedN{} are mixed, with \efourMixedPos{} positive and \efourMixedNeg{} negative indexes, down to \efourMixedMin{} (\cref{fig:sweep}).
 The Gauss--Hermite check of the engine is within \efourGhErr{} in every draw.
-The second-order formula is within 25\% of the index in \efourSecondWithin{} of \efourSecondN{} convex draws, with a median ratio of \efourSecondQFifty{} and 5th to 95th percentiles of \efourSecondQFive{} to \efourSecondQNinetyFive{}.
+The second-order formula is within 25\% of the index in \efourSecondWithin{} of \efourSecondN{} convex draws (the \efourSecondExcluded{} other convex draws have an index of $10^{-6}$ or less, for which a relative error is not defined and the formula is not judged), with a median ratio of \efourSecondQFifty{} and 5th to 95th percentiles of \efourSecondQFive{} to \efourSecondQNinetyFive{}.
 
 \begin{figure}[htbp]
 \centering
@@ -79,7 +84,7 @@ Staging that responds to the weights is the one feature that distinguishes that 
 \input{tables/committed-nonlinearity}
 
 Against the full distribution of the factor (\cref{tab:designs}, \cref{fig:designs}) the base scenario alone has a median absolute error of \efourSingleMed{} (\efourSingleMedLo{} to \efourSingleMedHi{}), three scenarios at one standard deviation \efourAdhocMed{}, tertile means \efourTertileMed{}, the three-point rule \efourGhThreeMed{} and the five-point rule \efourGhFiveMed{}.
-Among the \efourStrong{} draws with a margin of two standard deviations inside the convex region, the base scenario and the 25/50/25 set understate the expected PD in \efourSingleUnder{} and \efourAdhocUnder{}; the median ratio of the predicted to the measured bias of the 25/50/25 set is \efourBiasMedian{}.
+Among the \efourStrong{} draws with a margin of two standard deviations inside the convex region, the base scenario and the 25/50/25 set understate the expected PD in \efourSingleUnder{} and \efourAdhocUnder{}; the median ratio of the predicted to the measured bias of the 25/50/25 set is \efourBiasMedian{}, and the second-order bias form is within 20\% of the measured bias in \efourBiasWithin{} of them.
 
 \begin{figure}[htbp]
 \centering
@@ -119,9 +124,8 @@ The ratios depend on the size of the book (\cref{tab:ladder}): at \efiveLadderLo
 \label{sec:res-hypotheses}
 
 Of the \hypTotal{} predictions, \hypHeld{} held and \hypRefuted{} were refuted (\hypRefutedList{}), and \cref{tab:outcomes} gives the value observed for each.
-The rounding to millions (Q3b), the one blind entry (A2) and the group of eleven entries (A4) were wrong in their numbers.
+The rounding to millions (Q3b), the one blind entry (A2) and the predicted group of eleven or more entries (A4; the largest group observed has \esixLargest{}) were wrong in their numbers: after rounding to millions \etwoRoundMillionPct{} of the books are flagged where more than 99\% were predicted, the committed books leave \esixBlind{} entries seen by no identity where one was predicted, and the \esixPatterns{} patterns of failing identities separate the entries into groups no larger than \esixLargest{}.
+None of the three changes a conclusion of the protocol; each marks a limit that the prediction in its script header stated more tightly than the books bear out.
 The \hypReproTotal{} reproductions, which are not predictions, are counted apart: \hypReproHeld{} were reproduced (the reference example C1, the closing of the identities on the six committed dates C2 and the committed regime totals B6), and \hypReproContradicted{} was contradicted (\hypReproContradictedList{}): the weighted ECL is above the mean-path ECL on five of the six committed dates and below it on 2010-12, a statement that the design document lists as not claimed.
 
-\input{tables/main-results}
 \input{tables/outcomes}
-\input{tables/data}

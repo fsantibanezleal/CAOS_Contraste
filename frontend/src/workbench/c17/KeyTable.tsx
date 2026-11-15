@@ -3,6 +3,7 @@
 // the document does not carry says "not available" with its reason, written by the caller.
 import { pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { Fragment, type ReactNode } from 'react';
+import { markRefs } from '../../lib/refs';
 
 export interface KeyRow {
   id: string;
@@ -29,7 +30,7 @@ export function KeyTable({ table, rows }: { table: string; rows: KeyRow[] }) {
 }
 
 /** A text whose ISO dates never break at their hyphens (U16-R4 c21 m11: "2024-07-" and "05" on two lines at 390). */
-export function keepDates(text: string): ReactNode {
+export function keepDates(text: string, lang?: 'en' | 'es'): ReactNode {
   const parts = text.split(/(\d{4}-\d{2}-\d{2})/);
-  return parts.map((p, i) => (i % 2 === 1 ? <span key={i} style={{ whiteSpace: 'nowrap' }}>{p}</span> : <Fragment key={i}>{p}</Fragment>));
+  return parts.map((p, i) => (i % 2 === 1 ? <span key={i} style={{ whiteSpace: 'nowrap' }}>{p}</span> : <Fragment key={i}>{lang ? markRefs(p, lang) : p}</Fragment>));
 }

@@ -3,10 +3,11 @@
 \small
 \caption{A model facing returns $c$ times larger in scale than it assumes (Student-$t$ with five degrees of freedom): the fixed point of the working level, the mean and standard deviation of the level simulated over 50 replications of 5,000 days, the standard deviation predicted by the linearisation, the long-run hit rate with its 95\% interval and the share of updates cut by the band $[0.1\%, 25\%]$.}
 \label{tab:scale-sweep}
+{\footnotesize\setlength{\tabcolsep}{4pt}
 \begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{rrrlrrrlr}
 \toprule
-Level (\%) & Scale ratio $c$ & Fixed point $a^*$ (\%) & $a^*$ in band & Simulated mean level (\%) & Simulated sd (\%) & Predicted sd (\%) & Hit rate (\%, 95\% CI) & Clipped days (\%) \\
+Level (\%) & \makecell[br]{Scale ratio \\ $c$} & \makecell[br]{Fixed point \\ $a^*$ (\%)} & $a^*$ in band & \makecell[br]{Simulated \\ mean level \\ (\%)} & \makecell[br]{Simulated sd \\ (\%)} & \makecell[br]{Predicted sd \\ (\%)} & \makecell[bl]{Hit rate (\%, \\ 95\% CI)} & \makecell[br]{Clipped days \\ (\%)} \\
 \midrule
 1 & 1 & 1.000 & yes & 1.006 & 0.462 & 0.497 & \relax 1.02 $\pm$ 0.01 & 0.1 \\
 1 & 1.25 & 0.422 & yes & 0.526 & 0.287 & 0.339 & \relax 1.22 $\pm$ 0.02 & 0.5 \\
@@ -22,5 +23,5 @@ Level (\%) & Scale ratio $c$ & Fixed point $a^*$ (\%) & $a^*$ in band & Simulate
 2.5 & 3 & 0.029 & no & 0.223 & 0.113 & -- & \relax 7.82 $\pm$ 0.11 & 7.6 \\
 \bottomrule
 \end{tabular}
-\end{adjustbox}
+\end{adjustbox}}
 \end{table*}

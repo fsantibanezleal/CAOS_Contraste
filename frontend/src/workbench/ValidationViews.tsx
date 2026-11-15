@@ -43,11 +43,11 @@ export const bandText = (band: unknown, lang: 'en' | 'es'): string => {
 
 /** A tests row's segment in words under its name: the segment the document gives ("portfolio" for a portfolio row), and for a
  * row of no segment the whole portfolio (R5 ruling 2). */
-export function SegmentDetail({ segment }: { segment: string | null }) {
+export function SegmentDetail({ segment, inline }: { segment: string | null; inline?: boolean }) {
   const lang = useShellLang();
   const words = segment ? segmentName(segment, { caseId: 'C01' }) ?? { en: segment, es: segment } : WHOLE_PORTFOLIO;
   return (
-    <span className="ct-row-detail" data-segment={segment ?? 'none'}>
+    <span className={inline ? 'ct-row-detail ct-row-detail-inline' : 'ct-row-detail'} data-segment={segment ?? 'none'}>
       {pick(words, lang)}
     </span>
   );
@@ -364,7 +364,8 @@ export function StabilityView({ sel }: { sel: Selection | null }) {
                 <tr key={m.id}>
                   <td title={pick(m.title, lang)}>
                     {pick(shortName(m, m.id), lang)}
-                    <SegmentDetail segment={t?.segment ?? PORTFOLIO} />
+                    {/* beside the name, not under it: seven rows of two lines left the input table of this view no room at a wide font (G6) */}
+                    <SegmentDetail segment={t?.segment ?? PORTFOLIO} inline />
                   </td>
                   <td>{formatNumber(value(t), lang, { decimals: 4 })}</td>
                   <td className="ct-room-only">{formatNumber(extra(t, 'benchmark_05'), lang, { decimals: 4 })}</td>

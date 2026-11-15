@@ -27,6 +27,9 @@ from typing import Any
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "_shared"))
 import figkit  # noqa: E402
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from _halfup import fixed, percent, sci, install as _halfup_install  # noqa: E402
+_halfup_install(figkit)
 
 OUT = HERE
 SRC = "data/derived/C17"
@@ -110,7 +113,7 @@ def summ(c: dict, rung: str) -> dict | None:
 
 
 def f2(x: float) -> str:
-    return f"{x:.3f}" if x < 0.1 else f"{x:.2f}"
+    return f"{fixed(x, 3)}" if x < 0.1 else f"{fixed(x, 2)}"
 
 
 def eur_m(x: float, d: int = 1) -> str:
@@ -122,7 +125,7 @@ def med_iqr(s: dict | None) -> str:
 
 
 def share_def(s: dict | None) -> str:
-    return "--" if s is None else f"{100 * s['share_underestimating']:.0f}% / {s['n_defined']}"
+    return "--" if s is None else f"{percent(s['share_underestimating'], 0)}% / {s['n_defined']}"
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -133,14 +136,14 @@ def t_cases(d: dict) -> None:
     for (vid, L, xi), v in zip(VARIANTS, fit["variants"]):
         assert v["variant_id"] == vid
         cal = d[vid]["outputs"]["calibration"]["fit"]
-        rows.append([f"{xi:g}", f"{v['lambda_per_year']:.1f}", f"{v['scale_eur']:,.0f}", eur_m(v["true_quantile_999_eur"]),
-                     eur_m(v["true_mean_eur"]) if v["true_mean_eur"] is not None else "none", f"{cal['max_abs_log_error']:.3f}"])
-        mac(f"Lam{L}", f"{v['lambda_per_year']:.1f}", f"{SRC}/models-generator.json fit.variants[{vid}].lambda_per_year")
+        rows.append([f"{xi:g}", f"{fixed(v['lambda_per_year'], 1)}", f"{v['scale_eur']:,.0f}", eur_m(v["true_quantile_999_eur"]),
+                     eur_m(v["true_mean_eur"]) if v["true_mean_eur"] is not None else "none", f"{fixed(cal['max_abs_log_error'], 3)}"])
+        mac(f"Lam{L}", f"{fixed(v['lambda_per_year'], 1)}", f"{SRC}/models-generator.json fit.variants[{vid}].lambda_per_year")
         mac(f"Scale{L}", f"{v['scale_eur']:,.0f}", f"{SRC}/models-generator.json fit.variants[{vid}].scale_eur")
         mac(f"TrueQ{L}", eur_m(v["true_quantile_999_eur"]), f"{SRC}/models-generator.json fit.variants[{vid}].true_quantile_999_eur")
         mac(f"TrueMean{L}", eur_m(v["true_mean_eur"]) if v["true_mean_eur"] is not None else "none",
             f"{SRC}/models-generator.json fit.variants[{vid}].true_mean_eur")
-        mac(f"CalErr{L}", f"{cal['max_abs_log_error']:.3f}", f"{SRC}/{vid}.json outputs.calibration.fit.max_abs_log_error")
+        mac(f"CalErr{L}", f"{fixed(cal['max_abs_log_error'], 3)}", f"{SRC}/{vid}.json outputs.calibration.fit.max_abs_log_error")
     table(OUT / "oprisk-cases.tex",
                  [r"Tail index $\xi$", r"$\lambda$ (per year)", r"Scale $\beta$ (EUR)", r"True $q_{0.999}$ (EUR m)",
                   r"True mean (EUR m)", "Calibration error"],
@@ -150,7 +153,7 @@ def t_cases(d: dict) -> None:
                          r"and mean of the compound loss of the generator, and the largest absolute error of the log excess quantiles against the "
                          r"four loss-collection percentiles. The mean does not exist at $\xi=1.1$.")
     qs = [v["true_quantile_999_eur"] for v in fit["variants"]]
-    mac("QRatio", f"{qs[-1] / qs[0]:.0f}", f"{SRC}/models-generator.json fit.variants[*].true_quantile_999_eur, heaviest over lightest")
+    mac("QRatio", f"{fixed(qs[-1] / qs[0], 0)}", f"{SRC}/models-generator.json fit.variants[*].true_quantile_999_eur, heaviest over lightest")
     cal = d["xi-0-96"]["outputs"]["calibration"]
     tg = cal["targets"]
     pct = tg["severity_percentiles"]
@@ -160,8 +163,8 @@ def t_cases(d: dict) -> None:
     for k, nm in enumerate(("PA", "PB", "PC", "PD")):
         mac(nm, f"{pct[k]['loss_eur']:,.0f}", f"{SRC}/xi-0-96.json outputs.calibration.targets.severity_percentiles[{k}]")
     assets = d["xi-0-96"]["outputs"]["bank"]["assets_eur"]
-    mac("Assets", f"{assets / 1e9:.0f}", f"{SRC}/xi-0-96.json outputs.bank.assets_eur")
-    mac("ExpCount", f"{tg['frequency']['per_eur_bn_assets'] * assets / 1e9:.0f}", "0.82 x 50: LDCE frequency times the bank's assets")
+    mac("Assets", f"{fixed(assets / 1e9, 0)}", f"{SRC}/xi-0-96.json outputs.bank.assets_eur")
+    mac("ExpCount", f"{fixed(tg['frequency']['per_eur_bn_assets'] * assets / 1e9, 0)}", "0.82 x 50: LDCE frequency times the bank's assets")
     g = fit["grid"]
     mac("NRep", f"{g['n_replications_per_cell']:,}", f"{SRC}/models-generator.json fit.grid.n_replications_per_cell")
     mac("NHist", f"{g['n_replications_per_cell'] * len(VARIANTS) * len(CELLS):,}", "replications x 4 variants x 4 cells")
@@ -199,28 +202,28 @@ def t_benchmark() -> None:
     mc_mean = float(np.mean(sample.losses))
     mc_se_mean = float(np.std(sample.losses, ddof=1) / np.sqrt(sample.losses.size))
     rows = [
-        ["Mean $\\E[Z]$", f"{BENCH_REF['mean']:.4f}", f"{mom.mean:.4f}", f"{mc_mean:.2f} $\\pm$ {mc_se_mean:.2f} (Monte Carlo)"],
-        ["Variance $\\Var[Z]$", f"{BENCH_REF['variance']:.4f}", f"{mom.variance:.4f}", "--"],
-        ["Skewness", f"{BENCH_REF['skewness']:.4f}", f"{mom.skewness:.4f}", "--"],
-        ["$H_{5849}$ (Panjer, step 1)", f"{BENCH_REF['h5849']:.9f}", f"{h5849:.9f}", f"{float(np.cumsum(hf)[5849]):.9f} (FFT)"],
-        ["99.9\\% quantile, Panjer", f"{BENCH_REF['quantile']}", f"{q_pan:.0f}", "--"],
-        ["99.9\\% quantile, FFT", f"{BENCH_REF['quantile']}", f"{q_fft:.0f}", "--"],
-        ["99.9\\% quantile, Monte Carlo", "5853.1", f"{q_mc:.1f} $\\pm$ {se_mc:.1f}", "continuous quantile, not the discretised one"],
+        ["Mean $\\E[Z]$", f"{fixed(BENCH_REF['mean'], 4)}", f"{fixed(mom.mean, 4)}", f"{fixed(mc_mean, 2)} $\\pm$ {fixed(mc_se_mean, 2)} (Monte Carlo)"],
+        ["Variance $\\Var[Z]$", f"{fixed(BENCH_REF['variance'], 4)}", f"{fixed(mom.variance, 4)}", "--"],
+        ["Skewness", f"{fixed(BENCH_REF['skewness'], 4)}", f"{fixed(mom.skewness, 4)}", "--"],
+        ["$H_{5849}$ (Panjer, step 1)", f"{fixed(BENCH_REF['h5849'], 9)}", f"{fixed(h5849, 9)}", f"{fixed(float(np.cumsum(hf)[5849]), 9)} (FFT)"],
+        ["99.9\\% quantile, Panjer", f"{BENCH_REF['quantile']}", f"{fixed(q_pan, 0)}", "--"],
+        ["99.9\\% quantile, FFT", f"{BENCH_REF['quantile']}", f"{fixed(q_fft, 0)}", "--"],
+        ["99.9\\% quantile, Monte Carlo", "5853.1", f"{fixed(q_mc, 1)} $\\pm$ {fixed(se_mc, 1)}", "continuous quantile, not the discretised one"],
     ]
     table(OUT / "oprisk-benchmark.tex", ["Quantity", "Published", "Engine", "Second computation"], rows, align="lrrl",
                  label="tab:op-benchmark",
                  caption=r"The benchmark of the aggregate loss of \citet{oprisk:shevchenko2010}: a Poisson count with rate 100 and a lognormal "
                          r"severity with $\mu=0$, $\sigma=2$. Published values against the engine's moments, the Panjer recursion and the FFT on the "
                          r"grid of 6,000 points of step 1, and a Monte Carlo of one million years; the interval is one standard error.")
-    mac("BenchMean", f"{mom.mean:.4f}", "engine compound_poisson_moments(100, lognormal, (0, 2))")
-    mac("BenchVar", f"{mom.variance:.4f}", "engine compound_poisson_moments(100, lognormal, (0, 2))")
-    mac("BenchSkew", f"{mom.skewness:.4f}", "engine compound_poisson_moments(100, lognormal, (0, 2))")
-    mac("BenchPanjer", f"{q_pan:.0f}", "engine panjer_recursion + quantile_from_pmf, step 1, 6000 points")
-    mac("BenchFft", f"{q_fft:.0f}", "engine fft_aggregate (padding 2) + quantile_from_pmf")
-    mac("BenchMcQ", f"{q_mc:.1f}", "engine simulate_annual_losses, 1,000,000 years, seed 2010")
-    mac("BenchMcSe", f"{se_mc:.1f}", "engine mc_quantile standard error")
-    mac("BenchDiff", f"{diff:.1e}", "largest absolute difference of the Panjer and FFT probabilities per grid point")
-    mac("BenchH", f"{h5849:.9f}", "engine Panjer cumulative at index 5849")
+    mac("BenchMean", f"{fixed(mom.mean, 4)}", "engine compound_poisson_moments(100, lognormal, (0, 2))")
+    mac("BenchVar", f"{fixed(mom.variance, 4)}", "engine compound_poisson_moments(100, lognormal, (0, 2))")
+    mac("BenchSkew", f"{fixed(mom.skewness, 4)}", "engine compound_poisson_moments(100, lognormal, (0, 2))")
+    mac("BenchPanjer", f"{fixed(q_pan, 0)}", "engine panjer_recursion + quantile_from_pmf, step 1, 6000 points")
+    mac("BenchFft", f"{fixed(q_fft, 0)}", "engine fft_aggregate (padding 2) + quantile_from_pmf")
+    mac("BenchMcQ", f"{fixed(q_mc, 1)}", "engine simulate_annual_losses, 1,000,000 years, seed 2010")
+    mac("BenchMcSe", f"{fixed(se_mc, 1)}", "engine mc_quantile standard error")
+    mac("BenchDiff", f"{sci(diff)}", "largest absolute difference of the Panjer and FFT probabilities per grid point")
+    mac("BenchH", f"{fixed(h5849, 9)}", "engine Panjer cumulative at index 5849")
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -241,12 +244,12 @@ def t_aggregation(d: dict) -> None:
         mac(f"McSe{L}", eur_m(mc["standard_error_eur"]), f"{SRC}/{vid}.json outputs.truth.annual_loss_quantile.mc_check.standard_error_eur")
         mac(f"SlaQ{L}", eur_m(sla), f"{SRC}/{vid}.json outputs.exceedance.quantile_999_eur.sla")
         mac(f"SlaRel{L}", f"{100 * (sla / fft - 1):+.1f}", "SLA quantile over the FFT quantile minus one, percent")
-        mac(f"PanRel{L}", f"{100 * abs(pan / fft - 1):.3f}", "Panjer quantile over the FFT quantile minus one, absolute percent")
+        mac(f"PanRel{L}", f"{percent(abs(pan / fft - 1), 3)}", "Panjer quantile over the FFT quantile minus one, absolute percent")
         mac(f"McZ{L}", f"{(mc['value_eur'] - fft) / mc['standard_error_eur']:+.1f}", "(Monte Carlo - FFT) / standard error")
         for c in d[vid]["outputs"]["cells"]:
             maxdiff = max(maxdiff, c["aggregation_agreement"]["max_rel_diff_panjer_fft"])
-    mac("McZMax", f"{max(abs((d[v]['outputs']['truth']['annual_loss_quantile']['mc_check']['value_eur'] - d[v]['outputs']['exceedance']['quantile_999_eur']['fft']) / d[v]['outputs']['truth']['annual_loss_quantile']['mc_check']['standard_error_eur']) for v, _, _ in VARIANTS):.1f}", "largest |MC - FFT| / standard error over the variants")
-    mac("MaxPanFft", f"{100 * maxdiff:.3f}", "largest max_rel_diff_panjer_fft over the 16 cells, percent")
+    mac("McZMax", f"{fixed(max(abs((d[v]['outputs']['truth']['annual_loss_quantile']['mc_check']['value_eur'] - d[v]['outputs']['exceedance']['quantile_999_eur']['fft']) / d[v]['outputs']['truth']['annual_loss_quantile']['mc_check']['standard_error_eur']) for v, _, _ in VARIANTS), 1)}", "largest |MC - FFT| / standard error over the variants")
+    mac("MaxPanFft", f"{percent(maxdiff, 3)}", "largest max_rel_diff_panjer_fft over the 16 cells, percent")
     table(OUT / "oprisk-aggregation.tex",
                  [r"$\xi$", "FFT (EUR m)", "Panjer (EUR m)", "Monte Carlo (EUR m)", "SLA (EUR m)", "SLA over FFT", r"MC minus FFT ($\mathrm{se}$)"],
                  rows, align="rrrrrrr", label="tab:op-aggregation",
@@ -290,7 +293,7 @@ def t_ladders(d: dict) -> None:
                 mac(f"SpQhi{L}", f2(s["ratio_to_truth"]["p75"]), f"{SRC}/{vid}.json cells[{MAIN_CELL}].capital.lda_splice.ratio_to_truth.p75")
             mac(f"Med{nm}{L}", f2(s["ratio_to_truth"]["median"]), f"{SRC}/{vid}.json cells[{MAIN_CELL}].capital.{key}.ratio_to_truth.median")
             mac(f"Iqr{nm}{L}", f2(s["iqr_over_truth"]), f"{SRC}/{vid}.json cells[{MAIN_CELL}].capital.{key}.iqr_over_truth")
-            mac(f"Und{nm}{L}", f"{100 * s['share_underestimating']:.0f}", f"{SRC}/{vid}.json cells[{MAIN_CELL}].capital.{key}.share_underestimating, percent")
+            mac(f"Und{nm}{L}", f"{percent(s['share_underestimating'], 0)}", f"{SRC}/{vid}.json cells[{MAIN_CELL}].capital.{key}.share_underestimating, percent")
             mac(f"Nd{nm}{L}", f"{s['n_defined']:,}", f"{SRC}/{vid}.json cells[{MAIN_CELL}].capital.{key}.n_defined")
     # ranges of the interquartile range of the splice and of the robust fits over the 16 cells
     for key, nm in (("lda_splice", "Sp"), ("sla", "Sla"), ("scenario", "Sc"), ("sla_mean_adjusted", "Ma"), ("sla_cvm", "Cvm"), ("sla_obre", "Obre")):
@@ -350,7 +353,7 @@ def t_cell_effects(d: dict) -> None:
 def t_contam() -> None:
     rows = []
     for name, n, cells, _ in CONTAM:
-        rows.append([f"{name} ({n})"] + [f"{m:.2f} ({iq:.2f}; {sh}\\%)" for m, iq, sh in cells])
+        rows.append([f"{name} ({n})"] + [f"{fixed(m, 2)} ({fixed(iq, 2)}; {sh}\\%)" for m, iq, sh in cells])
     table(OUT / "oprisk-contam.tex", ["Scenario (histories)"] + list(CONTAM_COLUMNS), rows, align="lrrrrr", label="tab:op-contam",
                  caption=r"Capital over truth in the study of contaminated histories of the engine, 250 losses above EUR 20,000 per history: median, "
                          r"interquartile range and share of histories below half of the truth. Gross losses are 3 percent of the losses multiplied by 50. "
@@ -358,7 +361,7 @@ def t_contam() -> None:
                          r"which ran the study once with a cap of 900 seconds per scenario; no interval is computed for them here.")
     rows2 = []
     for name, n, _, logs in CONTAM:
-        rows2.append([name] + [f"{x:.2f}" for x in logs])
+        rows2.append([name] + [f"{fixed(x, 2)}" for x in logs])
     table(OUT / "oprisk-contam-log.tex", ["Scenario"] + list(CONTAM_COLUMNS), rows2, align="lrrrrr", label="tab:op-contam-log",
                  caption=r"Median absolute log ratio of capital to truth in the study of contaminated histories of the engine: the typical multiplicative "
                          r"error of each estimator, zero for an exact capital and 0.69 for an error by a factor of two, on the same four scenarios, transcribed from the documentation of the engine without an interval.")
@@ -367,24 +370,24 @@ def t_contam() -> None:
     mac("ContamCap", "900", "docs/oprisk/06_robust-severity.md line 63 (seconds allowed per scenario)")
     mac("ContamSpliceErrRobLo", f"{min(CONTAM[2][3][1:4]):.2f}", "docs/oprisk/06_robust-severity.md line 84, smallest of the three robust lognormal fits")
     mac("ContamSpliceErrRobHi", f"{max(CONTAM[2][3][1:4]):.2f}", "docs/oprisk/06_robust-severity.md line 84, largest of the three robust lognormal fits")
-    mac("ContamGrossMle", f"{CONTAM[1][3][0]:.2f}", "docs/oprisk/06_robust-severity.md line 83")
-    mac("ContamGrossCvm", f"{CONTAM[1][3][1]:.2f}", "docs/oprisk/06_robust-severity.md line 83")
-    mac("ContamGrossObre", f"{CONTAM[1][3][2]:.2f}", "docs/oprisk/06_robust-severity.md line 83")
-    mac("ContamGrossObreEighty", f"{CONTAM[1][3][3]:.2f}", "docs/oprisk/06_robust-severity.md line 83")
-    mac("ContamSplMle", f"{CONTAM[3][3][0]:.2f}", "docs/oprisk/06_robust-severity.md line 85")
-    mac("ContamSplCvm", f"{CONTAM[3][3][1]:.2f}", "docs/oprisk/06_robust-severity.md line 85")
-    mac("ContamSplObre", f"{CONTAM[3][3][2]:.2f}", "docs/oprisk/06_robust-severity.md line 85")
-    mac("ContamObreMedian", f"{CONTAM[1][2][2][0]:.2f}", "docs/oprisk/06_robust-severity.md line 72")
-    mac("ContamMleMedian", f"{CONTAM[1][2][0][0]:.2f}", "docs/oprisk/06_robust-severity.md line 72")
-    mac("ContamCleanMle", f"{CONTAM[0][3][0]:.2f}", "docs/oprisk/06_robust-severity.md line 82")
-    mac("ContamCleanCvm", f"{CONTAM[0][3][1]:.2f}", "docs/oprisk/06_robust-severity.md line 82")
-    mac("ContamCleanSplice", f"{CONTAM[0][3][4]:.2f}", "docs/oprisk/06_robust-severity.md line 82")
-    mac("ContamCleanIqrMle", f"{CONTAM[0][2][0][1]:.2f}", "docs/oprisk/06_robust-severity.md line 71")
-    mac("ContamCleanIqrObre", f"{CONTAM[0][2][2][1]:.2f}", "docs/oprisk/06_robust-severity.md line 71")
-    mac("ContamCleanIqrCvm", f"{CONTAM[0][2][1][1]:.2f}", "docs/oprisk/06_robust-severity.md line 71")
-    mac("ContamSpliceMed", f"{CONTAM[2][2][1][0]:.2f}", "docs/oprisk/06_robust-severity.md line 73")
-    mac("ContamSpliceErrMle", f"{CONTAM[2][3][0]:.2f}", "docs/oprisk/06_robust-severity.md line 84")
-    mac("ContamSpliceErrSplice", f"{CONTAM[2][3][4]:.2f}", "docs/oprisk/06_robust-severity.md line 84")
+    mac("ContamGrossMle", f"{fixed(CONTAM[1][3][0], 2)}", "docs/oprisk/06_robust-severity.md line 83")
+    mac("ContamGrossCvm", f"{fixed(CONTAM[1][3][1], 2)}", "docs/oprisk/06_robust-severity.md line 83")
+    mac("ContamGrossObre", f"{fixed(CONTAM[1][3][2], 2)}", "docs/oprisk/06_robust-severity.md line 83")
+    mac("ContamGrossObreEighty", f"{fixed(CONTAM[1][3][3], 2)}", "docs/oprisk/06_robust-severity.md line 83")
+    mac("ContamSplMle", f"{fixed(CONTAM[3][3][0], 2)}", "docs/oprisk/06_robust-severity.md line 85")
+    mac("ContamSplCvm", f"{fixed(CONTAM[3][3][1], 2)}", "docs/oprisk/06_robust-severity.md line 85")
+    mac("ContamSplObre", f"{fixed(CONTAM[3][3][2], 2)}", "docs/oprisk/06_robust-severity.md line 85")
+    mac("ContamObreMedian", f"{fixed(CONTAM[1][2][2][0], 2)}", "docs/oprisk/06_robust-severity.md line 72")
+    mac("ContamMleMedian", f"{fixed(CONTAM[1][2][0][0], 2)}", "docs/oprisk/06_robust-severity.md line 72")
+    mac("ContamCleanMle", f"{fixed(CONTAM[0][3][0], 2)}", "docs/oprisk/06_robust-severity.md line 82")
+    mac("ContamCleanCvm", f"{fixed(CONTAM[0][3][1], 2)}", "docs/oprisk/06_robust-severity.md line 82")
+    mac("ContamCleanSplice", f"{fixed(CONTAM[0][3][4], 2)}", "docs/oprisk/06_robust-severity.md line 82")
+    mac("ContamCleanIqrMle", f"{fixed(CONTAM[0][2][0][1], 2)}", "docs/oprisk/06_robust-severity.md line 71")
+    mac("ContamCleanIqrObre", f"{fixed(CONTAM[0][2][2][1], 2)}", "docs/oprisk/06_robust-severity.md line 71")
+    mac("ContamCleanIqrCvm", f"{fixed(CONTAM[0][2][1][1], 2)}", "docs/oprisk/06_robust-severity.md line 71")
+    mac("ContamSpliceMed", f"{fixed(CONTAM[2][2][1][0], 2)}", "docs/oprisk/06_robust-severity.md line 73")
+    mac("ContamSpliceErrMle", f"{fixed(CONTAM[2][3][0], 2)}", "docs/oprisk/06_robust-severity.md line 84")
+    mac("ContamSpliceErrSplice", f"{fixed(CONTAM[2][3][4], 2)}", "docs/oprisk/06_robust-severity.md line 84")
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -395,8 +398,8 @@ def t_tail(d: dict) -> None:
         c = cell(d[vid], MAIN_CELL)
         for t in c["threshold_stability"]:
             ti = t["tail_index"]
-            rows.append([f"{xi:g}", f"{t['threshold_eur']:,.0f}", f"{t['n_exceedances_median']:.0f}",
-                         f"{ti['median']:.3f} [{ti['p05']:.3f}, {ti['p95']:.3f}]", f"{100 * t['share_at_least_one']:.1f}%"])
+            rows.append([f"{xi:g}", f"{t['threshold_eur']:,.0f}", f"{fixed(t['n_exceedances_median'], 0)}",
+                         f"{fixed(ti['median'], 3)} [{fixed(ti['p05'], 3)}, {fixed(ti['p95'], 3)}]", f"{percent(t['share_at_least_one'], 1)}%"])
     table(OUT / "oprisk-tail.tex", [r"True $\xi$", "Threshold (EUR)", "Exceedances (median)", r"Fitted $\hat\xi$: median [5th, 95th]", r"Share $\hat\xi\ge1$"],
                  rows, align="rrrrr", label="tab:op-tail",
                  caption=r"The GPD tail index fitted to the excesses over four thresholds, from one to eight times the collection threshold of EUR 20,000, "
@@ -404,14 +407,14 @@ def t_tail(d: dict) -> None:
                          r"percentiles, and the share of histories whose fit reaches one, the point at which the mean does not exist.")
     for vid, L, xi in VARIANTS:
         shares = [cell(d[vid], cid)["threshold_stability"][0]["share_at_least_one"] for cid, _, _, _ in CELLS]
-        mac(f"InfLo{L}", f"{100 * min(shares):.0f}", f"{SRC}/{vid}.json cells[*].threshold_stability[0].share_at_least_one, minimum percent")
-        mac(f"InfHi{L}", f"{100 * max(shares):.0f}", f"{SRC}/{vid}.json cells[*].threshold_stability[0].share_at_least_one, maximum percent")
-        mac(f"FinLo{L}", f"{100 * (1 - max(shares)):.0f}", "100 minus the maximum share at or above one")
-        mac(f"FinHi{L}", f"{100 * (1 - min(shares)):.0f}", "100 minus the minimum share at or above one")
+        mac(f"InfLo{L}", f"{percent(min(shares), 0)}", f"{SRC}/{vid}.json cells[*].threshold_stability[0].share_at_least_one, minimum percent")
+        mac(f"InfHi{L}", f"{percent(max(shares), 0)}", f"{SRC}/{vid}.json cells[*].threshold_stability[0].share_at_least_one, maximum percent")
+        mac(f"FinLo{L}", f"{percent((1 - max(shares)), 0)}", "100 minus the maximum share at or above one")
+        mac(f"FinHi{L}", f"{percent((1 - min(shares)), 0)}", "100 minus the minimum share at or above one")
         t0 = cell(d[vid], MAIN_CELL)["threshold_stability"]
-        mac(f"XiMed{L}", f"{t0[0]['tail_index']['median']:.2f}", f"{SRC}/{vid}.json cells[{MAIN_CELL}].threshold_stability[0].tail_index.median")
-        mac(f"XiHi{L}", f"{t0[-1]['tail_index']['p95']:.2f}", f"{SRC}/{vid}.json cells[{MAIN_CELL}].threshold_stability[-1].tail_index.p95")
-        mac(f"XiLo{L}", f"{t0[-1]['tail_index']['p05']:.2f}", f"{SRC}/{vid}.json cells[{MAIN_CELL}].threshold_stability[-1].tail_index.p05")
+        mac(f"XiMed{L}", f"{fixed(t0[0]['tail_index']['median'], 2)}", f"{SRC}/{vid}.json cells[{MAIN_CELL}].threshold_stability[0].tail_index.median")
+        mac(f"XiHi{L}", f"{fixed(t0[-1]['tail_index']['p95'], 2)}", f"{SRC}/{vid}.json cells[{MAIN_CELL}].threshold_stability[-1].tail_index.p95")
+        mac(f"XiLo{L}", f"{fixed(t0[-1]['tail_index']['p05'], 2)}", f"{SRC}/{vid}.json cells[{MAIN_CELL}].threshold_stability[-1].tail_index.p05")
 
 
 def t_sma(d: dict) -> None:
@@ -422,13 +425,13 @@ def t_sma(d: dict) -> None:
         orc = s["orc_eur"]
         ratio = s["orc_over_true_quantile"]
         sp = summ(c, "lda_splice")
-        rows.append([f"{xi:g}", eur_m(orc["median"]), f"{eur_m(orc['p05'])} to {eur_m(orc['p95'])}", f"{s['ilm']['median']:.3f}",
+        rows.append([f"{xi:g}", eur_m(orc["median"]), f"{eur_m(orc['p05'])} to {eur_m(orc['p95'])}", f"{fixed(s['ilm']['median'], 3)}",
                      f2(ratio["median"]), f"{f2(ratio['p05'])} to {f2(ratio['p95'])}", f2(sp["ratio_to_truth"]["median"])])
         mac(f"OrcMed{L}", eur_m(orc["median"]), f"{SRC}/{vid}.json cells[{MAIN_CELL}].sma.orc_eur.median")
         mac(f"OrcRatio{L}", f2(ratio["median"]), f"{SRC}/{vid}.json cells[{MAIN_CELL}].sma.orc_over_true_quantile.median")
         mac(f"OrcRatioLo{L}", f2(ratio["p05"]), f"{SRC}/{vid}.json cells[{MAIN_CELL}].sma.orc_over_true_quantile.p05")
         mac(f"OrcRatioHi{L}", f2(ratio["p95"]), f"{SRC}/{vid}.json cells[{MAIN_CELL}].sma.orc_over_true_quantile.p95")
-        mac(f"IlmMed{L}", f"{s['ilm']['median']:.3f}", f"{SRC}/{vid}.json cells[{MAIN_CELL}].sma.ilm.median")
+        mac(f"IlmMed{L}", f"{fixed(s['ilm']['median'], 3)}", f"{SRC}/{vid}.json cells[{MAIN_CELL}].sma.ilm.median")
         mac(f"LcMed{L}", eur_m(s["lc_eur"]["median"]), f"{SRC}/{vid}.json cells[{MAIN_CELL}].sma.lc_eur.median")
     table(OUT / "oprisk-sma.tex",
                  [r"True $\xi$", "ORC median (EUR m)", "ORC 5th to 95th (EUR m)", "ILM median", "ORC over true quantile", "5th to 95th", "Splice over truth"],
@@ -437,10 +440,10 @@ def t_sma(d: dict) -> None:
                          r"5th to 95th percentile of the capital, the median internal loss multiplier, the capital as a multiple of the true 99.9 percent "
                          r"quantile of the generator, and for comparison the median ratio of the splice. The business indicator component is the same in every row.")
     om = [cell(d[v], MAIN_CELL)["sma"]["orc_eur"]["median"] for v, _, _ in VARIANTS]
-    mac("OrcGrowth", f"{100 * (om[-1] / om[0] - 1):.0f}", "median ORC at xi=1.1 over median ORC at xi=0.6 minus one, percent")
+    mac("OrcGrowth", f"{percent((om[-1] / om[0] - 1), 0)}", "median ORC at xi=1.1 over median ORC at xi=0.6 minus one, percent")
     b = d["xi-0-96"]["outputs"]["bank"]
     mac("Bic", eur_m(b["bic_eur"], 0), f"{SRC}/xi-0-96.json outputs.bank.bic_eur")
-    mac("Bi", f"{b['business_indicator']['bi_eur'] / 1e9:.1f}", f"{SRC}/xi-0-96.json outputs.bank.business_indicator.bi_eur")
+    mac("Bi", f"{fixed(b['business_indicator']['bi_eur'] / 1e9, 1)}", f"{SRC}/xi-0-96.json outputs.bank.business_indicator.bi_eur")
     mac("BiIldc", eur_m(b["business_indicator"]["ildc_eur"], 0), f"{SRC}/xi-0-96.json outputs.bank.business_indicator.ildc_eur")
     mac("BiSc", eur_m(b["business_indicator"]["sc_eur"], 0), f"{SRC}/xi-0-96.json outputs.bank.business_indicator.sc_eur")
     mac("BiFc", eur_m(b["business_indicator"]["fc_eur"], 0), f"{SRC}/xi-0-96.json outputs.bank.business_indicator.fc_eur")
@@ -452,7 +455,7 @@ def t_ilm(d: dict) -> None:
     bic = resp["bic_eur"]
     rows = []
     for r in resp["rows"]:
-        rows.append([f"{r['added_loss_eur'] / bic:g}", eur_m(r["added_loss_eur"]), eur_m(r["lc_eur"]), f"{r['ilm']:.3f}", eur_m(r["orc_eur"]),
+        rows.append([f"{r['added_loss_eur'] / bic:g}", eur_m(r["added_loss_eur"]), eur_m(r["lc_eur"]), f"{fixed(r['ilm'], 3)}", eur_m(r["orc_eur"]),
                      eur_m(r["lda_capital_eur"])])
     table(OUT / "oprisk-ilm.tex",
                  [r"Added loss over $\mathrm{BIC}$", "Added loss (EUR m)", "$LC$ (EUR m)", "ILM", "ORC (EUR m)", "SLA capital (EUR m)"],
@@ -462,9 +465,9 @@ def t_ilm(d: dict) -> None:
                          r"capital of the standardised approach and the single loss approximation capital of the same history, for losses from zero to the size of the business indicator component.")
     first, last = resp["rows"][0], resp["rows"][-1]
     mid = resp["rows"][3]
-    mac("IlmZero", f"{first['ilm']:.3f}", f"{SRC}/xi-0-96.json outputs.sma_response.rows[0].ilm")
-    mac("IlmLast", f"{last['ilm']:.3f}", f"{SRC}/xi-0-96.json outputs.sma_response.rows[-1].ilm")
-    mac("IlmMid", f"{mid['ilm']:.3f}", f"{SRC}/xi-0-96.json outputs.sma_response.rows[3].ilm")
+    mac("IlmZero", f"{fixed(first['ilm'], 3)}", f"{SRC}/xi-0-96.json outputs.sma_response.rows[0].ilm")
+    mac("IlmLast", f"{fixed(last['ilm'], 3)}", f"{SRC}/xi-0-96.json outputs.sma_response.rows[-1].ilm")
+    mac("IlmMid", f"{fixed(mid['ilm'], 3)}", f"{SRC}/xi-0-96.json outputs.sma_response.rows[3].ilm")
     mac("IlmMidAdded", eur_m(mid["added_loss_eur"], 0), f"{SRC}/xi-0-96.json outputs.sma_response.rows[3].added_loss_eur")
     mac("OrcZero", eur_m(first["orc_eur"]), f"{SRC}/xi-0-96.json outputs.sma_response.rows[0].orc_eur")
     mac("OrcLast", eur_m(last["orc_eur"]), f"{SRC}/xi-0-96.json outputs.sma_response.rows[-1].orc_eur")
@@ -474,7 +477,7 @@ def t_ilm(d: dict) -> None:
     mac("AddedLast", eur_m(last["added_loss_eur"], 0), f"{SRC}/xi-0-96.json outputs.sma_response.rows[-1].added_loss_eur")
     mac("AddedOne", eur_m(resp["rows"][1]["added_loss_eur"], 0), f"{SRC}/xi-0-96.json outputs.sma_response.rows[1].added_loss_eur")
     t = next(t for t in d["xi-0-96"]["tests"] if t["test_id"] == "oprisk.sma_ilm_response")
-    mac("IlmJump", f"{t['metric']:.3f}", f"{SRC}/xi-0-96.json tests[oprisk.sma_ilm_response].metric")
+    mac("IlmJump", f"{fixed(t['metric'], 3)}", f"{SRC}/xi-0-96.json tests[oprisk.sma_ilm_response].metric")
     mac("IlmJumpAdded", eur_m(t["extras"]["added_loss"], 0), f"{SRC}/xi-0-96.json tests[oprisk.sma_ilm_response].extras.added_loss")
 
 
@@ -492,13 +495,13 @@ def t_scenario(d: dict) -> None:
     amber = []
     for vid, L, xi in VARIANTS:
         t = next(t for t in d[vid]["tests"] if t["test_id"] == "oprisk.scenario_influence")
-        mac(f"ScTest{L}", f"{t['metric']:.3f}", f"{SRC}/{vid}.json tests[oprisk.scenario_influence].metric")
+        mac(f"ScTest{L}", f"{fixed(t['metric'], 3)}", f"{SRC}/{vid}.json tests[oprisk.scenario_influence].metric")
         if t["light"] == "amber":
             amber.append(f"$\\xi={xi}$")
     mac("ScAmberWhich", " and ".join(amber), f"{SRC}/*.json tests[oprisk.scenario_influence] with an amber light")
     mac("ScAmberN", str(len(amber)), f"{SRC}/*.json tests[oprisk.scenario_influence] with an amber light")
     mac("ScBase", eur_m(si["base_capital_eur"]), f"{SRC}/xi-0-96.json outputs.scenario_influence.base_capital_eur")
-    mac("ScMaxInf", f"{abs(mx['influence']):.3f}", f"{SRC}/xi-0-96.json outputs.scenario_influence.scenarios[max |influence|]")
+    mac("ScMaxInf", f"{fixed(abs(mx['influence']), 3)}", f"{SRC}/xi-0-96.json outputs.scenario_influence.scenarios[max |influence|]")
     mac("ScMaxId", mx["scenario_id"], f"{SRC}/xi-0-96.json outputs.scenario_influence.scenarios[max |influence|].scenario_id")
     mac("ScNeg", f"{sum(1 for s in si['scenarios'] if s['influence'] < 0)}", "scenario points whose removal raises the capital")
     mac("ScNPoints", f"{len(si['scenarios'])}", f"{SRC}/xi-0-96.json outputs.scenario_influence.scenarios")
@@ -528,7 +531,7 @@ def t_tests(d: dict) -> None:
     th = [t for vid, _, _ in VARIANTS for t in d[vid]["tests"] if t["test_id"] == "oprisk.threshold_stability"]
     mac("ThrTests", f"{len(th)}", "threshold stability results")
     bm = d["xi-0-96"]["tests"][0]
-    mac("BenchStat", f"{bm['metric']:.3f}", f"{SRC}/xi-0-96.json tests[oprisk.benchmark_reproduction].metric")
+    mac("BenchStat", f"{fixed(bm['metric'], 3)}", f"{SRC}/xi-0-96.json tests[oprisk.benchmark_reproduction].metric")
 
 
 def write_numbers(registry: pathlib.Path | None) -> None:

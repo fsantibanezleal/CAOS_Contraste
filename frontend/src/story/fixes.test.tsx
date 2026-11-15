@@ -11,7 +11,7 @@ import { FlowView } from './FlowView';
 import { CrisisPanel, DecisionPanel, InventoryPanel, LightPanel, RecalibrationPanel } from './Panels';
 import { RecalibrationView, recalibrationGeometry } from './RecalibrationView';
 import { TrafficLightView } from './TrafficLightView';
-import { MIN_SPAN, easeInOut, fullRange, isFull, mixSeries, zoomRange } from './chart';
+import { MIN_SPAN, SrTableDefer, easeInOut, fullRange, isFull, mixSeries, zoomRange } from './chart';
 import { exitTarget, seedOfQuery } from './exit';
 import { breachState, buildFlow, decision, recalibration, stressSpan, windowModel } from './model';
 import { WINDOW_ID_PATTERN, entriesLabel, findingsLabel, headlineBacktest, headlineInventory, headlineRecalibration, windowWords, zoneAdjective } from './text';
@@ -318,10 +318,20 @@ describe('F13: the dated views zoom and carry their data as a table', () => {
 
   it('each dated view has a visually hidden table of its series, one row per day', () => {
     for (const [id, el] of Object.entries(views())) {
-      const m = html(el);
+      const m = html(<SrTableDefer.Provider value={false}>{el}</SrTableDefer.Provider>);
       expect(m, id).toContain(`data-data-table="${id}"`);
       const body = m.slice(m.indexOf(`data-data-table="${id}"`));
       expect((body.slice(0, body.indexOf('</table>')).match(/<tr>/g) ?? []).length - 1, id).toBe(w.n);
+    }
+  });
+
+  it('in the app a dated view paints first and its table builds its rows after (the step into the light kept its frames, G21)', () => {
+    for (const [id, el] of Object.entries(views())) {
+      const m = html(el);
+      expect(m, id).toContain(`data-data-table="${id}"`); // the table and its caption are there from the first paint
+      const body = m.slice(m.indexOf(`data-data-table="${id}"`));
+      expect(body.slice(0, body.indexOf('</table>')), id).toContain('<caption>');
+      expect((body.slice(0, body.indexOf('</table>')).match(/<tr>/g) ?? []).length, id).toBe(1); // the head row; the days follow
     }
   });
 

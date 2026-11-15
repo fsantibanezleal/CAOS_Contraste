@@ -1,12 +1,16 @@
 \section{Ablation}
 \label{sec:ablation}
 
-The ablation removes one component of the protocol at a time and measures what is lost on the ten planted structures of
-Section~\ref{sec:design-planted}. Table~\ref{tab:ablation} gives every variant and Figure~\ref{fig:coverage} the counts of the
-first nine. The components are the sharp bounds, the second matrix, the $t$ rows, the single figures that the band replaces, the
-common level and the tests. In Figure~\ref{fig:coverage} the dark bars fall from $\bdAblFull$ of the ten for the full band to
-$\bdAblNoBounds$, $\bdAblNoStress$ and $\bdAblNoT$ when the bounds, the stressed matrix or the $t$ rows are removed, and the light
-bars show that each single figure stays at $\bdAblGaussPoint$, $\bdAblVcPoint$, $\bdAblSumPoint$, $\bdAblHybridPoint$ and
+The ablation removes components of the protocol and measures what is lost on the ten planted structures of
+Section~\ref{sec:design-planted}. Table~\ref{tab:ablation} gives every variant and Figure~\ref{fig:coverage} the counts of eleven
+of them. The components are the sharp bounds, the second matrix, the $t$ rows, the single figures that the band replaces, the
+common level and the tests. The interval components are not independent: the bounds fix both ends of the full band, so a
+component of the interior rows can be removed from the full band without changing its ends, and its effect shows only once the
+bounds are gone. The ablation therefore has two series. With the bounds kept, removing the stressed matrix or the $t$ rows leaves
+$\bdAblFullNoStress$ and $\bdAblFullNoT$ of the ten, the same $\bdAblFull$ as the full band. Without the bounds, the interior rows of
+both matrices contain $\bdAblNoBounds$; removing the stressed matrix as well leaves $\bdAblNoStress$, and removing the $t$ rows as
+well leaves $\bdAblNoTStress$. In Figure~\ref{fig:coverage} the dark bars are these six intervals, and the light bars show that each
+single figure stays at $\bdAblGaussPoint$, $\bdAblVcPoint$, $\bdAblSumPoint$, $\bdAblHybridPoint$ and
 $\bdAblKendallPoint$: only the full band holds every capital.
 
 \input{tables/ablation}
@@ -14,7 +18,7 @@ $\bdAblKendallPoint$: only the full band holds every capital.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/coverage}
-\caption{Number of the ten planted structures covered by each variant: the full band and three intervals with one component removed (dark bars, containing the capital after widening by three standard errors), and five single figures (light bars, within 5 percent of the capital).}
+\caption{Number of the ten planted structures covered by each variant. Dark bars, intervals that contain the capital after widening by three standard errors: the full band; the full band without the stressed matrix and without the $t$ rows (the bounds kept); and the interior rows of both matrices without the bounds, then without the bounds and the $t$ rows, then without the bounds and the stressed matrix. Light bars, five single figures within 5 percent of the capital.}
 \label{fig:coverage}
 \end{figure}
 
@@ -22,21 +26,24 @@ $\bdAblKendallPoint$: only the full band holds every capital.
 \label{sec:ablation-intervals}
 
 The full band, with the bounds and the interior rows of both matrices, contains all ten capitals and has a median width of
-$\bdAblFullWidth$ times the capital. Removing the sharp bounds leaves an interval of median width $\bdAblNoBoundsWidth$ that contains
-$\bdAblNoBounds$ of the ten: it misses \bdMissedNoBounds{}, the structure with no dependence, which lies below every interior row, and
+$\bdAblFullWidth$ times the capital. With the bounds kept, removing the stressed matrix or the $t$ rows changes neither end of the
+interval: it still contains $\bdAblFullNoStress$ and $\bdAblFullNoT$ of the ten at the median width $\bdAblFullNoStressWidth$ and
+$\bdAblFullNoTWidth$, because the lower bound and the worst case lie outside every interior row. The effect of these components shows
+on the interior rows, so the reference for them is the interval without the bounds. Removing the sharp bounds leaves that interval, of
+median width $\bdAblNoBoundsWidth$, which contains $\bdAblNoBounds$ of the ten: it misses \bdMissedNoBounds{}, the structure with no dependence, which lies below every interior row, and
 the heaviest tail, which lies above every interior row. The bounds therefore buy the last $\bdAblBoundsGain$ structures at a price of $\bdAblWidthBounds$ of the capital in median width, which is a high
 price and a necessary one if coverage is the goal: no
 choice of copula family and matrix can be known to span the structures that were not thought of, and the bounds are the only
 rows that do not depend on that choice.
 
-The stressed matrix is the component with the highest value for its width. Without it the interior rows of the base matrix
-contain $\bdAblNoStress$ of the ten structures with a median width of $\bdAblNoStressWidth$; with it, and without the bounds, they
+The stressed matrix is the component with the highest value for its width. Without the bounds and without it, the interior rows of
+the base matrix contain $\bdAblNoStress$ of the ten structures with a median width of $\bdAblNoStressWidth$; with it, they
 contain $\bdAblNoBounds$ at $\bdAblNoBoundsWidth$. The increase of $\bdAblStressGain$ structures costs $\bdAblWidthStress$ of the capital in median width. The $t$ rows have
-the opposite profile on the base matrix: removing them leaves the square-root rule and the Gaussian row, which contain
-$\bdAblNoT$ of the ten at a width of $\bdAblNoTWidth$, the same count as the five-row interval of the base matrix. Their
-contribution appears in combination with the stressed matrix: without the $t$ rows but with both matrices the interval contains
+the opposite profile on the base matrix: the interval of the square-root rule and the Gaussian row alone, without the bounds, the stressed matrix and
+the $t$ rows, contains $\bdAblNoT$ of the ten at a width of $\bdAblNoTWidth$, the same count as the five-row interval of the base matrix. Their
+contribution appears in combination with the stressed matrix: without the bounds and the $t$ rows but with both matrices the interval contains
 $\bdAblNoTStress$ of the ten at a median width of $\bdAblNoTStressWidth$, against $\bdAblNoBounds$ for the five interior rows of
-both matrices, and the $t$ rows alone, on both matrices, contain $\bdAblTOnly$ at $\bdAblTOnlyWidth$. The three components are
+both matrices, so that the $t$ rows add $\bdAblTGain$ structures for $\bdAblWidthT$ of the capital in median width, and the $t$ rows alone, on both matrices, contain $\bdAblTOnly$ at $\bdAblTOnlyWidth$. The three components are
 not additive, because each interior interval extends the others in different directions: the matrix moves the Gaussian
 structures up, the $t$ rows move the capital of the heavy-tailed structures up, and neither can reach the independent case, which
 only the bounds contain.

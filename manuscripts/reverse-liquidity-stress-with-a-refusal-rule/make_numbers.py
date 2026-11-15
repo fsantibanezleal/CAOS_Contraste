@@ -170,6 +170,12 @@ def build() -> None:
     reg("kHThreeGapNine", f"{K['H3']['gap_days_growing_quantiles']['0.9']:.0f}", f"{k} H3.gap quantile 0.9")
     reg("kHThreeGapFifty", f"{K['H3']['gap_days_growing_quantiles']['0.5']:.0f}", f"{k} H3.gap quantile 0.5")
     reg("kHThreeGapMax", f"{K['H3']['gap_days_growing_quantiles']['1.0']:.0f}", f"{k} H3.gap max")
+    sc = K["scatter"]
+    others = [g for g, fl in zip(sc["gap"], sc["flat_no_inflow"]) if not fl]
+    reg("kSampN", f"{len(sc['gap']):,}", f"{k} scatter sample size")
+    reg("kSampOther", f"{len(others):,}", f"{k} scatter sample, instances other than constant capacity with no inflow")
+    reg("kSampOtherGapPc", pc(sum(1 for g in others if g > 0) / len(others)), f"{k} scatter sample, share of those others with a positive gap x 100")
+    reg("kSampGapMax", f"{max(sc['gap']):.0f}", f"{k} scatter sample, largest gap")
     reg("kHFour", ci(K["H4"]), f"{k} H4")
     reg("kHFourMed", pc(K["H4"]["overshoot_quantiles"]["0.5"]), f"{k} H4.overshoot median x 100")
     reg("kHFourQ", pc(K["H4"]["overshoot_quantiles"]["0.9"]), f"{k} H4.overshoot q90 x 100")

@@ -95,10 +95,14 @@ def fig_fz0():
         ax.set_xticks(range(len(models)))
         ax.set_xticklabels([MNAME[m] for m in models], rotation=60, ha="right", fontsize=6.5)
         ax.set_title(f"target level {100 * a:g}%")
-        ax.set_ylim(-60, 20)
-    axs[0].set_ylabel("change of mean FZ0 (%), wrapped against unwrapped")
-    axs[0].legend(loc="lower left", fontsize=6.5)
-    fig.tight_layout()
+        ax.set_yscale("symlog", linthresh=20)
+        ax.set_ylim(-10000, 40)
+        ax.set_yticks([-10000, -1000, -100, -20, 0, 20])
+        ax.set_yticklabels(["-10,000", "-1,000", "-100", "-20", "0", "20"])
+    axs[0].set_ylabel("change of mean FZ0 (%), wrapped against unwrapped\n(symmetric log axis, linear within $\\pm$20)")
+    h, lab = axs[0].get_legend_handles_labels()
+    fig.legend(h, lab, loc="lower center", ncol=3, fontsize=7, frameon=False)
+    fig.tight_layout(rect=(0, 0.06, 1, 1))
     return figkit.save(fig, OUT, "fz0-change")
 
 
@@ -154,8 +158,9 @@ def fig_generators():
             if j == 0:
                 ax.set_ylabel(f"pass rate, level {100 * a:g}%")
             ax.set_ylim(0, 1.05)
-    axs[0, 0].legend(loc="lower left", fontsize=6)
-    fig.tight_layout()
+    h, lab = axs[0, 0].get_legend_handles_labels()
+    fig.legend(h, lab, loc="lower center", ncol=4, fontsize=7, frameon=False)
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
     return figkit.save(fig, OUT, "generator-pass")
 
 

@@ -10,6 +10,7 @@ import { useCard } from '../c03/U6Shared';
 import { NoticeFlow } from './C10Common';
 import { noteText } from '../c08/notes';
 import { ESTIMATOR_KIND_TEXT, ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, METHOD_TEXT, PARAMETER_TEXT, SECTOR_TEXT, fitOf, gridOf, measureText, outputsOf, referenceNote, rungOf, text, type C10GridOutputs, type C10Sel } from './selection';
+import { markRefs } from '../../lib/refs';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
@@ -79,7 +80,7 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
                   <td className="ct-text ct-wide-only" data-na={ran(r.id, r.n_scenarios, r.evaluated).n === null ? 'true' : undefined}>{ran(r.id, r.n_scenarios, r.evaluated).n === null ? (ran(r.id, r.n_scenarios, r.evaluated).why ? pick(ran(r.id, r.n_scenarios, r.evaluated).why as BiText, lang) : formatNumber(null, lang)) : count(ran(r.id, r.n_scenarios).n as number, lang)}</td>
                   {/* a rung that does not run calls no engine function: the planned one is not named (R4 c12 m-N3) */}
                   <td className="ct-text ct-wide-only" translate="no">{r.evaluated === false ? <span translate="yes">{pick({ en: 'none: the rung does not run', es: 'ninguna: el escalón no corre' }, lang)}</span> : <code>{r.engine_function}</code>}</td>
-                  <td className="ct-text">{referenceNote(r.reference, lang)}</td>
+                  <td className="ct-text">{markRefs(referenceNote(r.reference, lang), lang)}</td>
                   {/* the variant's own calibration of the rung (each loan type fits its own PD and correlation); the fit's ladder only when the variant has none (R3 c11 B1) */}
                   {/* a simulator grid has no rungs of its own: it runs the LHP estimators only, so the LHP rung takes the generator's known PD and
                       correlation grid and the other rungs say they do not run on it, never a loan type's calibration (R4 c12, c13 B1; R5 c13 B1) */}
@@ -222,7 +223,7 @@ export function EstimatorsView({ sel }: { sel: C10Sel | null }) {
                 <td className="ct-text">{pick(text(ESTIMATOR_TEXT, e.id), lang)}</td>
                 <td className="ct-text">{pick(text(INTERVAL_TEXT, e.interval_method), lang)}</td>
                 <td className="ct-text" translate="no"><code>{e.engine_function}</code></td>
-                <td className="ct-text ct-wide-only">{referenceNote(e.reference, lang)}</td>
+                <td className="ct-text ct-wide-only">{markRefs(referenceNote(e.reference, lang), lang)}</td>
               </tr>
             ))}
           </tbody>

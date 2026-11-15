@@ -39,15 +39,16 @@ dependence structures of known capital test what the band covers. The main findi
 \begin{itemize}
 \item The six committed aggregates, which reduce to $\bdDistinct$ distinct ones, all carry the eight rows in order with one headline
 and seven information labels, a single horizon and level, and an Euler allocation that adds up to a relative error of
-$\bdEulerGap$ (Table~\ref{tab:hypotheses}).
+$\bdEulerGap$ (Section~\ref{sec:results-structure}, Table~\ref{tab:hypotheses}).
 \item The band of Banco Andino runs from CLP $\bdLower$ to CLP $\bdWorst$ billion against a headline of CLP $\bdHeadline$ billion;
 its width is $\bdWidthOverSe$ times the largest Monte Carlo standard error, no row lies within 10 percent of every other row, and the engine reproduces the committed rows from the committed marginal grids to within $\bdMaxRelDiff$ percent
 (Table~\ref{tab:main-results}, Figure~\ref{fig:band}).
 \item On ten planted structures the sharp range contains the capital of all of them, with a median width of $\bdAblFullWidth$ times the capital; the interior rows of the base matrix contain
 $\bdCovInterior$ of the ten, and $\bdCovInteriorStress$ when the rows of the market-credit stress are added; the Gaussian copula row alone is within 5 percent of the capital of $\bdGaussWithin$ of the ten, with a median absolute error of $\bdGaussMedErr$ percent
 (Table~\ref{tab:planted-truth}, Figure~\ref{fig:truth-errors}). Two single-figure estimators calibrated on the structure itself are within 5 percent in $\bdAblHybridPoint$ of the ten.
-\item Removing a component of the rule has a measured cost: without the bounds the interval contains $\bdAblNoBounds$ of the ten, without the second matrix $\bdAblNoStress$ and without the $t$ rows,
-on the base matrix, $\bdAblNoT$ (Table~\ref{tab:ablation}). Of nine predictions, seven held and two were refuted, among them the coverage of the planted structures by the interior rows of the base matrix.
+\item Removing a component of the rule has a measured cost, read on the interior rows of both matrices, which contain $\bdAblNoBounds$ of the ten once the bounds are removed: removing the stressed matrix as well
+leaves $\bdAblNoStress$, and removing the $t$ rows as well leaves $\bdAblNoTStress$. While the bounds stay, removing either interior component leaves $\bdAblFullNoStress$ and $\bdAblFullNoT$ of the ten,
+because the bounds fix both ends of the interval (Table~\ref{tab:ablation}). Of nine predictions, seven held and two were refuted, among them the coverage of the planted structures by the interior rows of the base matrix.
 \end{itemize}
 
 The remainder of the paper is organised as follows. Section~\ref{sec:related-work} places the rule among the published methods.

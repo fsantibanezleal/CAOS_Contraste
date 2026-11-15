@@ -71,6 +71,11 @@ for key, nm in (("lower-bound", "Lower"), ("variance-covariance", "Vc"), ("gauss
     M("bd" + nm, bn(base[key])); M("bd" + nm + "M", n0(base[key])); M("bd" + nm + "Df", f"{base[key] / H:.3f}")
     M("bd" + nm + "Stress", bn(stress[key])); M("bd" + nm + "StressDf", f"{stress[key] / H:.3f}")
     M("bd" + nm + "Move", pc(stress[key] / base[key] - 1.0))
+_rb, _rs = e2["repetitions_base"]["rows"], e2["repetitions_stress"]["rows"]
+for key, nm in (("variance-covariance", "Vc"), ("gaussian-copula", "Gauss"), ("t-copula-nu4", "TFour"), ("t-copula-nu8", "TEight"), ("t-copula-nu30", "TThirty")):
+    M("bd" + nm + "MoveRb", pc(_rs[key]["mean"] / _rb[key]["mean"] - 1.0))
+_ri = [_rs[k]["mean"] for k in ("variance-covariance", "gaussian-copula", "t-copula-nu4", "t-copula-nu8", "t-copula-nu30")]
+M("bdStressRbMin", bn(min(_ri))); M("bdStressRbMax", bn(max(_ri)))
 M("bdWidth", bn(base["worst-case"] - base["lower-bound"])); M("bdWidthOverHeadline", f"{(base['worst-case'] - base['lower-bound']) / H:.3f}")
 M("bdWorstOverHeadline", f"{base['worst-case'] / H:.3f}"); M("bdWorstAbove", pc(base["worst-case"] / H - 1.0))
 M("bdLowerOverHeadline", f"{base['lower-bound'] / H:.3f}")
@@ -203,6 +208,10 @@ M("bdAblStressGain", str(var[names[1]]["covered"] - var[names[2]]["covered"]))
 M("bdAblBoundsGain", str(var[names[0]]["covered"] - var[names[1]]["covered"]))
 M("bdShareSdMin", pc(min(eu["share_sd"]))); M("bdShareSdMax", pc(max(eu["share_sd"])))
 M("bdAblTOnly", str(var[names[11]]["covered"])); M("bdAblTOnlyWidth", f"{var[names[11]]['median_width_over_truth']:.2f}")
+M("bdAblFullNoStress", str(var[names[12]]["covered"])); M("bdAblFullNoT", str(var[names[13]]["covered"]))
+M("bdAblFullNoStressWidth", f"{var[names[12]]['median_width_over_truth']:.2f}"); M("bdAblFullNoTWidth", f"{var[names[13]]['median_width_over_truth']:.2f}")
+M("bdAblTGain", str(var[names[1]]["covered"] - var[names[10]]["covered"]))
+M("bdAblWidthT", f"{var[names[1]]['median_width_over_truth'] - var[names[10]]['median_width_over_truth']:.2f}")
 M("bdMissedNoBounds", " and ".join(LBL[i] for i in var[names[1]]["missed"]))
 for h, o in (("HOne", e1["H1"]["outcome"]), ("HTwo", e2["H2"]["outcome"]), ("HThree", e2["H3"]["outcome"]), ("HFiveInv", e1["H5"]["outcome"]),
              ("HFourA", e3["H4a"]["outcome"]), ("HFourB", e3["H4b"]["outcome"]), ("HFourC", e3["H4c"]["outcome"]), ("HSix", h6["outcome"]), ("HSeven", h7["outcome"])):
@@ -279,27 +288,41 @@ def t_truth() -> None:
                  label="tab:planted-truth", align="lrrrrrccc", wide=True)
 
 
+ABL_ORDER = (0, 12, 13, 1, 10, 2, 3, 11)  # the full band, one interior component removed with the bounds kept, then the bounds removed
+
+
 def missed_text(v):
-    """The structures an interval misses: listed when at most three, else the ones it does cover."""
+    """The structures an interval misses, listed when at most three, else their number."""
     if not v["missed"]:
         return "none"
     if len(v["missed"]) <= 3:
         return "; ".join(LBL[i] for i in v["missed"])
-    return "covers only " + "; ".join(LBL[i] for i in LBL if i not in v["missed"])
+    return f"{len(v['missed'])} structures"
+
+
+def covered_text(v):
+    """The structures an interval contains, listed when at most three, else their number."""
+    got = [i for i in LBL if i not in v["missed"]]
+    if len(got) == len(LBL):
+        return "all"
+    if len(got) <= 3:
+        return "; ".join(LBL[i] for i in got)
+    return f"{len(got)} structures"
 
 
 def t_ablation() -> None:
     rows = []
-    for v in sorted(e4["ablation_variants"], key=lambda v: v["kind"] != "interval"):
-        if v["kind"] == "interval":
-            rows.append([v["variant"], "contains the capital", f"{v['covered']} of {v['of']}", f"{v['median_width_over_truth']:.2f}", missed_text(v)])
-        else:
-            rows.append([v["variant"], f"within {int(100 * v['tolerance'])} percent", f"{v['covered']} of {v['of']}", f"{v['median_abs_error']:.2f}",
-                         "median error"])
-    T(TAB / "ablation.tex", ["Variant", "Covered when", "Structures covered", "Median width / error", "Missed"], rows,
-                 caption="What each component of the protocol contributes on the ten planted structures: for an interval, the number of structures whose capital it contains and its median width "
-                         "relative to the capital; for a single figure, the number within the stated tolerance and its median absolute relative error.",
-                 label="tab:ablation", align="p{5.6cm}lcrp{3.4cm}", wide=True)
+    for ix in ABL_ORDER:
+        v = e4["ablation_variants"][ix]
+        rows.append([v["variant"], "contains the capital", f"{v['covered']} of {v['of']}", f"{v['median_width_over_truth']:.2f}", missed_text(v), covered_text(v)])
+    for v in e4["ablation_variants"]:
+        if v["kind"] == "point":
+            rows.append([v["variant"], f"within {int(100 * v['tolerance'])} percent", f"{v['covered']} of {v['of']}", f"{v['median_abs_error']:.2f}", "-", "-"])
+    T(TAB / "ablation.tex", ["Variant", "Covered when", "Covered", "Width or error", "Missed (listed when at most three)", "Covered (listed when at most three)"], rows,
+                 caption="What each component of the protocol contributes on the ten planted structures. For an interval, the number of structures whose capital it contains (after widening by three standard errors) "
+                         "and its median width relative to the capital; the first three rows keep the sharp bounds and every later interval row lacks them, so that the row of the stressed matrix "
+                         "or of the $t$ rows removed without the bounds also lacks the bounds. For a single figure, the number within the stated tolerance and its median absolute relative error.",
+                 label="tab:ablation", align=">{\\raggedright\\arraybackslash}p{4.4cm}>{\\raggedright\\arraybackslash}p{1.9cm}cr>{\\raggedright\\arraybackslash}p{2.2cm}>{\\raggedright\\arraybackslash}p{2.6cm}", wide=True)
 
 
 def t_hyp() -> None:
@@ -382,10 +405,12 @@ for fn in (t_marginals, t_protocol, t_main, t_truth, t_ablation, t_hyp, t_tests,
 
 # ---------------------------------------------------------------------------------------------------------------- figures
 figkit.style()
+import matplotlib as _mpl  # noqa: E402
+_mpl.rcParams["mathtext.fontset"] = "dejavuserif"
 import matplotlib.pyplot as plt  # noqa: E402
 
 SHORT = {"lower-bound": "lower bound", "simple-sum": "simple sum", "variance-covariance": "square-root", "gaussian-copula": "Gaussian",
-         "t-copula-nu4": "t, nu 4", "t-copula-nu8": "t, nu 8", "t-copula-nu30": "t, nu 30", "worst-case": "worst case"}
+         "t-copula-nu4": r"$t$, $\nu=4$", "t-copula-nu8": r"$t$, $\nu=8$", "t-copula-nu30": r"$t$, $\nu=30$", "worst-case": "worst case"}
 
 
 def fig_band() -> None:
@@ -404,17 +429,17 @@ def fig_band() -> None:
 
 
 def fig_protocol() -> None:
-    fig, ax = plt.subplots(figsize=(6.8, 2.2)); ax.axis("off")
+    fig, ax = plt.subplots(figsize=(6.3, 1.6)); ax.axis("off"); fig.subplots_adjust(0.0, 0.0, 1.0, 1.0)
     boxes = ["marginals $F_k$\nEC, EL, ES at\none horizon,\none level", "named inputs\n$R$ and the set\nof $\\nu$ values", "eight rows\nlower, sum,\nroot, Gauss,\n3 t, worst",
-             "status labels\nsum: headline,\nrest: not\ncapital", "gates\norder, level,\nbracket, sign,\nEuler sum", "readings\nwidth, DF,\nmodel-risk\nmeasures"]
-    w, gap = 0.145, 0.026
+             "status labels\nsum: headline,\nrest: not\ncapital", "checks\norder, level,\nbracket, sign,\nEuler sum", "readings\nwidth, DF,\nmodel-risk\nmeasures"]
+    w, gap = 0.14, 0.032
     for i, text in enumerate(boxes):
         x = i * (w + gap)
         ax.add_patch(plt.Rectangle((x, 0.2), w, 0.6, fill=False, linewidth=0.8, clip_on=False))
-        ax.text(x + w / 2, 0.5, text, ha="center", va="center", fontsize=5.8)
+        ax.text(x + w / 2, 0.5, text, ha="center", va="center", fontsize=7.5)
         if i < len(boxes) - 1:
             ax.annotate("", xy=(x + w + gap, 0.5), xytext=(x + w, 0.5), arrowprops={"arrowstyle": "-|>", "linewidth": 0.8, "shrinkA": 0, "shrinkB": 0})
-    ax.set_xlim(-0.005, 5 * (w + gap) + w + 0.005); ax.set_ylim(0.1, 0.9)
+    ax.set_xlim(-0.01, 5 * (w + gap) + w + 0.01); ax.set_ylim(0.1, 0.9)
     figkit.save(fig, FIG, "protocol")
 
 
@@ -434,29 +459,31 @@ def fig_nu() -> None:
 
 
 def fig_truth() -> None:
-    fig, ax = plt.subplots(figsize=(6.6, 4.0))
-    methods = [("simple-sum", "simple sum", 0), ("variance-covariance", "square-root", 1), ("gaussian-copula", "Gaussian", 2), ("t-copula-nu4", "t, nu 4", 3),
-               ("t-copula-nu30", "t, nu 30", 4), ("hybrid-calibrated", "hybrid, truth correlation", 5), ("gaussian-kendall-calibrated", "Gaussian, truth rank corr.", 6)]
+    fig, ax = plt.subplots(figsize=(5.8, 4.0))
+    methods = [("simple-sum", "simple sum", 0), ("variance-covariance", "square-root", 1), ("gaussian-copula", "Gaussian", 2), ("t-copula-nu4", r"$t$, $\nu=4$", 3),
+               ("t-copula-nu30", r"$t$, $\nu=30$", 4), ("hybrid-calibrated", "hybrid, truth correlation", 5), ("gaussian-kendall-calibrated", "Gaussian, truth rank corr.", 6)]
     y = np.arange(len(st))[::-1]
     for key, lab, i in methods:
         s = figkit.STYLES[i % len(figkit.STYLES)]
         ax.plot([100 * r["relative_error"][key] for r in st], y, linestyle="none", marker=s["marker"] if i < len(figkit.STYLES) else "P", color=s["color"], mfc=("none" if i >= len(figkit.STYLES) else None), label=lab, markersize=4)
     ax.axvline(0, color="0.2", linewidth=0.8)
     ax.axvspan(-5, 5, color="0.93")
-    ax.set_yticks(y); ax.set_yticklabels([r["label"] for r in st], fontsize=7)
-    ax.set_xlabel("relative error against the planted capital, percent"); ax.legend(fontsize=6.5, loc="lower right")
+    ax.set_yticks(y); ax.set_yticklabels([r["label"] for r in st], fontsize=7.5)
+    ax.set_xlabel("relative error against the planted capital, percent"); ax.legend(fontsize=7.5, loc="lower right")
     figkit.save(fig, FIG, "truth-errors")
 
 
 def fig_cov() -> None:
-    fig, ax = plt.subplots(figsize=(6.4, 3.0))
+    fig, ax = plt.subplots(figsize=(5.7, 3.2))
     vs = e4["ablation_variants"]
-    labs = ["full band", "no bounds", "no stressed\nmatrix", "no t rows", "Gaussian\n(5%)", "sqrt rule\n(5%)", "simple sum\n(5%)", "hybrid\n(5%)", "Gauss. rank\n(5%)"]
-    vals = [v["covered"] for v in vs[:9]]
-    ax.bar(range(len(vals)), vals, color=["0.15"] * 4 + ["0.6"] * 5, edgecolor="0.0")
+    order = [0, 12, 13, 1, 10, 2, 4, 5, 6, 7, 8]
+    labs = ["full band", "full, no stressed matrix", "full, no t rows", "no bounds", "no bounds, no t rows", "no bounds, no stressed matrix",
+            "Gaussian (5%)", "square-root (5%)", "simple sum (5%)", "hybrid (5%)", "Gaussian, rank corr. (5%)"]
+    vals = [vs[i]["covered"] for i in order]
+    ax.bar(range(len(vals)), vals, color=["0.15"] * 6 + ["0.7"] * 5, edgecolor="0.0")
     for i, v in enumerate(vals):
-        ax.text(i, v + 0.1, str(v), ha="center", fontsize=7)
-    ax.set_xticks(range(len(vals))); ax.set_xticklabels(labs, fontsize=6.5, rotation=30, ha="right"); ax.set_ylim(0, len(st) + 1)
+        ax.text(i, v + 0.1, str(v), ha="center", fontsize=8)
+    ax.set_xticks(range(len(vals))); ax.set_xticklabels(labs, fontsize=7.5, rotation=45, ha="right", rotation_mode="anchor"); ax.set_ylim(0, len(st) + 1)
     ax.set_ylabel(f"planted structures covered, of {len(st)}")
     figkit.save(fig, FIG, "coverage")
 

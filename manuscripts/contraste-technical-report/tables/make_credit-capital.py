@@ -27,6 +27,9 @@ from typing import Any
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "_shared"))
 import figkit  # noqa: E402
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from _halfup import fixed, percent, install as _halfup_install  # noqa: E402
+_halfup_install(figkit)
 
 OUT = HERE
 LOANS = (
@@ -80,17 +83,17 @@ def bt_row(doc: dict, level: float) -> dict:
 
 
 def f(x: float, d: int) -> str:
-    return f"{x:.{d}f}"
+    return fixed(x, d)
 
 
 def mil(x: float, d: int = 2) -> str:
     """Money in millions of USD."""
-    return f"{x / 1e6:.{d}f}"
+    return f"{fixed(x / 1e6, d)}"
 
 
 def pct(x: float, d: int = 2) -> str:
     """A share as a percentage, without the sign."""
-    return f"{100.0 * x:.{d}f}"
+    return percent(x, d)
 
 
 def sci(x: float, d: int = 1) -> str:
@@ -99,14 +102,14 @@ def sci(x: float, d: int = 1) -> str:
         return "\\ensuremath{0}"
     e = math.floor(math.log10(abs(x)))
     m = x / 10 ** e
-    return f"\\ensuremath{{{m:.{d}f}\\times10^{{{e}}}}}"
+    return f"\\ensuremath{{{fixed(m, d)}\\times10^{{{e}}}}}"
 
 
 def pval(p: float) -> str:
     if p >= 0.001:
-        return f"{p:.3f}"
+        return f"{fixed(p, 3)}"
     if p >= 1e-4:
-        return f"{p:.4f}"
+        return f"{fixed(p, 4)}"
     return sci(p, 1)
 
 
@@ -384,7 +387,7 @@ def R(w: float) -> str:
 
 
 def interval(est: float, lo: float, hi: float, d: int = 3) -> str:
-    return f"${est:.{d}f}$ [${lo:.{d}f}$, ${hi:.{d}f}$]"
+    return f"${fixed(est, d)}$ [${fixed(lo, d)}$, ${fixed(hi, d)}$]"
 
 
 def t_cases(D: dict) -> None:
@@ -513,7 +516,7 @@ def t_mcerr(D: dict) -> None:
         r = []
         for rid in ("c2-gaussian-1f", "c2-gaussian-mf", "c3-student-t", "c6-is-gaussian"):
             m = meas(d, rid, 0.999)
-            r.append(f"{m['var_se'] / 1e3:.1f}")
+            r.append(f"{fixed(m['var_se'] / 1e3, 1)}")
         isr = rung(d, "c6-is-gaussian")
         dg = {x["name"]: x["value"] for x in isr["diagnostics"]}
         r += [f(dg["variance_ratio_vs_plain_mc"], 0), f(dg["variance_ratio_es_vs_plain_mc"], 0), pct(dg["effective_sample_share"], 3)]
@@ -592,8 +595,8 @@ def t_battery(D: dict) -> None:
         eu = test_rows(d, "portfolio.euler_additivity")
         ev = max(t["metric"] for t in eu if t["segment"].startswith("var"))
         ee = max(t["metric"] for t in eu if t["segment"].startswith("es"))
-        rows.append([name, f"${mc['statistic']:.2f}$", pval(mc["p_value"]), mc["light"], f"{cr['statistic']:.5f}", f"{cr['p_value']:.3f}", cr["light"],
-                     f"{ev:.4f}", sci(ee, 1)])
+        rows.append([name, f"${fixed(mc['statistic'], 2)}$", pval(mc["p_value"]), mc["light"], f"{fixed(cr['statistic'], 5)}", f"{fixed(cr['p_value'], 3)}", cr["light"],
+                     f"{fixed(ev, 4)}", sci(ee, 1)])
     tbl("battery", ["Loan type", "MC $z$", "MC $p$", "Light", "CR+ $D$", "CR+ $p$", "Light", "VaR gap", "ES gap"], rows,
         caption="Validation tests of the portfolio models on each loan type: the convergence of the Monte Carlo value at risk of 5,000 identical "
                 "names to the large-portfolio quantile ($z$ statistic, two-sided $p$-value, light); the Kolmogorov distance $D$ between the "
@@ -611,7 +614,7 @@ def t_crp(D: dict) -> None:
         cd = {x["name"]: x["value"] for x in cr["diagnostics"]}
         v = meas(d, "c4-creditrisk-plus", 0.999)["var"]
         vg = meas(d, "c2-gaussian-1f", 0.999)["var"]
-        rows.append([name, f"{cp['sigma2']:.4f}", thousands(cd["n_max"]), sci(cd["tail_mass_left_out"], 1), mil(cd["expected_loss"], 3),
+        rows.append([name, f"{fixed(cp['sigma2'], 4)}", thousands(cd["n_max"]), sci(cd["tail_mass_left_out"], 1), mil(cd["expected_loss"], 3),
                      mil(meas(d, "c4-creditrisk-plus", 0.999)["el"], 3), f(v / vg, 3)])
     tbl("crp", ["Loan type", "$\\sigma^2$", "Grid $n_{\\max}$", "Mass beyond grid", "EL of the pmf (M)", "EL of the portfolio (M)", "VaR / Gaussian 1F"],
         rows,
@@ -630,7 +633,7 @@ def t_sizepower(D: dict) -> None:
         row = [f(a["known_rho"], 2), a["role"]]
         for c in (a, b):
             for e in c["estimators"]:
-                row.append(f"{e['rejection_rate']:.3f} [{e['rejection_ci_low']:.3f}, {e['rejection_ci_high']:.3f}]")
+                row.append(f"{fixed(e['rejection_rate'], 3)} [{fixed(e['rejection_ci_low'], 3)}, {fixed(e['rejection_ci_high'], 3)}]")
         rows.append(row)
     tbl("sizepower", ["$\\rho$", "Role", "ML, 22 y", "Moments, 22 y", "ML, 40 y", "Moments, 40 y"], rows,
         caption="Rejection rate of $H_0:\\rho=0.12$ at the 5\\% level on the simulator with known correlation and a known default probability "
@@ -647,7 +650,7 @@ def t_estacc(D: dict) -> None:
         row = [f(a["known_rho"], 2)]
         for c in (a, b):
             for e in c["estimators"]:
-                row += [f"{e['rmse']:.3f}", f"{e['coverage']:.3f}"]
+                row += [f(e['rmse'], 3), f(e['coverage'], 3)]
         rows.append(row)
     tbl("estacc", ["$\\rho$", "ML RMSE 22", "ML cov. 22", "Mom. RMSE 22", "Mom. cov. 22", "ML RMSE 40", "ML cov. 40", "Mom. RMSE 40", "Mom. cov. 40"], rows,
         caption="Accuracy of the two correlation estimators on the simulator with known correlation: root-mean-square error of the estimate "
@@ -669,23 +672,23 @@ def engine_checks() -> list[list[Any]]:
     pd_, rho_ = 0.02, 0.15
     m = pf.lhp_measures(1.0, 1.0, pd_, rho_, (0.99, 0.999))
     var999 = float(stats.norm.cdf((stats.norm.ppf(pd_) + math.sqrt(rho_) * stats.norm.ppf(0.999)) / math.sqrt(1 - rho_)))
-    rows.append(["LHP value at risk, 99.9\\%", f"{m[1].var:.6f}", f"{var999:.6f}", sci(abs(m[1].var - var999), 1)])
+    rows.append(["LHP value at risk, 99.9\\%", f"{fixed(m[1].var, 6)}", f"{fixed(var999, 6)}", sci(abs(m[1].var - var999), 1)])
     c = stats.norm.ppf(1 - 0.999)
 
     def p_of_z(z: float) -> float:
         return float(stats.norm.cdf((stats.norm.ppf(pd_) - math.sqrt(rho_) * z) / math.sqrt(1 - rho_)))
 
     es_q = integrate.quad(lambda z: p_of_z(z) * stats.norm.pdf(z), -40, c, epsabs=1e-14, epsrel=1e-13)[0] / (1 - 0.999)
-    rows.append(["LHP expected shortfall, 99.9\\% (Simpson, 4,000 steps)", f"{m[1].es:.6f}", f"{es_q:.6f}", sci(abs(m[1].es - es_q), 1)])
+    rows.append(["LHP expected shortfall, 99.9\\% (Simpson, 4,000 steps)", f"{fixed(m[1].es, 6)}", f"{fixed(es_q, 6)}", sci(abs(m[1].es - es_q), 1)])
     k_irb = irb.capital_requirement("residential_mortgage", pd_, 0.45).k
     k_lhp = 0.45 * (m[1].var - pd_)
-    rows.append(["IRB capital K (mortgage class) against LGD $\\times$ (LHP VaR $-$ PD)", f"{k_irb:.6f}", f"{k_lhp:.6f}", sci(abs(k_irb - k_lhp), 1)])
+    rows.append(["IRB capital K (mortgage class) against LGD $\\times$ (LHP VaR $-$ PD)", f"{fixed(k_irb, 6)}", f"{fixed(k_lhp, 6)}", sci(abs(k_irb - k_lhp), 1)])
     inp = creditrisk_plus.CreditRiskPlusInput(nu=np.array([1]), pd=np.array([0.2]), w0=np.zeros(1), weights=np.ones((1, 1)),
                                               sigma2=np.array([0.5]), loss_unit=1.0, currency="USD")
     pmf = creditrisk_plus.pmf_stable(inp, 3)
     r_, p_ = 1.0 / 0.5, 1.0 / (1.0 + 0.5 * 0.2)
     nb = stats.nbinom.pmf(np.arange(4), r_, p_)
-    rows.append(["CreditRisk+ recursion, one obligor, negative binomial (max over 4 terms)", f"{pmf[0]:.6f}", f"{nb[0]:.6f}",
+    rows.append(["CreditRisk+ recursion, one obligor, negative binomial (max over 4 terms)", f"{fixed(pmf[0], 6)}", f"{fixed(nb[0], 6)}",
                  sci(float(np.max(np.abs(pmf - nb))), 1)])
     inp3 = creditrisk_plus.CreditRiskPlusInput(nu=np.array([1, 2, 3]), pd=np.array([0.1, 0.2, 0.3]), w0=np.ones(3), weights=np.zeros((3, 0)),
                                                sigma2=np.array([]), loss_unit=1.0, currency="USD")
@@ -698,12 +701,12 @@ def engine_checks() -> list[list[Any]]:
         sp[::nu] = pois[: len(sp[::nu])]
         conv = np.convolve(conv, sp)[:8]
     rows.append(["CreditRisk+ recursion, three obligors without sector, against the convolution of Poisson laws (max over 8 terms)",
-                 f"{pm3[0]:.6f}", f"{conv[0]:.6f}", sci(float(np.max(np.abs(pm3 - conv))), 1)])
+                 f"{fixed(pm3[0], 6)}", f"{fixed(conv[0], 6)}", sci(float(np.max(np.abs(pm3 - conv))), 1)])
     dl = granularity.delta(0.25, 0.999)
-    rows.append(["Granularity multiplier $\\delta$ at $\\xi=0.25$, 99.9\\% against the value printed by Gordy and L\\\"utkebohmert", f"{dl:.4f}", "4.83",
-                 f"{abs(dl - 4.83):.4f}"])
+    rows.append(["Granularity multiplier $\\delta$ at $\\xi=0.25$, 99.9\\% against the value printed by Gordy and L\\\"utkebohmert", f"{fixed(dl, 4)}", "4.83",
+                 f"{fixed(abs(dl - 4.83), 4)}"])
     pth = importance.twisted_pd(np.array([0.1]), np.array([1.0]), math.log(2.0))[0]
-    rows.append(["Exponential twist of a default probability 0.1 at $\\theta=\\ln 2$", f"{pth:.6f}", f"{2 * 0.1 / (1 + 0.1):.6f}",
+    rows.append(["Exponential twist of a default probability 0.1 at $\\theta=\\ln 2$", f"{fixed(pth, 6)}", f"{fixed(2 * 0.1 / (1 + 0.1), 6)}",
                  sci(abs(pth - 2 * 0.1 / (1 + 0.1)), 1)])
     return rows
 
@@ -738,11 +741,11 @@ def t_regimes(D: dict) -> None:
             try:
                 r = irb.capital_requirement(i["asset_class"], i["pd"], 0.45, regime=reg, **kw)
                 vals[reg] = 100.0 * r.risk_weight
-                row.append(f"{vals[reg]:.1f}")
+                row.append(f"{fixed(vals[reg], 1)}")
             except ValueError:
                 vals[reg] = None
                 row.append("--")
-        row.append(f"{vals['basel2'] / vals['basel3']:.3f}")
+        row.append(f"{fixed(vals['basel2'] / vals['basel3'], 3)}")
         ratios.append(vals["basel2"] / vals["basel3"])
         rows.append(row)
         if lid == "commercial-real-estate":
@@ -751,8 +754,8 @@ def t_regimes(D: dict) -> None:
             for reg in ("basel3", "crr3", "basel2", "cl_ran21_6"):
                 r = irb.capital_requirement("corporate", i["pd"], 0.45, regime=reg, maturity=2.5)
                 vals[reg] = 100.0 * r.risk_weight
-                row.append(f"{vals[reg]:.1f}")
-            row.append(f"{vals['basel2'] / vals['basel3']:.3f}")
+                row.append(f"{fixed(vals[reg], 1)}")
+            row.append(f"{fixed(vals['basel2'] / vals['basel3'], 3)}")
             rows.append(row)
     tbl("regimes", ["Loan type", "IRB class", "Basel III", "CRR3", "Basel II", "Chile 21-6", "II / III"], rows,
         caption="Risk weight $12.5K$ in percent (columns Basel III, EU CRR3, Basel II and the Chilean RAN 21-6; the last column is Basel II over Basel III) for each loan type's IRB class at its fitted default probability, loss given default 0.45 and, "
@@ -760,7 +763,7 @@ def t_regimes(D: dict) -> None:
                 "factor and a lower default probability floor; the last row of commercial real estate uses the corporate curve instead of the high-volatility class; a dash marks a combination the engine refuses because the Chilean regime fixes "
                 "the loss given default of the consumer portfolio at 61.3\\%.",
         label="tab:cc-regimes", align=P(2.8) + P(2.4) + R(1.45) * 5, digits=1)
-    mac("RegScale", f"{sum(ratios) / len(ratios):.3f}", "mean of Basel II over Basel III risk weights, five loan types (table script)")
+    mac("RegScale", f"{fixed(sum(ratios) / len(ratios), 3)}", "mean of Basel II over Basel III risk weights, five loan types (table script)")
 
 
 def cre99_agreement() -> None:
@@ -786,9 +789,9 @@ def cre99_agreement() -> None:
     mac("AnchorCells", str(n), src)
     mac("AnchorHalfOk", str(n - len(off)), src)
     mac("AnchorOff", str(len(off)), src)
-    mac("AnchorWorst", f"{worst:.4f}", src)
-    items = [f"{cls[c['id'].split('_')[0]]} at a loss given default of {c['lgd']:.2f} and a default probability of {100 * pd_:.1f} percent "
-             f"(engine {g:.4f}, printed {pr:.2f})" for pd_, c, g, pr in off]
+    mac("AnchorWorst", f"{fixed(worst, 4)}", src)
+    items = [f"{cls[c['id'].split('_')[0]]} at a loss given default of {fixed(c['lgd'], 2)} and a default probability of {percent(pd_, 1)} percent "
+             f"(engine {fixed(g, 4)}, printed {fixed(pr, 2)})" for pd_, c, g, pr in off]
     mac("AnchorOffList", "; ".join(items), src)
 
 

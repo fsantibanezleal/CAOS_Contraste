@@ -48,7 +48,9 @@ if (!base) {
   const port = address.port;
   await new Promise((resolve) => portServer.close(resolve));
   base = `http://127.0.0.1:${port}`;
-  serverProcess = spawn(process.execPath, ['scripts/serve.mjs', '--port', String(port)], { cwd: process.cwd(), stdio: 'ignore' });
+  // the server and its folder from this file's place, not the caller's: the release verdict runs this script from the repository root
+  // (as check_story_mode.mjs already does)
+  serverProcess = spawn(process.execPath, [join(here, 'serve.mjs'), '--port', String(port)], { cwd: join(here, '..'), stdio: 'ignore' });
   let ready = false;
   for (let attempt = 0; attempt < 60; attempt += 1) {
     if (serverProcess.exitCode !== null) throw new Error(`Story smoke server exited with ${serverProcess.exitCode}`);

@@ -124,6 +124,10 @@ def fig_architecture(n_sources: int) -> None:
 
 def main() -> None:
     data = rt.derive()
+    # Guard: the bars of Figure 85 are the findings of the register the tables count; a figure drawn from another register
+    # (the figure of the 2026-11-06 register showed 732 findings against the 745 of the tables) fails here.
+    bars = sum(sum(c["findings"]["by_severity"][s] for s in rt.SEV) for c in data["cases"] if c["findings"])
+    assert bars == data["findings"]["counts"]["total"], (bars, data["findings"]["counts"]["total"])
     fig_findings(data)
     fig_lights(data)
     fig_architecture(len(data["sources"]["sources"]))

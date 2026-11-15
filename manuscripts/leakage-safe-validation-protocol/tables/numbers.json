@@ -4928,7 +4928,7 @@
   "source": "data/derived/C22/leakage.json simulations[stability.csi@l0] rate at 5%, 2000 repetitions"
  },
  "c22.auc.0.25": {
-  "text": "63.5",
+  "text": "63.6",
   "source": "data/derived/C22/leakage.json simulations[disc.auc_vs_initial@l0.25] rate at 5%, 2000 repetitions"
  },
  "c22.csi.0.25": {
@@ -4940,7 +4940,7 @@
   "source": "data/derived/C22/leakage.json simulations[disc.auc_vs_initial@l0.5] rate at 5%, 2000 repetitions"
  },
  "c22.csi.0.5": {
-  "text": "7.8",
+  "text": "7.9",
   "source": "data/derived/C22/leakage.json simulations[stability.csi@l0.5] rate at 5%, 2000 repetitions"
  },
  "c22.auc.1": {
@@ -5023,6 +5023,10 @@
   "text": "0.1",
   "source": "theory_checks.json detection.by_m[5] expected misses = (1 - exact) x trials"
  },
+ "th.det.zerobound": {
+  "text": "$3\\times10^{-4}$",
+  "source": "3 / trials of theory_checks.json detection: the rule-of-three 95% upper bound of a miss probability when no miss is seen"
+ },
  "e4.sed.lo": {
   "text": "0.10",
   "source": "binomial standard error of the random-split rate at the window rate, smallest cohort, points"
@@ -5090,6 +5094,22 @@
  "h4.cells": {
   "text": "7",
   "source": "make_artifacts.hypotheses H4: cells scored"
+ },
+ "h2.cells.syn": {
+  "text": "5",
+  "source": "make_artifacts.hypotheses H2: label-reading cells on the planted data"
+ },
+ "h2.ok.syn": {
+  "text": "5",
+  "source": "make_artifacts.hypotheses H2: label-reading cells on the planted data whose bias interval is above 0"
+ },
+ "h2.cells.small": {
+  "text": "5",
+  "source": "make_artifacts.hypotheses H2: label-reading cells on the small sample data"
+ },
+ "h2.ok.small": {
+  "text": "5",
+  "source": "make_artifacts.hypotheses H2: label-reading cells on the small sample data whose bias interval is above 0"
  },
  "h2.cells.tw": {
   "text": "5",
@@ -5196,7 +5216,7 @@
   "source": "make_artifacts.hypotheses H2"
  },
  "outcome.H2.ev": {
-  "text": "syn: 5 of 5, small: 5 of 5, tw: 3 of 5, prod: 1 of 1",
+  "text": "planted: 5 of 5, small sample: 5 of 5, card holders: 3 of 5, product: 1 of 1",
   "source": "make_artifacts.hypotheses H2"
  },
  "outcome.H3": {
@@ -5228,7 +5248,7 @@
   "source": "make_artifacts.hypotheses H6"
  },
  "outcome.H6.ev": {
-  "text": "AUC test power 99.0\\% at s = 0.5; CSI power 14.2\\% and single-feature flag 0.0\\% at s = 1",
+  "text": "AUC test power 99.0\\% at $\\delta=0.5$; CSI power 14.2\\% and single-feature flag 0.0\\% at $\\delta=1$",
   "source": "make_artifacts.hypotheses H6"
  },
  "outcome.H7": {

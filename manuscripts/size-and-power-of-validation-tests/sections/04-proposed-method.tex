@@ -20,7 +20,7 @@ A grade-frequency generator draws the counts of ten grades, and a rating-path ge
 Every generator records its configuration and its truth in the artifact, so that a reader can redraw any simulation from the document alone; the measurement uses \nGens{} configurations in all.
 
 The null of a test is the generator at the boundary of its null hypothesis with its assumptions met: for example, the PD applied equals the true PD of 1\,\% for 1,000 obligors with independent defaults for the binomial and Jeffreys tests (the Vasicek-corrected test has a true and an assumed asset correlation of 12\,\%), five annual cohorts of 1,000 obligors at 3\,\% for the multi-year tests, two samples of 1,000 from one population for the stability tests, and the one cell at the boundary of the monotonicity null for the migration z-tests.
-A defect is one parameter of a generator moved away from the null along a ladder of six severities: \cref{tab:design} lists the seven defects and their units.
+A defect is one parameter of a generator moved away from the null along a ladder of six points, the null and five severities: \cref{tab:design} lists the seven defects and their units.
 
 \input{tables/design}
 
@@ -120,7 +120,7 @@ The rules answer different questions, and \cref{alg:judgement} states how they c
 \subsection{Power curves and their summary}
 \label{sec:pm-power}
 
-A power curve is the rate $\hat\rej_j$ at each of the six severities $\sev_1<\dots<\sev_6$ of a ladder, each with its standard error and Wilson interval.
+A power curve is the rate $\hat\rej_j$ at each of the six points $\sev_1<\dots<\sev_6$ of a ladder (the null and five severities), each with its standard error and Wilson interval.
 The severity at which the curve reaches 80\,\%, the empirical counterpart of \eqref{eq:s80}, is obtained by linear interpolation between the two points that bracket 80\,\%,
 \begin{equation}
 \hat\sev_{0.8}=\sev_{j-1}+\frac{0.8-\hat\rej_{j-1}}{\hat\rej_j-\hat\rej_{j-1}}\,(\sev_j-\sev_{j-1}),\qquad j=\min\{j:\hat\rej_j\ge0.8\},

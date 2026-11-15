@@ -181,9 +181,9 @@ def main() -> None:
                 "missed": [r["id"] for r, c in zip(rowsel, cov) if not c]}
 
     variants.append(interval("full band (bounds and all interior rows, base and stressed matrix)", INTERIOR, INTERIOR, True, rows))
-    variants.append(interval("without the sharp bounds (interior rows, base and stressed matrix)", INTERIOR, INTERIOR, False, rows))
-    variants.append(interval("without the stressed matrix (interior rows of the base matrix)", INTERIOR, [], False, rows))
-    variants.append(interval("without the t copula rows (square-root rule and Gaussian copula, base matrix)", ["variance-covariance", "gaussian-copula"], [], False, rows))
+    variants.append(interval("bounds removed (interior rows, base and stressed matrix)", INTERIOR, INTERIOR, False, rows))
+    variants.append(interval("bounds and stressed matrix removed (interior rows of the base matrix)", INTERIOR, [], False, rows))
+    variants.append(interval("bounds, stressed matrix and t copula rows removed (square-root rule and Gaussian copula, base matrix)", ["variance-covariance", "gaussian-copula"], [], False, rows))
 
     def point(name, getter, tol=0.05):
         errs = [getter(r) / r["truth"] - 1.0 for r in rows]
@@ -198,10 +198,15 @@ def main() -> None:
     variants.append(point("hybrid quantile with the correlation of the truth sample", lambda r: r["hybrid_calibrated"]))
     variants.append(point("Gaussian copula with the rank correlation of the truth sample", lambda r: r["gaussian_kendall_calibrated"]))
     variants.append(point("Gaussian copula alone, tolerance 10 percent", lambda r: base_e2["gaussian-copula"], 0.10))
-    variants.append(interval("without the t copula rows, with the stressed matrix (square-root rule and Gaussian copula, both matrices)",
+    variants.append(interval("bounds and t copula rows removed (square-root rule and Gaussian copula, both matrices)",
                              ["variance-covariance", "gaussian-copula"], ["variance-covariance", "gaussian-copula"], False, rows))
-    variants.append(interval("t copula rows only (4, 8 and 30 degrees of freedom, both matrices)",
+    variants.append(interval("bounds, square-root rule and Gaussian copula removed (t copula rows only, both matrices)",
                              ["t-copula-nu4", "t-copula-nu8", "t-copula-nu30"], ["t-copula-nu4", "t-copula-nu8", "t-copula-nu30"], False, rows))
+    # a component removed from the full band, with the bounds kept: the bounds fix both ends of the interval, so these two
+    # variants measure whether an interior component still changes the band once the bounds are present
+    variants.append(interval("stressed matrix removed from the full band (bounds and the interior rows of the base matrix)", INTERIOR, [], True, rows))
+    variants.append(interval("t copula rows removed from the full band (bounds, square-root rule and Gaussian copula, both matrices)",
+                             ["variance-covariance", "gaussian-copula"], ["variance-covariance", "gaussian-copula"], True, rows))
     out = {"H6": h6, "H7": h7, "euler": euler, "ablation_variants": variants, "seconds": round(time.time() - t0)}
     path = bk.write_json("e4_ablation.json", out)
     print("wrote", path.name, "H6", h6["outcome"], "H7", h7["outcome"], "seconds", out["seconds"], flush=True)

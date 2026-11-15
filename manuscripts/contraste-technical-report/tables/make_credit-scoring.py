@@ -19,6 +19,9 @@ import numpy as np
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "_shared"))
 import figkit  # noqa: E402
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from _halfup import fixed, percent, install as _halfup_install  # noqa: E402
+_halfup_install(figkit)
 
 OUT = HERE
 VARIANTS = ["holdout", "drift-moderate", "drift-severe", "prior-shift", "label-noise", "small-sample", "german-twin"]
@@ -55,11 +58,11 @@ REGIME_CODE = {"mar": "Mar", "weak": "Weak", "moderate": "Mod", "strong": "Str"}
 # formatting
 
 def f3(x: float) -> str:
-    return f"{x:.3f}"
+    return f"{fixed(x, 3)}"
 
 
 def f4(x: float) -> str:
-    return f"{x:.4f}"
+    return f"{fixed(x, 4)}"
 
 
 def tiny(x: float) -> str:
@@ -72,12 +75,12 @@ def signed(x: float, d: int = 3) -> str:
     if x != 0 and round(x, d) == 0:
         return tiny(x)
     if round(x, d) == 0:
-        return f"{0:.{d}f}"
+        return f"{fixed(0, d)}"
     return f"{x:+.{d}f}".replace("-", "$-$") if x < 0 else f"{x:+.{d}f}"
 
 
 def pct(x: float, d: int = 1) -> str:
-    return f"{100 * x:.{d}f}"
+    return percent(x, d)
 
 
 def pfmt(p: float) -> str:
@@ -85,7 +88,7 @@ def pfmt(p: float) -> str:
     if p is None:
         return "--"
     if p >= 0.001:
-        return f"{p:.3f}"
+        return f"{fixed(p, 3)}"
     if p == 0.0:
         return "\\ensuremath{<10^{-300}}"
     mant, exp = f"{p:.1e}".split("e")
@@ -93,12 +96,12 @@ def pfmt(p: float) -> str:
 
 
 def pm(x: float, lo: float, hi: float, d: int = 3) -> str:
-    return f"${x:.{d}f}\\pm{(hi - lo) / 2:.{d}f}$"
+    return f"${fixed(x, d)}\\pm{fixed((hi - lo) / 2, d)}$"
 
 
 def interval(x: float, lo: float, hi: float, d: int = 3, scale: float = 1.0) -> str:
     def s(v: float) -> str:
-        return f"${v * scale:.{d}f}$"
+        return f"${fixed(v * scale, d)}$"
 
     return f"{s(x)} [{s(lo)}, {s(hi)}]"
 
@@ -405,9 +408,9 @@ def build_macros(D: dict) -> Macros:
             M.add(f"Fit{code}XgKnots", str(F["xg_knots"]))
             M.add(f"Fit{code}XgViol", f"{F['xg_viol']:g}")
     F = D["fit"]["taiwan"]
-    M.add("ScFactor", f"{F['sc_factor']:.2f}")
-    M.add("ScOffset", f"{F['sc_offset']:.2f}")
-    M.add("ScIntercept", f"{F['sc_intercept']:.3f}")
+    M.add("ScFactor", f"{fixed(F['sc_factor'], 2)}")
+    M.add("ScOffset", f"{fixed(F['sc_offset'], 2)}")
+    M.add("ScIntercept", f"{fixed(F['sc_intercept'], 3)}")
     M.add("EbMaxBins", str(F["eb_cfg"]["max_bins"]["value"]))
     M.add("EbMaxIntBins", str(F["eb_cfg"]["max_interaction_bins"]["value"]))
     M.add("EbInteractions", str(F["eb_cfg"]["interactions"]["value"]))
@@ -424,8 +427,8 @@ def build_macros(D: dict) -> Macros:
         d = D["c02"][h]["rungs"]["P1-scorecard"]["discrimination"]["auc_ci"]
         M.add(f"Ctwo{HORIZON_CODE[h]}ScHalf", f4((d["hi"] - d["lo"]) / 2))
     later = [abs(v["gap"]) * 100 for c in COHORTS[2:] for v in D["c03"][c]["vintages"]]
-    M.add("CthreeLaterMin", f"{min(later):.1f}")
-    M.add("CthreeLaterMax", f"{max(later):.1f}")
+    M.add("CthreeLaterMin", f"{fixed(min(later), 1)}")
+    M.add("CthreeLaterMax", f"{fixed(max(later), 1)}")
     M.add("PointsN", str(D["points"]["n"]))
     M.add("PointsMatch", str(D["points"]["match"]))
     M.add("PointsFeatures", str(D["points"]["features"]))
@@ -553,7 +556,7 @@ def table_fit(D: dict) -> None:
         ["L1 logistic", f"penalty $1/C$ with $C={F['l1_c']:g}$ (grid 0.003 to 1, five-fold cross-validated log loss); "
          f"{F['l1_selected']} non-zero coefficients"],
         ["PLTR", f"$C={F['pl_c']:g}$; {F['pl_cand']} candidate rules; {F['pl_sel']} selected; "
-         f"mean Jaccard {F['pl_jm']:.3f} over {F['pl_boot']} resamples"],
+         f"mean Jaccard {fixed(F['pl_jm'], 3)} over {F['pl_boot']} resamples"],
         ["EBM", f"{F['eb_terms']} terms ({D['ebm']['pairs']} pairwise); at most {F['eb_cfg']['max_bins']['value']} bins per main "
          f"term and {F['eb_cfg']['max_interaction_bins']['value']} per pair; {F['eb_cfg']['outer_bags']['value']} outer bags; "
          f"isotonic map with {F['eb_cal_knots']} knots"],
@@ -630,9 +633,9 @@ def table_checks(D: dict) -> None:
     rows = []
     for fit, label in (("taiwan", "Taiwan, 16,800 rows"), ("taiwan-small", "Taiwan, 2,000 rows"), ("german", "German, 560 rows")):
         F = D["fit"][fit]
-        rows.append([label, f"{F['sc_neg']} of {F['sc_kept']}", f"{F['pl_jm']:.3f} / {F['pl_jmin']:.3f}",
+        rows.append([label, f"{F['sc_neg']} of {F['sc_kept']}", f"{fixed(F['pl_jm'], 3)} / {fixed(F['pl_jmin'], 3)}",
                      f"{F['lg_viol']:g}", str(F["lg_constrained"]),
-                     f"{F['reason']['overlap_mean']:.3f} / {F['reason']['overlap_min']:.3f}"])
+                     f"{fixed(F['reason']['overlap_mean'], 3)} / {fixed(F['reason']['overlap_min'], 3)}"])
     tbl(OUT / "credit-scoring-checks.tex",
                  ["Fit", sh("Negative WoE", "coefficients"), sh("PLTR Jaccard", "mean / min"), sh("Largest monotone", "violation"),
                   sh("Constrained", "inputs"), sh("Top-4 reason overlap", "mean / min")], rows, size="scriptsize",

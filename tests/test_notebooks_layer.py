@@ -14,12 +14,14 @@ claim there and in the SDD together, and the tests hold every listed claim to it
 from __future__ import annotations
 
 import hashlib
+import os
 import importlib.util
 import json
 import re
 import shutil
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import pytest
@@ -438,11 +440,29 @@ def test_the_adopted_scripts_are_the_template_scripts_byte_for_byte():
 
 @pytest.mark.skipif(not (ROOT / ".venv-notebooks").exists(), reason="the notebook environment .venv-notebooks is a local release gate (ADR-0074)")
 def test_every_notebook_runs_top_to_bottom_in_a_fresh_kernel(tmp_path):
-    # template 0.11.000: --check names its temp root (--tmp, else CAOS_TEMP_ROOT) and never falls back to the system temp
-    done = subprocess.run([sys.executable, str(SCRIPTS / "run_notebooks.py"), "--check", "--tmp", str(tmp_path)], capture_output=True, text=True, check=False,
-                          cwd=ROOT, timeout=7200)  # 220 notebooks in fresh kernels: about an hour on a loaded machine
-    assert done.returncode == 0, done.stdout[-2000:] + done.stderr[-2000:]
-    assert "nothing written" in done.stdout
+    # template 0.11.000: --check names its temp root (--tmp, else CAOS_TEMP_ROOT) and never falls back to the system temp.
+    # One runner call per notebook on a pool of workers: the 232 notebooks in one call ran past this test's 2 h budget on a loaded
+    # workstation (the 1.00.000 release run, 2026-11-11). Each call has its own short temp folder (the runner copies the repository's
+    # sandbox folders under it, and Windows paths stop at 260 characters).
+    books = [path for lang in LANGS for path in notebooks(ROOT, lang)]
+    assert len(books) >= 2 * 116, f"{len(books)} notebooks found"
+    workers = max(2, min(8, (os.cpu_count() or 4) // 2))
+
+    def run(item: tuple[int, Path]) -> tuple[Path, subprocess.CompletedProcess]:
+        i, path = item
+        tmp = tmp_path / f"n{i}"
+        tmp.mkdir()
+        done = subprocess.run([sys.executable, str(SCRIPTS / "run_notebooks.py"), "--check", "--tmp", str(tmp), "--only", path.relative_to(ROOT).as_posix()],
+                              capture_output=True, text=True, check=False, cwd=ROOT, timeout=1800)
+        return path, done
+
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        results = list(pool.map(run, enumerate(books)))
+    # The runner inherits this suite's thread pin (OPENBLAS, OMP and MKL at 4, tests/conftest.py, D16-18), so a notebook whose printed
+    # figures depend on the number of threads the linear algebra uses fails here even when it matches on its writer's machine: notebook
+    # 12/02 printed a rounding gap of 1.8e-16 (3.6e-16 under the pin) until 1.00.001, and now prints the gap against its tolerance.
+    failed = [(path, done) for path, done in results if done.returncode != 0 or "nothing written" not in done.stdout]
+    assert not failed, "\n\n".join(f"{path.relative_to(ROOT).as_posix()}: exit {done.returncode}\n{(done.stdout + done.stderr)[-1500:]}" for path, done in failed[:5])
 
 
 def test_a_notebook_that_reads_test_rows_prints_the_engine_version_that_baked_them():

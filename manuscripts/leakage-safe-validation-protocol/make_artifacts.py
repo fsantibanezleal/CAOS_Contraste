@@ -9,6 +9,7 @@ Inputs: ``experiments/results/*.json`` (the experiment scripts of this folder) a
 from __future__ import annotations
 
 import json
+from decimal import ROUND_HALF_UP, Decimal
 import math
 import pathlib
 import sys
@@ -30,12 +31,16 @@ def _raw(v):
     return v
 
 
-def table(path, header, rows, **kw):
+def table(path, header, rows, note=None, **kw):
     """figkit.table with every text cell that carries LaTeX passed through as it is (figkit escapes any other text), and the tabular
-    scaled to the text width when it is wider (the shared fitwidth macro of the preamble)."""
+    scaled to the text width when it is wider (the shared fitwidth macro of the preamble). ``note`` is a paragraph of notes printed
+    under the tabular, inside the float, at the footnote size."""
     out = _table(path, header, [[_raw(c) for c in r] for r in rows], **kw)
     txt = pathlib.Path(out).read_text(encoding="utf-8")
     txt = txt.replace("\\begin{tabular}", "\\fitwidth{%\n\\begin{tabular}", 1).replace("\\end{tabular}", "\\end{tabular}%\n}", 1)
+    if note:
+        env = "table*" if kw.get("wide") else "table"
+        txt = txt.replace("\\end{" + env + "}", "\\par\\smallskip\n{\\raggedright\\footnotesize " + note + "\\par}\n\\end{" + env + "}", 1)
     pathlib.Path(out).write_text(txt, encoding="utf-8", newline="\n")
     return out
 
@@ -54,6 +59,13 @@ LEAK_TEXT = {
     "fit_full": "everything fitted on training and holdout", "select_test": "configuration chosen on the holdout",
     "cal_test": "calibration map fitted on the holdout", "cal_overlap": "calibration slice overlapping the holdout",
     "cv_in": "five-fold, preprocessing inside the folds", "cv_pre": "five-fold, preprocessing before the folds"}
+#: Shorter names of the variants for the two wide comparison tables, so that they print at a legible size.
+MAIN_TEXT = {
+    "none": "proposed protocol", "impute_full": "imputation, all rows", "scale_full": "scaling, all rows",
+    "bin_full": "bin edges, all rows", "woe_full": "WoE, holdout labels", "screen_full": "screen, holdout labels",
+    "fit_full": "fit on training + holdout", "select_test": "choice made on holdout",
+    "cal_test": "calibration map on holdout", "cal_overlap": "calibration overlaps holdout",
+    "cv_in": "5-fold, preprocessing inside", "cv_pre": "5-fold, preprocessing before"}
 MK = {"woe": "w", "linear": "l", "product": "p"}
 MODEL_TEXT = {"woe": "WoE scorecard", "linear": "standardised logit", "product": "product scorecard"}
 
@@ -75,7 +87,10 @@ def load(name: str) -> dict:
 
 
 def ratio(x: float, d: int = 1) -> str:
-    return f"{100 * x:.{d}f}"
+    """A rate in percent, rounded half up on its decimal value (the technical report's rounding): 1,271 of 2,000 is 63.6, where
+    the binary float of 63.55 would print 63.5."""
+    q = Decimal(repr(x)) * 100
+    return str(q.quantize(Decimal(1).scaleb(-d), rounding=ROUND_HALF_UP))
 
 
 # ---------------------------------------------------------------------------------------------------------- E1 numbers
@@ -140,38 +155,44 @@ def main_table(d: dict) -> None:
                    if "coverage" in v else "--")
             br = pm(v["brier_bias"], 1.96 * v["brier_bias_se"], 4) if "brier_bias" in v else "--"
             ec = pm(v["ece_bias"], 1.96 * v["ece_bias_se"], 4) if "ece_bias" in v else "--"
-            rows.append([MODEL_TEXT[m] if leak == "none" else "", LEAK_TEXT[leak], pm(v["auc_bias"], 1.96 * v["auc_bias_se"]),
-                         v["auc_rmse"], cov, br, ec])
+            if leak == "none":
+                rows.append(["\\multicolumn{6}{l}{\\textit{" + MODEL_TEXT[m] + "}}"])
+            rows.append([MAIN_TEXT[leak], pm(v["auc_bias"], 1.96 * v["auc_bias_se"]), v["auc_rmse"], cov, br, ec])
     table(TAB / "tab-main-results.tex",
-                 ["Model", "Validation procedure", "AUC bias $\\pm$ 95\\% half-width", "RMSE", "Coverage \\% [Wilson 95\\%]",
-                  "Brier bias", "ECE bias"], rows,
+                 ["Validation procedure", "\\shortstack{AUC bias\\\\$\\pm$ 95\\% half-width}", "RMSE",
+                  "\\shortstack{Coverage \\%\\\\{[}Wilson 95\\%{]}}", "Brier bias", "ECE bias"], rows,
                  caption=(f"Bias of the holdout estimate of the AUC, the Brier score and the calibration error against the value on a "
                           f"reference sample of {d['n_oracle']:,} rows that no step read, for the proposed protocol and for each leaked "
                           f"variant, on {d['reps']} planted data sets of {d['n_total']:,} rows with {d['p']} inputs; the coverage column "
                           f"is the share of the 95\\% intervals of the engine's AUC variance that contain the reference value. "
                           f"The two five-fold rows compare the cross-validated AUC with the mean reference AUC of the fold models."),
-                 label="tab:main-results", align="llrrrrr", digits=3, wide=True)
+                 label="tab:main-results", align="lrrrrr", digits=3, wide=True)
 
 
 def other_table(sets: dict) -> None:
     leaks = ["none", "impute_full", "bin_full", "woe_full", "screen_full", "fit_full", "select_test", "cal_test", "cal_overlap", "cv_in",
              "cv_pre"]
+    logit_leaks = ["none", "impute_full", "scale_full", "screen_full", "fit_full", "select_test", "cal_test", "cal_overlap", "cv_in", "cv_pre"]
     rows = []
-    for leak in leaks:
-        row = [LEAK_TEXT[leak]]
-        for ds in ("small", "tw"):
-            v = sets[ds]["summary"][f"woe/{leak}"]
-            row += [pm(v["auc_bias"], 1.96 * v["auc_bias_se"]), f"{100 * v['coverage']:.0f}" if "coverage" in v else "--"]
-        pv = sets["prod"]["summary"].get(f"product/{leak}")
-        row += [pm(pv["auc_bias"], 1.96 * pv["auc_bias_se"]) if pv else "--", f"{100 * pv['coverage']:.0f}" if pv else "--"]
-        rows.append(row)
+    for model, group in (("woe", leaks), ("linear", logit_leaks)):
+        rows.append(["\\multicolumn{7}{l}{\\textit{" + MODEL_TEXT[model] + "}}"])
+        for leak in group:
+            row = [MAIN_TEXT[leak]]
+            for ds in ("small", "tw"):
+                v = sets[ds]["summary"][f"{model}/{leak}"]
+                row += [pm(v["auc_bias"], 1.96 * v["auc_bias_se"]), f"{100 * v['coverage']:.0f}" if "coverage" in v else "--"]
+            pv = sets["prod"]["summary"].get(f"product/{leak}") if model == "woe" else None
+            row += [pm(pv["auc_bias"], 1.96 * pv["auc_bias_se"]) if pv else "--", f"{100 * pv['coverage']:.0f}" if pv else "--"]
+            rows.append(row)
     table(TAB / "tab-other-data.tex",
                  ["Validation procedure", "Small sample bias", "Cov.", "Card holders bias", "Cov.", "Product scorecard bias", "Cov."], rows,
                  caption=(f"Bias of the holdout AUC (with its 95\\% half-width) and coverage of the 95\\% interval in percent for the WoE "
-                          f"scorecard on planted data of {sets['small']['n_total']} rows ({sets['small']['reps']} repetitions), on the "
+                          f"scorecard and for the standardised logit on planted data of {sets['small']['n_total']} rows "
+                          f"({sets['small']['reps']} repetitions), on the "
                           f"{sets['tw']['n_total']:,}-row subsamples of the 30,000 card holders of C01 ({sets['tw']['reps']} repetitions, "
                           f"10,000 rows set aside per repetition as the reference), and for the product's own optbinning scorecard on "
-                          f"planted data ({sets['prod']['reps']} repetitions; only the variants that call the product's fit appear)."),
+                          f"planted data ({sets['prod']['reps']} repetitions; only the variants that call the product's fit appear, and the "
+                          f"product's scorecard has no row in the logit block)."),
                  label="tab:other-data", align="lrrrrrr", wide=True)
 
 
@@ -246,7 +267,7 @@ def e3_numbers_tables() -> dict:
                      f"{v['closed_form']['cur_auc']:.3f}", ratio(v["auc_test"]["rate"], 1), ratio(v["csi_test"]["rate"], 1),
                      ratio(v["resemblance_flag"]["rate"], 1), ratio(v["single_feature_flag"]["rate"], 1)])
     table(TAB / "tab-planted-leak.tex",
-                 ["Leak $s$", "Dev. AUC sim.", "Dev. AUC Prop.", "Current AUC sim.", "Current AUC Prop.", "AUC test power",
+                 ["Leak $\\delta$", "Dev. AUC sim.", "Dev. AUC Prop.", "Current AUC sim.", "Current AUC Prop.", "AUC test power",
                   "CSI power", "Resemblance power", "Single-feature flag"], rows,
                  caption=(f"The leak planted by the engine generator (150 defaulters and 4,850 survivors per sample, {d['reps']} repetitions per "
                           f"level): simulated mean AUC in development and at decision time beside the closed forms of Proposition 4, and "
@@ -366,22 +387,24 @@ def e5_numbers_tables() -> dict:
 def split_table() -> None:
     der = figkit.DERIVED
     rows = []
+    # the split of each case is a short code, defined under the table; the window and the date to which the outcomes are read are
+    # columns of their own for the dated cases
     m = figkit.doc("C01/models-taiwan.json")["fit"]["split"]
     put("c01.train", f"{m['train']['n']:,}", "data/derived/C01/models-taiwan.json fit.split.train.n")
     put("c01.cal", f"{m['calibration']['n']:,}", "data/derived/C01/models-taiwan.json fit.split.calibration.n")
     put("c01.hold", f"{m['holdout']['n']:,}", "data/derived/C01/models-taiwan.json fit.split.holdout.n")
     put("c01.holdev", f"{m['holdout']['defaults']:,}", "data/derived/C01/models-taiwan.json fit.split.holdout.defaults")
     put("c01.rate", ratio(m["holdout"]["default_rate"]), "data/derived/C01/models-taiwan.json fit.split.holdout.default_rate")
-    rows.append(["C01 card holders", "locked stratified holdout (30\\%), calibration slice, training slice",
+    rows.append(["C01 card holders", "A", "--", "--",
                  f"{m['train']['n']:,} / {m['calibration']['n']:,} / {m['holdout']['n']:,}", f"{m['holdout']['defaults']:,}",
-                 "none: single snapshot"])
+                 "none, one snapshot"])
     for h in ("h1", "h2", "h3", "h4", "h5"):
         s = figkit.doc(f"C02/{h}.json")["outputs"]["split"]
         put(f"c02.{h}.hold", f"{s['holdout_rows']:,}", f"data/derived/C02/{h}.json outputs.split.holdout_rows")
         put(f"c02.{h}.ev", f"{s['holdout_events']:,}", f"data/derived/C02/{h}.json outputs.split.holdout_events")
-        rows.append([f"C02 horizon {h[1]}", "locked stratified holdout, calibration map on a separate slice",
+        rows.append([f"C02 horizon {h[1]}", "B", "--", "--",
                      f"{s['train_rows']:,} / {s['calibration_rows']:,} / {s['holdout_rows']:,}", f"{s['holdout_events']:,}",
-                     "none: files carry no date" if not s["out_of_time_claim"] else "yes"])
+                     "none, undated files" if not s["out_of_time_claim"] else "yes"])
     for cid in ("fy2006-07", "fy2008-10", "fy2011-14", "fy2015-17", "fy2018-20"):
         doc = figkit.doc(f"C03/{cid}.json")["outputs"]
         t, c = doc["training"], doc["cohort"]
@@ -389,18 +412,25 @@ def split_table() -> None:
         put(f"c03.{cid[2:]}.events", f"{t['n_events']:,}", f"data/derived/C03/{cid}.json outputs.training.n_events")
         put(f"c03.{cid[2:]}.last", str(t["last_fy"]), f"data/derived/C03/{cid}.json outputs.training.last_fy")
         put(f"c03.{cid[2:]}.cutoff", t["cutoff_date"], f"data/derived/C03/{cid}.json outputs.training.cutoff_date")
-        rows.append([f"C03 cohort FY{cid[2:6]}-{cid[7:]}", f"out-of-time cohort at the 5-year mark; window FY{t['first_fy']} to FY{t['last_fy']}, "
-                                                           f"outcomes read to {t['cutoff_date']}", f"{t['n_loans']:,} window loans",
-                     f"{t['n_events']:,}", "yes"])
-    table(TAB / "tab-splits.tex", ["Case", "Split declared in the artifact", "Training / calibration / holdout rows", "Events",
+        rows.append([f"C03 cohort FY{cid[2:6]}-{cid[7:]}", "OOT", f"FY{t['first_fy']} to FY{t['last_fy']}", t["cutoff_date"],
+                     f"{t['n_loans']:,} window loans", f"{t['n_events']:,}", "yes"])
+    table(TAB / "tab-splits.tex", ["Case", "Split", "Training window", "Outcomes read to", "Training / calibration / holdout rows", "Events",
                                          "Out-of-time claim"], rows,
                  caption=("The split each case declares in its committed documents: the locked stratified holdout and the disjoint calibration "
                           "slice of C01 and C02 (the events are those of the holdout) and the out-of-time training windows of C03 (the events are "
                           "the window's 5-year charge-offs), with the out-of-time claim each case makes or declines to make."),
-                 label="tab:splits", align="llrrl", wide=True)
+                 note=("Split A: locked stratified holdout (30\\%), calibration slice and training slice, drawn from one snapshot. "
+                       "Split B: locked stratified holdout, with the calibration map fitted on a separate slice. "
+                       "Split OOT: out-of-time cohort at the 5-year mark, scored with a model fitted on the training window of the row; "
+                       "the outcomes of the window are read to the date shown."),
+                 label="tab:splits", align="llllp{3.6cm}rl", wide=True)
 
 
 # ------------------------------------------------------------------------------------------------- hypotheses, ablation
+
+#: The name of each data set in the evidence column of the table of predictions (the keys are the file keys of the experiment outputs).
+H2NAME = {"syn": "planted", "small": "small sample", "tw": "card holders", "prod": "product"}
+
 
 def hypotheses(e1: dict, e2: dict, e3: dict, e4: dict, e5: dict) -> None:
     S, Sm, T = e1["syn"]["summary"], e1["small"]["summary"], e1["tw"]["summary"]
@@ -428,6 +458,9 @@ def hypotheses(e1: dict, e2: dict, e3: dict, e4: dict, e5: dict) -> None:
     put("h1.cells", str(len(h1)), "make_artifacts.hypotheses H1: cells scored (two models on three data sets and the product's scorecard)")
     put("h1.ok", str(sum(h1)), "make_artifacts.hypotheses H1: cells that satisfy the rule")
     put("h4.cells", str(len(h4)), "make_artifacts.hypotheses H4: cells scored")
+    for ds_ in ("syn", "small"):
+        put(f"h2.cells.{ds_}", str(len(h2[ds_])), f"make_artifacts.hypotheses H2: label-reading cells on the {H2NAME[ds_]} data")
+        put(f"h2.ok.{ds_}", str(sum(h2[ds_])), f"make_artifacts.hypotheses H2: label-reading cells on the {H2NAME[ds_]} data whose bias interval is above 0")
     put("h2.cells.tw", str(len(h2["tw"])), "make_artifacts.hypotheses H2: label-reading cells on the card holders")
     put("h2.ok.tw", str(sum(h2["tw"])), "make_artifacts.hypotheses H2: label-reading cells on the card holders whose bias interval is above 0")
     mt = e2["matrix"]["pass_rates"]
@@ -468,10 +501,10 @@ def hypotheses(e1: dict, e2: dict, e3: dict, e4: dict, e5: dict) -> None:
     put("h9.failcells", str(12 - sum(h9pos) - sum(h9null)), "cells of the twelve that fail")
     sel = e5["loglog_fit_p40"]
     res = {"H1": (all(h1), f"{sum(h1)} of {len(h1)} cells"), "H2": (all(all(v) for v in h2.values()),
-           ", ".join(f"{k}: {sum(v)} of {len(v)}" for k, v in h2.items())), "H3": (all(h3), f"{sum(h3)} of {len(h3)} cells"),
+           ", ".join(f"{H2NAME[k]}: {sum(v)} of {len(v)}" for k, v in h2.items())), "H3": (all(h3), f"{sum(h3)} of {len(h3)} cells"),
            "H4": (all(h4), f"{sum(h4)} of {len(h4)} cells"), "H5": (all(v >= 0.999 for v in detect_any.values()) and max(false_alarm.values()) == 0,
            f"{sum(1 for v in detect_any.values() if v >= 0.999)} of {len(detect_any)} leaks, false alarms {100 * max(false_alarm.values()):.0f}\\%"),
-           "H6": (h6, f"AUC test power {ratio(lv['0.5']['auc_test']['rate'])}\\% at s = 0.5; CSI power {ratio(lv['1.0']['csi_test']['rate'])}\\% and single-feature flag {ratio(lv['1.0']['single_feature_flag']['rate'])}\\% at s = 1"),
+           "H6": (h6, f"AUC test power {ratio(lv['0.5']['auc_test']['rate'])}\\% at $\\delta=0.5$; CSI power {ratio(lv['1.0']['csi_test']['rate'])}\\% and single-feature flag {ratio(lv['1.0']['single_feature_flag']['rate'])}\\% at $\\delta=1$"),
            "H7": (h7, f"largest absolute z {max(max(abs((v['dev_auc']['mean'] - v['closed_form']['dev_auc']) / v['dev_auc']['se']), abs((v['cur_auc']['mean'] - v['closed_form']['cur_auc']) / v['cur_auc']['se'])) for v in lv.values()):.1f} over seven levels"),
            "H8": (h8, f"random gap below 1 point in {h8a} of {len(cells8)} cohort and rung cells; "
                       f"out-of-time gap at least 2 points in {h8b} of {len(cells8)}"),
@@ -492,7 +525,7 @@ def hypotheses(e1: dict, e2: dict, e3: dict, e4: dict, e5: dict) -> None:
         "H3": "A step that reads only holdout inputs (imputation, scaling, bin edges) leaves the estimate within 0.005 of the truth.",
         "H4": "A calibration map fitted on the holdout biases the AUC and the Brier score optimistically (positive AUC bias, negative Brier bias, intervals excluding 0), for two models on three data sets and for the product's scorecard.",
         "H5": "At least one of the three gates fails on every leak planted in the fitting path, in every draw, and none fails on the proposed protocol.",
-        "H6": "A leak that exists only in development is flagged by the AUC-against-development test (power at least 97\\% at s = 0.5) and not by the CSI of the leaked feature (power at most 20\\% at s = 1) or the single-feature screen (at most 2\\% at s = 1).",
+        "H6": "A leak that exists only in development is flagged by the AUC-against-development test (power at least 97\\% at $\\delta=0.5$) and not by the CSI of the leaked feature (power at most 20\\% at $\\delta=1$) or the single-feature screen (at most 2\\% at $\\delta=1$).",
         "H7": "The closed forms of Proposition 4 reproduce the generator's exact development and decision-time AUC and the simulated means within three standard errors.",
         "H8": "A random split inside the training window reports a level gap below 1 point for every cohort, while the out-of-time gap is at least 2 points, for the scorecard and for the gradient-boosting rung.",
         "H9": "Preprocessing fitted before the folds inflates the cross-validated AUC; fitted inside the folds it does not, for both models on every data set.",
@@ -568,7 +601,7 @@ def notation() -> None:
         ["$\\hat A,\\ A^{\\ast}$", "the holdout AUC of a fitted model and its value on the population", "1"],
         ["$b$", "the bias of an estimate: $\\hat A-A^{\\ast}$, averaged over repetitions", "1"],
         ["$s^2$", "the engine's variance of the AUC (DeLong form)", "1"],
-        ["$d,\\ s$", "separation of the genuine and of the leaked feature for defaulters", "standard deviations"],
+        ["$d,\\ \\delta$", "separation of the genuine feature and shift $\\delta$ of the leaked feature, for defaulters", "standard deviations"],
         ["$\\pi$", "the default share of the development sample", "1"],
         ["$N,\\ m$", "pooled rows read by a step and number of outside rows perturbed", "rows"],
         ["$K$", "number of configurations compared", "1"],
@@ -641,8 +674,12 @@ def derived_numbers() -> None:
         v = th["by_m"][mm]
         put(f"th.det.{mm}.miss", str(round((1 - v["simulated"]) * th["trials"])), f"theory_checks.json detection.by_m[{mm}] misses among the trials")
         put(f"th.det.{mm}.missexp", f"{(1 - v['exact']) * th['trials']:.1f}", f"theory_checks.json detection.by_m[{mm}] expected misses = (1 - exact) x trials")
+    ub = 3.0 / th["trials"]
+    mant, exp = f"{ub:.1e}".split("e")
+    put("th.det.zerobound", f"${float(mant):g}\\times10^{{{int(exp)}}}$",
+        "3 / trials of theory_checks.json detection: the rule-of-three 95% upper bound of a miss probability when no miss is seen")
     e4d = load("e4_out_of_time.json")
-    ses = [100 * math.sqrt(c["random_rate"] * (1 - c["random_rate"]) / e4d["random_holdout_cap"]) for c in e4d["cohorts"]]
+    ses =[100 * math.sqrt(c["random_rate"] * (1 - c["random_rate"]) / e4d["random_holdout_cap"]) for c in e4d["cohorts"]]
     put("e4.sed.lo", f"{min(ses):.2f}", "binomial standard error of the random-split rate at the window rate, smallest cohort, points")
     put("e4.sed.hi", f"{max(ses):.2f}", "binomial standard error of the random-split rate at the window rate, largest cohort, points")
     put("e4.maxz", f"{max(abs(100 * c['rungs'][r]['random_gap']) / se for c, se in zip(e4d['cohorts'], ses) for r in ('P1-scorecard', 'P4-lightgbm')):.1f}",

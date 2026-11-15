@@ -64,7 +64,7 @@ hyperparameters by repeated stratified five-fold cross-validation (two repeats) 
 before calibration is measured, because undersampling, oversampling and synthetic minority methods produced strongly
 miscalibrated risk models without a higher AUC \citep{credit-scoring:goorbergh2022}. For C03 the split is out of time by approval
 fiscal year. The tests that judge every method are those of the validation engine \texttt{riskvalidation} 1.1.0, called from the
-data pipeline of Contraste (release 1.00.000).
+data pipeline of Contraste (release \docversion{}).
 
 % ---------------------------------------------------------------------------------------------------------------------
 \subsection{Weight-of-evidence monotone scorecard}
@@ -821,7 +821,7 @@ fiscal year (right).}
 \centering
 \includegraphics[width=0.78\textwidth]{credit-scoring-vintage}
 \caption{Cumulative charge-off probability by months since approval for the SBA 7(a) vintages FY2007, FY2008, FY2010 and FY2013:
-observed (solid lines with filled markers) and predicted by the scorecard of the vintage's cohort, with the 5-year PD allocated in
+observed (filled markers, one line style for each vintage) and predicted by the scorecard of the vintage's cohort, with the 5-year PD allocated in
 time by the share of charge-offs of the training window (dotted lines with open markers).}
 \label{fig:cs-vintage}
 \end{figure}

@@ -1,8 +1,8 @@
-"""Tests of what the review fixes added to the e-process manuscript: the exact rejection probability of the rate monitor,
+"""Regression tests of the e-process manuscript: the exact rejection probability of the rate monitor,
 the product's own PD tests as comparators on the same default histories, the equal-size chi-square rule, the matched
 single alternative at each severity, and the contract of the new outputs.
 
-    python -m pytest manuscripts/e-process-sequential-monitors/experiments/test_review_fixes.py
+    python -m pytest manuscripts/e-process-sequential-monitors/experiments/test_regressions.py
 """
 from __future__ import annotations
 

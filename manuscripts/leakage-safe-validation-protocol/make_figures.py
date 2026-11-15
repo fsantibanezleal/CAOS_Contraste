@@ -114,7 +114,7 @@ def fig_gate_matrix() -> None:
 def fig_planted() -> None:
     d = load("e3_planted_leak.json")["levels"]
     s = np.array([float(k) for k in d])
-    fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.1))
+    fig, axes = plt.subplots(1, 2, figsize=(7.2, 4.0))
     ax = axes[0]
     grid = np.linspace(0, 3, 100)
     from scipy.stats import norm
@@ -122,9 +122,9 @@ def fig_planted() -> None:
     ax.plot(grid, np.full_like(grid, norm.cdf(0.5)), color="0.4", ls="--", lw=1.0, label="decision time, Proposition 4")
     ax.errorbar(s, [d[k]["dev_auc"]["mean"] for k in d], yerr=[1.96 * d[k]["dev_auc"]["se"] for k in d], fmt="o", color="0.1", ms=3.5, capsize=2)
     ax.errorbar(s, [d[k]["cur_auc"]["mean"] for k in d], yerr=[1.96 * d[k]["cur_auc"]["se"] for k in d], fmt="s", color="0.4", ms=3.5, capsize=2)
-    ax.set_xlabel("leak s (shift of the feature for defaulters in development)")
+    ax.set_xlabel(r"leak $\delta$ (shift of the feature for defaulters in development)")
     ax.set_ylabel("AUC of the model score")
-    ax.legend(frameon=False, loc="center right", fontsize=7)
+    ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.22), fontsize=7)
     ax = axes[1]
     for sty, (k, lab) in zip(ST, (("auc_test", "AUC against development"), ("csi_test", "CSI of the leaked feature"),
                                   ("resemblance_flag", "resemblance AUC"), ("single_feature_flag", "single-feature AUC screen"))):
@@ -133,17 +133,18 @@ def fig_planted() -> None:
         hi = np.array([d[x][k]["hi"] for x in d])
         ax.errorbar(s, r, yerr=[np.maximum(r - lo, 0), np.maximum(hi - r, 0)], color=sty["color"], ls=sty["linestyle"], marker=sty["marker"], ms=3.5, capsize=2, lw=1.0, label=lab)
     ax.axhline(0.05, color="0.6", lw=0.6)
-    ax.set_xlabel("leak s")
+    ax.set_xlabel(r"leak $\delta$")
     ax.set_ylabel("rejection rate at 5%")
-    ax.legend(frameon=False, fontsize=7, loc="center right")
+    ax.legend(frameon=False, fontsize=7, loc="upper center", bbox_to_anchor=(0.5, -0.22))
     fig.tight_layout()
     figkit.save(fig, OUT, "fig-planted-leak")
 
 
 def fig_draws() -> None:
     dr = load("e2_draws.json")["detection_by_draws"]
-    th = load("theory_checks.json")["detection"]["by_m"]
-    fig, axes = plt.subplots(1, 2, figsize=(7.0, 3.0))
+    det = load("theory_checks.json")["detection"]
+    th = det["by_m"]
+    fig, axes = plt.subplots(1, 2, figsize=(7.0, 4.0))
     ax = axes[0]
     R = np.array([1, 2, 3, 5])
     for sty, (m, K, lab) in zip(ST, (("woe", 8, "WoE scorecard, K = 8"), ("linear", 2, "standardised logit, K = 2"))):
@@ -159,11 +160,20 @@ def fig_draws() -> None:
     ex = np.array([th[k]["exact"] for k in th])
     sim = np.array([th[k]["simulated"] for k in th])
     ax.semilogy(ms, 1 - ex, color="0.1", ls="-", lw=1.0, label="exact miss probability")
-    ax.semilogy(ms, np.maximum(1 - sim, 3e-5), color="0.3", ls="none", marker="o", ms=4, label="simulated (floor at 3e-5)")
+    # a value of m at which the simulation saw no miss is not a measured probability of zero: it is drawn as an open triangle at the
+    # rule-of-three 95% upper bound 3 / trials, and said so in the legend and the caption
+    miss = 1 - sim
+    seen = miss > 0
+    ub = 3.0 / det["trials"]
+    ax.semilogy(ms[seen], miss[seen], color="0.3", ls="none", marker="o", ms=4, label="simulated miss probability")
+    if (~seen).any():
+        mant, exp = f"{ub:.1e}".split("e")
+        ax.semilogy(ms[~seen], np.full((~seen).sum(), ub), color="0.3", ls="none", marker="v", ms=5, fillstyle="none",
+                    label=f"no miss in {det['trials']:,} trials (bound ${float(mant):g}\\times10^{{{int(exp)}}}$)")
     ax.semilogy(ms, 0.1 ** ms, color="0.5", ls="--", lw=0.9, label="$0.1^m$")
     ax.set_xlabel("outside rows moved beyond the training range, m")
     ax.set_ylabel("probability that the gate misses a bin-edge leak")
-    ax.legend(frameon=False, fontsize=7)
+    ax.legend(frameon=False, fontsize=7, loc="upper center", bbox_to_anchor=(0.5, -0.22))
     fig.tight_layout()
     figkit.save(fig, OUT, "fig-detection-draws")
 
@@ -186,6 +196,8 @@ def fig_cv() -> None:
     ax.set_xticks(n)
     ax.set_xticklabels([f"{v:,}" for v in n], fontsize=7)
     ax.minorticks_off()
+    ax.set_yticks([-1e-2, 0, 1e-2, 1e-1])
+    ax.set_yticklabels([r"$-10^{-2}$", "0", r"$10^{-2}$", r"$10^{-1}$"], fontsize=7)
     ax.set_xlabel("development rows (40 inputs)")
     ax.set_ylabel("bias of the cross-validated AUC")
     ax.legend(frameon=False, fontsize=7)

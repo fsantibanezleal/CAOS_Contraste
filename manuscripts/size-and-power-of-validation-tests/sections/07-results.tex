@@ -36,12 +36,12 @@ The binomial test is conservative because its count is discrete: its exact size 
 The Markov-order test shows how the two rules part on one cell.
 Its rate is \ordFive\,\% at 5\,\% against the bound of \boundFive\,\%, a margin of \markovBoundMargin\ points, so the screen passes it; but its Wilson interval, \ordLoFive\,\% to \ordHiFive\,\%, lies wholly above 5\,\%, and at 1\,\% its rate of \ordOne\,\% has an interval of \ordLoOne\,\% to \ordHiOne\,\%, wholly above 1\,\%, so by the definition it does not hold its size.
 A run of 20,000 repetitions gives \ordTwentyK\,\% at 5\,\% with interval \ordTwentyKLo\,\% to \ordTwentyKHi\,\%, and the pool of the replication of \cref{sec:rs-seeds} \pooledOrd\,\%.
-\Cref{fig:p-histograms} shows the p-values behind the rates: the binomial test has gaps where no count falls, the normal test piles its mass at small p-values, and the concentration test has all its mass at one, which is what a test that cannot reject looks like.
+\Cref{fig:p-histograms} shows the p-values behind the rates: the binomial test has gaps where no count falls, the normal test piles its mass at small p-values, the concentration test has all its mass between \hhiPLo{} and \hhiPHi{}, so that it never comes near a rejection, and the migration z-tests pile \migTopBin\,\% of theirs in the last bin, next to one.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{p_histograms}
-\caption{Histograms of the p-values of eight tests under their null in 4,000 repetitions: a test that holds its size continuously has a flat histogram (dashed line), the discrete binomial test has empty bins, the normal test over five years has excess mass at small p-values, and the concentration test has all of its mass at one.}
+\caption{Histograms of the p-values of eight tests under their null in 4,000 repetitions: a test that holds its size continuously has a flat histogram (dashed line), the discrete binomial test has empty bins, the normal test over five years has excess mass at small p-values, and the concentration test has all of its mass between \hhiPLo{} and \hhiPHi{}, while the migration z-tests pile theirs next to one.}
 \label{fig:p-histograms}
 \end{figure}
 
@@ -143,7 +143,7 @@ No power curve falls by more than 3.29 combined standard errors between neighbou
 
 The reruns of the published studies are in \cref{tab:reproductions} and \cref{fig:reproductions}.
 The rerun agrees with \wpAgree{} of the \wpTotal{} cells of the normal and traffic-lights tests of the Basel Committee at \wpRuns{} runs; the one cell that does not, the traffic-lights test in the scenario labelled DV\_LV at the 0.1\,\% level, is printed as \wpOffPub\,\% and measured as \wpOffMeas\,\%.
-It agrees with \ynAgree{} of the \ynTotal{} cells of the stability study at \ynRuns{} runs; the harness sits slightly above the printed rates, with a mean $z$ of $+\ynMeanZ$ over the \ynInterior{} cells whose printed rate is strictly between 0 and 1.
+It agrees with \ynAgree{} of the \ynTotal{} cells of the stability study at \ynRuns{} runs; the harness sits slightly above the printed rates, with a mean $z$ of $+\ynMeanZ$ over the \ynInterior{} cells whose printed rate is strictly between 0 and 1 and of $\ynMeanZAll$ over all \ynTotal{} cells (\cref{tab:reproductions} prints the second).
 The nested-model rate of the DeLong test is \demlerMeasured\,\% in \demlerRuns{} runs against the printed \demlerPublished\,\%.
 Every one of the \nReproTotal{} committed null cells reproduces exactly: the counts of rejections, at both levels, and the number of undefined results equal the committed ones when the cell is rerun from its configuration and its seed.
 The estimators that the harness also measures agree: the AUC of 4,000 binormal samples has a normal interval that covers \aucCover\,\% of the time (Monte Carlo standard error \aucCoverMcse\,\%), and the standard error of the ECB formula differs from the empirical one by $\aucSeRel\,\%$.
