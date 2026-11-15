@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c17/models.schema.json",
   "title": "C17 models",
-  "description": "Catalog row c17-models 1.2.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification, the S-3 hypothesis over all cells).",
+  "description": "Catalog row c17-models 2.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification, the S-3 hypothesis over all cells).",
   "allOf": [
     {
       "$ref": "../common/models-envelope.schema.json"
@@ -810,7 +810,8 @@
         "ladder",
         "aggregation",
         "sma",
-        "scenarios"
+        "scenarios",
+        "s3_overall"
       ],
       "properties": {
         "currency": {

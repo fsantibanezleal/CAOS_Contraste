@@ -577,7 +577,7 @@ def c17_defs() -> dict:
         "scenarios": R("c17ScenarioSpec"),
     }, "C17 models: the generator, the LDCE calibration targets, the true parameters and quantile of every variant, the grid and "
        "its seeds, the ladder, the aggregation settings, the OPE25 specification and the scenario methods.")
-    # c17-models 1.2.0: the S-3 hypothesis judged once over every cell of every variant; optional, so every 1.1.0 document stays valid
+    # c17-models 2.0.0: the S-3 hypothesis judged once over every cell of every variant, a newly required member of the fit
     d["c17S3Rung"] = Ob({
         "model_id": E("sla-cvm", "sla-obre"),
         "cells": Int(0),
@@ -593,6 +593,7 @@ def c17_defs() -> dict:
         "verdict": E("holds", "refuted", "inconclusive"),
     }, "The S-3 hypothesis over every cell of every variant, computed once at the bake: holds only when both rungs hold, refuted when either is.")
     d["c17Fit"]["properties"]["s3_overall"] = R("c17S3Overall")
+    d["c17Fit"]["required"].append("s3_overall")
     return d
 
 
@@ -602,7 +603,7 @@ def main() -> None:
                    "Catalog row c17-outputs 1.0.0: one tail index of the operational risk case (outputs.kind tail-index), LDA against SMA "
                    "on a generator of operational loss histories with a known true annual loss distribution.", "c17Outputs", d)
     models_schema("C17 models",
-                  "Catalog row c17-models 1.2.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every "
+                  "Catalog row c17-models 2.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every "
                   "variant, grid, ladder, aggregation, OPE25 specification, the S-3 hypothesis over all cells).", "c17Fit", d)
 
 

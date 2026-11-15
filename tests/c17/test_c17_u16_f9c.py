@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from pipeline.cases.c17.documents import _findings
+from pipeline.cases.c17.documents import _findings, s3_overall
 
 NBSP = " "
 
@@ -25,7 +25,7 @@ def _cells() -> dict:
 
 def _titles() -> dict[str, dict[str, str]]:
     v = SimpleNamespace(tail_index=0.8, infinite_mean=False)
-    return {f["id"]: f["title"] for f in _findings(v, _cells(), 163_483_000.0, 142_003_392.0, [])}
+    return {f["id"]: f["title"] for f in _findings(v, _cells(), 163_483_000.0, 142_003_392.0, [], s3_overall([[{"lda_splice": c["lda_splice"], **{k: c[k]["summary"] for k in S3}} for c in _cells().values()]]))}
 
 
 def test_the_threshold_names_its_currency() -> None:

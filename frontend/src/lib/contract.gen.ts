@@ -10500,7 +10500,7 @@ export interface components {
         };
         /**
          * C17 models
-         * @description Catalog row c17-models 1.2.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification, the S-3 hypothesis over all cells).
+         * @description Catalog row c17-models 2.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification, the S-3 hypothesis over all cells).
          */
         "c17-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -10726,7 +10726,7 @@ export interface components {
             aggregation: components["schemas"]["c17Aggregation"];
             sma: components["schemas"]["c17SmaSpec"];
             scenarios: components["schemas"]["c17ScenarioSpec"];
-            s3_overall?: components["schemas"]["c17S3Overall"];
+            s3_overall: components["schemas"]["c17S3Overall"];
         };
         /** @description The generator of annual operational loss histories for a synthetic bank; its true annual loss distribution is known. */
         c17Generator: {

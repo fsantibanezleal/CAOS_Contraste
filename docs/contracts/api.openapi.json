@@ -44250,7 +44250,7 @@
       },
       "c17-models": {
         "title": "C17 models",
-        "description": "Catalog row c17-models 1.2.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification, the S-3 hypothesis over all cells).",
+        "description": "Catalog row c17-models 2.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification, the S-3 hypothesis over all cells).",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-models-envelope"
@@ -45127,7 +45127,8 @@
           "ladder",
           "aggregation",
           "sma",
-          "scenarios"
+          "scenarios",
+          "s3_overall"
         ],
         "properties": {
           "currency": {

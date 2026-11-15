@@ -6,7 +6,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 from pipeline.cases.c17 import documents as D
-from pipeline.cases.c17.documents import _findings
+from pipeline.cases.c17.documents import _findings, s3_overall
 
 NBSP = " "
 
@@ -26,7 +26,7 @@ def _cells(lognormal: float = 0.00438) -> dict:
 
 def _titles(lognormal: float = 0.00438) -> dict[str, dict[str, str]]:
     v = SimpleNamespace(tail_index=1.1, infinite_mean=True)
-    return {f["id"]: f["title"] for f in _findings(v, _cells(lognormal), 2_148_602_460.0, 165_000_000.0, [])}
+    return {f["id"]: f["title"] for f in _findings(v, _cells(lognormal), 2_148_602_460.0, 165_000_000.0, [], s3_overall([[{"lda_splice": c["lda_splice"], **{k: c[k]["summary"] for k in S3}} for c in _cells(lognormal).values()]]))}
 
 
 def test_m6_a_ratio_near_zero_keeps_two_significant_digits() -> None:
