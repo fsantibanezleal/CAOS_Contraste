@@ -129,8 +129,10 @@ def test_adversarial_an_absent_stage_input_keeps_its_refusal(workflow, tmp_path,
 
 
 def test_the_template_workflow_config_passes(workflow):
-    # The template asserts its own example input here (data/examples/params.csv), which a product does not carry
-    # (CAOS_PRODUCT_TEMPLATE#123 is the same kind of finding): the product's own declared inputs pass the refusal instead.
     config = workflow.settings(ROOT)
     inputs = workflow.authored_inputs(ROOT, config)
+    # a product declares its own authored inputs (ChancaDEM has two); the guard admits exactly the declared ones, each present
     assert list(inputs) == list(config.get("stage_inputs", []))
+    assert all(path.is_file() for path in inputs.values())
+    if (ROOT / ".template-source").is_file():
+        assert list(inputs) == ["data/examples/params.csv"]  # the template's own list stays pinned
