@@ -458,12 +458,10 @@ def test_every_notebook_runs_top_to_bottom_in_a_fresh_kernel(tmp_path):
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
         results = list(pool.map(run, enumerate(books)))
+    # The runner inherits this suite's thread pin (OPENBLAS, OMP and MKL at 4, tests/conftest.py, D16-18), so a notebook whose printed
+    # figures depend on the number of threads the linear algebra uses fails here even when it matches on its writer's machine: notebook
+    # 12/02 printed a rounding gap of 1.8e-16 (3.6e-16 under the pin) until 1.00.001, and now prints the gap against its tolerance.
     failed = [(path, done) for path, done in results if done.returncode != 0 or "nothing written" not in done.stdout]
-    # A notebook that failed while the pool loaded the machine runs once more alone: under that load the kernel can write a
-    # warning of its own into a cell's outputs (notebook 12/02 in both languages, 2026-11-14; six concurrent runs of it alone
-    # matched the committed outputs byte for byte). A notebook that fails alone too stays failed.
-    failed = [run((len(books) + i, path)) for i, (path, _) in enumerate(failed)]
-    failed = [(path, done) for path, done in failed if done.returncode != 0 or "nothing written" not in done.stdout]
     assert not failed, "\n\n".join(f"{path.relative_to(ROOT).as_posix()}: exit {done.returncode}\n{(done.stdout + done.stderr)[-1500:]}" for path, done in failed[:5])
 
 
