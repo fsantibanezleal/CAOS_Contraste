@@ -10,6 +10,7 @@ import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { truthStatusText } from '../c05/selection';
 import { componentLabel, fitOf, liveIfrs9, outputsOf, type C07Outputs, type C07Sel } from './selection';
+import { markRefs } from '../../lib/refs';
 
 const LIVE = 'live' as const;
 
@@ -123,7 +124,7 @@ export function C07ContextView({ sel }: { sel: C07Sel | null }) {
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
           <dd>{pick(truthStatusText(v.provenance.truth_status), lang)}</dd>
           <dt>CMF B-1</dt>
-          <dd>{pick({ en: 'The statutory provision on loans in Chile: IFRS 9 5.5 is carved out for loans in the CMF compendium.', es: 'La provisión estatutaria sobre créditos en Chile: IFRS 9 5.5 está excluida para créditos en el compendio de la CMF.' }, lang)}</dd>
+          <dd>{markRefs(pick({ en: 'The statutory provision on loans in Chile: IFRS 9 5.5 is carved out for loans in the CMF compendium.', es: 'La provisión estatutaria sobre créditos en Chile: IFRS 9 5.5 está excluida para créditos en el compendio de la CMF.' }, lang), lang)}</dd>
           <dt>IFRS 9</dt>
           <dd>{pick({ en: 'A comparison measure: the probability-weighted ECL of the same portfolio, not what Chilean banks book on loans.', es: 'Una medida de comparación: la PCE ponderada por probabilidad de la misma cartera, no lo que los bancos chilenos constituyen sobre los créditos.' }, lang)}</dd>
           <dt>{pick({ en: 'BdE Annex 9', es: 'Anejo 9 del BdE' }, lang)}</dt>

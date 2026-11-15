@@ -11,6 +11,7 @@ import { modelName } from '../names';
 import { STAGE_TEXT, ChartOverTable, MaybeNumber, alignTo, money, pct, segmentLabel, unionX } from './format';
 import { referenceText } from '../c03/U6Shared';
 import { COHORT_TEXT, cohortText, covariateText, fitOf, ifrs9TestText, movementText, outputsOf, type C06Sel } from './selection';
+import { markRefs } from '../../lib/refs';
 
 // seven cohorts are seven curves: seven distinct colour tokens (the predicted line of each stays dashed)
 const COLORS: ShellColorToken[] = ['--color-accent', '--color-magenta', '--color-warn', '--color-good', '--color-bad', '--color-fg-subtle', '--color-fg'];
@@ -515,7 +516,7 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
                     {/* every row names its segment; a portfolio-level row of no segment names its scope in words (R5 ruling 2) */}
                     <span className="ct-note" data-segment="" style={{ display: 'block', whiteSpace: 'normal' }}>{pick(t.segment ? segmentOf(t.segment) : WHOLE_PORTFOLIO, lang)}</span>
                     {/* on a phone the reference sits under the test, so the light stays in view (R3 c08 m8) */}
-                    <span className="ct-narrow-only">{referenceText(t, lang)}</span>
+                    <span className="ct-narrow-only">{markRefs(referenceText(t, lang), lang)}</span>
                   </td>
                   <td className="ct-text">{t.model_id ? pick(modelName(t.model_id, { caseId: variant.case_id, models: variant.model }) ?? { en: t.model_id, es: t.model_id }, lang) : '-'}</td>
                   <td>{formatNumber(t.statistic ?? t.metric, lang, { digits: 4 })}</td>
@@ -523,7 +524,7 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text ct-wide-only ct-repeated">{referenceText(t, lang)}</td>
+                  <td className="ct-text ct-wide-only ct-repeated">{markRefs(referenceText(t, lang), lang)}</td>
                 </tr>
               ))}
             </tbody>

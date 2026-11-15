@@ -14,6 +14,7 @@ import { LabelledOverTable, barMin, f2, f3, int, pc1, testsOf } from '../c20/U14
 import { LegalSentences, NoLegalClaim, legalOf } from './C21Common';
 import { CONTROL_TEXT, FIELD_TEXT, attributeFor, groupBi, outputsOf, text, type C21Sel } from './selection';
 import { es } from './localise';
+import { markRefs } from '../../lib/refs';
 
 const controls = (ids: string[], lang: 'en' | 'es') => ids.map((c) => pick(text(CONTROL_TEXT, c), lang)).join(', ');
 
@@ -295,7 +296,7 @@ export function SituationView({ sel }: { sel: C21Sel | null }) {
               <tr data-status={s.label_parameters}><td className="ct-text">{pick({ en: 'Distance and level', es: 'Distancia y nivel' }, lang)}</td><td className="ct-text">{pick({ en: `${s.distance_normalization} normalisation; parameters by convention`, es: `normalización por ${es(s.distance_normalization, 'es')}; parámetros por convención` }, lang)}</td></tr>
             </tbody>
           </table>
-          <p className="ct-note">{es(s.interval, lang)}</p>
+          <p className="ct-note">{markRefs(es(s.interval, lang), lang)}</p>
           <C21TestsTable tests={sel.data.variant.tests} only={testsOf('fair.situation')} />
           <LegalSentences legal={legalOf(sel)} />
         </LabelledOverTable>

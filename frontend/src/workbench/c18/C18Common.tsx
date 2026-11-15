@@ -25,6 +25,7 @@ import { Symbols } from './CapitalViews';
 import { quarterText } from './StressViews';
 import { testText } from '../names';
 import { variantName } from '../names';
+import { markRefs } from '../../lib/refs';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -140,12 +141,12 @@ export function C18TestsView({ sel }: { sel: C18Sel | null }) {
                   const ran = t.light !== 'not_evaluated' && t.light !== 'error';
                   return (
                     <tr key={`${t.test_id}-${i}`} data-test={t.test_id} data-light={t.light}>
-                      <td className="ct-text" title={t.test_id} data-scope={t.segment ?? 'whole-balance-sheet'}>{`${pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)} (${scopeOf(t, lang)})`}</td>
+                      <td className="ct-text" title={t.test_id} data-scope={t.segment ?? 'whole-balance-sheet'}>{markRefs(`${pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)} (${scopeOf(t, lang)})`, lang)}</td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                       </td>
-                      <td className="ct-text">{t.notes ? noteName(t.notes, lang) : phraseEs(t.reference, lang)}</td>
+                      <td className="ct-text">{markRefs(t.notes ? noteName(t.notes, lang) : phraseEs(t.reference, lang), lang)}</td>
                     </tr>
                   );
                 })}

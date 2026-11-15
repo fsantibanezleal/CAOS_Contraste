@@ -20,6 +20,13 @@ A patch release: the base on template 0.15.010 and shell 0.26.0; the three defec
   draws it a tenth of the cut to the left. The card's note says so in English and Spanish.
 - The C04 capital chart and the C11 Z2 chart are point charts whose empty padding point at each end is gone: the points are the real
   ones and the room at the ends is the axis range, so Home and ArrowRight read two different points (shell 0.26.0, G20).
+- Spanish pages: the reference identifiers written inside a text (a paragraph, section, table or equation number, an arXiv id, a
+  package or licence version: "sección 4.2", "Tablas 3.2 y 3.3", "IFRS 9 5.5", "arXiv 0708.2542", "QuantLib 1.44") are marked
+  `translate="no"` where the views render them (`frontend/src/lib/refs.tsx`), so the live gate's G11 reads them as identifiers and
+  not as decimals written with a point: 30 hits over 14 cases in the Spanish pass of every case. An identifier is recognised by its
+  context only (the number after a reference word or name, and the list it starts), never a bare dotted number, so a decimal written
+  with a point in Spanish prose is still caught. The English rendering reads the same. The C07 IFRS 9 card's paragraph reference
+  moved from the card note (plain text the shell renders) to a line under the drawing, with the same words.
 
 ## [1.00.000], 2026-11-08
 

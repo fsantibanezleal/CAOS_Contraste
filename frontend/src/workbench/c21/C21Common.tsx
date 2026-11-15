@@ -17,6 +17,7 @@ import { FindingsEvidenceCard } from './FindingsEvidence';
 import { LabelledOverTable, barMin, f3, int, pc, pc1 } from '../c20/U14Common';
 import { BASIS_TEXT, CONTROL_TEXT, FIELD_TEXT, attributeFor, contrastFor, fitOf, groupBi, outputsOf, text, type C21Legal, type C21Outputs, type C21Sel } from './selection';
 import { es, treatmentName } from './localise';
+import { markRefs } from '../../lib/refs';
 
 /** The short label every C21 view says before its content. */
 
@@ -206,7 +207,7 @@ function Quoted({ quote, lang }: { quote: string; lang: 'en' | 'es' }) {
   if (lang === 'es' && spanish !== quote) {
     return (
       <>
-        {`«${spanish}» `}
+        «{markRefs(spanish, lang)}»{' '}
         <span data-original="en">(original en inglés: <span translate="no" lang="en">{`"${quote}"`}</span>)</span>
       </>
     );

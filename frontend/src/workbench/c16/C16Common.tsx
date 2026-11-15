@@ -20,6 +20,7 @@ import {
   type C16Fit, type C16Outputs, type C16Reverse, type C16Sel, type C16Survival,
 } from './selection';
 import { testText } from '../names';
+import { markRefs } from '../../lib/refs';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -131,7 +132,7 @@ export function C16TestsView({ sel }: { sel: C16Sel | null }) {
                   return (
                     <tr key={`${t.test_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                       <td className="ct-text" title={t.test_id}>
-                        {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
+                        {markRefs(pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang), lang)}
                         <span className="ct-narrow-only" data-segment={t.segment ?? 'whole-balance-sheet'}>{pick(against(t.segment), lang)}</span>
                       </td>
                       <td className="ct-text ct-wide-only ct-repeated">{pick(against(t.segment), lang)}</td>
@@ -139,7 +140,7 @@ export function C16TestsView({ sel }: { sel: C16Sel | null }) {
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                       </td>
-                      <td className="ct-text">{es(t.notes ? t.notes : t.reference, lang)}</td>
+                      <td className="ct-text">{markRefs(es(t.notes ? t.notes : t.reference, lang), lang)}</td>
                     </tr>
                   );
                 })}
@@ -474,7 +475,7 @@ function ModelBlocks({ fit, card }: { fit: C16Fit; card: ReturnType<typeof useCa
                 <tr key={p.set_id} data-parameter-set={p.set_id} data-source-kind={p.source_kind}>
                   <td className="ct-text">{nameOf(p.set_id, lang)}</td>
                   <td className="ct-text">{pick(text(SOURCE_KIND_TEXT, p.source_kind), lang)}</td>
-                  <td className="ct-text ct-wide-only">{es(p.source, lang)}</td>
+                  <td className="ct-text ct-wide-only">{markRefs(es(p.source, lang), lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -633,7 +634,7 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
                     <td className="ct-text">{pick(i.label, lang)}</td>
                     <td className="ct-text ct-wide-only">{i.source_field}</td>
                     <td>{cell(i.amount, lang)}</td>
-                    <td className="ct-text">{i.reason_missing ? pick(i.reason_missing, lang) : es(i.assumption, lang)}</td>
+                    <td className="ct-text">{i.reason_missing ? pick(i.reason_missing, lang) : markRefs(es(i.assumption, lang), lang)}</td>
                   </tr>
                 ))}
               </tbody>

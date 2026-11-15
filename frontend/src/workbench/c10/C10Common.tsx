@@ -18,6 +18,7 @@ import {
   ESTIMATOR_TEXT, GENERATOR_TEXT, INTERVAL_TEXT, SOURCE_TEXT, estimatorFit, estimatorOf, eulerLevelOf, eulerOf, cellOf, gridOf, groupLabel, levelBi, measureOf, outputsOf, rungOf, text,
   type C10Estimator, type C10GridOutputs, type C10Outputs, type C10Sel,
 } from './selection';
+import { markRefs } from '../../lib/refs';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -175,7 +176,7 @@ export function C10TestsTable({ variant, only }: { variant: VariantArtifact; onl
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
                   {/* a measure of its own, so a phone's scroll box does not wrap the reference one word a line (R3 c11 n2) */}
-                  <td className="ct-text" style={{ minWidth: '16rem' }}>{[sizePowerText(t, lang), t.notes ? noteText(t.notes, lang) : referenceText(t, lang)].filter(Boolean).join('; ')}</td>
+                  <td className="ct-text" style={{ minWidth: '16rem' }}>{markRefs([sizePowerText(t, lang), t.notes ? noteText(t.notes, lang) : referenceText(t, lang)].filter(Boolean).join('; '), lang)}</td>
                 </tr>
               );
             })}
