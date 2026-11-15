@@ -8,6 +8,7 @@ import { LIGHT_TEXT } from '../../lib/policy';
 import { REPLAY, provenanceOf } from '../model';
 import { pct } from '../c06/format';
 import { WHOLE_PORTFOLIO, segmentName, testText } from '../names';
+import { markRefs } from '../../lib/refs';
 
 export const LIVE: Lane = 'live';
 
@@ -168,7 +169,7 @@ export function U6TestsTable({ variant, modelLabel, only }: { variant: VariantAr
               return (
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                   <td className="ct-text" title={t.test_id}>
-                    {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
+                    {markRefs(pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang), lang)}
                     {segments[i] ? <span className="ct-row-detail" data-segment={t.segment ?? 'none'}>{pick(segments[i]!, lang)}</span> : null}
                   </td>
                   <td className="ct-text ct-wide-only">{t.model_id === null ? '-' : (modelLabel?.(t.model_id) ?? t.model_id)}</td>
@@ -178,7 +179,7 @@ export function U6TestsTable({ variant, modelLabel, only }: { variant: VariantAr
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ? engineNote(t.notes, lang) : referenceText(t, lang)}</td>
+                  <td className="ct-text">{markRefs(t.notes ? engineNote(t.notes, lang) : referenceText(t, lang), lang)}</td>
                 </tr>
               );
             })}

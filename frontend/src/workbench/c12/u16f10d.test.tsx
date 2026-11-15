@@ -44,7 +44,8 @@ describe('U16-F10d C12', () => {
   afterEach(() => setLang('en'));
 
   it('BL4: the Spanish Context prints the estimator in Spanish from the bilingual document, and the English one stays', () => {
-    const es = textOf(render(<C12ContextView sel={selOf('netting-set', rebaked())} />, 'es'));
+    // the identifiers of the sentence (arXiv id, equation numbers) are marked spans: read the sentence without the markers
+    const es = textOf(render(<C12ContextView sel={selOf('netting-set', rebaked())} />, 'es').replace(/<span translate="no">([^<]*)<\/span>/g, '$1'));
     expect(es).toContain(ESTIMATOR_ES);
     expect(es).not.toContain('exact AR(1) OLS');
     const en = textOf(render(<C12ContextView sel={selOf('netting-set', rebaked())} />, 'en'));

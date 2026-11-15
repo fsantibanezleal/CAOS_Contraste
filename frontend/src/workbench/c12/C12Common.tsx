@@ -17,6 +17,7 @@ import { T } from '../../content/bi';
 import { UnavailableCard } from '../c14/C14Common';
 import { RATING_TEXT, SECTOR_TEXT, VARIANT_ORDER, VARIANT_TEXT, BASIS_TEXT, CASE_TEXT, HORIZON_LONG, SUBJECT_TEXT, amount, axisOf, fitOf, horizonOf, liveBaCva, liveSaCcr, outputsOf, sensitivityOf, segmentText, text, gridOf, type C12Outputs, type C12Sel, type Peers } from './selection';
 import { segmentName, testText } from '../names';
+import { markRefs } from '../../lib/refs';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -163,14 +164,14 @@ export function C12TestsView({ sel }: { sel: C12Sel | null }) {
                   return (
                     <tr key={`${t.test_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                       <td className="ct-text" title={t.test_id}>
-                        {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
+                        {markRefs(pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang), lang)}
                         <span className="ct-note" data-segment={t.segment ?? 'whole-book'} style={{ display: 'block' }}>{rowSegment(t.segment, lang)}</span>
                       </td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? <Nw>{formatNumber(t.statistic, lang, { digits: 4 })}</Nw> : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                       </td>
-                      <td className="ct-text">{powerOfTen((t.notes ? noteText(t.notes, lang) : referenceText(t, lang)).replace(/W\^2/g, 'W²'))}</td>
+                      <td className="ct-text">{markRefs(powerOfTen((t.notes ? noteText(t.notes, lang) : referenceText(t, lang)).replace(/W\^2/g, 'W²')), lang)}</td>
                     </tr>
                   );
                 })}
@@ -501,7 +502,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
           <div className="ct-scroll" data-caos-flow="">
             <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-fit">
               <dt>{pick({ en: 'Estimator', es: 'Estimador' }, lang)}</dt>
-              <dd>{typeof fit.estimator === 'string' ? <span translate="no">{fit.estimator}</span> : pick(fit.estimator, lang)}</dd>
+              <dd>{typeof fit.estimator === 'string' ? <span translate="no">{fit.estimator}</span> : markRefs(pick(fit.estimator, lang), lang)}</dd>
               <dt>{pick({ en: 'Minimum history', es: 'Historia mínima' }, lang)}</dt>
               <dd>{`${fit.min_history_years} ${pick({ en: 'years (CRE53.51)', es: 'años (CRE53.51)' }, lang)}`}</dd>
               <dt>{pick({ en: 'Closed forms', es: 'Formas cerradas' }, lang)}</dt>
@@ -547,7 +548,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
             </Paged>
             <ul className="ct-note" data-table="c12-limits">
               {fit.limits.map((l, i) => (
-                <li key={i}>{pick(l, lang)}</li>
+                <li key={i}>{markRefs(pick(l, lang), lang)}</li>
               ))}
             </ul>
           </div>

@@ -164,6 +164,19 @@ def build() -> None:
     put("CommittedCostThree", cc, "derived: kupiec_one_shot_power - e_rate.by, rate-x3, committed document", 1, pct=True)
     cc4 = cs("rate-x4", "kupiec_one_shot_power") - cs("rate-x4", "e_rate")["by"]
     put("CommittedCostFour", cc4, "derived: kupiec_one_shot_power - e_rate.by, rate-x4, committed document", 1, pct=True)
+    # the pooled replication the committed document judges the delay and the power cost on (its own seeds, not those of this study)
+    rp = C22["replication"]
+    rx3 = next(f for f in rp["factors"] if f["id"] == "rate-x3")
+    rsrc = "data/derived/C22/other-families.json:outputs.sequential.replication"
+    put("CommittedRepSeeds", rp["seeds"], rsrc + ".seeds")
+    put("CommittedPooledMedThree", rx3["pooled_median"], rsrc + ".factors[rate-x3].pooled_median", 0)
+    put("CommittedPooledMedThreeLo", rx3["pooled_median_ci"][0], rsrc + ".factors[rate-x3].pooled_median_ci[0]", 0)
+    put("CommittedPooledMedThreeHi", rx3["pooled_median_ci"][1], rsrc + ".factors[rate-x3].pooled_median_ci[1]", 0)
+    put("CommittedPooledCostThree", rx3["pooled_power_cost"], rsrc + ".factors[rate-x3].pooled_power_cost", 1, pct=True)
+    failed = ", ".join(C22["verdict"]["failed"])
+    held = ", ".join(C22["verdict"]["held"])
+    put("CommittedFailed", failed.replace(", ", " and "), "data/derived/C22/other-families.json:outputs.sequential.verdict.failed")
+    put("CommittedHeld", held.replace(", ", " and "), "data/derived/C22/other-families.json:outputs.sequential.verdict.held")
 
     # size over the horizon
     last = SH["days"][-1]

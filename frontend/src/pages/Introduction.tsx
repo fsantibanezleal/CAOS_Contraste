@@ -2,13 +2,15 @@
 // the shell's ExecutiveView rendering content/executive.json, the industry problem of defending internal risk models
 // before supervisors (the pain, the context, the current situation, the trends, the proposal), general and never tied to a
 // client, every figure linked to its source in the file. It then turns technical: the previous page, its subsections as
-// sub-tabs (problem, principles, math with its glossary, pipeline, honesty, how to read the App, the six pages).
+// sub-tabs (problem, principles, math with its glossary, pipeline, honesty, how to read the App, the six pages and the
+// publications with their concept DOIs).
 import { Callout, Cite, DocPage, DocSection, ExecutiveView, Figure, Glossary, InlineMath, SubTabs, Tabs } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 import { OverviewFigure } from '../architecture/figures';
 import { Equation, L, P, T, useT } from '../content/bi';
 import executive from '../../../content/executive.json';
+import { Publications } from './Publications';
 
 /** One list item written in both languages. */
 const Li = ({ en, es }: { en: ReactNode; es: ReactNode }) => (
@@ -178,6 +180,7 @@ function Technical() {
           ]}
         />
       </DocSection>
+      <Publications />
         </>
       ),
     },

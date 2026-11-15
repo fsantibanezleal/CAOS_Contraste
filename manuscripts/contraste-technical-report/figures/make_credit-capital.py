@@ -95,13 +95,12 @@ def fig_profile(D: dict, out: pathlib.Path) -> None:
         ll = np.array(p["log_likelihood"]) - p["max_log_likelihood"]
         cut = p["cutoff"] - p["max_log_likelihood"]
         ax.plot(rho, ll, label=name, **{kk: v for kk, v in figkit.STYLES[k].items() if kk != "marker"})
-    ax.axhline(cut, color="0.5", linewidth=0.8)
-    ax.text(ax.get_xlim()[1] * 0.0 + 0.0025, cut + 0.12, "95% likelihood-ratio cutoff", fontsize=7, color="0.3")
+    ax.axhline(cut, color="0.5", linewidth=0.8, label="95% likelihood-ratio cutoff")
     ax.set_xscale("log")
     ax.set_ylim(-6, 0.3)
     ax.set_xlabel("asset correlation $\\rho$ (log scale)")
     ax.set_ylabel("profile log-likelihood minus maximum")
-    ax.legend(frameon=False, fontsize=7, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=3)
+    ax.legend(frameon=False, fontsize=7, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=2)
     figkit.save(fig, out, "credit-capital-profile")
 
 

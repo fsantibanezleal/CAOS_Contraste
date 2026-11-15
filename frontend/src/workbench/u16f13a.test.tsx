@@ -190,7 +190,7 @@ describe('U16-F13a C01 (R5 c01 M1, M3; ruling 2 on every tests table)', () => {
         expect(textOf(battery)).not.toMatch(/Jeffreys, (cartera|portfolio)/);
         const psi = bodyRows(render(<StabilityView sel={c01Sel(v)} />, lang), lang === 'es' ? 'Estabilidad poblacional' : 'Population stability');
         expect(psi.length).toBeGreaterThan(0);
-        for (const r of psi) expect(r).toMatch(/class="ct-row-detail" data-segment="portfolio"/);
+        for (const r of psi) expect(r).toMatch(/class="ct-row-detail(?: ct-row-detail-inline)?" data-segment="portfolio"/);
         const dl = bodyRows(render(<DiscriminationView sel={c01Sel(v)} />, lang), lang === 'es' ? 'AUC fuera de muestra' : 'Held-out AUC');
         for (const r of dl) expect(r).toMatch(/class="ct-row-detail" data-segment="portfolio"/);
       }

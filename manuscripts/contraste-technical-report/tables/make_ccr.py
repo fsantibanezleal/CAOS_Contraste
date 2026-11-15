@@ -19,6 +19,9 @@ import numpy as np
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "_shared"))
 import figkit  # noqa: E402
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from _halfup import fixed, percent, install as _halfup_install  # noqa: E402
+_halfup_install(figkit)
 
 VARIANTS = ["single-swap", "netting-set", "csa-mpor-10d", "csa-mpor-20d", "with-im", "wrong-way-risk"]
 LABEL = {"single-swap": "Single swap", "netting-set": "Netting set", "csa-mpor-10d": "CSA, MPoR 10 days",
@@ -69,10 +72,27 @@ def sci(x: float) -> str:
     return f"${mant}\\times10^{{{int(exp)}}}$"
 
 
+#: Tables that the fit-to-width box shrank to 5.8 pt: they are set at 8 pt with wrapped, right-aligned columns instead.
+_R = ">{\\raggedleft\\arraybackslash}"
+_L = ">{\\raggedright\\arraybackslash}"
+SET_AT_SIZE = {
+    "ccr-t-ore.tex": ("lrrrrrrrrc", "p{2.3cm}" + _R + "p{1.2cm}" + _R + "p{1.2cm}" + _R + "p{1.0cm}" + _R + "p{1.4cm}" + _R + "p{1.4cm}" + _R + "p{1.0cm}"
+                      + _R + "p{1.5cm}" + _R + "p{1.1cm}c"),
+    "ccr-t-params.tex": ("llll", _L + "p{5.4cm}" + _L + "p{3.7cm}" + _L + "p{2.7cm}" + _L + "p{3.4cm}"),
+    "ccr-t-cre99.tex": ("lrrrrrcc", "p{4.4cm}" + _R + "p{0.9cm}" + _R + "p{1.5cm}" + _R + "p{1.6cm}" + _R + "p{1.5cm}" + _R + "p{1.2cm}p{1.2cm}p{1.6cm}"),
+}
+
+
 def fit_width() -> None:
     """Wrap the tabular of every generated table in a box that shrinks it to the text width when it is wider."""
     for f in HERE.glob("ccr-t-*.tex"):
         s = f.read_text(encoding="utf-8")
+        if f.name in SET_AT_SIZE:
+            old_spec, new_spec = SET_AT_SIZE[f.name]
+            s = s.replace("\\small\n", "\\scriptsize\n\\setlength{\\tabcolsep}{2.5pt}\n", 1)
+            s = s.replace("\\begin{tabular}{" + old_spec + "}", "\\begin{tabular}{" + new_spec + "}", 1)
+            f.write_text(s, encoding="utf-8", newline="\n")
+            continue
         if "\\resizebox" in s or "\\fitwidth" in s:
             continue
         s = s.replace("\\begin{tabular}", "\\fitwidth{%\n\\begin{tabular}", 1)
@@ -102,7 +122,7 @@ def table_book() -> None:
     for t in ns["book"]["trades"]:
         single = "yes" if t["trade_id"] == "SW-1" else "no"
         rows.append([t["trade_id"], t["side"], n0(t["notional"]["amount"]), nd(t["maturity_years"], 1),
-                     "$" + f"{100 * t['fixed_rate']:.2f}" + "\\,\\%$", t["fixed_frequency_per_year"], single, "yes"])
+                     "$" + f"{percent(t['fixed_rate'], 2)}" + "\\,\\%$", t["fixed_frequency_per_year"], single, "yes"])
     figkit.table(HERE / "ccr-t-book.tex", ["Trade", "Side", "Notional (USD)", "Maturity (years)", "Fixed rate",
                                           "Fixed payments per year", "In single swap", "In netting set"], rows,
                  caption="The synthetic book of case C12 on the Treasury par curve of 2025-09-30: four interest rate swaps on one floating curve, "
@@ -154,19 +174,19 @@ def table_params() -> None:
     macro("PathCount", n0(v("path_count")))
     macro("Seed", str(v("seed")))
     macro("GridPoints", str(len(v("time_grid_years"))))
-    macro("HwA", f"{cal['a']:.4f}")
-    macro("HwASe", f"{cal['a_se']:.4f}")
-    macro("HwSigma", f"{cal['sigma']:.5f}")
-    macro("HwSigmaSe", f"{cal['sigma_se']:.5f}")
+    macro("HwA", f"{fixed(cal['a'], 4)}")
+    macro("HwASe", f"{fixed(cal['a_se'], 4)}")
+    macro("HwSigma", f"{fixed(cal['sigma'], 5)}")
+    macro("HwSigmaSe", f"{fixed(cal['sigma_se'], 5)}")
     macro("NObs", n0(cal["n_obs"]))
-    macro("HistYears", f"{cal['history_years']:.2f}")
+    macro("HistYears", f"{fixed(cal['history_years'], 2)}")
     macro("SampleStart", cal["sample_start"])
     macro("SampleEnd", cal["sample_end"])
-    macro("PfeQuantile", f"{v('pfe_quantile'):.2f}")
+    macro("PfeQuantile", f"{fixed(v('pfe_quantile'), 2)}")
     macro("Mta", n0(v("csa_minimum_transfer_amount")))
-    macro("CpLgd", f"{v('counterparty_lgd'):.1f}")
-    macro("BankSpread", f"{v('bank_spread'):.3f}")
-    macro("ImQuantile", f"{v('im_quantile'):.2f}")
+    macro("CpLgd", f"{fixed(v('counterparty_lgd'), 1)}")
+    macro("BankSpread", f"{fixed(v('bank_spread'), 3)}")
+    macro("ImQuantile", f"{fixed(v('im_quantile'), 2)}")
     macro("BacktestPaths", n0(v("backtest_paths_per_date")))
     macro("CriticalCount", n0(v("backtest_simulated_critical_count")))
     macro("StressStart", v("stress_window_start"))
@@ -207,7 +227,7 @@ def table_exposure() -> None:
     for key, o in (("Single", ss), ("Netting", ns)):
         g = o["exposure"]["time_grid_years"]
         macro("PeakTime" + key, nd(g[int(np.argmax(o["exposure"]["ee"]["values"]))], 1))
-    macro("NettingCutEepe", f"{100 * (1 - ns['exposure']['eepe']['amount'] / ss['exposure']['eepe']['amount']):.0f}")
+    macro("NettingCutEepe", f"{percent((1 - ns['exposure']['eepe']['amount'] / ss['exposure']['eepe']['amount']), 0)}")
     macro("CvaSeNetting", nd(ns["cva_dva"]["cva"]["mc_se"], 1))
     macro("CvaSeSingle", nd(ss["cva_dva"]["cva"]["mc_se"], 1))
     macro("EeOneYearSingle", n0(ss["exposure"]["ee"]["values"][grid_index("single-swap", 1.0)]))
@@ -215,17 +235,17 @@ def table_exposure() -> None:
     macro("EeOneYearCsaShort", n0(c10["exposure"]["ee"]["values"][grid_index("csa-mpor-10d", 1.0)]))
     macro("EeOneYearCsaLong", n0(c20["exposure"]["ee"]["values"][grid_index("csa-mpor-20d", 1.0)]))
     macro("EeOneYearIm", n0(im["exposure"]["ee"]["values"][grid_index("with-im", 1.0)]))
-    macro("RatioCsaShort", f"{c10['exposure']['eepe']['amount'] / ns['exposure']['eepe']['amount']:.2f}")
-    macro("RatioCsaLong", f"{c20['exposure']['eepe']['amount'] / ns['exposure']['eepe']['amount']:.2f}")
-    macro("CutCsaShort", f"{100 * (1 - c10['exposure']['eepe']['amount'] / ns['exposure']['eepe']['amount']):.0f}")
-    macro("CutCsaLong", f"{100 * (1 - c20['exposure']['eepe']['amount'] / ns['exposure']['eepe']['amount']):.0f}")
-    macro("RatioLongShort", f"{c20['exposure']['eepe']['amount'] / c10['exposure']['eepe']['amount']:.2f}")
+    macro("RatioCsaShort", f"{fixed(c10['exposure']['eepe']['amount'] / ns['exposure']['eepe']['amount'], 2)}")
+    macro("RatioCsaLong", f"{fixed(c20['exposure']['eepe']['amount'] / ns['exposure']['eepe']['amount'], 2)}")
+    macro("CutCsaShort", f"{percent((1 - c10['exposure']['eepe']['amount'] / ns['exposure']['eepe']['amount']), 0)}")
+    macro("CutCsaLong", f"{percent((1 - c20['exposure']['eepe']['amount'] / ns['exposure']['eepe']['amount']), 0)}")
+    macro("RatioLongShort", f"{fixed(c20['exposure']['eepe']['amount'] / c10['exposure']['eepe']['amount'], 2)}")
     nb = ns["netting_benefit"]
     i1 = grid_index("netting-set", 1.0)
     macro("SumSingleOneYear", n0(nb["sum_of_single_trade_ee"]["values"][i1]))
     macro("NettedOneYear", n0(nb["netted_ee"]["values"][i1]))
     macro("NettingBenefitOneYear", n0(nb["benefit"]["values"][i1]))
-    macro("NettingBenefitPct", f"{100 * nb['benefit']['values'][i1] / nb['sum_of_single_trade_ee']['values'][i1]:.0f}")
+    macro("NettingBenefitPct", f"{percent(nb['benefit']['values'][i1] / nb['sum_of_single_trade_ee']['values'][i1], 0)}")
     macro("EffMaturity", nd(ns["regulatory_comparison"]["effective_maturity_years"], 1))
     macro("BaCvaM", nd(ns["ba_cva"]["counterparties"][0]["m_years"], 1))
     macro("BaCvaMSingle", nd(ss["ba_cva"]["counterparties"][0]["m_years"], 1))
@@ -234,7 +254,7 @@ def table_exposure() -> None:
     macro("DimPeak", n0(max(dim)))
     macro("Nica", n0(im["sa_ccr"]["nica"]["amount"]))
     macro("EeVmOnlyPeak", n0(max(im["initial_margin"]["ee_vm_only"]["values"])))
-    macro("ImAlpha", f"{im['initial_margin']['alpha']:.4f}")
+    macro("ImAlpha", f"{fixed(im['initial_margin']['alpha'], 4)}")
     macro("CvaWwrIndependent", n0(ww["wrong_way_risk"]["independent_cva"]["amount"]))
 
 
@@ -262,16 +282,16 @@ def table_regulatory() -> None:
     macro("RatioEadNetting", nd(ns["regulatory_comparison"]["sa_ccr_over_alpha_eepe"], 2))
     macro("RatioEadSingle", nd(ss["regulatory_comparison"]["sa_ccr_over_alpha_eepe"], 2))
     macro("StressedNetting", n0(ns["regulatory_comparison"]["stressed"]["effective_epe"]["amount"]))
-    macro("StressedSpreadStart", f"{ns['regulatory_comparison']['stressed']['hqm_spread_start']:.4f}")
-    macro("StressedSpreadPeak", f"{ns['regulatory_comparison']['stressed']['hqm_spread_peak']:.4f}")
+    macro("StressedSpreadStart", f"{fixed(ns['regulatory_comparison']['stressed']['hqm_spread_start'], 4)}")
+    macro("StressedSpreadPeak", f"{fixed(ns['regulatory_comparison']['stressed']['hqm_spread_peak'], 4)}")
     macro("BaCvaNetting", n0(ns["ba_cva"]["capital"]["amount"]))
     macro("BaCvaSingle", n0(ss["ba_cva"]["capital"]["amount"]))
     macro("BaCvaIm", n0(im["ba_cva"]["capital"]["amount"]))
     macro("GirrNetting", n0(ns["girr"]["delta_charge"]["amount"]))
     macro("GirrUndividedNetting", n0(ns["girr"]["delta_charge_undivided"]["amount"]))
     macro("GirrSingle", n0(ss["girr"]["delta_charge"]["amount"]))
-    macro("MultNetting", f"{ns['sa_ccr']['multiplier']:.4f}")
-    macro("MultSingle", f"{ss['sa_ccr']['multiplier']:.4f}")
+    macro("MultNetting", f"{fixed(ns['sa_ccr']['multiplier'], 4)}")
+    macro("MultSingle", f"{fixed(ss['sa_ccr']['multiplier'], 4)}")
     macro("VNetting", n0(ns["sa_ccr"]["v"]["amount"]))
     macro("AddOnNetting", n0(ns["sa_ccr"]["addon_aggregate"]["amount"]))
     macro("AddOnSingle", n0(ss["sa_ccr"]["addon_aggregate"]["amount"]))
@@ -279,13 +299,13 @@ def table_regulatory() -> None:
     macro("EadCsaImDiff", n0(c10["sa_ccr"]["ead"]["amount"] - im["sa_ccr"]["ead"]["amount"]))
     macro("AlphaRcCsa", n0(1.4 * c10["sa_ccr"]["rc"]["amount"]))
     # with initial margin: C is the variation margin plus the NICA (CRE52.10, CRE52.17), so the multiplier falls below 1
-    macro("MultIm", f"{im['sa_ccr']['multiplier']:.4f}")
+    macro("MultIm", f"{fixed(im['sa_ccr']['multiplier'], 4)}")
     macro("CIm", n0(im["sa_ccr"]["c"]["amount"]))
     macro("RcIm", n0(im["sa_ccr"]["rc"]["amount"]))
     macro("EadMultDiff", n0(c10["sa_ccr"]["ead"]["amount"] - im["sa_ccr"]["ead"]["amount"]
                             - 1.4 * (c10["sa_ccr"]["rc"]["amount"] - im["sa_ccr"]["rc"]["amount"])))
     mf = {t["trade_id"]: t["maturity_factor"] for t in c10["sa_ccr"]["trades"]}
-    macro("MaturityFactorCsa", f"{next(iter(mf.values())):.4f}")
+    macro("MaturityFactorCsa", f"{fixed(next(iter(mf.values())), 4)}")
 
 
 def table_saccr_ladder() -> None:
@@ -307,7 +327,7 @@ def table_saccr_ladder() -> None:
     macro("ENNetting", nd(s["effective_notional"] / 1e6, 2))
     macro("DThreeSingle", nd(out("single-swap")["sa_ccr"]["hedging_sets"][0]["d_b3"] / 1e6, 2))
     t1 = out("single-swap")["sa_ccr"]["trades"][0]
-    macro("SdTen", f"{t1['supervisory_duration']:.4f}")
+    macro("SdTen", f"{fixed(t1['supervisory_duration'], 4)}")
 
 
 def table_ore() -> None:
@@ -331,8 +351,8 @@ def table_ore() -> None:
         macro("OreCva" + key, nd(cv["ore"], 1))
         macro("OreCvaGap" + key, nd(abs(cv["difference"]) / cv["combined_se"], 1))
         macro("OreEepeGap" + key, nd(abs(ee["difference"]) / ee["combined_se"], 2))
-        macro("OreCvaRel" + key, f"{100 * abs(cv['python'] - cv['ore']) / cv['ore']:.1f}")
-        macro("OreEepeRel" + key, f"{100 * abs(ee['python'] - ee['ore']) / ee['ore']:.1f}")
+        macro("OreCvaRel" + key, f"{percent(abs(cv['python'] - cv['ore']) / cv['ore'], 1)}")
+        macro("OreEepeRel" + key, f"{percent(abs(ee['python'] - ee['ore']) / ee['ore'], 1)}")
     macro("OreGridPoints", str(len(out("single-swap")["ore_reconciliation"]["agreement"])))
     figkit.table(HERE / "ccr-t-ore.tex",
                  ["Variant", "EEPE engine", "EEPE ORE", "EEPE gap (SE)", "CVA engine", "CVA ORE", "CVA gap (SE)", "Points within 2 SE", "Largest EE gap (SE)", "All within"], rows,
@@ -344,7 +364,7 @@ def table_ore() -> None:
     o_dim = np.asarray(im["ore_reconciliation"]["ore_dim"]["values"])
     p_dim = np.asarray(im["initial_margin"]["dim"]["values"])
     ratio = float(np.mean(o_dim / p_dim))
-    macro("DimRatio", f"{ratio:.3f}")
+    macro("DimRatio", f"{fixed(ratio, 3)}")
     macro("DimGap", nd(next(t for t in doc("with-im")["tests"] if t["test_id"] == "ccr.ore_dim_agreement")["statistic"], 1))
     for v, key in (("csa-mpor-10d", "Short"), ("csa-mpor-20d", "Long")):
         seg = next(t for t in doc(v)["tests"] if t["test_id"] == "ccr.reconcile_ee_profile" and t["segment"] == "minimum-transfer-amount-0")
@@ -363,7 +383,7 @@ def table_wwr() -> None:
         key = {"-2": "NegTwo", "0": "Zero", "1": "One", "2": "Two", "4": "Four"}[f"{s['b']:g}"]
         macro("WwrCva" + key, n0(s["cva"]["amount"]))
         macro("WwrRatio" + key, nd(s["cva"]["amount"] / base, 2))
-        macro("WwrPct" + key, f"{100 * (s['cva']['amount'] / base - 1):.0f}")
+        macro("WwrPct" + key, f"{percent((s['cva']['amount'] / base - 1), 0)}")
     figkit.table(HERE / "ccr-t-wwr.tex", ["$b$ (per USD million)", "CVA (USD)", "Ratio to $b=0$", "Largest calibration error of $a(t)$", "Independent of exposure"], rows,
                  caption="The wrong-way risk sweep of case C12 on the netting set: CVA of the Hull and White hazard model against the dependence parameter b, with its Monte Carlo standard error, "
                          "the ratio to the independent value and the largest distance between the average simulated survival and its target.",
@@ -380,7 +400,7 @@ def table_backtest() -> None:
         for h in hs:
             ex95 = next(e for e in h["exceedances"] if abs(e["quantile"] - 0.95) < 1e-9)
             rows.append([obj, h["horizon"], h["n"], nd(h["w2"], 2), nd(h["critical_simulated"]["p05"], 2), nd(h["critical_simulated"]["p01"], 2),
-                         nd(h["effective_sample_size"], 1), "yes" if h["reject_at_5pct"] else "no", f"{ex95['count']} of {ex95['expected']:.1f}"])
+                         nd(h["effective_sample_size"], 1), "yes" if h["reject_at_5pct"] else "no", f"{ex95['count']} of {fixed(ex95['expected'], 1)}"])
     figkit.table(HERE / "ccr-t-backtest.tex",
                  ["Object", "Horizon", "Dates", "$W^2$", "5\\% critical", "1\\% critical", "Effective size", "Rejected", "Exceedances of PFE 95\\%"], rows,
                  caption="The exposure backtest of case C12 over the monthly dates from 2000-01 to 2025-09: the Anderson-Darling statistic of the probability integral transforms of the realised "
@@ -400,9 +420,9 @@ def table_backtest() -> None:
     macro("BtWRfShort", nd(rf["10bd"]["w2"], 2))
     macro("BtWRfSix", nd(rf["6m"]["w2"], 2))
     pb10, pb12, pr10 = np.asarray(bk["10bd"]["pits"]), np.asarray(bk["12m"]["pits"]), np.asarray(rf["10bd"]["pits"])
-    macro("PitOuterBook", f"{100 * np.mean((pb10 < 0.1) | (pb10 > 0.9)):.0f}")
-    macro("PitLowBookYear", f"{100 * np.mean(pb12 < 0.1):.0f}")
-    macro("PitCentralRf", f"{100 * np.mean((pr10 >= 0.4) & (pr10 < 0.6)):.0f}")
+    macro("PitOuterBook", f"{percent(np.mean((pb10 < 0.1) | (pb10 > 0.9)), 0)}")
+    macro("PitLowBookYear", f"{percent(np.mean(pb12 < 0.1), 0)}")
+    macro("PitCentralRf", f"{percent(np.mean((pr10 >= 0.4) & (pr10 < 0.6)), 0)}")
     macro("BtWRfMin",nd(min(h["w2"] for h in rf.values()), 2))
     macro("BtWRfMax", nd(max(h["w2"] for h in rf.values()), 2))
     macro("BtWRfMinHorizon", min(rf, key=lambda k: rf[k]["w2"]))
@@ -462,9 +482,9 @@ def table_sensitivity() -> None:
     macro("APlusValue", nd(by["a-plus-1se"]["a"], 4))
     macro("AMinusValue", nd(by["a-minus-1se"]["a"], 4))
     base = by["base"]["eepe"]["amount"]
-    macro("EepeAPlusPct", f"{100 * (by['a-plus-1se']['eepe']['amount'] / base - 1):.0f}")
-    macro("EepeAMinusPct", f"{100 * (by['a-minus-1se']['eepe']['amount'] / base - 1):.0f}")
-    macro("EepeSigmaPct", f"{100 * (by['sigma-plus-1se']['eepe']['amount'] / base - 1):.1f}")
+    macro("EepeAPlusPct", f"{percent((by['a-plus-1se']['eepe']['amount'] / base - 1), 0)}")
+    macro("EepeAMinusPct", f"{percent((by['a-minus-1se']['eepe']['amount'] / base - 1), 0)}")
+    macro("EepeSigmaPct", f"{percent((by['sigma-plus-1se']['eepe']['amount'] / base - 1), 1)}")
     # the spread of the calibrations over the backtest dates
     cals = figkit.doc("C12/models-hw1f-treasury-2000-2025.json")["fit"]["calibrations"]
     macro("CalDates", str(len(cals)))

@@ -63,7 +63,7 @@ def num(x: int) -> str:
     return f"{x:,}"
 
 
-def table(name: str, header, rows, *, caption: str, label: str, align: str | None = None, longtable: bool = False, scale: bool = True) -> None:
+def table(name: str, header, rows, *, caption: str, label: str, align: str | None = None, longtable: bool = False, scale: bool = True, placement: str = "htbp") -> None:
     def cell(v):
         if isinstance(v, str) and ("$" in v or "\\" in v):
             return v
@@ -77,7 +77,7 @@ def table(name: str, header, rows, *, caption: str, label: str, align: str | Non
         lines = [f"\\begin{{longtable}}{{{align}}}", f"\\caption{{{caption}}}\\label{{{label}}}\\\\", "\\toprule", head, "\\midrule", "\\endfirsthead",
                  "\\toprule", head, "\\midrule", "\\endhead", "\\bottomrule", "\\endfoot", *body, "\\end{longtable}", ""]
     else:
-        lines = ["\\begin{table}[htbp]", "\\centering", "\\small", f"\\caption{{{caption}}}", f"\\label{{{label}}}"]
+        lines = [f"\\begin{{table}}[{placement}]", "\\centering", "\\small", f"\\caption{{{caption}}}", f"\\label{{{label}}}"]
         lines.append("\\begin{adjustbox}{max width=\\textwidth}" if scale else "")
         lines += [f"\\begin{{tabular}}{{{align}}}", "\\toprule", head, "\\midrule", *body, "\\bottomrule", "\\end{tabular}"]
         lines += ["\\end{adjustbox}" if scale else "", "\\end{table}", ""]
@@ -158,17 +158,17 @@ def hypotheses() -> list[tuple[str, str, str, str, bool]]:
                  f"{num(sw['mixed']['positive'])} positive, {num(sw['mixed']['negative'])} negative", sw["mixed"]["positive"] > 0 and sw["mixed"]["negative"] > 0))
     so = E4["sweep"]["second_order"]
     rows.append(("N4", "The second-order formula is within 25% of the index in at least 75% of the convex draws.", SET_HEADER,
-                 f"{100 * so['within_25pct']:.1f}% of {num(so['n'])}", so["within_25pct"] >= 0.75))
+                 f"{100 * so['within_25pct']:.1f}% of {num(so['n'])} (the {so['excluded_index_at_most_1e-6']} other convex draws have an index of 1e-6 or less)", so["within_25pct"] >= 0.75))
     ds = E4["designs"]["designs"]
     rows.append(("R1", "Where the forecast lies two standard deviations inside the convex region the base scenario alone understates the expected PD in at least 99% of the draws.",
                  SET_HEADER, f"{100 * ds['single']['share_negative_strong_margin']:.1f}% of {num(E4['designs']['strong_margin_draws'])}",
                  ds["single"]["share_negative_strong_margin"] >= 0.99))
     order = [ds[k]["median_abs"] for k in ("gh5", "gh3", "tertile3", "adhoc3", "single")]
-    rows.append(("R2", "The median absolute error is ordered gh5 < gh3 < tertile3 < adhoc3 < single.", SET_HEADER, "ordered as predicted" if order == sorted(order) else "not ordered",
+    rows.append(("R2", "The median absolute error is ordered, smallest first: five-point Gauss--Hermite, three-point Gauss--Hermite, tertile means, three scenarios at one standard deviation (25/50/25), base scenario alone.", SET_HEADER, "ordered as predicted" if order == sorted(order) else "not ordered",
                  order == sorted(order)))
     br = E4["designs"]["adhoc3_bias_ratio_predicted_over_measured"]
     rows.append(("R3", "The second-order bias of the three-scenario set is within 20% of the measured bias at the median.", SET_HEADER,
-                 f"median ratio {br['q50']:.3f}", abs(br["q50"] - 1) <= 0.2))
+                 f"median ratio {br['q50']:.3f}; within 20% in {100 * br['within_20pct']:.1f}% of {num(E4['designs']['strong_margin_draws'])} draws", abs(br["q50"] - 1) <= 0.2))
     bsum = max(r_["scenarios"][s]["bridge_residual"] for r_ in RUNS for s in r_["scenarios"])
     rows.append(("B1", "The bridge closes to within one currency unit in every seed and scenario.", SET_HEADER, f"largest residual {sci(bsum)} over {len(RUNS) * 6} runs", bsum <= 1.0))
     green = all(s["identities"]["light"] == "green" for r_ in RUNS for s in r_["scenarios"].values())
@@ -296,7 +296,7 @@ def write_main() -> None:
         ["IFRS 9 over B-1, combined severe scenario, ten seeds", ratio("combined-severe"), "B-1 is the reference (1)", "mean and 95\\% $t$ interval"],
         ["Largest bridge residual, 60 runs (currency units)", sci(max(r["scenarios"][s]["bridge_residual"] for r in RUNS for s in r["scenarios"])), "not applicable", "maximum, no sampling"],
     ]
-    table("main-results", ["Measurement", "Proposed protocol", "Comparator", "Uncertainty"], rows, align="p{5.4cm}p{3.3cm}p{4.0cm}p{3.0cm}", label="tab:main-results",
+    table("main-results", ["Measurement", "Proposed protocol", "Comparator", "Uncertainty"], rows, align="p{5.4cm}p{3.3cm}p{4.0cm}p{3.0cm}", label="tab:main-results", placement="tbp",
           caption="Main comparison of the proposed protocol with the comparators run on the same data: detection of planted defects by the twelve identities, the stage "
                   "arithmetic and the pooled row; false alarms on clean tables by tolerance basis; overlay bookings; the non-linearity of the weighted PD; the error of short "
                   "scenario sets against the full distribution of the factor; and the three regimes of the synthetic bank over ten seeds. Intervals as stated in the last column.")
@@ -312,7 +312,7 @@ def write_data() -> None:
         gross = sum(r["gross_carrying_amount"] for r in s2)
         rows.append([d, f"{gross / 1e9:.1f}", f"{e1['limit']:,.0f}", f"{100 * s2[1]['gross_carrying_amount'] / gross:.1f}\\%", f"{sum(r['accounts'] for r in s2):,}",
                      sci(e1["max_residual"])])
-    table("data", ["Date", "Gross amount G (USD bn)", "Limit $10^{-6}G$ (USD)", "Stage 2 share", "Loans", "Largest residual (USD)"], rows, align="lrrrrr", label="tab:data",
+    table("data", ["Date", "Gross amount G (USD bn)", "Limit $10^{-6}G$ (USD)", "Stage 2 share", "Loans", "Largest residual (USD)"], rows, align="lrrrrr", label="tab:data", placement="tbp",
           caption="The six committed reporting dates of the SBA 7(a) loan book: the gross carrying amount G, the limit of the test on the engine's tolerance basis, the share "
                   "of the gross amount in Stage 2, the number of loans in the staged book and the largest residual of the twelve identities on the committed tables.")
 
@@ -349,12 +349,12 @@ def write_designs() -> None:
     rows = []
     for k in ("single", "adhoc3", "tertile3", "gh3", "gh5"):
         q = d[k]["quantiles"]
-        rows.append([nm[k], f"{100 * q['q05']:+.3g}", f"{100 * q['q50']:+.3g}", f"{100 * q['q95']:+.3g}", f"{100 * d[k]['share_abs_above_5pct']:.1f}\\%",
+        rows.append([nm[k], sci(100 * q['q05'], 1), sci(100 * q['q50'], 1), sci(100 * q['q95'], 1), f"{100 * d[k]['share_abs_above_5pct']:.1f}\\%",
                      f"{100 * d[k]['share_negative_strong_margin']:.1f}\\%"])
     table("designs", ["Scenario set", "5th pct (\\%)", "Median (\\%)", "95th pct (\\%)", "$|$error$|>5\\%$", "Understated (convex margin)"], rows, align="p{5.2cm}rrrrr", label="tab:designs",
           caption="Relative error of the expected PD of five scenario sets against the 64-node Gauss--Hermite expectation under a normal factor, over 5,000 draws of the PD, the "
                   "correlation and the forecast mean and spread: quantiles of the signed error in percent, the share of draws with absolute error above 5%, and the share "
-                  "understated among the draws whose forecast lies two standard deviations inside the convex region.")
+                  "understated among the draws whose forecast lies two standard deviations inside the convex region. The three quantile columns are in scientific notation.")
 
 
 def write_committed() -> None:
@@ -413,7 +413,9 @@ def write_ablation() -> None:
     short = ["Alw. mov.", "Alw. clos.", "Realloc.", "GCA mov.", "WF line", "WF clos.", "Stage ECL"]
     table("ablation", ["Identity family left out", *short, "Classes lost"], rows, align="p{4.6cm}rrrrrrrr", label="tab:ablation",
           caption="Ablation of the twelve identities by family: share of the 600 cases of each defect class (defect of ten times the limit) that the remaining identities still flag when one family is left "
-                  "out; the last column counts the classes that no remaining identity detects.")
+                  "out; the last column counts the classes that no remaining identity detects. Column heads: Alw. mov., allowance movement with the closing kept; Alw. clos., allowance closing with the movements kept; "
+                  "Realloc., allowance moved between stages; GCA mov., gross amount movement with the closing kept; WF line, waterfall movement line; WF clos., waterfall closing line; "
+                  "Stage ECL, model ECL of a stage.")
     # the other components: what removing each one costs
     rs = E2["resampled"]
     sw = E4["sweep"]["classes"]

@@ -70,7 +70,7 @@ def fig_by_target() -> None:
 
 
 def fig_methods() -> None:
-    names = [("proposed", "proposed"), ("grid_case", "case grid"), ("grid_fine", "fine grid"), ("brent_sp", "Brent on SP"),
+    names = [("proposed", "engine"), ("grid_case", "case grid"), ("grid_fine", "fine grid"), ("brent_sp", "Brent on SP"),
              ("bisect_no_refusal", "no refusal"), ("uncapped", "no cap"), ("nearest", "nearest decimal"), ("raw_capacity", "raw capacity")]
     fig, ax = plt.subplots(1, 3, figsize=(6.8, 2.6), sharey=True)
     for a, (key, title) in zip(ax, (("false_answer_on_refused", "answer where refused"), ("miss_on_solved", "no answer where solved"),
@@ -128,7 +128,7 @@ def fig_labelled() -> None:
                                    ("labelled", "m reproducing 85% in 2 days"))):
         ax.plot(days, L["curves"][k], label=lab, **S[i])
     obs = [(r["days"], r["observed"], r["bank"]) for r in L["rows"] if r["modelled"] is not None]
-    ax.plot([o[0] for o in obs], [o[1] for o in obs], ls="none", marker="*", ms=8, color="k", label="observed (Table A.1)")
+    ax.plot([o[0] for o in obs], [o[1] for o in obs], ls="none", marker="*", ms=8, color="k", label="observed (BCBS report)")
     ax.set_xlabel("day of the run")
     ax.set_ylabel("cumulative outflow, share of deposits")
     ax.legend(frameon=False, fontsize=6)
@@ -136,26 +136,45 @@ def fig_labelled() -> None:
 
 
 def fig_band() -> None:
-    fig, ax = plt.subplots(1, 2, figsize=(6.6, 2.8), layout="constrained")
+    fig, ax = plt.subplots(1, 2, figsize=(6.6, 3.1), layout="constrained", gridspec_kw={"width_ratios": [1.0, 2.3]})
     for i, b in enumerate(("list-adverse", "list-extreme")):
         rows = C["band"][b]["uninsured_share"]
         ax[0].plot([r["uninsured_share"] for r in rows], [r["multiplier"] for r in rows], label=LABEL[b], **S[i])
     ax[0].set_xlabel("uninsured share of domestic deposits")
     ax[0].set_ylabel("threshold multiplier at T = 30")
-    ax[0].legend(frameon=False)
-    labels, vals, hatch = [], [], []
-    for b in ("list-adverse", "list-extreme"):
-        for r in C["band"][b]["haircut_x_monetisation"]:
-            labels.append(f"{b.split('-')[1][:3]} {r['haircut'][:3]} {r['monetisation'][:3]}")
-            vals.append(r["multiplier"])
-    x = np.arange(len(vals))
-    ax[1].bar(x, [0 if v is None else v for v in vals], color="0.4")
-    for xi, v in zip(x, vals):
-        if v is None:
-            ax[1].text(xi, 0.05, "refused", rotation=90, fontsize=5, ha="center", va="bottom")
-    ax[1].set_xticks(x)
-    ax[1].set_xticklabels(labels, rotation=90, fontsize=5)
+    ax[0].legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=1)
+    # right panel: one group of three bars per base and haircut, one bar per monetisation schedule,
+    # with a hatch per schedule (the grey levels alone are not enough in print) and a refusal written above the baseline
+    schedules = ("immediate", "central", "slow")
+    greys = {"immediate": "0.25", "central": "0.55", "slow": "0.85"}
+    hatches = {"immediate": "", "central": "///", "slow": "xx"}
+    haircuts = ("low", "central", "high")
+    width = 0.26
+    centres, group_labels, ymax = [], [], 0.0
+    for bi, b in enumerate(("list-adverse", "list-extreme")):
+        table = {(r["haircut"], r["monetisation"]): r["multiplier"] for r in C["band"][b]["haircut_x_monetisation"]}
+        for hi, h in enumerate(haircuts):
+            g = bi * 4 + hi
+            centres.append(g)
+            group_labels.append(h)
+            for si, sch in enumerate(schedules):
+                v = table[(h, sch)]
+                x = g + (si - 1) * width
+                if v is None:
+                    ax[1].bar(x, 0.0, width=width, color=greys[sch])
+                    ax[1].text(x, 0.04, "refused", rotation=90, fontsize=7.6, ha="center", va="bottom", bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.6})
+                else:
+                    ax[1].bar(x, v, width=width, color=greys[sch], hatch=hatches[sch], edgecolor="0.0", linewidth=0.4)
+                    ymax = max(ymax, v)
+    ax[1].set_xticks(centres)
+    ax[1].set_xticklabels(group_labels, fontsize=7.6)
+    ax[1].set_xlabel("haircut band", labelpad=14)
+    for centre, name in ((1.0, "LiST Adverse base"), (5.0, "LiST Extreme base")):
+        ax[1].annotate(name, xy=(centre, 0.0), xycoords=("data", "axes fraction"), xytext=(0, -16), textcoords="offset points", ha="center", va="top", fontsize=7.6)
     ax[1].set_ylabel("threshold multiplier at T = 30")
+    ax[1].set_ylim(0.0, ymax * 1.08)
+    handles = [plt.Rectangle((0, 0), 1, 1, facecolor=greys[s], hatch=hatches[s], edgecolor="0.0", linewidth=0.4) for s in schedules]
+    ax[1].legend(handles, list(schedules), title="monetisation schedule", title_fontsize=7.6, frameon=False, fontsize=7.6, loc="upper center", bbox_to_anchor=(0.5, -0.26), ncol=3)
     figkit.save(fig, OUT, "band")
 
 

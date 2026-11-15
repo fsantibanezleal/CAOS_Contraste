@@ -10,6 +10,7 @@ import { KeyTable, keepDates } from './KeyTable';
 import { C17TestsTable } from './Tests';
 import { AGGREGATION_TEXT, DISCRETION_TEXT, SEVERITY_TEXT, STATUS_TEXT, capitalOf, isCaution, cellLabel, cellOf, fitOf, outputsOf, rungName, text, whole, type C17Sel } from './selection';
 import { es } from './localise';
+import { markRefs } from '../../lib/refs';
 
 const pct = (v: number, lang: 'en' | 'es', decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
 
@@ -87,7 +88,7 @@ export function LadderView({ sel }: { sel: C17Sel | null }) {
                   <td className="ct-text ct-wide-only">{r.truncated ? pick({ en: 'yes', es: 'sí' }, lang) : pick({ en: 'no', es: 'no' }, lang)}</td>
                   <td className="ct-text">{pick(text(AGGREGATION_TEXT, r.aggregation), lang)}</td>
                   <td className="ct-text">{pick(text(STATUS_TEXT, r.status), lang)}</td>
-                  <td className="ct-text ct-wide-only">{es(r.reference, lang)}</td>
+                  <td className="ct-text ct-wide-only">{markRefs(es(r.reference, lang), lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -175,8 +176,8 @@ export function SmaSpecView({ sel }: { sel: C17Sel | null }) {
               { id: 'lc', label: { en: 'Loss component', es: 'Componente de pérdidas' }, value: pick({ en: `${s.loss_multiple} times the average annual loss over ${s.loss_window_years} years; at least ${s.minimum_years} years of data, otherwise the capital is the business indicator component alone`, es: `${s.loss_multiple} veces la pérdida anual promedio en ${s.loss_window_years} años; al menos ${s.minimum_years} años de datos, si no el capital es solo el componente del indicador de negocio` }, lang) },
               { id: 'exponent', label: { en: 'Multiplier exponent', es: 'Exponente del multiplicador' }, value: formatNumber(s.ilm_exponent, lang, { digits: 3 }) },
               { id: 'rwa', label: { en: 'Risk-weighted assets', es: 'Activos ponderados por riesgo' }, value: pick({ en: `${formatNumber(s.rwa_factor, 'en', { digits: 4 })} times the capital`, es: `${formatNumber(s.rwa_factor, 'es', { digits: 4 })} veces el capital` }, lang) },
-              { id: 'golden', label: { en: 'Golden value', es: 'Valor de referencia' }, attrs: { 'data-golden': String(s.golden.bic_eur) }, value: pick({ en: `a business indicator of ${whole(s.golden.bi_eur, 'en')} EUR gives a component of ${whole(s.golden.bic_eur, 'en')} EUR (${s.golden.reference})`, es: `un indicador de negocio de ${whole(s.golden.bi_eur, 'es')} EUR da un componente de ${whole(s.golden.bic_eur, 'es')} EUR (${es(s.golden.reference, 'es')})` }, lang) },
-              { id: 'reference', label: { en: 'Reference', es: 'Referencia' }, value: keepDates(es(s.reference, lang)) },
+              { id: 'golden', label: { en: 'Golden value', es: 'Valor de referencia' }, attrs: { 'data-golden': String(s.golden.bic_eur) }, value: markRefs(pick({ en: `a business indicator of ${whole(s.golden.bi_eur, 'en')} EUR gives a component of ${whole(s.golden.bic_eur, 'en')} EUR (${s.golden.reference})`, es: `un indicador de negocio de ${whole(s.golden.bi_eur, 'es')} EUR da un componente de ${whole(s.golden.bic_eur, 'es')} EUR (${es(s.golden.reference, 'es')})` }, lang), lang) },
+              { id: 'reference', label: { en: 'Reference', es: 'Referencia' }, value: keepDates(es(s.reference, lang), lang) },
             ]}
           />
           <table className="caos-table ct-wrap-head" data-table="sma-discretions">
@@ -192,7 +193,7 @@ export function SmaSpecView({ sel }: { sel: C17Sel | null }) {
                 <tr key={d.id} data-discretion={d.id}>
                   <td className="ct-text">{pick(text(DISCRETION_TEXT, d.id), lang)}</td>
                   <td className="ct-text">{pick(d.description, lang)}</td>
-                  <td className="ct-text ct-wide-only">{es(d.reference, lang)}</td>
+                  <td className="ct-text ct-wide-only">{markRefs(es(d.reference, lang), lang)}</td>
                 </tr>
               ))}
             </tbody>

@@ -49,4 +49,10 @@ describe('the header band of the story stage', () => {
       ['a bare pixel padding of the drawing', 'the drawing is not padded by the band property'],
     );
   });
+
+  it('adversarial: the stage keeps no hold of its own on the band (shell 0.26.0 reports only settled bands, known defect 65)', () => {
+    const story = source('../pages/Story.tsx');
+    expect(story).not.toMatch(/data-stale|useStaleUntilBandHolds|BAND_HOLD_MS/);
+    expect(source('./band.ts')).not.toMatch(/setTimeout|useLayoutEffect/);
+  });
 });

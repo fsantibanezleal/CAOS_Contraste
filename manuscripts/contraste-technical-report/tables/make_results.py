@@ -30,6 +30,9 @@ import sys
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "_shared"))
 import figkit  # noqa: E402
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from _halfup import fixed, percent, install as _halfup_install  # noqa: E402
+_halfup_install(figkit)
 
 ROOT = figkit.ROOT
 DERIVED = figkit.DERIVED
@@ -94,27 +97,27 @@ def group(n: int) -> str:
 
 
 def f1(x: float) -> str:
-    return f"{x:.1f}"
+    return f"{fixed(x, 1)}"
 
 
 def f2(x: float) -> str:
-    return f"{x:.2f}"
+    return f"{fixed(x, 2)}"
 
 
 def f3(x: float) -> str:
-    return f"{x:.3f}"
+    return f"{fixed(x, 3)}"
 
 
 def f4(x: float) -> str:
-    return f"{x:.4f}"
+    return f"{fixed(x, 4)}"
 
 
 def pct(x: float, d: int = 1) -> str:
-    return f"{100 * x:.{d}f}"
+    return percent(x, d)
 
 
 def signed(x: float, d: int = 3) -> str:
-    return f"$-${abs(x):.{d}f}" if x < 0 else f"+{x:.{d}f}"
+    return f"$-${fixed(abs(x), d)}" if x < 0 else f"+{fixed(x, d)}"
 
 
 def esc(text: str) -> str:
@@ -396,7 +399,7 @@ def cases_table(data: dict) -> None:
     rows = []
     for c in data["cases"]:
         if not c["manifest"]:
-            rows.append([c["id"], esc(c["title"]), "published tables", "published answers", "0", "--"])
+            rows.append([c["id"], esc(c["title"]), "published tables", "--", "published answer", "0"])
             continue
         classes = sorted({d["class"] for d in c["source_details"].values()})
         rows.append([c["id"], esc(c["title"]), esc(", ".join(c["sources"])) if c["sources"] else "generator",
@@ -564,7 +567,13 @@ def numbers(data: dict) -> dict[str, str]:
     out["rsSeedDefault"] = str(max(set(c["seed"] for c in with_result), key=[c["seed"] for c in with_result].count))
     out["rsSeedDefaultCases"] = str([c["seed"] for c in with_result].count(int(out["rsSeedDefault"])))
     first = with_result[0]["engine"]
-    out["rsEnginePipeline"] = first["pipeline"]
+    # the pipeline version the artifacts record: the one most cases carry, and the cases re-baked at another (C16 at 1.00.001,
+    # whose tests re-bake it at every release)
+    pipelines = [c["engine"]["pipeline"] for c in with_result]
+    common = max(set(pipelines), key=pipelines.count)
+    out["rsEnginePipeline"] = common
+    others = sorted((c["id"], c["engine"]["pipeline"]) for c in with_result if c["engine"]["pipeline"] != common)
+    out["rsEnginePipelineOthers"] = (", except " + ", ".join(f"{cid} (re-baked at {v})" for cid, v in others)) if others else ""
     out["rsEngineRv"] = first["riskvalidation"]
     out["rsAlphaAmber"] = "0.05"
     out["rsAlphaRed"] = "0.01"
@@ -604,7 +613,9 @@ def numbers(data: dict) -> dict[str, str]:
     ram = re.search(r"(\d+) GB of RAM", text)
     out["rsRamGb"] = ram.group(1)
     for key, src in [("rsOneTests", "pxOneTests"), ("rsOneRates", "pxOneRates"), ("rsOneSims", "pxOneSims"), ("rsOneReps", "pxOneReps"),
-                     ("rsThirteenPower", "pxThirteenPowerRate"), ("rsThirteenPowerCi", "pxThirteenPower"), ("rsThirteenCiLo", "pxThirteenCiLo"), ("rsThirteenCiHi", "pxThirteenCiHi"), ("rsThirteenPla", "pxThirteenPla"), ("rsThirteenN", "pxThirteenN")]:
+                     ("rsThirteenPower", "pxThirteenPowerRate"), ("rsThirteenPowerCi", "pxThirteenPower"), ("rsThirteenCiLo", "pxThirteenCiLo"), ("rsThirteenCiHi", "pxThirteenCiHi"), ("rsThirteenPla", "pxThirteenPla"), ("rsThirteenN", "pxThirteenN"),
+                     ("rsThirteenUnion", "pxThirteenUnionPower"), ("rsThirteenUnionLo", "pxPpThirteenUnionLo"), ("rsThirteenUnionHi", "pxPpThirteenUnionHi"),
+                     ("rsThirteenHeldUnion", "pxThirteenNullUnion")]:
         out[key] = MACROS[src]
     out["rsProductVersion"] = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
     # splits and contract counts

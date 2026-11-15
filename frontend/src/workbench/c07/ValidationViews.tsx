@@ -7,6 +7,7 @@ import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { fitOf, outputsOf, type C07Sel } from './selection';
 import { Fragment } from 'react';
+import { markRefs } from '../../lib/refs';
 
 /** The calibration targets' metric and unit in Spanish (the models document writes them in English; R2b c08 B3). */
 const PART_ES: Record<string, string> = {
@@ -65,7 +66,7 @@ export function CalibrationView({ sel }: { sel: C07Sel | null }) {
                   <td>{formatNumber(t.target, lang, { digits: 4 })}</td>
                   <td>{formatNumber(t.achieved, lang, { digits: 4 })}</td>
                   <td className="ct-text ct-wide-only">{lang === 'es' ? UNIT_ES[t.unit] ?? t.unit : t.unit}</td>
-                  <td className="ct-text ct-wide-only">{`${targetSource(t.source as string | BiText, lang)} (${t.as_of})`}</td>
+                  <td className="ct-text ct-wide-only">{markRefs(`${targetSource(t.source as string | BiText, lang)} (${t.as_of})`, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -202,7 +203,7 @@ export function TablesView({ sel }: { sel: C07Sel | null }) {
             // centred text was cut at the box edge (R5 c10 n1); the table keeps it as its accessible name
             return (
               <Fragment key={t.table_id}>
-              <p className="ct-note" data-caption={t.table_id}>{caption}</p>
+              <p className="ct-note" data-caption={t.table_id}>{markRefs(caption, lang)}</p>
               <table className="caos-table ct-wrap-head" data-table-id={t.table_id} aria-label={caption}>
                 <thead>
                   <tr>

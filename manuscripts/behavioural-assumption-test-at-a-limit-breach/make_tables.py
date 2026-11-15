@@ -88,7 +88,30 @@ def write_numbers() -> None:
 
 
 #: the tables wider than the text, scaled to its width (the others keep their natural size)
-FIT_WIDTH = ("main-results", "weight-override-auc", "anticipation", "stated-grid", "fitted-power", "weight-override", "ablation", "robustness", "robustness-shift", "c14-history", "constructed", "realism")
+FIT_WIDTH = ("stated-grid", "fitted-power", "weight-override", "robustness", "robustness-shift", "constructed", "realism")
+
+
+def stacked(path, header, rows, blocks, *, caption, label, lead_align="l"):
+    """A wide table written as blocks of columns stacked in one float, each block a tabular at the text's own size: ``blocks`` is a list of
+    (title, column indices after the first); the first column (the row label) is repeated in each block. Nothing is scaled."""
+    def cell(v):
+        return v if isinstance(v, str) and (v.startswith("$") or v.startswith("\\")) else figkit.fmt(v, 3)
+
+    lines = ["\\begin{table*}[htbp]", "\\centering", "\\footnotesize", f"\\caption{{{caption}}}", f"\\label{{{label}}}"]
+    for k, (title, cols) in enumerate(blocks):
+        idx = [0] + list(cols)
+        n = len(idx)
+        lines += [f"\\begin{{tabular}}{{{lead_align}{'c' * (n - 1)}}}", "\\toprule"]
+        if title:
+            lines += [f"\\multicolumn{{{n}}}{{l}}{{\\textit{{{title}}}}} \\\\", f"\\cmidrule(lr){{1-{n}}}"]
+        lines += [" & ".join(header[i] for i in idx) + " \\\\", "\\midrule"]
+        lines += [" & ".join(cell(r[i]) for i in idx) + " \\\\" for r in rows]
+        lines += ["\\bottomrule", "\\end{tabular}"]
+        if k < len(blocks) - 1:
+            lines += ["\\par\\medskip"]
+    lines += ["\\end{table*}", ""]
+    path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+    return path
 
 
 def T(path, header, rows, **kw):
@@ -212,7 +235,7 @@ def table_c14() -> None:
     T(OUT / "c14-history.tex", ["Date", "Outlier ratio, behavioural treatment", "Breach", "Fitted WAM (years)", "Proposed test (flagged changes)", "Weight stability", "EVE with and without"],
       rows, caption="The stored history of case C14, the wholesale deposits of the bank at three valuation dates: the standardised outlier ratio and its breach flag, the fitted "
       "weighted average maturity (WAM), the proposed test on the history up to each date, and the two other behavioural tests of the engine rerun on the stored inputs.",
-      label="tab:c14-history", align="lrlrlll")
+      label="tab:c14-history", align=r">{\raggedright\arraybackslash}p{1.8cm}>{\raggedright\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}p{1.1cm}>{\raggedright\arraybackslash}p{1.6cm}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{1.8cm}>{\raggedright\arraybackslash}p{1.9cm}")
     reg("c14RatioA", f"{c['outlier_ratios'][0]:.3f}", "results_reproduction.json committed.outlier_ratios[0]")
     reg("c14RatioB", f"{c['outlier_ratios'][1]:.3f}", "results_reproduction.json committed.outlier_ratios[1]")
     reg("c14RatioC", f"{c['outlier_ratios'][2]:.3f}", "results_reproduction.json committed.outlier_ratios[2]")
@@ -282,10 +305,10 @@ def table_main() -> None:
             fa, fu = FIT["add"]["2.0"][det], FIT["auc_add"]["2.0"][det]
             row += [ci(fa["rate"], fa["lo"], fa["hi"]), auc_s(fu)]
         rows.append(row)
-    T(OUT / "main-results.tex", ["Detector", "False flags (\\%)", "Detection (\\%)", "AUC (95\\% interval)", "False flags (\\%)", "Detection of +2 years (\\%)", "AUC (95\\% interval)"],
-      rows, groups=[("Stated parameter", 3), ("Re-estimated parameter", 3)], caption="The proposed test and the comparators run on the same histories: on a stated parameter (4,000 histories per arm, changes unrelated to the breach at 0.10 per quarter, breach "
+    stacked(OUT / "main-results.tex", ["Detector", "False flags (\\%)", "Detection (\\%)", "AUC (95\\% interval)", "False flags (\\%)", "Detection of +2 years (\\%)", "AUC (95\\% interval)"],
+      rows, [("Stated parameter", (1, 2, 3)), ("Re-estimated parameter", (4, 5, 6))], lead_align="p{5.2cm}", caption="The proposed test and the comparators run on the same histories: on a stated parameter (4,000 histories per arm, changes unrelated to the breach at 0.10 per quarter, breach "
       "prevalence 0.25) and on a re-estimated parameter (2,000 banks, breach prevalence 0.25, a 2-year lengthening planted at breach dates); false-flag and detection rates with 95\\% Wilson intervals, "
-      "and the area under the ROC curve with its bootstrap interval; the tolerance and the two level-shift tests are calibrated at 5\\% on 1,000 separate histories of each population.", label="tab:main-results", align="lcccccc", wide=True)
+      "and the area under the ROC curve with its bootstrap interval; the tolerance and the two level-shift tests are calibrated at 5\\% on 1,000 separate histories of each population.", label="tab:main-results")
     for det, key in (("engine", "Engine"), ("any_change", "Any"), ("fisher", "Fisher"), ("mannwhitney", "Mw"), ("welch", "Welch"), ("shift", "Shift"), ("shift_at_breach", "ShiftB")):
         n, a = BASE["rates"]["null"][det], BASE["rates"]["alt"][det]
         reg(f"statedNull{key}", pc(n["rate"]) + "\\%", f"results_stated.json cell(lam=0.10,prev=0.25).rates.null.{det}.rate")
@@ -435,10 +458,10 @@ def table_early() -> None:
     for det in ("engine", "any_change", "fisher", "mannwhitney", "welch", "shift", "shift_at_breach", "tolerance", "tolerance_lookahead"):
         n, r2, r4, u4 = e["null"][det], e["rates"]["2.0"][det], e["rates"]["4.0"][det], e["auc"]["4.0"][det]
         rows.append([NAME[det], ci(n["rate"], n["lo"], n["hi"]), ci(r2["rate"], r2["lo"], r2["hi"]), ci(r4["rate"], r4["lo"], r4["hi"]), auc_s(u4)])
-    T(OUT / "anticipation.tex", ["Detector", "False flags (\\%)", "Detection of +2 years (\\%)", "Detection of +4 years (\\%)", "AUC of +4 years (95\\% interval)"], rows,
-      caption=f"An override made at the date before a breach begins, on the {e['n']:,} of the 2,000 simulated banks (breach prevalence 0.25) that have such a date: at each date that precedes the first date of a breach spell "
+    stacked(OUT / "anticipation.tex", ["Detector", "False flags (\\%)", "Detection of +2 years (\\%)", "Detection of +4 years (\\%)", "AUC of +4 years (95\\% interval)"], rows,
+      [("Rates", (1, 2, 3)), ("Ranking", (4,))], lead_align="p{4.6cm}", caption=f"An override made at the date before a breach begins, on the {e['n']:,} of the 2,000 simulated banks (breach prevalence 0.25) that have such a date: at each date that precedes the first date of a breach spell "
       "an addition of 2 or 4 years to the fitted maturity is made with probability 0.5 (at least once), from that date on; the first date of the history is never one. False-flag rate of the same banks without the override, detection with 95\\% Wilson intervals, "
-      "and the area under the ROC curve at 4 years; the two tolerance rules and the two level-shift tests are calibrated at 5\\% on the 1,000 calibration banks.", label="tab:anticipation", align="lcccc", wide=True)
+      "and the area under the ROC curve at 4 years; the two tolerance rules and the two level-shift tests are calibrated at 5\\% on the 1,000 calibration banks.", label="tab:anticipation")
     reg("earlyN", f"{e['n']:,}", "results_fitted.json matched.0.25.early.n")
     for y, ys in (("2.0", "Two"), ("4.0", "Four")):
         r = e["rates"][y]
@@ -467,8 +490,9 @@ def table_weights() -> None:
       caption="An override that moves the replicating-portfolio weights toward the longest tranche at breach dates (breach prevalence 0.25, 2,000 banks): the share of histories in which the override leaves the "
       "weights unchanged because they already sit on that tranche, and the percentage of banks flagged by each detector for each share of the weight moved per planted date; the last row is the rate on the banks without an override.",
       label="tab:weight-override", align="rrrrrrrrrr", wide=True)
-    T(OUT / "weight-override-auc.tex", ["Share $s$"] + heads, rows_auc,
-      caption="The same override: the area under the ROC curve of each detector against the banks without an override, with its 95\\% bootstrap interval.", label="tab:weight-override-auc", align="rccccccccc", wide=True)
+    stacked(OUT / "weight-override-auc.tex", ["Share $s$"] + heads, rows_auc,
+      [("Proposed test, stability test, tolerance and Fisher test", (1, 2, 3, 4)), ("Mann--Whitney, Welch, level-shift and break-on-a-breach-date tests", (5, 6, 7, 8))],
+      caption="The same override: the area under the ROC curve of each detector against the banks without an override, with its 95\\% bootstrap interval.", label="tab:weight-override-auc")
     reg("invisShare", pc(c["alt"]["0.4"]["invisible_share"]) + "\\%", "results_fitted.json matched.0.25.alt.0.4.invisible_share")
     for s, ss in (("0.05", "Low"), ("0.4", "High")):
         for d, dk in (("engine", "Engine"), ("tolerance", "Tol"), ("mannwhitney", "Mw"), ("stability", "Stab"), ("welch", "Welch"), ("fisher", "Fisher"), ("shift", "Shift"), ("shift_at_breach", "ShiftB")):
@@ -515,11 +539,11 @@ def table_ablation() -> None:
         row += [pc(fn["rate"]), pc(fa["rate"]), f"{fu['auc']:.3f}"]
         row.append(pc(FIT["early"]["rates"]["4.0"][det]["rate"]))
         rows.append(row)
-    T(OUT / "ablation.tex", ["Variant of the method", "False flags (\\%)", "Detection (\\%)", "AUC", "False flags (\\%)", "Detection (\\%)", "AUC", "Override before the breach (\\%)"], rows,
-      groups=[("Stated parameter", 3), ("Re-estimated parameter", 3), ("Detection", 1)],
+    stacked(OUT / "ablation.tex", ["Variant of the method", "False flags (\\%)", "Detection (\\%)", "AUC", "False flags (\\%)", "Detection (\\%)", "AUC", "Override before the breach (\\%)"], rows,
+      [("Stated parameter", (1, 2, 3)), ("Re-estimated parameter", (4, 5, 6)), ("Override made before the breach", (7,))], lead_align="p{6.4cm}",
       caption="Ablation of the proposed test: each row removes or replaces one component (the conjunction with the breach flag, the exact inequality as the definition of a change, the same-date rule, the counting statistic) "
       "and reports the false-flag rate, the detection rate and the area under the ROC curve on the stated parameter and, for a 2-year lengthening, on the fitted parameter, and the detection of a 4-year lengthening made at the date before a breach begins.",
-      label="tab:ablation", align="lccccccc", wide=True)
+      label="tab:ablation")
     reg("ablAnyStatedNull", pc(BASE["rates"]["null"]["any_change"]["rate"]) + "\\%", "results_stated.json base.null.any_change")
 
 

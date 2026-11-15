@@ -2,9 +2,9 @@
 
 % The four macros of the header standard; tools/zenodo/publish_revision.py patches them when it reserves the DOI.
 \newcommand{\doctype}{Preprint}
-\newcommand{\docversion}{v1.00.000}
-\newcommand{\docdate}{8 November 2026}
-\newcommand{\versiondoi}{10.5281/zenodo.24053184}
+\newcommand{\docversion}{v1.00.001}
+\newcommand{\docdate}{14 November 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.24231507}
 \newcommand{\conceptdoi}{10.5281/zenodo.24053183}
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
@@ -27,7 +27,7 @@
 A bank that estimates its 99.9 percent operational-risk capital from five or ten years of internal losses cannot say how far it is
 from the true quantile, which is never observed. We measure that distance on a generator with a known annual loss distribution:
 a compound Poisson sum of generalised Pareto losses calibrated to the 2008 Loss Data Collection Exercise, at four tail indices (0.6 to 1.1),
-two history lengths and two collection thresholds, with \nPer{} independent histories in each of \nCells{} cells. Ten estimation rungs (nine counted below) and
+two history lengths and two collection thresholds, with \nPer{} independent histories in each of \nCells{} cells. Nine estimation rungs, and a tenth reported apart, and
 the standardised approach are run by one engine on the same histories and divided by the true quantile. The interquartile range of the
 splice capital is \spIqrMin{} (95 percent interval \spMinLo{} to \spMinHi{}) to \spIqrMax{} (\spMaxLo{} to \spMaxHi{}) times the
 truth; the capital stability test is red in all \redTotal{} rung-by-cell rows; and \infLo{} to \infHi{} percent of the histories at tail index 0.96

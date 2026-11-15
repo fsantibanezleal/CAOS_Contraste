@@ -70,7 +70,7 @@ def eur_m(x: float) -> str:
 def macros() -> None:
     mac("nHist", "16{,}000")
     mac("nCells", "16")
-    mac("nPer", str(CELLS[0]["n_replications"]))
+    mac("nPer", f"{CELLS[0]['n_replications']:,}".replace(",", "{,}"))
     for c in CELLS:
         v, k = VAR[c["variant"]], CELL[c["id"]]
         for r, rs in RUNG.items():
@@ -203,7 +203,7 @@ def macros() -> None:
     sc = [t["iqr_predicted_scaled"] / t["iqr_measured"] for t in R["theory_check"]]
     mac("thIqrScaledMin", f2(min(sc)))
     mac("thIqrScaledMax", f2(max(sc)))
-    mac("thIqrScaledErr", pc(max(abs(x - 1) for x in sc), 0))
+    mac("thIqrScaledErr", str(math.ceil(100 * max(abs(x - 1) for x in sc))))  # rounded up: the unrounded largest departure is 6.2 percent
     meds = [t["median_measured"] for t in R["theory_check"]]
     mac("slMedMin", f2(min(meds)))
     mac("slMedMax", f2(max(meds)))
@@ -418,12 +418,13 @@ def tab_ablation() -> None:
     assert len(mc_rows) == 1, "one comparison of the mean-corrected rung"
     mc_cells = next(a["n_cells"] for a in R["ablation"].values() if a["to"] == MC)
     rows += ["\\midrule", f"\\multicolumn{{7}}{{l}}{{\\emph{{{MC_NOTE}}}}} \\\\"] + mc_rows
-    table("tab-ablation", "\\begin{table}[htbp]\n\\centering\\scriptsize\n\\caption{The ablation of the estimation ladder: for each component, the paired comparison on the histories of the 16 cells where both rungs return a capital, "
+    # set at \footnotesize (9 pt) with wrapped text columns: no \resizebox shrinks it (the review of 2026-11-10 measured 4.7 pt with the shrink)
+    table("tab-ablation", "\\begin{table}[htbp]\n\\centering\\footnotesize\n\\caption{The ablation of the estimation ladder: for each component, the paired comparison on the histories of the 16 cells where both rungs return a capital, "
           "the share of those histories within a factor of two of the truth before and after, the change in percentage points with its 95 percent bootstrap interval over the paired histories, and the standard deviation of the "
           f"logarithm of the ratio before and after. The last row is a comparison only, on the {mc_cells} cells where the mean-corrected rung is computed: its form is not confirmed against a primary text, "
           "so it is not read as a component of the ladder.}\n\\label{tab:ablation}\n"
-          "\\fitwidth{\\begin{tabular}{llrrrrr}\n\\toprule\nComponent & Rungs compared & Pairs & Before (\\%) & After (\\%) & Change (points) [95\\% CI] & $\\mathrm{sd}$ of $\\ln$ ratio \\\\\n\\midrule\n"
-          + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}}\n\\end{table}\n")
+          "\\setlength{\\tabcolsep}{3pt}\n\\begin{tabular}{>{\\raggedright\\arraybackslash}p{2.3cm}>{\\raggedright\\arraybackslash}p{2.9cm}rrrrr}\n\\toprule\nComponent & Rungs compared & Pairs & Before (\\%) & After (\\%) & Change (points) [95\\% CI] & $\\mathrm{sd}$ of $\\ln$ ratio \\\\\n\\midrule\n"
+          + "\n".join(rows).replace("\\multicolumn{7}{l}", "\\multicolumn{7}{p{14cm}}") + "\n\\bottomrule\n\\end{tabular}\n\\end{table}\n")
 
 
 def tab_lights() -> None:

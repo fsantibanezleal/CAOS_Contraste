@@ -78,7 +78,7 @@ def incidence() -> None:
     for e in edges:
         ax.axvline(e - 0.5, color="0.4", linewidth=0.8)
     starts = [0] + edges + [len(kinds)]
-    names = {"A": "allowance rows", "G": "gross amount rows", "W": "waterfall lines", "E": "stage ECL"}
+    names = {"A": "allowance\nrows", "G": "gross amount\nrows", "W": "waterfall\nlines", "E": "stage\nECL"}
     ax.set_xticks([(starts[i] + starts[i + 1] - 1) / 2 for i in range(len(starts) - 1)], [names[kinds[starts[i]]] for i in range(len(starts) - 1)])
     eq = d["equation_names"]
     labels = []
@@ -130,7 +130,9 @@ def sweep() -> None:
     ax.set_yscale("symlog", linthresh=1e-3)
     ax.set_xlabel("weighted mean scenario factor")
     ax.set_ylabel("index: weighted PD over PD at the mean factor, minus one")
-    ax.legend(loc="upper left", markerscale=2)
+    ys_all = [p[1] for p in pts]
+    ax.set_ylim(min(ys_all) * 2.0 if min(ys_all) < 0 else -1e-3, max(ys_all) * 2.0)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=3, markerscale=2, frameon=False)
     fig.tight_layout()
     figkit.save(fig, OUT, "sweep")
 

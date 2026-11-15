@@ -69,6 +69,7 @@ def pd_second_derivative(p: float, rho: float, z: np.ndarray) -> np.ndarray:
 def part_a() -> dict:
     counts = {k: {"n": 0, "negative": 0, "positive": 0, "zero": 0, "red": 0, "min": math.inf, "max": -math.inf} for k in ("convex", "concave", "mixed")}
     ratios: list[float] = []
+    excluded = 0
     sample: list[list] = []
     gh_error_max = 0.0
     for k in range(DRAWS_A):
@@ -97,13 +98,15 @@ def part_a() -> dict:
             var = float(np.sum(w * (z - zbar) ** 2))
             approx = 0.5 * float(pd_second_derivative(p, rho, np.array([zbar]))[0]) * var / float(ts.ttc_to_pit(np.array([p]), rho, np.array([zbar]))[0])
             ratios.append(approx / idx)
+        elif cls == "convex":
+            excluded += 1
     for cell in counts.values():
         for key in ("min", "max"):
             cell[key] = None if not math.isfinite(cell[key]) else cell[key]
     r = np.array(ratios)
     within = float(np.mean(np.abs(r - 1.0) <= 0.25)) if r.size else None
     return {"draws": DRAWS_A, "sample": sample, "classes": counts, "gauss_hermite_error_max": gh_error_max,
-            "second_order": {"n": int(r.size), "within_25pct": within, "ratio_q05": float(np.quantile(r, 0.05)), "ratio_q50": float(np.quantile(r, 0.5)),
+            "second_order": {"n": int(r.size), "excluded_index_at_most_1e-6": excluded, "within_25pct": within, "ratio_q05": float(np.quantile(r, 0.05)), "ratio_q50": float(np.quantile(r, 0.5)),
                              "ratio_q95": float(np.quantile(r, 0.95))}}
 
 

@@ -276,7 +276,7 @@
   "source": "exact size of the Jeffreys test at 1% minus the level, in points"
  },
  "jeffSimOne": {
-  "value": "1.12",
+  "value": "1.13",
   "source": "null.json pd.jeffreys@null rate p<0.01"
  },
  "jeffSimFive": {
@@ -332,7 +332,7 @@
   "source": "null.json"
  },
  "timeFive": {
-  "value": "4.72",
+  "value": "4.73",
   "source": "null.json"
  },
  "ordLoFive": {
@@ -344,7 +344,7 @@
   "source": "committed cell Wilson high at 5%"
  },
  "ordOne": {
-  "value": "1.47",
+  "value": "1.48",
   "source": "committed cell rate at 1%"
  },
  "ordLoOne": {
@@ -380,7 +380,7 @@
   "source": "null.json"
  },
  "hlOne": {
-  "value": "0.97",
+  "value": "0.98",
   "source": "null.json"
  },
  "chiGradesFive": {
@@ -416,7 +416,7 @@
   "source": "null.json pd.traffic_lights@null exact"
  },
  "chiThin": {
-  "value": "5.67",
+  "value": "5.68",
   "source": "null.json pd.chi2_grades@thin"
  },
  "chiThinOne": {
@@ -468,7 +468,7 @@
   "source": "chi2_9 sf(0.10*400/2)"
  },
  "binKOneTwoFive": {
-  "value": "76.0",
+  "value": "76.1",
   "source": "miscalibration.json pd.binomial portfolio x=1.25"
  },
  "jeffKOneTwoFive": {
@@ -488,7 +488,7 @@
   "source": "miscalibration.json pd.chi2_grades grades x=1.25"
  },
  "normKOneTwoFive": {
-  "value": "86.2",
+  "value": "86.3",
   "source": "miscalibration.json pd.normal_multiperiod years x=1.25"
  },
  "tlKOneTwoFive": {
@@ -520,7 +520,7 @@
   "source": "miscalibration.json pd.binomial portfolio x=1.1"
  },
  "spiKOneOne": {
-  "value": "41.2",
+  "value": "41.3",
   "source": "miscalibration.json pd.spiegelhalter obligors x=1.1"
  },
  "hlKOneOne": {
@@ -572,7 +572,7 @@
   "source": "clustering.json pd.chi2_grades grades x=0.1"
  },
  "hlRhoTwo": {
-  "value": "50.0",
+  "value": "50.1",
   "source": "clustering.json pd.hosmer_lemeshow obligors x=0.02"
  },
  "hlRhoTwoZero": {
@@ -580,7 +580,7 @@
   "source": "clustering.json pd.hosmer_lemeshow obligors x=0.2"
  },
  "spiRhoFive": {
-  "value": "34.5",
+  "value": "34.6",
   "source": "clustering.json pd.spiegelhalter obligors x=0.05"
  },
  "normRhoFive": {
@@ -596,7 +596,7 @@
   "source": "clustering.json pd.binomial_vasicek portfolio x=0.1"
  },
  "vasRhoTwoZero": {
-  "value": "5.9",
+  "value": "6.0",
   "source": "clustering.json pd.binomial_vasicek portfolio x=0.2"
  },
  "tlRhoFive": {
@@ -656,7 +656,7 @@
   "source": "drift.json pd.spiegelhalter calibration x=0.5"
  },
  "ecbDropZeroTwo": {
-  "value": "25.4",
+  "value": "25.5",
   "source": "discrimination-decay.json disc.auc_vs_initial ecb x=0.02"
  },
  "ecbDropZeroFive": {
@@ -684,7 +684,7 @@
   "source": "discrimination-decay.json impact.delong_drop80"
  },
  "leakAucZeroTwoFive": {
-  "value": "63.5",
+  "value": "63.6",
   "source": "leakage.json disc.auc_vs_initial auc x=0.25"
  },
  "leakCsiZeroTwoFive": {
@@ -754,6 +754,18 @@
  "hhiAllInP": {
   "value": "0.22",
   "source": "upper normal tail of the all-in statistic"
+ },
+ "hhiPLo": {
+  "value": "0.40",
+  "source": "lower edge of the first non-empty bin of the p-value histogram of rating.hhi@null (20 bins)"
+ },
+ "hhiPHi": {
+  "value": "0.60",
+  "source": "upper edge of the last non-empty bin of the same histogram"
+ },
+ "migTopBin": {
+  "value": "96.2",
+  "source": "share of the migration z-tests' null p-values in the last bin (0.95 to 1), rating.migration_ztests@null"
  },
  "zCrit": {
   "value": "1.645",
@@ -846,6 +858,10 @@
  "ynMeanZ": {
   "value": "0.65",
   "source": "mean z of the cells strictly between 0 and 1"
+ },
+ "ynMeanZAll": {
+  "value": "+0.67",
+  "source": "mean z over all cells of the stability study (the value of the reproductions table)"
  },
  "ynInterior": {
   "value": "52",
@@ -1408,7 +1424,7 @@
   "source": "studies with power below 0.5"
  },
  "lgdTimeOne": {
-  "value": "1.47",
+  "value": "1.48",
   "source": "LGD calibration over time, size at 1%"
  },
  "mcConvFive": {
@@ -1424,7 +1440,7 @@
   "source": "Christoffersen independence size at 5%"
  },
  "chrIndOne": {
-  "value": "1.52",
+  "value": "1.53",
   "source": "at 1%"
  },
  "chrCcFive": {

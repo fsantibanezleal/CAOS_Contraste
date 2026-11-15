@@ -1,24 +1,26 @@
 \begin{table*}[htbp]
 \centering
 \small
-\caption{What each component of the protocol contributes on the ten planted structures: for an interval, the number of structures whose capital it contains and its median width relative to the capital; for a single figure, the number within the stated tolerance and its median absolute relative error.}
+\caption{What each component of the protocol contributes on the ten planted structures. For an interval, the number of structures whose capital it contains (after widening by three standard errors) and its median width relative to the capital; the first three rows keep the sharp bounds and every later interval row lacks them, so that the row of the stressed matrix or of the $t$ rows removed without the bounds also lacks the bounds. For a single figure, the number within the stated tolerance and its median absolute relative error.}
 \label{tab:ablation}
-\fitwidth{\begin{tabular}{p{5.6cm}lcrp{3.4cm}}
+\fitwidth{\begin{tabular}{>{\raggedright\arraybackslash}p{4.4cm}>{\raggedright\arraybackslash}p{1.9cm}cr>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{2.6cm}}
 \toprule
-Variant & Covered when & Structures covered & Median width / error & Missed \\
+Variant & Covered when & Covered & Width or error & Missed (listed when at most three) & Covered (listed when at most three) \\
 \midrule
-\relax full band (bounds and all interior rows, base and stressed matrix) & \relax contains the capital & \relax 10 of 10 & \relax 1.26 & \relax none \\
-\relax without the sharp bounds (interior rows, base and stressed matrix) & \relax contains the capital & \relax 8 of 10 & \relax 0.17 & \relax Gaussian, independent risks; t copula, 3 degrees, crisis matrix \\
-\relax without the stressed matrix (interior rows of the base matrix) & \relax contains the capital & \relax 2 of 10 & \relax 0.11 & \relax covers only Gaussian, base matrix; Gaussian regimes, 5 percent crisis \\
-\relax without the t copula rows (square-root rule and Gaussian copula, base matrix) & \relax contains the capital & \relax 2 of 10 & \relax 0.07 & \relax covers only Gaussian, base matrix; Gaussian regimes, 5 percent crisis \\
-\relax without the t copula rows, with the stressed matrix (square-root rule and Gaussian copula, both matrices) & \relax contains the capital & \relax 5 of 10 & \relax 0.14 & \relax covers only Gaussian, base matrix; Gaussian, market-credit 0.8; t copula, 3 degrees, base matrix; t copula, 2.5 degrees, base matrix; Gaussian regimes, 5 percent crisis \\
-\relax t copula rows only (4, 8 and 30 degrees of freedom, both matrices) & \relax contains the capital & \relax 6 of 10 & \relax 0.15 & \relax covers only Gaussian, market-credit 0.8; Gaussian, crisis matrix; t copula, 3 degrees, base matrix; t copula, 2.5 degrees, base matrix; Clayton, reflected, same mean tau; Gumbel, same mean tau \\
-\relax Gaussian copula row alone & \relax within 5 percent & \relax 2 of 10 & \relax 0.14 & \relax median error \\
-\relax square-root row alone & \relax within 5 percent & \relax 2 of 10 & \relax 0.08 & \relax median error \\
-\relax simple sum alone (the headline) & \relax within 5 percent & \relax 0 of 10 & \relax 0.18 & \relax median error \\
-\relax hybrid quantile with the correlation of the truth sample & \relax within 5 percent & \relax 5 of 10 & \relax 0.07 & \relax median error \\
-\relax Gaussian copula with the rank correlation of the truth sample & \relax within 5 percent & \relax 5 of 10 & \relax 0.04 & \relax median error \\
-\relax Gaussian copula alone, tolerance 10 percent & \relax within 10 percent & \relax 2 of 10 & \relax 0.14 & \relax median error \\
+\relax full band (bounds and all interior rows, base and stressed matrix) & \relax contains the capital & \relax 10 of 10 & \relax 1.26 & \relax none & \relax all \\
+\relax stressed matrix removed from the full band (bounds and the interior rows of the base matrix) & \relax contains the capital & \relax 10 of 10 & \relax 1.26 & \relax none & \relax all \\
+\relax t copula rows removed from the full band (bounds, square-root rule and Gaussian copula, both matrices) & \relax contains the capital & \relax 10 of 10 & \relax 1.26 & \relax none & \relax all \\
+\relax bounds removed (interior rows, base and stressed matrix) & \relax contains the capital & \relax 8 of 10 & \relax 0.17 & \relax Gaussian, independent risks; t copula, 3 degrees, crisis matrix & \relax 8 structures \\
+\relax bounds and t copula rows removed (square-root rule and Gaussian copula, both matrices) & \relax contains the capital & \relax 5 of 10 & \relax 0.14 & \relax 5 structures & \relax 5 structures \\
+\relax bounds and stressed matrix removed (interior rows of the base matrix) & \relax contains the capital & \relax 2 of 10 & \relax 0.11 & \relax 8 structures & \relax Gaussian, base matrix; Gaussian regimes, 5 percent crisis \\
+\relax bounds, stressed matrix and t copula rows removed (square-root rule and Gaussian copula, base matrix) & \relax contains the capital & \relax 2 of 10 & \relax 0.07 & \relax 8 structures & \relax Gaussian, base matrix; Gaussian regimes, 5 percent crisis \\
+\relax bounds, square-root rule and Gaussian copula removed (t copula rows only, both matrices) & \relax contains the capital & \relax 6 of 10 & \relax 0.15 & \relax 4 structures & \relax 6 structures \\
+\relax Gaussian copula row alone & \relax within 5 percent & \relax 2 of 10 & \relax 0.14 & \relax - & \relax - \\
+\relax square-root row alone & \relax within 5 percent & \relax 2 of 10 & \relax 0.08 & \relax - & \relax - \\
+\relax simple sum alone (the headline) & \relax within 5 percent & \relax 0 of 10 & \relax 0.18 & \relax - & \relax - \\
+\relax hybrid quantile with the correlation of the truth sample & \relax within 5 percent & \relax 5 of 10 & \relax 0.07 & \relax - & \relax - \\
+\relax Gaussian copula with the rank correlation of the truth sample & \relax within 5 percent & \relax 5 of 10 & \relax 0.04 & \relax - & \relax - \\
+\relax Gaussian copula alone, tolerance 10 percent & \relax within 10 percent & \relax 2 of 10 & \relax 0.14 & \relax - & \relax - \\
 \bottomrule
 \end{tabular}}
 \end{table*}

@@ -5,6 +5,7 @@
     "readiness"
   ],
   "stage_inputs": [],
+  "stage_engine_versions": {},
   "readiness_exceptions": {
     "case-manifest": "partial",
     "api": "missing"

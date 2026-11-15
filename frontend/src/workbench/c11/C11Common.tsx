@@ -14,6 +14,7 @@ import {
   CLASS_TEXT, HYPERPARAMETER_TEXT, REASON_ES, esMethodText, rungSourceText, SOURCE_CLASS_TEXT, WINDOW_TEXT, unitFor, alphaLabel, championOf, fitOf, levelOf, modelLabel, outputsOf, rungOf, spanLine, testName, testsOf, text,
   reasonText, type C11Outputs, type C11Sel,
 } from './selection';
+import { markRefs } from '../../lib/refs';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 /** The value axis of the exceedance bars: the expected counts (2.49, 0.64) are fractions and keep them (U16-R2 b05 B1). */
@@ -242,7 +243,7 @@ export function C11ContextView({ sel }: { sel: C11Sel | null }) {
                   <tr key={r.model_id} data-rung={r.rung} data-status={r.status}>
                     <td className="ct-text">{pick(r.title, lang)}</td>
                     <td className="ct-wide-only">{r.rung}</td>
-                    <td className="ct-text ct-wide-only">{rungSourceText(r.source, lang)}</td>
+                    <td className="ct-text ct-wide-only">{markRefs(rungSourceText(r.source, lang), lang)}</td>
                     <td className="ct-text">
                       {esMethodText(r.es_method, lang)}
                       {r.not_run_reason ? <span className="ct-note" style={{ display: 'block' }}>{reasonText(r.not_run_reason, lang)}</span> : null}
@@ -256,7 +257,7 @@ export function C11ContextView({ sel }: { sel: C11Sel | null }) {
                 <tr data-rung="aci" data-kind="conformal">
                   <td className="ct-text">{pick(o.conformal.method.title, lang)}</td>
                   <td className="ct-wide-only">{o.conformal.method.id}</td>
-                  <td className="ct-text ct-wide-only">{o.conformal.method.source}</td>
+                  <td className="ct-text ct-wide-only">{markRefs(o.conformal.method.source, lang)}</td>
                   <td className="ct-text">
                     {pick(
                       {

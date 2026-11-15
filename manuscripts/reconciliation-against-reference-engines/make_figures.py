@@ -33,7 +33,7 @@ def fig_printed_gaps(plt) -> None:
              .replace("Israel, Rosenthal and Wei (2001)", "Israel et al.").replace("Engelmann (2024)", "Engelmann").replace("Tasche (2013)", "Tasche")
              for n in names}
     kinds = {s["source"]: s["kind"] for s in d["sources"]}
-    fig, ax = plt.subplots(figsize=(7.2, 4.6))
+    fig, ax = plt.subplots(figsize=(6.05, 4.6))
     rng = np.random.default_rng(1)
     for i, n in enumerate(names):
         g = np.array(d["unit_gaps"][n])
@@ -45,7 +45,7 @@ def fig_printed_gaps(plt) -> None:
     ax.invert_yaxis()
     for x, ls, lab in ((0.5, "-", "half a unit (digit rule)"), (1.0, "--", "1 unit"), (2.0, ":", "2 units")):
         ax.axvline(x, color="0.4", linestyle=ls, linewidth=0.8, label=lab)
-    ax.legend(fontsize=6.5, loc="lower right")
+    ax.legend(fontsize=7, loc="lower right")
     ax.set_xlabel("absolute gap in units of the last printed digit (log scale; zero drawn at 0.01)")
     ax.set_xlim(0.008, 60)
     ax.set_ylim(len(names) - 0.4, -0.6)
@@ -56,7 +56,7 @@ def fig_printed_gaps(plt) -> None:
 def fig_routes(plt) -> None:
     d = load("results_routes.json")
     p1 = d["part1"]
-    fig, (a, b) = plt.subplots(1, 2, figsize=(7.2, 3.1))
+    fig, (a, b) = plt.subplots(1, 2, figsize=(6.3, 3.1))
     n = len(p1["grid_gaps_jeffreys"])
     floor = 1e-17
     a.scatter(range(n), np.maximum(p1["grid_gaps_jeffreys"], floor), s=14, color="0.1", label="Jeffreys against the quadrature")
@@ -67,7 +67,7 @@ def fig_routes(plt) -> None:
     a.set_ylim(1e-17, 1e-4)
     a.set_xlabel("case of the grid of 36")
     a.set_ylabel("absolute difference of the p-value")
-    a.legend(fontsize=6.5, loc="upper left")
+    a.legend(fontsize=7, loc="upper left")
     eps = [r["eps"] for r in d["defect_relative"]]
     for key, lab, st in (("C1_binomial", "reuse of the engine's helper (C1)", S[1]), ("C2_binomial", "same library, parameters from the definition (C2)", S[2]),
                          ("C3_binomial", "independent route (C3)", S[0])):
@@ -78,14 +78,14 @@ def fig_routes(plt) -> None:
     b.set_xlabel("relative error planted inside the SciPy function")
     b.set_ylabel("largest difference to the engine")
     b.set_ylim(1e-17, 1e-1)
-    b.legend(fontsize=6.0, loc="lower right")
+    b.legend(fontsize=7, loc="lower right")
     fig.tight_layout()
     figkit.save(fig, OUT, "routes")
 
 
 def fig_closed(plt) -> None:
     d = load("results_closedforms.json")
-    fig, (a, b) = plt.subplots(1, 2, figsize=(7.2, 3.1))
+    fig, (a, b) = plt.subplots(1, 2, figsize=(6.3, 3.1))
     kinds = ["bond_call", "bond_put", "swaption_payer", "swaption_receiver"]
     rng = np.random.default_rng(2)
     rows = d["part2"]["rows"]
@@ -106,14 +106,14 @@ def fig_closed(plt) -> None:
     b.set_yscale("log")
     b.set_xlabel("relative error planted in the engine's volatility")
     b.set_ylabel("relative difference to QuantLib")
-    b.legend(fontsize=6.5, loc="upper left")
+    b.legend(fontsize=7, loc="upper left")
     fig.tight_layout()
     figkit.save(fig, OUT, "closed-forms")
 
 
 def fig_z_profiles(plt) -> None:
     d = load("results_committed.json")
-    fig, ax = plt.subplots(2, 3, figsize=(7.2, 4.2), sharex=True)
+    fig, ax = plt.subplots(2, 3, figsize=(6.3, 4.2), sharex=True)
     titles = {"single-swap": "single swap", "netting-set": "netting set", "csa-mpor-10d": "CSA, 10 days", "csa-mpor-20d": "CSA, 20 days", "with-im": "CSA, 10 days, initial margin"}
     for a, (v, r) in zip(ax.flat, d["variants"].items()):
         a.plot(r["t"], r["z"], color="0.1", marker="o", markersize=2.5, linewidth=0.9)
@@ -135,7 +135,7 @@ def fig_pairs(plt) -> None:
     pr = load("results_pairs.json")
     cr = load("results_criterion.json")
     t = pr["t"]
-    fig, (a, b) = plt.subplots(1, 2, figsize=(7.2, 3.0))
+    fig, (a, b) = plt.subplots(1, 2, figsize=(6.3, 3.0))
     for v, st in (("single-swap", S[0]), ("netting-set", S[1])):
         a.plot(t, pr[v]["rho_by_date"], label=v.replace("-", " "), **st)
     a.set_xlabel("report date, years")
@@ -149,7 +149,7 @@ def fig_pairs(plt) -> None:
     b.set_xlabel("report date, years")
     b.set_ylabel("standard deviation of z over repetitions")
     b.set_ylim(0.2, 1.55)
-    b.legend(fontsize=6.0, loc="upper right")
+    b.legend(fontsize=7, loc="upper right")
     fig.tight_layout()
     figkit.save(fig, OUT, "pairs")
 
@@ -159,7 +159,7 @@ def fig_power(plt) -> None:
     conds = cr["conditions"]
     rules = [("product", "product rule", S[0]), ("pair+sidak", "pair-aware errors, bound 3.18", S[1]), ("sidak", "bound 3.18", S[2]),
              ("pair", "pair-aware errors, bound 2", S[3]), ("fixed 2%", "fixed tolerance 2 %", S[4])]
-    fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.2), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(6.3, 3.2), sharey=True)
     for ax, v in zip(axes, cr["variants"]):
         x = np.arange(len(conds))
         for key, lab, st in rules:
@@ -169,12 +169,12 @@ def fig_power(plt) -> None:
             ax.plot(x, y, label=lab, **st)
             ax.fill_between(x, lo, hi, color=st["color"], alpha=0.12, linewidth=0)
         ax.set_xticks(x)
-        ax.set_xticklabels([c.replace("sigma", "vol.").replace("a+", "rev.+").replace("+", "\n+", 1) if c != "null" and c != "measure" else c for c in conds], fontsize=6.5)
+        ax.set_xticklabels([c.replace("sigma", "vol.").replace("a+", "rev.+").replace("+", "\n+", 1) if c != "null" and c != "measure" else c for c in conds], fontsize=7)
         ax.set_title(v.replace("-", " "), fontsize=8)
         ax.axhline(0.05, color="0.6", linestyle=":", linewidth=0.7)
         ax.set_ylim(-0.02, 1.02)
     axes[0].set_ylabel("rejection rate over repetitions")
-    axes[0].legend(fontsize=6.0, loc="center right")
+    axes[0].legend(fontsize=7, loc="center right")
     fig.tight_layout()
     figkit.save(fig, OUT, "power")
 
@@ -182,7 +182,7 @@ def fig_power(plt) -> None:
 def fig_null_z(plt) -> None:
     cr = load("results_criterion.json")
     z = np.array(cr["calibration"]["netting-set"]["z_null"]).ravel()
-    fig, ax = plt.subplots(figsize=(4.4, 3.0))
+    fig, ax = plt.subplots(figsize=(3.9, 3.0))
     bins = np.linspace(-4, 4, 61)
     ax.hist(z[np.abs(z) > 0], bins=bins, density=True, color="0.6", label="product's errors (independent paths)")
     grid = np.linspace(-4, 4, 400)
@@ -195,7 +195,7 @@ def fig_null_z(plt) -> None:
 
 
 def fig_ore(plt) -> None:
-    fig, axes = plt.subplots(1, 3, figsize=(7.2, 3.0), sharey=False)
+    fig, axes = plt.subplots(1, 3, figsize=(6.3, 3.0), sharey=False)
     t = load("results_committed.json")["variants"]["single-swap"]["t"]
     for ax, (name, lab) in zip(axes, (("netting-set", "netting set"), ("single-swap", "single swap"), ("csa-mpor-10d", "CSA, 10 days"))):
         s = load(f"results_ore_{name}.json")["summary"]
@@ -206,7 +206,7 @@ def fig_ore(plt) -> None:
         ax.set_title(f"{lab}, {s['reps']} seeds", fontsize=7.5)
         ax.set_xlabel("report date, years")
     axes[0].set_ylabel("mean over seeds of z, ORE minus engine")
-    axes[0].legend(fontsize=6.0, loc="lower left")
+    axes[0].legend(fontsize=7, loc="lower left")
     fig.tight_layout()
     figkit.save(fig, OUT, "ore-replicates")
 

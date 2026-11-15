@@ -21,6 +21,9 @@ import sys
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "_shared"))
 import figkit  # noqa: E402
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from _halfup import fixed, percent, install as _halfup_install  # noqa: E402
+_halfup_install(figkit)
 
 ROOT = figkit.ROOT
 C08_SRC = ROOT / "data-pipeline" / "pipeline" / "cases" / "c08"
@@ -92,7 +95,7 @@ def params_entries(path: pathlib.Path) -> tuple[dict[str, object], dict[str, str
 
 def neg(x: float, digits: int = 3) -> str:
     """A signed number in math mode (a true minus sign)."""
-    s = f"{x:.{digits}f}"
+    s = f"{fixed(x, digits)}"
     if s.startswith("-") and float(s) == 0.0:
         s = s[1:]
     return f"${s}$" if not s.startswith("-") else f"$-{s[1:]}$"
@@ -105,13 +108,13 @@ def plain(x: float, digits: int = 3) -> str:
 
 
 def pm(x: float, half: float, digits: int = 3) -> str:
-    s = f"{abs(x):.{digits}f}"
+    s = f"{fixed(abs(x), digits)}"
     sign = "-" if x < 0 and float(s) != 0.0 else ""
-    return f"${sign}{s} \\pm {half:.{digits}f}$"
+    return f"${sign}{s} \\pm {fixed(half, digits)}$"
 
 
 def pct(x: float, digits: int = 1) -> str:
-    return f"{100.0 * x:.{digits}f}\\,\\%"
+    return percent(x, digits) + "\\,\\%"
 
 
 def cohort_label(cid: str) -> str:
@@ -176,14 +179,14 @@ def c08_numbers() -> None:
         put(f"nfit-{cid}", f"{nf:,}")
         put(f"nout-{cid}", f"{nout:,}")
         put(f"ntest-{cid}", f"{o['lgd_distribution']['n']:,}")
-        put(f"mean-{cid}", f"{o['lgd_distribution']['mean']['value']:.3f}")
+        put(f"mean-{cid}", f"{fixed(o['lgd_distribution']['mean']['value'], 3)}")
         rows = rung_rows(cid)
         for rid in RUNGS:
             r = rows[rid]
-            put(f"rmse-{rid}-{cid}", f"{r['rmse']:.3f}")
-            put(f"mae-{rid}-{cid}", f"{r['mae']:.3f}")
-            put(f"r2-{rid}-{cid}", f"{r['r2']:.3f}")
-            put(f"rho-{rid}-{cid}", f"{r['spearman']:.3f}")
+            put(f"rmse-{rid}-{cid}", f"{fixed(r['rmse'], 3)}")
+            put(f"mae-{rid}-{cid}", f"{fixed(r['mae'], 3)}")
+            put(f"r2-{rid}-{cid}", f"{fixed(r['r2'], 3)}")
+            put(f"rho-{rid}-{cid}", f"{fixed(r['spearman'], 3)}")
             t = cal_test(cid, rid)
             put(f"gap-{rid}-{cid}", plain(t["metric"], 3))
             put(f"gaplo-{rid}-{cid}", plain(t["extras"]["ci_low"], 3))
@@ -194,22 +197,22 @@ def c08_numbers() -> None:
         put(f"above1-{cid}", pct(d["share_above_one"], 1))
         put(f"mass1-{cid}", pct(d["mass_at_one"]["share"], 1))
     o = C08[REF]["outputs"]["lgd_distribution"]
-    put("ref-median", f"{o['median']['value']:.3f}")
-    put("ref-highest", f"{o['highest']['value']:.2f}")
+    put("ref-median", f"{fixed(o['median']['value'], 3)}")
+    put("ref-highest", f"{fixed(o['highest']['value'], 2)}")
     put("ref-top-bin-share", pct(o["bins"][-1]["share"], 1))
     put("ref-n-above1", f"{o['n_above_one']:,}")
     put("ref-mass0-n", f"{o['mass_at_zero']['n']:,}")
     put("ref-mass1-n", f"{o['mass_at_one']['n']:,}")
     ep = {(cid, e["epsilon"]): e for cid in COHORTS for e in C08[cid]["outputs"]["endpoint_sensitivity"]}
     for (cid, eps), e in ep.items():
-        put(f"eps-rmse-{eps:g}-{cid}", f"{e['rmse']:.4f}")
-        put(f"eps-mean-{eps:g}-{cid}", f"{e['mean_predicted']['value']:.3f}")
+        put(f"eps-rmse-{eps:g}-{cid}", f"{fixed(e['rmse'], 4)}")
+        put(f"eps-mean-{eps:g}-{cid}", f"{fixed(e['mean_predicted']['value'], 3)}")
     # beta sensitivity: spread of the RMSE and of the mean prediction over the three epsilons, in the reference cohort
     spread_rmse = max(ep[(REF, e)]["rmse"] for e in ladder_c["EPSILONS"]) - min(ep[(REF, e)]["rmse"] for e in ladder_c["EPSILONS"])
     spread_mean = (max(ep[(REF, e)]["mean_predicted"]["value"] for e in ladder_c["EPSILONS"])
                    - min(ep[(REF, e)]["mean_predicted"]["value"] for e in ladder_c["EPSILONS"]))
-    put("eps-spread-rmse", f"{spread_rmse:.4f}")
-    put("eps-spread-mean", f"{spread_mean:.3f}")
+    put("eps-spread-rmse", f"{fixed(spread_rmse, 4)}")
+    put("eps-spread-mean", f"{fixed(spread_mean, 3)}")
     # the hypothesis on the two machine-learning rungs
     wins = 0
     gains = {}
@@ -243,8 +246,8 @@ def c08_numbers() -> None:
     put("disc-green", str(sum(x == "green" for x in disc)))
     put("disc-total", str(len(disc)))
     # the range of the rank correlation and of R2 over rungs and cohorts
-    put("r2-max", f"{max(rung_rows(c)[r]['r2'] for c in COHORTS for r in RUNGS):.3f}")
-    put("r2-min", f"{min(rung_rows(c)[r]['r2'] for c in COHORTS for r in RUNGS):.3f}")
+    put("r2-max", f"{fixed(max(rung_rows(c)[r]['r2'] for c in COHORTS for r in RUNGS), 3)}")
+    put("r2-min", f"{fixed(min(rung_rows(c)[r]['r2'] for c in COHORTS for r in RUNGS), 3)}")
     # the best rung by RMSE in each cohort, and how many cohorts each rung wins
     best = {cid: min(RUNGS, key=lambda r: rung_rows(cid)[r]["rmse"]) for cid in COHORTS}
     for r in RUNGS:
@@ -253,16 +256,16 @@ def c08_numbers() -> None:
     for cid in (REF, "2014-19"):
         for rid in ("L2-fractional-logit", "L5-gradient-boosted", "L7-random-forest", "L8-neural-network"):
             b = [x for x in C08[cid]["outputs"]["calibration_by_bucket"] if x["rung_id"] == rid]
-            put(f"bucket-lo-pred-{rid}-{cid}", f"{b[0]['predicted']['value']:.3f}")
-            put(f"bucket-lo-real-{rid}-{cid}", f"{b[0]['realised']['value']:.3f}")
-            put(f"bucket-hi-pred-{rid}-{cid}", f"{b[-1]['predicted']['value']:.3f}")
-            put(f"bucket-hi-real-{rid}-{cid}", f"{b[-1]['realised']['value']:.3f}")
+            put(f"bucket-lo-pred-{rid}-{cid}", f"{fixed(b[0]['predicted']['value'], 3)}")
+            put(f"bucket-lo-real-{rid}-{cid}", f"{fixed(b[0]['realised']['value'], 3)}")
+            put(f"bucket-hi-pred-{rid}-{cid}", f"{fixed(b[-1]['predicted']['value'], 3)}")
+            put(f"bucket-hi-real-{rid}-{cid}", f"{fixed(b[-1]['realised']['value'], 3)}")
             put(f"bucket-n-{rid}-{cid}", f"{b[0]['n']:,}")
     # the test by rung count with the downturn add-on of the file
     dn = C08[REF]["outputs"]["downturn"]
     put("down-first", str(dn["period"]["first_year"]))
     put("down-last", str(dn["period"]["last_year"]))
-    put("down-addon", f"{dn['rows'][0]['add_on']:.3f}")
+    put("down-addon", f"{fixed(dn['rows'][0]['add_on'], 3)}")
     # model of the ladder: the catboost settings and the forest and network settings
     put("forest-trees", str(ml_c["FOREST"]["n_estimators"]))
     put("forest-leaf", str(ml_c["FOREST"]["min_samples_leaf"]))
@@ -312,7 +315,7 @@ def table_rmse() -> None:
     for rid in RUNGS:
         row = [RUNG_NAME[rid]]
         for cid in COHORTS:
-            v = f"{rung_rows(cid)[rid]['rmse']:.3f}"
+            v = f"{fixed(rung_rows(cid)[rid]['rmse'], 3)}"
             row.append(f"\\textbf{{{v}}}" if best[cid] == rid else v)
         rows.append(row)
     rows.append(["Test defaults"] + [f"{C08[c]['outputs']['lgd_distribution']['n']:,}" for c in COHORTS])
@@ -329,8 +332,8 @@ def table_ladder_ref() -> None:
     for rid in RUNGS:
         r = rung_rows(REF)[rid]
         t = cal_test(REF, rid)
-        rows.append([RUNG_NAME[rid], f"{r['rmse']:.3f}", f"{r['mae']:.3f}", f"{r['r2']:.3f}", f"{r['spearman']:.3f}", neg(t["metric"]),
-                     f"$[{t['extras']['ci_low']:.3f},\\ {t['extras']['ci_high']:.3f}]$", LIGHT[t["light"]]])
+        rows.append([RUNG_NAME[rid], f"{fixed(r['rmse'], 3)}", f"{fixed(r['mae'], 3)}", f"{fixed(r['r2'], 3)}", f"{fixed(r['spearman'], 3)}", neg(t["metric"]),
+                     f"$[{fixed(t['extras']['ci_low'], 3)},\\ {fixed(t['extras']['ci_high'], 3)}]$", LIGHT[t["light"]]])
     figkit.table(
         HERE / "lgd-ead-ladder.tex", ["Rung", "RMSE", "MAE", "$R^2$", "Spearman $\\rho$", "Gap", "95\\% interval of the gap", "Light"], rows,
         caption=f"The ladder on the {cohort_label(REF)} default cohort ({C08[REF]['outputs']['lgd_distribution']['n']:,} defaults): error, rank "
@@ -348,7 +351,7 @@ def table_ml() -> None:
         bm = min(((r, rows_c[r]["rmse"]) for r in ML), key=lambda kv: kv[1])
         gain = be[1] - bm[1]
         wins += gain > 0
-        rows.append([cohort_label(cid), RUNG_NAME[be[0]], f"{be[1]:.4f}", RUNG_NAME[bm[0]], f"{bm[1]:.4f}", neg(gain, 4), "yes" if gain > 0 else "no"])
+        rows.append([cohort_label(cid), RUNG_NAME[be[0]], f"{fixed(be[1], 4)}", RUNG_NAME[bm[0]], f"{fixed(bm[1], 4)}", neg(gain, 4), "yes" if gain > 0 else "no"])
     rows.append(["Cohorts won", "", "", "", "", "", f"{wins} of {len(COHORTS)}"])
     figkit.table(
         HERE / "lgd-ead-ml.tex", ["Cohort", "Best of the six earlier rungs", "RMSE", "Better of forest and network", "RMSE", "Gain", "Wins"],
@@ -365,7 +368,7 @@ def table_endpoint() -> None:
     rows = []
     for cid in COHORTS:
         e = {x["epsilon"]: x for x in C08[cid]["outputs"]["endpoint_sensitivity"]}
-        rows.append([cohort_label(cid)] + [f"{e[x]['rmse']:.4f}" for x in eps] + [f"{e[x]['mean_predicted']['value']:.3f}" for x in eps])
+        rows.append([cohort_label(cid)] + [f"{fixed(e[x]['rmse'], 4)}" for x in eps] + [f"{fixed(e[x]['mean_predicted']['value'], 3)}" for x in eps])
     figkit.table(
         HERE / "lgd-ead-endpoint.tex", header, rows,
         caption="Sensitivity of the beta regression to the endpoint adjustment: for each test cohort the root mean squared error and the "
@@ -389,30 +392,30 @@ def ccf_row(lv: int, design: str, treatment: str, agg: str) -> dict:
 
 def c09_numbers() -> None:
     d0 = C09[3]["outputs"]
-    put("ccf-tol", f"{d0['ccf_by_design']['tolerance']:.2f}")
+    put("ccf-tol", f"{fixed(d0['ccf_by_design']['tolerance'], 2)}")
     put("ccf-horizon", str(ccf_p["HORIZON"]))
     put("ccf-months", str(ccf_p["MONTHS"]))
     put("ccf-nrep", str(d0["replications"]["test"]["n_replications"]))
     put("ccf-nfac", f"{d0['replications']['test']['n_facilities']:,}")
     put("ccf-ndef-test", f"{d0['replications']['test']['n_defaults']:,}")
     put("ccf-ndef-dev", f"{d0['replications']['development']['n_defaults']:,}")
-    put("ccf-anchor", f"{PVALS['ccf_anchor']:.2f}")
+    put("ccf-anchor", f"{fixed(PVALS['ccf_anchor'], 2)}")
     put("ccf-frailty", f"{PVALS['frailty_shape']:g}")
     put("ccf-noise", f"{PVALS['ccf_noise_sd']:g}")
     put("ccf-small", f"{PVALS['small_undrawn_threshold']:g}")
     put("ccf-thinning", ", ".join(str(k) for k in est_c["THINNING"]))
     for lv in LEVELS:
         o = C09[lv]["outputs"]
-        put(f"truth-{lv}", f"{o['generator']['true_ccf']['value']:.3f}")
+        put(f"truth-{lv}", f"{fixed(o['generator']['true_ccf']['value'], 3)}")
         put(f"factor-{lv}", f"{o['generator']['acceleration_factor']:g}")
         put(f"window-{lv}", str(o["generator"]["acceleration_window_months"]))
         for r in o["ccf_by_design"]["rows"]:
             k = f"{r['design']}-{r['treatment']}-{r['estimator']}-{lv}"
             put(f"bias-{k}", plain(r["bias"], 3))
             put(f"biasfine-{k}", plain(r["bias"], 4))
-            put(f"half-{k}", f"{(r['ci_high'] - r['ci_low']) / 2:.3f}")
-            put(f"rmse-{k}", f"{r['rmse']:.3f}")
-            put(f"est-{k}", f"{r['estimate']['value']:.3f}")
+            put(f"half-{k}", f"{fixed((r['ci_high'] - r['ci_low']) / 2, 3)}")
+            put(f"rmse-{k}", f"{fixed(r['rmse'], 3)}")
+            put(f"est-{k}", f"{fixed(r['estimate']['value'], 3)}")
             put(f"within-{k}", "within" if r["within_tolerance"] else "outside")
     fh = d0["ccf_by_design"]["rows"][0]
     put("ccf-below0", pct(fh["share_below_zero"], 1))
@@ -439,7 +442,7 @@ def c09_numbers() -> None:
         put(f"ead-worst-{mid}", plain(worst["relative_gap"], 3))
         put(f"ead-worst-band-{mid}", worst["band_id"])
         t = next(t for t in C09[3]["tests"] if t["test_id"] == "lgd_ead.ead_backtest_by_band" and t["model_id"] == mid)
-        put(f"ead-metric-{mid}", f"{t['metric']:.3f}")
+        put(f"ead-metric-{mid}", f"{fixed(t['metric'], 3)}")
         put(f"ead-light-{mid}", LIGHT[t["light"]])
         tot_p = sum(r["predicted_ead"] for r in rows)
         tot_r = sum(r["realised_ead"] for r in rows)
@@ -501,10 +504,10 @@ def table_ccf_designs() -> None:
                          pm(p["bias"], (p["ci_high"] - p["ci_low"]) / 2), "yes" if p["within_tolerance"] else "no"])
     figkit.table(
         HERE / "lgd-ead-designs.tex", ["Design", "Treatment", "Bias, mean", "In tol.", "Bias, pooled", "In tol."], rows,
-        caption=f"Bias of the credit conversion factor estimators against the known value {C09[3]['outputs']['generator']['true_ccf']['value']:.3f} at level 3, "
+        caption=f"Bias of the credit conversion factor estimators against the known value {fixed(C09[3]['outputs']['generator']['true_ccf']['value'], 3)} at level 3, "
                 f"for each reference-date design, treatment of values outside [0, 1] and aggregator; the entry is the mean over {C09[3]['outputs']['replications']['test']['n_replications']} "
                 "independent test replications with the half-width of its 95\\% interval, and the tolerance columns say whether the bias is "
-                f"within {C09[3]['outputs']['ccf_by_design']['tolerance']:.2f}.",
+                f"within {fixed(C09[3]['outputs']['ccf_by_design']['tolerance'], 2)}.",
         label="tab:lgd-ead-designs", align="llrcrc")
 
 
@@ -514,7 +517,7 @@ def table_ccf_levels() -> None:
             ("variable-horizon", "none", "pooled", "Variable horizon, pooled")]
     rows = []
     for lv in LEVELS:
-        row = [lv, f"{C09[lv]['outputs']['generator']['true_ccf']['value']:.3f}"]
+        row = [lv, f"{fixed(C09[lv]['outputs']['generator']['true_ccf']['value'], 3)}"]
         for d, t, a, _ in cols:
             r = ccf_row(lv, d, t, a)
             row.append(pm(r["bias"], (r["ci_high"] - r["ci_low"]) / 2))
@@ -522,9 +525,9 @@ def table_ccf_levels() -> None:
     always = [c[3] for c in cols if all(ccf_row(lv, c[0], c[1], c[2])["within_tolerance"] for lv in LEVELS)]
     tol = C09[3]["outputs"]["ccf_by_design"]["tolerance"]
     if always:
-        tail = f"the only column whose bias stays inside the tolerance of {tol:.2f} at every level is {always[0].lower()}."
+        tail = f"the only column whose bias stays inside the tolerance of {fixed(tol, 2)} at every level is {always[0].lower()}."
     else:
-        tail = f"no column keeps its bias inside the tolerance of {tol:.2f} at every level."
+        tail = f"no column keeps its bias inside the tolerance of {fixed(tol, 2)} at every level."
     figkit.table(
         HERE / "lgd-ead-levels.tex", ["Level", "Known CCF"] + [c[3] for c in cols], rows,
         caption="Bias of five credit conversion factor estimators at each of the six acceleration levels, as the mean over the independent "

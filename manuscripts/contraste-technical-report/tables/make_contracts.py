@@ -314,6 +314,8 @@ INTERNAL = [
     (re.compile(r"\bSO" + r"TA\b"), "published"),
     (re.compile(r"\bSDD\b"), "the design document"),
     (re.compile(r"\s*\(U\d+-[A-Z]\d*\)"), ""),
+    (re.compile(r"\s*\(R\d+ of the U\d+ sizing\)"), ""),
+    (re.compile(r"\s*\(W\d+-\d+\)"), ""),
     (re.compile(r"\s*\bU\d+-[A-Z]\d*\b"), ""),
     # references to the research notes and the plan are process vocabulary: the cited section goes, the content stays
     (re.compile(r"\s*\(dossier \d+ [A-Z]\.\d+(?: and [A-Z]\.\d+)?(?:, row \d+)?\)(?=[:,;.])"), ""),
@@ -366,10 +368,20 @@ def group_of(row: dict[str, str]) -> str:
     return "common"
 
 
+_TITLES_USED: set[str] = set()
+
+
 def subsection(row: dict[str, str]) -> str:
     cid = row["id"]
     schema = load_schema(row["schema file"]) if row["schema file"].endswith(".schema.json") else None
     title = schema.get("title") if schema else None
+    if title:
+        # A schema title that repeats a word ('annex1-variant variant') is collapsed; a title another contract already carries is
+        # told apart by the part of the contract id that follows the case ('C01 models (pd rung)').
+        title = re.sub(r"\b(\S+) \1\b", r"\1", title)
+        if title in _TITLES_USED and "-" in cid:
+            title = f"{title} ({cid.split('-', 1)[1].replace('-', ' ')})"
+        _TITLES_USED.add(title)
     desc = schema.get("description", "") if schema else ""
     lines = [f"\\subsubsection{{\\texttt{{{figkit.tex_escape(cid)}}}" + (f": {figkit.tex_escape(title)}" if title else "") + "}",
              f"\\label{{sec:contract-{cid}}}", ""]
@@ -400,7 +412,8 @@ def subsection(row: dict[str, str]) -> str:
     lines.append("")
     if schema:
         if props:
-            lines += ["{\\small", "\\begin{longtable}{p{0.19\\textwidth}p{0.13\\textwidth}p{0.11\\textwidth}p{0.16\\textwidth}p{0.27\\textwidth}}",
+            lines += ["{\\small\\setlength{\\tabcolsep}{4pt}",
+                      "\\begin{longtable}{p{0.18\\textwidth}>{\\raggedright\\arraybackslash}p{0.20\\textwidth}p{0.09\\textwidth}p{0.15\\textwidth}p{0.27\\textwidth}}",
                       f"\\caption{{The top-level fields of the contract \\texttt{{{figkit.tex_escape(cid)}}}: the name, the JSON "
                       f"type, the unit, the range or the values and the description, as the schema file holds them.}}"
                       f"\\label{{tab:contract-{cid}}}\\\\",
@@ -408,7 +421,6 @@ def subsection(row: dict[str, str]) -> str:
                       "\\toprule Field & Type & Unit & Range or values & Description \\\\ \\midrule \\endhead"]
             for name, spec in expand(props, schema):
                 d = describe(name, spec, schema)
-                d = (d[:220] + " ...") if len(d) > 220 else d
                 # A field named after the dossier or the verdict of an output is an identifier of the schema, not talk
                 # about the document: the row carries the voice checker's sanctioned marker.
                 mark = " % voice-ok: schema field name, an identifier of the contract" if re.search(
@@ -431,7 +443,9 @@ def _breaks(body: str) -> str:
     body = body.replace(BS + "_", BREAK + BS + "_")
     for sep in ("/", ".", "::", "-"):
         body = body.replace(sep, sep + BREAK)
-    return body
+    # A break point before a space would swallow the space (TeX skips blanks after a control word): drop it there.
+    body = body.replace(BREAK + " ", " ")
+    return body[: -len(BREAK)] if body.endswith(BREAK) else body
 
 
 def breakable_tt(line: str) -> str:
@@ -467,13 +481,23 @@ def _token_breaks(token: str) -> str:
     if len(token) < LONG_TOKEN or "{" in token or "}" in token or token.replace(BS + "_", "").count(BS):
         return token
     out = []
+    # An identifier with an inner capital or a digit (c11Hyperparameters, in a type cell) may also break inside a long run of
+    # letters: a column cannot hold the run (it overprinted its neighbour by 18 pt).
+    identifier = any(c.isupper() or c.isdigit() for c in token[1:]) and not any(c in token for c in "/.")
+    run = 0
     for i, ch in enumerate(token):
         if (ch.isupper() and i > 0 and (token[i - 1].islower() or token[i - 1].isdigit())) or (
                 ch == BS and token[i + 1:i + 2] == "_" and i > 0):
             out.append(BREAK)
-        out.append(ch)
-        if ch in "/." or (ch == "-" and 0 < i < len(token) - 1):
+            run = 0
+        elif identifier and run >= 16 and ch.isalnum() and i < len(token) - 1:
             out.append(BREAK)
+            run = 0
+        out.append(ch)
+        run += 1
+        if (ch in "/." or (ch == "-" and 0 < i < len(token) - 1)) and i < len(token) - 1:
+            out.append(BREAK)
+            run = 0
     return "".join(out)
 
 

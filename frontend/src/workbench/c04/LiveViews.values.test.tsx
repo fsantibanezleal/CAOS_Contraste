@@ -153,8 +153,9 @@ describe('what the C04 live views draw', () => {
       const irb = { assetClass: 'corporate' as const, lgd, maturity: o.irb.maturity, regime: 'basel3' as const };
       const results = rows.map((pds) => portfolioRiskWeight(pds as (number | null)[], o.origination.slice(0, 7), irb));
       const [chart, byGrade] = drawn(<CapitalView sel={makeSel(d, { lgd, grade })} />);
-      results.forEach((r, i) => expect(inner(chart.series[i].values)[i] as number, `point ${i + 1}`).toBeCloseTo(r.average as number, 12));
-      close(inner(chart.series[results.length].values), results.map((r) => onLog(r.riskWeights[grade] as number)), `grade ${grade}'s own`);
+      // a point chart: its points are the positions 1 to n themselves (the room at each end is the axis range, shell 0.26.0 G20)
+      results.forEach((r, i) => expect(chart.series[i].values[i] as number, `point ${i + 1}`).toBeCloseTo(r.average as number, 12));
+      close(chart.series[results.length].values, results.map((r) => onLog(r.riskWeights[grade] as number)), `grade ${grade}'s own`);
       results.forEach((r, i) => close(inner(byGrade.series[i].values), r.riskWeights.map((w) => onLog(w as number)), `row ${i + 1} by grade`));
     }
   });

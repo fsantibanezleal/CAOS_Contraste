@@ -2,13 +2,15 @@
 
 % The four macros of the header standard; tools/zenodo/publish_revision.py patches them when it reserves the DOI.
 \newcommand{\doctype}{Preprint}
-\newcommand{\docversion}{v1.00.000}
-\newcommand{\docdate}{8 November 2026}
-\newcommand{\versiondoi}{10.5281/zenodo.24053209}
+\newcommand{\docversion}{v1.00.001}
+\newcommand{\docdate}{14 November 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.24231498}
 \newcommand{\conceptdoi}{10.5281/zenodo.24053208}
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
 \input{../_shared/preamble}
+\usepackage{pdflscape}% wide tables on a landscape page, at their own size
+\usepackage{afterpage}% a landscape table waits for the next page break
 \makeatletter
 \def\input@path{{sections/}}
 % two algorithms: give the line anchors of each its own name, so that the hyperlinks do not collide

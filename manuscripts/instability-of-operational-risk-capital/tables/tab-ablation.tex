@@ -1,8 +1,9 @@
 \begin{table}[htbp]
-\centering\scriptsize
+\centering\footnotesize
 \caption{The ablation of the estimation ladder: for each component, the paired comparison on the histories of the 16 cells where both rungs return a capital, the share of those histories within a factor of two of the truth before and after, the change in percentage points with its 95 percent bootstrap interval over the paired histories, and the standard deviation of the logarithm of the ratio before and after. The last row is a comparison only, on the 12 cells where the mean-corrected rung is computed: its form is not confirmed against a primary text, so it is not read as a component of the ladder.}
 \label{tab:ablation}
-\fitwidth{\begin{tabular}{llrrrrr}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{2.9cm}rrrrr}
 \toprule
 Component & Rungs compared & Pairs & Before (\%) & After (\%) & Change (points) [95\% CI] & $\mathrm{sd}$ of $\ln$ ratio \\
 \midrule
@@ -15,8 +16,8 @@ Fit the GPD by Cram\'er-von Mises & Mean-adjusted single loss approximation to C
 Fit the GPD by the bias-robust estimator & Mean-adjusted single loss approximation to Optimally bias-robust GPD & 10{,}941 & 61.7 & 60.0 & -1.7 [-2.4, -1.0] & 0.82 to 0.86 \\
 Fit a lognormal instead of the GPD & Cram\'er-von Mises GPD to Cram\'er-von Mises lognormal & 10{,}275 & 49.1 & 4.9 & -44.2 [-45.3, -43.1] & 1.05 to 0.91 \\
 \midrule
-\multicolumn{7}{l}{\emph{Comparison only, in no count of the text (form not confirmed)}} \\
+\multicolumn{7}{p{14cm}}{\emph{Comparison only, in no count of the text (form not confirmed)}} \\
 Add the mean correction & Single loss approximation to Single loss approximation, mean correction & 10{,}635 & 62.5 & 65.5 & +2.9 [+2.5, +3.4] & 0.79 to 0.76 \\
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table}

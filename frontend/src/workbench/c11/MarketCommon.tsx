@@ -5,6 +5,7 @@ import { formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-a
 import type { TestRow } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { referenceText, type Bi } from '../c03/U6Shared';
+import { markRefs } from '../../lib/refs';
 import { MaybeNumber } from '../c06/format';
 import { noteText } from '../c08/notes';
 import { WHOLE_PORTFOLIO } from '../c08/words';
@@ -111,7 +112,7 @@ export function MarketTestsTable({ rows, table, caseId = 'C11' }: { rows: TestRo
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(lightWord(t.light), lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ? noteText(t.notes, lang) : referenceText(t, lang)}</td>
+                  <td className="ct-text">{markRefs(t.notes ? noteText(t.notes, lang) : referenceText(t, lang), lang)}</td>
                 </tr>
               );
             })}

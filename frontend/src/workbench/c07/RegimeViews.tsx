@@ -4,6 +4,7 @@
 // delta against the base. Every drawing has its table with the same numbers; every number is the document's.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BarDatum, type BiText } from '@fasl-work/caos-app-shell';
 import { ChartOverTable, MaybeNumber, STAGE_TEXT, money, pct } from '../c06/format';
+import { markRefs } from '../../lib/refs';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { FixtureNotice } from '../c06/C06Common';
@@ -473,7 +474,7 @@ export function Ifrs9View({ sel }: { sel: C07Sel | null }) {
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: 'The IFRS 9 measure is the weighted sum of the scenarios (5.5.17(a), B5.5.42). A single scenario at 100% weight is a sensitivity and never the measure. IFRS 9 5.5 is carved out for bank loans in Chile: this is a comparison, not the provision Chilean banks book.', es: 'La medida IFRS 9 es la suma ponderada de los escenarios (5.5.17(a), B5.5.42). Un solo escenario con 100 % de peso es una sensibilidad y nunca la medida. IFRS 9 5.5 está excluida para los créditos bancarios en Chile: esto es una comparación, no la provisión que constituyen los bancos chilenos.' }}
+        note={{ en: 'The IFRS 9 measure is the weighted sum of the scenarios (5.5.17(a), B5.5.42). A single scenario at 100% weight is a sensitivity and never the measure.', es: 'La medida IFRS 9 es la suma ponderada de los escenarios (5.5.17(a), B5.5.42). Un solo escenario con 100 % de peso es una sensibilidad y nunca la medida.' }}
       >
         <div className="ct-scroll" data-caos-flow="" data-measure={d.measure}>
           <table className="caos-table ct-wrap-head" data-table="ifrs9-components">
@@ -556,6 +557,8 @@ export function Ifrs9View({ sel }: { sel: C07Sel | null }) {
             </table>
           </div>
         )}
+        {/* a PlotCard note is plain text the shell renders, so the paragraph it cites cannot carry the identifier marker: the sentence sits under the drawing */}
+        <p className="ct-note" data-note="ifrs9-carve-out">{markRefs(pick({ en: 'IFRS 9 5.5 is carved out for bank loans in Chile: this is a comparison, not the provision Chilean banks book.', es: 'IFRS 9 5.5 está excluida para los créditos bancarios en Chile: esto es una comparación, no la provisión que constituyen los bancos chilenos.' }, lang), lang)}</p>
         </div>
       </PlotCard>
     </ViewsRow>
