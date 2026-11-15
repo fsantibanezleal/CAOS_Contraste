@@ -10500,7 +10500,7 @@ export interface components {
         };
         /**
          * C17 models
-         * @description Catalog row c17-models 1.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification).
+         * @description Catalog row c17-models 1.2.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification, the S-3 hypothesis over all cells).
          */
         "c17-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -10726,6 +10726,7 @@ export interface components {
             aggregation: components["schemas"]["c17Aggregation"];
             sma: components["schemas"]["c17SmaSpec"];
             scenarios: components["schemas"]["c17ScenarioSpec"];
+            s3_overall?: components["schemas"]["c17S3Overall"];
         };
         /** @description The generator of annual operational loss histories for a synthetic bank; its true annual loss distribution is known. */
         c17Generator: {
@@ -10936,6 +10937,24 @@ export interface components {
             /** @constant */
             status?: "SECONDARY_SOURCE";
         });
+        /** @description The S-3 hypothesis over every cell of every variant, computed once at the bake: holds only when both rungs hold, refuted when either is. */
+        c17S3Overall: {
+            variants: number;
+            cells: number;
+            rungs: components["schemas"]["c17S3Rung"][];
+            /** @enum {string} */
+            verdict: "holds" | "refuted" | "inconclusive";
+        };
+        /** @description One robust rung against the splice LDA over the pooled cells: the cells where both have a capital, the cells where the rung has the smaller spread and the smaller bias, and the verdict by the shares of the hypothesis. */
+        c17S3Rung: {
+            /** @enum {string} */
+            model_id: "sla-cvm" | "sla-obre";
+            cells: number;
+            smaller_spread: number;
+            smaller_bias: number;
+            /** @enum {string} */
+            verdict: "holds" | "refuted" | "inconclusive";
+        };
         c17Scenario: {
             scenario_id: string;
             label: components["schemas"]["common-text"];

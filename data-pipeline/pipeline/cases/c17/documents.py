@@ -112,6 +112,36 @@ def s3_verdict(n: int, spread: int, bias: int) -> str:
     return "holds" if min(spread, bias) / n >= h["holds_at_share"] else "inconclusive"
 
 
+_VERDICT_ORDER = {"holds": 0, "inconclusive": 1, "refuted": 2}
+_VERDICT_ES = {"holds": "se sostiene", "refuted": "se refuta", "inconclusive": "no es concluyente"}
+
+
+def s3_overall(capitals_by_variant: list[list[dict[str, Any]]]) -> dict[str, Any]:
+    """The S-3 hypothesis over every cell of every variant, computed once: per robust rung the counts of ``s3_counts`` and the verdict of
+    ``s3_verdict`` over the pooled cells, and the verdict of the hypothesis as the worst of its two rungs (it holds only when both hold,
+    it is refuted when either is)."""
+    pooled = [c for caps in capitals_by_variant for c in caps]
+    rungs = []
+    for key, mid in S3_RUNGS:
+        if mid not in P.S3_HYPOTHESIS["rungs"]:
+            continue
+        n, sp, bi = s3_counts(pooled, key)
+        rungs.append({"model_id": mid, "cells": n, "smaller_spread": sp, "smaller_bias": bi, "verdict": s3_verdict(n, sp, bi)})
+    return {"variants": len(capitals_by_variant), "cells": len(pooled), "rungs": rungs,
+            "verdict": max((r["verdict"] for r in rungs), key=_VERDICT_ORDER.__getitem__)}
+
+
+def s3_capitals(truth: Truth, cells: list[CellResult]) -> list[dict[str, Any]]:
+    """The per-cell capital summaries ``s3_counts`` reads (the splice LDA and the robust rungs), from the replication arrays of one variant;
+    the same summaries ``variant_document`` writes into its cells."""
+    caps = []
+    for c in cells:
+        cap = {"lda_splice": capital_summary(c.arrays["lda_splice"], truth.quantile_eur, "lda-splice", c.id, "fft")[0]}
+        cap.update({k: capital_summary(c.arrays[k], truth.quantile_eur, mid, c.id, "closed-form", "SECONDARY_SOURCE")[0] for k, mid in S3_RUNGS})
+        caps.append(cap)
+    return caps
+
+
 def _row(res: Any, segment: str | None = None) -> dict[str, Any]:
     d = res.to_dict()
     if segment is not None:
@@ -198,7 +228,8 @@ def bank_block(bank: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _findings(v: Variant, cells: dict[str, dict[str, Any]], truth: float, orc_median: float, tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _findings(v: Variant, cells: dict[str, dict[str, Any]], truth: float, orc_median: float, tests: list[dict[str, Any]],
+              overall: dict[str, Any]) -> list[dict[str, Any]]:
     have = {(t["test_id"], t["model_id"], t["segment"]) for t in tests}
 
     def ev(model: str, seg: str) -> list[str]:
@@ -225,17 +256,21 @@ def _findings(v: Variant, cells: dict[str, dict[str, Any]], truth: float, orc_me
                            f"El capital por riesgo operacional del SMA es {es_num(orc_median / truth, '.1%')} del cuantil 99,9 por ciento verdadero con índice de cola "
                            f"{es_num(v.tail_index, 'g')}; depende de las pérdidas solo por el promedio de 10 años y el BIC.")})
     caps = [{"lda_splice": c["lda_splice"], **{k: c[k]["summary"] for k, _ in S3_RUNGS}} for c in cells.values()]
-    es_word = {"holds": "se sostiene", "refuted": "se refuta", "inconclusive": "no es concluyente"}
     lines_en, lines_es, refs = [], [], []
     for key, mid in S3_RUNGS[1:3]:
         n, sp, bi = s3_counts(caps, key)
         verdict = s3_verdict(n, sp, bi)
-        lines_en.append(f"the {S3_NAME[mid]['en']} has the smaller spread in {sp} of {n} cells and the smaller bias in {bi} (hypothesis {verdict})")
-        lines_es.append(f"la {S3_NAME[mid]['es']} tiene el menor rango en {sp} de {n} celdas y el menor sesgo en {bi} (hipótesis: {es_word[verdict]})")
+        lines_en.append(f"the {S3_NAME[mid]['en']} has the smaller spread in {sp} of {n} cells and the smaller bias in {bi} (hypothesis {verdict} at this tail index)")
+        lines_es.append(f"la {S3_NAME[mid]['es']} tiene el menor rango en {sp} de {n} celdas y el menor sesgo en {bi} "
+                        f"(hipótesis: {_VERDICT_ES[verdict]} con este índice de cola)")
         refs += ev(mid, "y10-h20000")
+    ov_en = "; ".join(f"the {S3_NAME[r['model_id']]['en']} {r['smaller_spread']} of {r['cells']} for the spread and {r['smaller_bias']} for the bias" for r in overall["rungs"])
+    ov_es = "; ".join(f"la {S3_NAME[r['model_id']]['es']} {r['smaller_spread']} de {r['cells']} en el rango y {r['smaller_bias']} en el sesgo" for r in overall["rungs"])
     out.append({"id": "F-5", "severity": "S3", "status": "open", "evidence": refs + ev("lda-splice", "y10-h20000") or ["design:replications"],
-                "title": T(f"Robust severity, tail index {v.tail_index:g}: against the splice LDA, " + "; ".join(lines_en) + ".",
-                           f"Severidad robusta, índice de cola {es_num(v.tail_index, 'g')}: frente al LDA con empalme, " + "; ".join(lines_es) + ".")})
+                "title": T(f"Robust severity, tail index {v.tail_index:g}, at this tail index only: against the splice LDA, " + "; ".join(lines_en) + ". "
+                           f"Over all {overall['cells']} cells of the {overall['variants']} tail indices the hypothesis is {overall['verdict']}: {ov_en}.",
+                           f"Severidad robusta, índice de cola {es_num(v.tail_index, 'g')}, solo con este índice de cola: frente al LDA con empalme, " + "; ".join(lines_es) + ". "
+                           f"En las {overall['cells']} celdas de los {overall['variants']} índices de cola la hipótesis {_VERDICT_ES[overall['verdict']]}: {ov_es}.")})
     if v.infinite_mean:
         out.append({"id": "F-4", "severity": "S2", "status": "open", "evidence": ["design:infinite-mean"],
                     "title": T("The severity has an infinite mean: no true mean, no expected shortfall and no mean-corrected single loss approximation exist.",
@@ -244,7 +279,7 @@ def _findings(v: Variant, cells: dict[str, dict[str, Any]], truth: float, orc_me
 
 
 def variant_document(v: Variant, truth: Truth, bank: dict[str, Any], cells: list[CellResult], response: dict[str, Any],
-                     scenario: dict[str, Any], bench_row: dict[str, Any], rv: str) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, Any], list[dict[str, Any]]]:
+                     scenario: dict[str, Any], bench_row: dict[str, Any], rv: str, overall: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, Any], list[dict[str, Any]]]:
     """``(outputs, tests, impact, findings)`` of one variant; the caller wraps them with ``build_artifact``."""
     tq = truth.quantile_eur
     out_cells: list[dict[str, Any]] = []
@@ -301,7 +336,7 @@ def variant_document(v: Variant, truth: Truth, bank: dict[str, Any], cells: list
                                        "Capital LDA al 99,9 por ciento, empalme (mediana, 10 años)")},
         "sma_orc": {"value": sma_med, "unit": "EUR", "label": T("SMA operational risk capital (median, 10 years)", "Capital por riesgo operacional SMA (mediana, 10 años)")},
     }
-    findings = _findings(v, {c["id"]: c["capital"] for c in out_cells}, tq, sma_med, tests)
+    findings = _findings(v, {c["id"]: c["capital"] for c in out_cells}, tq, sma_med, tests, overall)
     outputs = {
         "kind": "tail-index", "currency": P.CURRENCY, "tail_index": v.tail_index, "infinite_mean": v.infinite_mean, "truth": truth.truth_block,
         "calibration": {"targets": P.LDCE_TARGETS,
@@ -314,7 +349,8 @@ def variant_document(v: Variant, truth: Truth, bank: dict[str, Any], cells: list
     return outputs, tests, impact, findings
 
 
-def models_document(vs: list[Variant], truths: dict[float, Truth], seed_base: int, n_rep: int, mc_years_truth: int, mc_years_rep: int, rv: str) -> dict[str, Any]:
+def models_document(vs: list[Variant], truths: dict[float, Truth], seed_base: int, n_rep: int, mc_years_truth: int, mc_years_rep: int, rv: str,
+                    overall: dict[str, Any]) -> dict[str, Any]:
     from .truth import PANJER_POINTS, TRUTH_POINTS
 
     fit = {
@@ -331,6 +367,7 @@ def models_document(vs: list[Variant], truths: dict[float, Truth], seed_base: in
         "grid": {"years": list(P.YEARS), "collection_thresholds_eur": list(P.THRESHOLDS_EUR), "n_replications_per_cell": n_rep,
                  "seed_base": seed_base, "seed_stride": P.SEED_STRIDE},
         "ladder": P.LADDER,
+        "s3_overall": overall,
         "aggregation": {"level": P.LEVEL, "panjer_step_eur": P.PANJER_STEP_EUR, "panjer_points": PANJER_POINTS, "fft_points": TRUTH_POINTS,
                         "fft_padding_factor": 4, "fft_tilt": 0.0, "mc_years_truth": mc_years_truth,
                         "mc_years_replication": mc_years_rep},
