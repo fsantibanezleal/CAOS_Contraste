@@ -124,7 +124,7 @@ const FAILURES: Array<[string, string]> = [
   ['C21 context', 'Como obra del Gobierno de Estados Unidos, este paquete (salvo las excepciones listadas abajo) es de dominio público dentro de Estados Unidos. Además, renunciamos a los derechos de autor y derechos conexos sobre la obra en todo el mundo mediante la dedicación de dominio público CC0 1.0 Universal.'],
 ];
 
-describe('markRefs: the texts of the release 1.00.001 Spanish pass', () => {
+describe('markRefs: the texts the Spanish pass over every case read as decimals (2026-11-14)', () => {
   for (const [where, text] of FAILURES) {
     it(`${where}: every dotted number is a marked identifier`, () => {
       expect(unmarked(text, 'es')).toEqual([]);
