@@ -82,21 +82,39 @@ def pch_rows(derived: Path) -> list[dict]:
             continue
         d = json.loads((derived / a["path"]).read_text(encoding="utf-8"))
         rec = next(m for m in d["model"] if m["id"] == "L3-pch")
-        rows.append({"date": d["fit"]["ladder"][0]["training_cutoff"], "ev": rec["details"].get("evaluation")})
+        rows.append({"date": d["fit"]["ladder"][0]["training_cutoff"], "ev": rec["details"].get("evaluation"), "boot": d["fit"]["s4_bootstrap"]})
     return rows
 
 
+def _interval(d: dict, scale: float, fmt: str) -> str:
+    """One difference with its 95% interval, ``-0.00008 [-0.00012, -0.00004]``; ``n/a`` when a side is not observed, and the difference
+    alone, marked, when it has no interval: a number is never invented."""
+    if d["difference"] is None:
+        return "n/a"
+    head = format(scale * d["difference"], "+" + fmt)
+    if d["lo"] is None:
+        return f"{head} (no interval)"
+    return f"{head} [{format(scale * d['lo'], '+' + fmt)}, {format(scale * d['hi'], '+' + fmt)}]"
+
+
 def pch_block(derived: Path) -> str:
-    """The S-4 table: the PC-Hazard rung beside Cox at every date, and the verdict on the hypothesis written before the run."""
+    """The S-4 table: the PC-Hazard rung beside Cox at every date, the 95% interval of each difference from the evaluation bootstrap, and the
+    verdict on the hypothesis written before the run (the intervals never change it)."""
     from pipeline.cases.c06.backtest import S4_HYPOTHESIS, s4_verdict
 
     head = ("| Reporting date | c-index L3 | c-index L2 | Integrated Brier L3 | Integrated Brier L2 | Mean decile gap vs Aalen-Johansen L3 (points) | "
-            "Mean decile gap L2 (points) | Accounts | Defaults | Follow-up (months) | Hypothesis at the date |\n|---|---|---|---|---|---|---|---|---|---|---|")
-    body, holds = [], []
+            "Mean decile gap L2 (points) | Accounts | Defaults | Follow-up (months) | Hypothesis at the date | "
+            "Integrated Brier, L3 minus L2 (95% interval) | Mean decile gap, L3 minus L2, points (95% interval) | Interval excludes zero (both measures) |\n"
+            "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    body, holds, blocks = [], [], []
     for r in pch_rows(derived):
-        ev = r["ev"]
+        ev, b = r["ev"], r["boot"]
+        blocks.append(b)
+        diff = {d["measure"]: d for d in b["differences"]}
+        cells = f"{_interval(diff['integrated_brier'], 1.0, '.5f')} | {_interval(diff['mean_decile_gap'], 100.0, '.2f')} | " \
+                f"{ {None: 'n/a', True: 'yes', False: 'no'}[b['both_exclude_zero']] } |"
         if ev is None:
-            body.append(f"| {r['date']} | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | not fitted |")
+            body.append(f"| {r['date']} | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | not fitted | {cells}")
             holds.append(None)
             continue
         g = ev["mean_abs_decile_gap_aalen_johansen"]
@@ -106,11 +124,18 @@ def pch_block(derived: Path) -> str:
         body.append(f"| {r['date']} | {_f(ev['c_index']['pch'], '.4f')} | {_f(ev['c_index']['cox'], '.4f')} | "
                     f"{_f(ev['integrated_brier']['pch'], '.5f')} | {_f(ev['integrated_brier']['cox'], '.5f')} | "
                     f"{_f(None if g['pch_mean'] is None else 100 * g['pch_mean'], '.2f')} | {_f(None if g['cox_mean'] is None else 100 * g['cox_mean'], '.2f')} | "
-                    f"{ev['eligible_accounts']:,} | {ev['defaults_followed']:,} | {ev['follow_up_months']:.1f} | {words} |")
+                    f"{ev['eligible_accounts']:,} | {ev['defaults_followed']:,} | {ev['follow_up_months']:.1f} | {words} | {cells}")
     v = s4_verdict(holds)
     word = {"holds": "HOLDS", "refuted": "IS REFUTED", None: "CANNOT BE JUDGED"}[v["verdict"]]
+    n_excl = sum(1 for h, b in zip(holds, blocks, strict=True) if h and b["both_exclude_zero"])
+    first = blocks[0]
     tail = (f"\n**Verdict.** The hypothesis {word}: it holds at {v['holds_at']} of {v['evaluable']} evaluable reporting dates "
-            f"({v['dates']} dates in all).\n\n> {S4_HYPOTHESIS['en']}\n")
+            f"({v['dates']} dates in all).\n\n> {S4_HYPOTHESIS['en']}\n\n"
+            f"**Intervals.** The 95% interval beside each difference is the 2.5 and 97.5 percentiles of {first['replicates']:,} replicates of an "
+            f"evaluation bootstrap (seed {first['seed']}): the out-of-time accounts are resampled with replacement and the predictions of both rungs "
+            "are held fixed (nothing is refit), so it measures the sampling noise of the comparison on this book, not the uncertainty of the fits. "
+            "A negative difference favours PC-Hazard. The verdict above is the rule written before the run and the intervals do not change it: "
+            f"{n_excl} of the {v['holds_at']} dates where the hypothesis holds have both intervals excluding zero.\n")
     return "\n".join([head, *body]) + "\n" + tail
 
 
