@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c06/models.schema.json",
   "title": "C06 models",
-  "description": "Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.",
+  "description": "Catalog row c06-models 2.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD, the staging policy and the bootstrap intervals of the S-4 comparison.",
   "allOf": [
     {
       "$ref": "../common/models-envelope.schema.json"
@@ -35,7 +35,8 @@
         "ladder",
         "lgd",
         "ead",
-        "staging_policy"
+        "staging_policy",
+        "s4_bootstrap"
       ],
       "properties": {
         "currency": {
@@ -72,6 +73,9 @@
         },
         "staging_policy": {
           "$ref": "#/$defs/c06StagingPolicy"
+        },
+        "s4_bootstrap": {
+          "$ref": "#/$defs/c06S4Bootstrap"
         }
       },
       "description": "C06 fit: segments, the Fed-style scenario definitions, the TTC to PIT conversion, the lifetime PD ladder, LGD, EAD and the staging policy that the bake used."
@@ -515,6 +519,218 @@
         }
       },
       "description": "The staging policy of the fit. The variant `outputs.settings.sicr` (with `settings.probation_months`) is authoritative: this block equals it field by field, and `low_credit_risk_pd` is null exactly when `low_credit_risk_exemption` is false."
+    },
+    "c06S4Difference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "measure",
+        "difference",
+        "lo",
+        "hi",
+        "excludes_zero",
+        "n_valid",
+        "reason"
+      ],
+      "properties": {
+        "measure": {
+          "type": "string",
+          "enum": [
+            "integrated_brier",
+            "mean_decile_gap"
+          ]
+        },
+        "difference": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "PC-Hazard minus Cox on the out-of-time accounts (negative favours PC-Hazard); null with its reason when a side is not observed."
+        },
+        "lo": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The 2.5 percentile of the replicate differences."
+        },
+        "hi": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The 97.5 percentile of the replicate differences."
+        },
+        "excludes_zero": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "True when the interval lies wholly on one side of zero."
+        },
+        "n_valid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "One S-4 difference with its bootstrap interval, beside the point difference the hypothesis judges."
+    },
+    "c06S4Overall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dates",
+        "evaluable",
+        "holds_at",
+        "holds_excluding_zero",
+        "verdict"
+      ],
+      "properties": {
+        "dates": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evaluable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "holds_at": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "holds_excluding_zero": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verdict": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "holds",
+                "refuted"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The verdict of the pre-registered rule over the dates (`holds_at` of `evaluable`, more than half holds) and how many of the dates where it holds have both intervals excluding zero."
+    },
+    "c06S4Bootstrap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "resampled_unit",
+        "replicates",
+        "level",
+        "seed",
+        "predictions_refit",
+        "evaluated",
+        "reason",
+        "accounts",
+        "differences",
+        "both_exclude_zero",
+        "overall"
+      ],
+      "properties": {
+        "method": {
+          "$ref": "../common/text.schema.json"
+        },
+        "resampled_unit": {
+          "const": "account"
+        },
+        "replicates": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "level": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "predictions_refit": {
+          "const": false
+        },
+        "evaluated": {
+          "type": "boolean"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accounts": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "differences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c06S4Difference"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "both_exclude_zero": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "overall": {
+          "$ref": "#/$defs/c06S4Overall"
+        }
+      },
+      "description": "The loan-level evaluation bootstrap of the S-4 comparison of this reporting date: the out-of-time accounts resampled with replacement, the predictions of both rungs held fixed (no refit), percentile intervals on the difference of the integrated Brier score and of the mean absolute decile gap against Aalen-Johansen. Reported beside the verdict, never in place of it."
     }
   }
 }

@@ -8982,7 +8982,7 @@
       },
       "c06-models": {
         "title": "C06 models",
-        "description": "Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.",
+        "description": "Catalog row c06-models 2.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD, the staging policy and the bootstrap intervals of the S-4 comparison.",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-models-envelope"
@@ -9403,7 +9403,8 @@
           "ladder",
           "lgd",
           "ead",
-          "staging_policy"
+          "staging_policy",
+          "s4_bootstrap"
         ],
         "properties": {
           "currency": {
@@ -9440,6 +9441,9 @@
           },
           "staging_policy": {
             "$ref": "#/components/schemas/c06StagingPolicy"
+          },
+          "s4_bootstrap": {
+            "$ref": "#/components/schemas/c06S4Bootstrap"
           }
         },
         "description": "C06 fit: segments, the Fed-style scenario definitions, the TTC to PIT conversion, the lifetime PD ladder, LGD, EAD and the staging policy that the bake used."
@@ -10261,6 +10265,218 @@
             ]
           }
         }
+      },
+      "c06S4Bootstrap": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "resampled_unit",
+          "replicates",
+          "level",
+          "seed",
+          "predictions_refit",
+          "evaluated",
+          "reason",
+          "accounts",
+          "differences",
+          "both_exclude_zero",
+          "overall"
+        ],
+        "properties": {
+          "method": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "resampled_unit": {
+            "const": "account"
+          },
+          "replicates": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "level": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "predictions_refit": {
+            "const": false
+          },
+          "evaluated": {
+            "type": "boolean"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/common-text"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "accounts": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "differences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c06S4Difference"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "both_exclude_zero": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "overall": {
+            "$ref": "#/components/schemas/c06S4Overall"
+          }
+        },
+        "description": "The loan-level evaluation bootstrap of the S-4 comparison of this reporting date: the out-of-time accounts resampled with replacement, the predictions of both rungs held fixed (no refit), percentile intervals on the difference of the integrated Brier score and of the mean absolute decile gap against Aalen-Johansen. Reported beside the verdict, never in place of it."
+      },
+      "c06S4Difference": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "measure",
+          "difference",
+          "lo",
+          "hi",
+          "excludes_zero",
+          "n_valid",
+          "reason"
+        ],
+        "properties": {
+          "measure": {
+            "type": "string",
+            "enum": [
+              "integrated_brier",
+              "mean_decile_gap"
+            ]
+          },
+          "difference": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "PC-Hazard minus Cox on the out-of-time accounts (negative favours PC-Hazard); null with its reason when a side is not observed."
+          },
+          "lo": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The 2.5 percentile of the replicate differences."
+          },
+          "hi": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The 97.5 percentile of the replicate differences."
+          },
+          "excludes_zero": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "True when the interval lies wholly on one side of zero."
+          },
+          "n_valid": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/common-text"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "One S-4 difference with its bootstrap interval, beside the point difference the hypothesis judges."
+      },
+      "c06S4Overall": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "dates",
+          "evaluable",
+          "holds_at",
+          "holds_excluding_zero",
+          "verdict"
+        ],
+        "properties": {
+          "dates": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "evaluable": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "holds_at": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "holds_excluding_zero": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "holds",
+                  "refuted"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "The verdict of the pre-registered rule over the dates (`holds_at` of `evaluable`, more than half holds) and how many of the dates where it holds have both intervals excluding zero."
       },
       "c06ScenarioDefinition": {
         "type": "object",
@@ -13861,6 +14077,232 @@
           }
         }
       },
+      "c08MlBenchmark": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "resampled_unit",
+          "replicates",
+          "level",
+          "seed",
+          "predictions_refit",
+          "evaluated",
+          "reason",
+          "defaults",
+          "better_rung",
+          "against_best",
+          "against",
+          "interval_excludes_zero",
+          "overall"
+        ],
+        "properties": {
+          "method": {
+            "$ref": "#/components/schemas/c08Text"
+          },
+          "resampled_unit": {
+            "const": "default"
+          },
+          "replicates": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "level": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "predictions_refit": {
+            "const": false
+          },
+          "evaluated": {
+            "type": "boolean"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c08Text"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "defaults": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "better_rung": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The better of the random forest and the neural network by RMSE at the point estimate."
+          },
+          "against_best": {
+            "$ref": "#/components/schemas/c08MlDifference"
+          },
+          "against": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c08MlDifference"
+            },
+            "minItems": 1
+          },
+          "interval_excludes_zero": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The interval against the best of the six excludes zero."
+          },
+          "overall": {
+            "$ref": "#/components/schemas/c08MlOverall"
+          }
+        },
+        "description": "The loan-level evaluation bootstrap of the S-5 benchmark of this test cohort: the defaults of the cohort resampled with replacement, the predictions held fixed (no refit), percentile intervals on the RMSE difference of the better of the random forest and the neural network against each of the six rungs before them and against the best of the six. Reported beside the verdict, never in place of it."
+      },
+      "c08MlDifference": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rung_id",
+          "difference",
+          "lo",
+          "hi",
+          "excludes_zero",
+          "n_valid",
+          "reason"
+        ],
+        "properties": {
+          "rung_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The rung compared against; for the comparison against the best, the best of the six at the point estimate."
+          },
+          "difference": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "RMSE of that rung minus RMSE of the better of the random forest and the neural network on the test cohort (positive: the machine-learning rung is lower); null with its reason when a rung is not fitted."
+          },
+          "lo": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The 2.5 percentile of the replicate differences."
+          },
+          "hi": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The 97.5 percentile of the replicate differences."
+          },
+          "excludes_zero": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "True when the interval lies wholly on one side of zero."
+          },
+          "n_valid": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c08Text"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "One S-5 RMSE difference with its bootstrap interval, beside the point difference the hypothesis judges."
+      },
+      "c08MlOverall": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cohorts",
+          "evaluable",
+          "wins",
+          "wins_excluding_zero",
+          "verdict"
+        ],
+        "properties": {
+          "cohorts": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "evaluable": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "wins": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "wins_excluding_zero": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "holds",
+                  "mixed",
+                  "refuted"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "The verdict of the pre-registered rule over the test cohorts (`wins` of `evaluable`) and how many of the cohorts where it holds have the interval against the best of the six excluding zero."
+      },
       "c08Outputs": {
         "type": "object",
         "additionalProperties": false,
@@ -13879,7 +14321,8 @@
           "calibration_by_bucket",
           "endpoint_sensitivity",
           "downturn",
-          "floors_bite"
+          "floors_bite",
+          "ml_benchmark"
         ],
         "properties": {
           "kind": {
@@ -13945,6 +14388,9 @@
           },
           "floors_bite": {
             "$ref": "#/components/schemas/c08FloorsBite"
+          },
+          "ml_benchmark": {
+            "$ref": "#/components/schemas/c08MlBenchmark"
           }
         },
         "description": "C08 default-cohort outputs (outputs.kind default-cohort): one test default cohort. LGD in [0, 1] with the cases outside it (fees, costs) allowed and flagged, never clipped; the LGD proxy definition and bias statement are required; money in `currency`."

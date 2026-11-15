@@ -359,6 +359,19 @@ def build_c06() -> tuple[dict, dict]:
                                                        {"pd_origination_upper": 0.05, "multiplier": 2.5},
                                                        {"pd_origination_upper": 0.5, "multiplier": 1.5}],
                                "source": "fixture: Contraste policy parameters, not IFRS 9 requirements"},
+            # c06-models 2.0.0 (1.01.000 M2): the loan-level evaluation bootstrap of the S-4 comparison of the date
+            "s4_bootstrap": {
+                "method": txt("Evaluation bootstrap of the fixture: accounts resampled with replacement, predictions held fixed.",
+                              "Remuestreo de evaluacion del ejemplo: cuentas remuestreadas con reemplazo, predicciones fijas."),
+                "resampled_unit": "account", "replicates": 1000, "level": 0.95, "seed": 42, "predictions_refit": False,
+                "evaluated": True, "reason": None, "accounts": 1000,
+                "differences": [
+                    {"measure": "integrated_brier", "difference": -0.00008, "lo": -0.00012, "hi": -0.00004, "excludes_zero": True,
+                     "n_valid": 1000, "reason": None},
+                    {"measure": "mean_decile_gap", "difference": -0.0004, "lo": -0.0011, "hi": 0.0003, "excludes_zero": False,
+                     "n_valid": 1000, "reason": None}],
+                "both_exclude_zero": False,
+                "overall": {"dates": 1, "evaluable": 1, "holds_at": 1, "holds_excluding_zero": 0, "verdict": "holds"}},
         },
         **envelope_common("real-outcomes"),
     }

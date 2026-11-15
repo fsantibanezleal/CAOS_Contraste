@@ -374,6 +374,22 @@ def build_c08() -> tuple[dict, dict]:
         "floors_bite": {"regime": "basel-iii-final", "rows": floors,
                         "note": txt("Fixture floors from dossier 01 A.5; the bite is the mean uplift they cause.",
                                     "Pisos de ejemplo del dossier 01 A.5; el efecto es el alza media que causan.")},
+        # c08-outputs 4.0.0 (1.01.000 M2): the loan-level evaluation bootstrap of the S-5 benchmark of the cohort
+        "ml_benchmark": {
+            "method": txt("Evaluation bootstrap of the fixture: defaults resampled with replacement, predictions held fixed.",
+                          "Remuestreo de evaluacion del ejemplo: incumplimientos remuestreados con reemplazo, predicciones fijas."),
+            "resampled_unit": "default", "replicates": 1000, "level": 0.95, "seed": 42, "predictions_refit": False,
+            "evaluated": True, "reason": None, "defaults": 1000, "better_rung": "L7-random-forest",
+            "against_best": {"rung_id": "L5-gradient-boosted", "difference": 0.004, "lo": 0.001, "hi": 0.007, "excludes_zero": True,
+                             "n_valid": 1000, "reason": None},
+            "against": [
+                {"rung_id": "L1-ols", "difference": 0.02, "lo": 0.015, "hi": 0.025, "excludes_zero": True, "n_valid": 1000, "reason": None},
+                {"rung_id": "L2-fractional-logit", "difference": 0.01, "lo": 0.006, "hi": 0.014, "excludes_zero": True, "n_valid": 1000,
+                 "reason": None},
+                {"rung_id": "L3-beta", "difference": None, "lo": None, "hi": None, "excludes_zero": None, "n_valid": 0,
+                 "reason": txt("rung L3-beta was not fitted: fixture", "la etapa L3-beta no se ajusto: ejemplo")}],
+            "interval_excludes_zero": True,
+            "overall": {"cohorts": 1, "evaluable": 1, "wins": 1, "wins_excluding_zero": 1, "verdict": "holds"}},
     }
     variant = {
         "schema": "contraste.case/v1", "case_id": "C08", "variant_id": "fixture-2009-10",

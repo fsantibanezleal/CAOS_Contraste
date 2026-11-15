@@ -1847,7 +1847,7 @@ export interface components {
         };
         /**
          * C06 models
-         * @description Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.
+         * @description Catalog row c06-models 2.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD, the staging policy and the bootstrap intervals of the S-4 comparison.
          */
         "c06-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -1942,6 +1942,7 @@ export interface components {
             lgd: components["schemas"]["c06Lgd"];
             ead: components["schemas"]["c06Ead"];
             staging_policy: components["schemas"]["c06StagingPolicy"];
+            s4_bootstrap: components["schemas"]["c06S4Bootstrap"];
         };
         c06GcaMovement: {
             /** @enum {string} */
@@ -2111,6 +2112,46 @@ export interface components {
             integrated_brier: number | null;
             calibration_gap_12m: number | null;
             reason: components["schemas"]["common-text"] | null;
+        };
+        /** @description The loan-level evaluation bootstrap of the S-4 comparison of this reporting date: the out-of-time accounts resampled with replacement, the predictions of both rungs held fixed (no refit), percentile intervals on the difference of the integrated Brier score and of the mean absolute decile gap against Aalen-Johansen. Reported beside the verdict, never in place of it. */
+        c06S4Bootstrap: {
+            method: components["schemas"]["common-text"];
+            /** @constant */
+            resampled_unit: "account";
+            replicates: number;
+            level: number;
+            seed: number;
+            /** @constant */
+            predictions_refit: false;
+            evaluated: boolean;
+            reason: components["schemas"]["common-text"] | null;
+            accounts: number | null;
+            differences: components["schemas"]["c06S4Difference"][];
+            both_exclude_zero: boolean | null;
+            overall: components["schemas"]["c06S4Overall"];
+        };
+        /** @description One S-4 difference with its bootstrap interval, beside the point difference the hypothesis judges. */
+        c06S4Difference: {
+            /** @enum {string} */
+            measure: "integrated_brier" | "mean_decile_gap";
+            /** @description PC-Hazard minus Cox on the out-of-time accounts (negative favours PC-Hazard); null with its reason when a side is not observed. */
+            difference: number | null;
+            /** @description The 2.5 percentile of the replicate differences. */
+            lo: number | null;
+            /** @description The 97.5 percentile of the replicate differences. */
+            hi: number | null;
+            /** @description True when the interval lies wholly on one side of zero. */
+            excludes_zero: boolean | null;
+            n_valid: number;
+            reason: components["schemas"]["common-text"] | null;
+        };
+        /** @description The verdict of the pre-registered rule over the dates (`holds_at` of `evaluable`, more than half holds) and how many of the dates where it holds have both intervals excluding zero. */
+        c06S4Overall: {
+            dates: number;
+            evaluable: number;
+            holds_at: number;
+            holds_excluding_zero: number;
+            verdict: ("holds" | "refuted") | null;
         };
         c06ScenarioDefinition: {
             id: string;
@@ -3051,6 +3092,50 @@ export interface components {
             /** @description A share or an observed rate in [0, 1]. */
             share: number;
         };
+        /** @description The loan-level evaluation bootstrap of the S-5 benchmark of this test cohort: the defaults of the cohort resampled with replacement, the predictions held fixed (no refit), percentile intervals on the RMSE difference of the better of the random forest and the neural network against each of the six rungs before them and against the best of the six. Reported beside the verdict, never in place of it. */
+        c08MlBenchmark: {
+            method: components["schemas"]["c08Text"];
+            /** @constant */
+            resampled_unit: "default";
+            replicates: number;
+            level: number;
+            seed: number;
+            /** @constant */
+            predictions_refit: false;
+            evaluated: boolean;
+            reason: components["schemas"]["c08Text"] | null;
+            defaults: number;
+            /** @description The better of the random forest and the neural network by RMSE at the point estimate. */
+            better_rung: string | null;
+            against_best: components["schemas"]["c08MlDifference"];
+            against: components["schemas"]["c08MlDifference"][];
+            /** @description The interval against the best of the six excludes zero. */
+            interval_excludes_zero: boolean | null;
+            overall: components["schemas"]["c08MlOverall"];
+        };
+        /** @description One S-5 RMSE difference with its bootstrap interval, beside the point difference the hypothesis judges. */
+        c08MlDifference: {
+            /** @description The rung compared against; for the comparison against the best, the best of the six at the point estimate. */
+            rung_id: string | null;
+            /** @description RMSE of that rung minus RMSE of the better of the random forest and the neural network on the test cohort (positive: the machine-learning rung is lower); null with its reason when a rung is not fitted. */
+            difference: number | null;
+            /** @description The 2.5 percentile of the replicate differences. */
+            lo: number | null;
+            /** @description The 97.5 percentile of the replicate differences. */
+            hi: number | null;
+            /** @description True when the interval lies wholly on one side of zero. */
+            excludes_zero: boolean | null;
+            n_valid: number;
+            reason: components["schemas"]["c08Text"] | null;
+        };
+        /** @description The verdict of the pre-registered rule over the test cohorts (`wins` of `evaluable`) and how many of the cohorts where it holds have the interval against the best of the six excluding zero. */
+        c08MlOverall: {
+            cohorts: number;
+            evaluable: number;
+            wins: number;
+            wins_excluding_zero: number;
+            verdict: ("holds" | "mixed" | "refuted") | null;
+        };
         /** @description C08 default-cohort outputs (outputs.kind default-cohort): one test default cohort. LGD in [0, 1] with the cases outside it (fees, costs) allowed and flagged, never clipped; the LGD proxy definition and bias statement are required; money in `currency`. */
         c08Outputs: {
             /** @constant */
@@ -3071,6 +3156,7 @@ export interface components {
             endpoint_sensitivity: components["schemas"]["c08EndpointRow"][];
             downturn: components["schemas"]["c08Downturn"];
             floors_bite: components["schemas"]["c08FloorsBite"];
+            ml_benchmark: components["schemas"]["c08MlBenchmark"];
         };
         c08RealisedRow: {
             rung_id: string;
