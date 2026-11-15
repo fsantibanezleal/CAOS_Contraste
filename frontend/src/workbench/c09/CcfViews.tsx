@@ -7,6 +7,7 @@ import { Flagged, U6TestsTable, p2, useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { withPortfolioScope } from '../c08/words';
 import { DESIGN_TEXT, ESTIMATOR_TEXT, TREATMENT_TEXT, modelLabel, outputsOf, text, type C09Sel } from './selection';
+import { TableBox, useTall } from '../TableBox';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 /** The bar labels of the estimates: two decimals, so a known 71.42 % and an estimate of 71.28 % do not both read 71 % (R3 c10 m10). */
@@ -16,6 +17,7 @@ const BAR_FORMAT = { percent: true, decimals: 2 } as const;
 export function ByDesignView({ sel }: { sel: C09Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
+  const tall = useTall();
   const o = outputsOf(sel);
   if (!sel || !o) return <Pending />;
   const c = o.ccf_by_design;
@@ -45,6 +47,16 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
   const shares: { en: string; es: string } = sameShares
     ? { en: ` In this design ${p2(rows[0].share_below_zero, 'en')} of the defaults are below 0 and ${p2(rows[0].share_above_one, 'en')} above 1, the same for every estimator.`, es: ` En este diseño ${p2(rows[0].share_below_zero, 'es')} de los incumplimientos están bajo 0 y ${p2(rows[0].share_above_one, 'es')} sobre 1, igual para todo estimador.` }
     : { en: '', es: '' };
+  // a tall desktop: the bars fill the card's body, their rows sharing its height, the chart the body's own child as the gate measures the body
+  // (BL-107); a shorter one keeps the rows' own height in a box that scrolls
+  const bars = (
+      <BarChart title={{ en: `CCF by treatment and estimator, ${text(DESIGN_TEXT, sel.design).en.toLowerCase()}`, es: `CCF por tratamiento y estimador, ${text(DESIGN_TEXT, sel.design).es.toLowerCase()}` }} orientation="horizontal" height={tall ? 'fill' : undefined} data={data} axis={{ label: { en: 'Conversion factor', es: 'Factor de conversión' }, format: { percent: true, digits: 2 } }} legend={[
+        { tone: 'neutral' as const, label: { en: 'Known CCF', es: 'CCF conocido' } },
+        { tone: 'good' as const, label: { en: 'Within the tolerance', es: 'Dentro de la tolerancia' } },
+        { tone: 'warn' as const, label: { en: 'Outside the tolerance', es: 'Fuera de la tolerancia' } },
+        { tone: 'bad' as const, label: { en: 'Outside 0 to 1', es: 'Fuera de 0 a 1' } },
+      ].filter((l) => data.some((d) => d.tone === l.tone)) as Array<{ tone: 'neutral' | 'good' | 'warn' | 'bad'; label: { en: string; es: string } }>} />
+  );
   return (
     // split, not scrolled (ADR-0071 rule 6; R3 c10 M2: the estimates and the tests shared one 42 % box that showed one row): the drawing
     // fills a card of its own beside the estimates, whole at 1280; the tests are a sub-view of their own (EstimatorTestsView).
@@ -65,14 +77,11 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
         {/* the rows take the height they need (a horizontal chart without `fill`); where the card is shorter than that (20 bars and
             their key need about 34rem, the card 31 at 1280 x 800) the drawing scrolls in its own box with the cue, never cut by the
             card body (U16-R4 c11 M1, ADR-0071) */}
-        <div data-scroll-box="" data-caos-flow="" data-block="ccf-chart" style={{ height: '100%', minHeight: 0, overflowY: 'auto' }}>
-          <BarChart title={{ en: `CCF by treatment and estimator, ${text(DESIGN_TEXT, sel.design).en.toLowerCase()}`, es: `CCF por tratamiento y estimador, ${text(DESIGN_TEXT, sel.design).es.toLowerCase()}` }} orientation="horizontal" data={data} axis={{ label: { en: 'Conversion factor', es: 'Factor de conversión' }, format: { percent: true, digits: 2 } }} legend={[
-            { tone: 'neutral' as const, label: { en: 'Known CCF', es: 'CCF conocido' } },
-            { tone: 'good' as const, label: { en: 'Within the tolerance', es: 'Dentro de la tolerancia' } },
-            { tone: 'warn' as const, label: { en: 'Outside the tolerance', es: 'Fuera de la tolerancia' } },
-            { tone: 'bad' as const, label: { en: 'Outside 0 to 1', es: 'Fuera de 0 a 1' } },
-          ].filter((l) => data.some((d) => d.tone === l.tone)) as Array<{ tone: 'neutral' | 'good' | 'warn' | 'bad'; label: { en: string; es: string } }>} />
-        </div>
+        {tall ? bars : (
+          <div data-scroll-box="" data-caos-flow="" data-block="ccf-chart" style={{ height: '100%', minHeight: 0, overflowY: 'auto' }}>
+            {bars}
+          </div>
+        )}
       </PlotCard>
       <PlotCard fill title={{ en: 'The estimates of this design', es: 'Las estimaciones de este diseño' }} {...card} note={{
           // the light rule of the tests is the Tests sub-view's note and the bar tones are the chart's legend: stated once each, so the
@@ -80,7 +89,7 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
           en: `The bias, its interval and the shares of defaults outside 0 to 1 of each treatment and estimator. Known CCF of the generator: ${p2(truth.value, 'en')}; an estimate counts as recovered within ${p2(c.tolerance, 'en')}.${shares.en}`,
           es: `El sesgo, su intervalo y las proporciones de incumplimientos fuera de 0 a 1 de cada tratamiento y estimador. CCF conocido del generador: ${p2(truth.value, 'es')}; una estimación cuenta como recuperada dentro de ${p2(c.tolerance, 'es')}.${shares.es}`,
         }}>
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
             <table className="caos-table ct-wrap-head" data-table="ccf-by-design" data-truth={truth.value}>
               <thead>
                 <tr>
@@ -113,7 +122,7 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
                 ))}
               </tbody>
             </table>
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );

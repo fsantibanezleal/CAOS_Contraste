@@ -10,6 +10,7 @@ import { LightCell } from '../ValidationViews';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { APPROACH_COLOR, CASE1, approachShort, averageRiskWeight, isSp, useLiveCurve, type C05Sel, type SpVariant } from './selection';
+import { TableBox } from '../TableBox';
 
 const LIVE = 'live' as const;
 // The x axis counts grades from the best; its title names the letter grades a reader looks for (the shell's marks are
@@ -207,7 +208,7 @@ export function ApproachesView({ sel }: { sel: C05Sel | null }) {
           es: `El caso 1 conoce el perfil y la PD de ${o.year} (${pct(lang, o.pd1, 2)}, la observada, como el artículo); el caso 2 solo la PD; el caso 3 solo el perfil, así que pronostica la PD. La prueba del perfil es el chi-cuadrado del perfil de incumplimiento implícito del artículo, con valor p de Monte Carlo.`,
         }}
       >
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
           <table className="caos-table ct-wrap-head" data-table="approaches">
             <thead>
               <tr>
@@ -234,7 +235,7 @@ export function ApproachesView({ sel }: { sel: C05Sel | null }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );
@@ -426,7 +427,7 @@ export function GoldenSpView({ sel }: { sel: C05Sel | null }) {
         </div>
       </PlotCard>
       <PlotCard fill title={{ en: 'p-values and the case 3 forecasts', es: 'Valores p y los pronósticos del caso 3' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
           <table className="caos-table" data-table="golden-p">
             <thead>
               <tr>
@@ -463,7 +464,7 @@ export function GoldenSpView({ sel }: { sel: C05Sel | null }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );
@@ -499,7 +500,7 @@ export function SpImpactView({ sel }: { sel: C05Sel | null }) {
           es: `Función IRB corporativa, vencimiento ${formatNumber(v.outputs.irb.maturity, 'es', { decimals: 1 })} años, una unidad de EAD por deudor, la PD con el piso del régimen; régimen y LGD del panel. Relativo a la razón de verosimilitud escalada, el enfoque que favorece la prueba retrospectiva del artículo.`,
         }}
       >
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
           <table className="caos-table" data-table="capital">
             <thead>
               <tr>
@@ -518,7 +519,7 @@ export function SpImpactView({ sel }: { sel: C05Sel | null }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </TableBox>
       </PlotCard>
       <PlotCard
         fill

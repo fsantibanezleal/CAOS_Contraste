@@ -8,6 +8,7 @@ import { Pending } from '../Pending';
 import { inputName } from '../names';
 import { U6TestsTable, p2, useCard } from './U6Shared';
 import { fitOf, fyRange, outputsOf, reasonText, rungLabel, type C03Sel } from './selection';
+import { TableBox } from '../TableBox';
 
 // three fixed decimals: the precision does not change inside a column (R3 c04 m2)
 const d3 = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 3 });
@@ -228,7 +229,7 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
         )}
       </PlotCard>
       <PlotCard fill title={{ en: 'This cohort and its rung', es: 'Esta cohorte y su peldaño' }} {...card}>
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
           {/* the cohort's facts as a two-column table: a table is what a card draws (gate G6), so a rung with no coefficients still
               fills its card (a definition list left it painting 22% of its stage) */}
           <table className="caos-table" data-training={o.cohort.id} data-table="cohort-facts">
@@ -291,7 +292,7 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
           <p className="ct-note" data-block="window-rationale">
             <strong>{pick({ en: 'Why this window.', es: 'Por qué esta ventana.' }, lang)}</strong> {pick(t.rationale, lang)}
           </p>
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );

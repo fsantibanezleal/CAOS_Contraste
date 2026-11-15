@@ -10,6 +10,7 @@ import { U6TestsTable, p2, useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { COVARIATE_TEXT, DESIGN_TEXT, TREATMENT_TEXT, bandLabel, bandsOf, facilityLabel, fitOf, kindText, modelLabel, outputsOf, text, type C09Sel } from './selection';
 import { rangeText, withPortfolioScope } from '../c08/words';
+import { TableBox, useTall } from '../TableBox';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
@@ -173,7 +174,7 @@ export function ModelsView({ sel }: { sel: C09Sel | null }) {
           es: 'Un modelo de CCF estima la parte del monto no utilizado que se usa al incumplir; un modelo directo estima la exposición misma. Solo un modelo directo de EAD recorta observaciones para su ajuste, y dice cuántas.',
         }}
       >
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
           <table className="caos-table ct-wrap-head" data-table="ead-models" data-bands={bandCount}>
             <thead>
               <tr>
@@ -204,7 +205,7 @@ export function ModelsView({ sel }: { sel: C09Sel | null }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );
@@ -214,6 +215,7 @@ export function ModelsView({ sel }: { sel: C09Sel | null }) {
 export function FloorsView({ sel }: { sel: C09Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
+  const tall = useTall();
   const o = outputsOf(sel);
   if (!sel || !o) return <Pending />;
   const f = o.ead_floor;
@@ -235,6 +237,7 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
       >
         <ChartAbove
           chartHeight="9rem"
+          grow={tall}
           chart={
             <BarChart
               title={{ en: 'Share of facilities where the floor binds', es: 'Proporción de líneas donde el piso se activa' }}
@@ -278,7 +281,7 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
         </ChartAbove>
       </PlotCard>
       <PlotCard fill title={{ en: 'Supervisory CCFs and the small-undrawn rule', es: 'CCF supervisores y la regla de saldo no utilizado pequeño' }} {...card}>
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
           <dl className="ct-defs" data-table="small-undrawn" data-applied={String(s.applied)}>
             <dt>{pick({ en: 'Threshold', es: 'Umbral' }, lang)}</dt>
             <dd>{`${money(s.threshold, lang, s.currency)} ${s.currency}`}</dd>
@@ -312,7 +315,7 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
           ) : (
             <p className="ct-note" data-state="unavailable">{pick({ en: 'Not available: the models artifact carries no supervisory CCFs.', es: 'No disponible: el artefacto de modelos no trae los CCF supervisores.' }, lang)}</p>
           )}
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );

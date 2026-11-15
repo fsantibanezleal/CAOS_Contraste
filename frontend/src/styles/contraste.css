@@ -50,6 +50,11 @@
 
 /* a long table scrolls inside its filling card, its header kept in view by the shell's sticky header */
 .ct-scroll { height: 100%; overflow: auto; min-height: 0; }
+/* a tall desktop (TableBox, BL-107): the tables of a card that hold more than one block (two tables, a table and a list) share the card's
+   height, each at its rows' own height at the least, so the numbers take their stage as a lone table does through the shell's rule (a
+   table that is the card body's own child); a box with more than the card shows scrolls */
+.ct-tall-tables { display: flex; flex-direction: column; gap: 0.5rem; }
+.ct-tall-tables > .ct-fill-table { flex: 1 0 auto; }
 
 /* what a phone has no room for. A table column is hidden only when its value is repeated under the text of the row, in
    .ct-narrow-only, which only a phone shows (those columns carry .ct-repeated); every other column stays, and the table scrolls
