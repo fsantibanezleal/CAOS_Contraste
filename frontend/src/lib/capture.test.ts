@@ -38,9 +38,16 @@ interface Row {
 const work = mkdtempSync(join(process.env.CAPTURE_TEST_TMP ?? tmpdir(), 'capture-test-'));
 afterAll(() => rmSync(work, { recursive: true, force: true }));
 
+// The tool alone takes seconds (C01 and C02: 8 s; the whole file: 274 s, 2026-11-15). Inside the whole vitest run on every core a
+// variants-all run of C18 and C20 went past the old 240 s limit, was stopped by it, and the test read only an empty output (M3's
+// release run, 2026-11-15). The limit stays under the 600 s of the slowest test, and a run this test stopped says so.
+const RUN_LIMIT_MS = 540_000;
+
 function run(args: string[], cwd = frontend) {
-  const r = spawnSync(process.execPath, [tool, ...args], { cwd, encoding: 'utf8', timeout: 240_000, env: process.env });
-  return { code: r.status, out: `${r.stdout}${r.stderr}` };
+  const r = spawnSync(process.execPath, [tool, ...args], { cwd, encoding: 'utf8', timeout: RUN_LIMIT_MS, env: process.env });
+  const stopped = r.signal !== null || (r.error as NodeJS.ErrnoException | undefined)?.code === 'ETIMEDOUT';
+  const note = stopped ? `\n[the test stopped the capture tool after ${RUN_LIMIT_MS / 1000} s (signal ${r.signal ?? 'none'})]` : '';
+  return { code: r.status, out: `${r.stdout ?? ''}${r.stderr ?? ''}${note}` };
 }
 
 /** Everything under a folder with sizes and mtimes: the repository must look the same after the tool ran. */
