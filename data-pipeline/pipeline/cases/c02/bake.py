@@ -223,7 +223,15 @@ def _source_details() -> dict[str, dict[str, str]]:
 
 
 def expect_ranges(values: dict[str, float]) -> dict[str, tuple[float, float]]:
-    return {k: (EXPECT_RATE if k.startswith("event_rate_") else EXPECT_GAP if k.startswith("overfit_gap_") else EXPECT_AUC) for k in values}
+    """One range per result, chosen by the prefix of its key; a key with none of these prefixes has no range."""
+    by_prefix = (("event_rate_", EXPECT_RATE), ("overfit_gap_", EXPECT_GAP), ("auc_", EXPECT_AUC))
+    out: dict[str, tuple[float, float]] = {}
+    for k in values:
+        found = [rng for prefix, rng in by_prefix if k.startswith(prefix)]
+        if not found:
+            raise expectations.ExpectationError(f"{CASE_ID}: no expected range for the result {k!r} (prefixes: {', '.join(p for p, _ in by_prefix)})")
+        out[k] = found[0]
+    return out
 
 
 def bake_case(seed: int, paths: Any, data_root: Path | str | None, *, manifest: dict[str, Any] | None = None,

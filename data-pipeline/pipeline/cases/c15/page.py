@@ -9,6 +9,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from . import models as c15_models
+
 BEGIN = "<!-- c15-results:begin -->"
 END = "<!-- c15-results:end -->"
 BLOCKS = {"outcomes": ("<!-- c15-outcomes:begin -->", "<!-- c15-outcomes:end -->"),
@@ -16,6 +18,11 @@ BLOCKS = {"outcomes": ("<!-- c15-outcomes:begin -->", "<!-- c15-outcomes:end -->
           "results": (BEGIN, END)}
 SHOCKS = ("parallel-up", "parallel-down", "steepener", "flattener", "short-up", "short-down")
 ORDER = ("long-uf", "short-uf", "cpi-surprise", "clp-steepener", "offset-on-off", "floors-active")
+
+
+def eve_threshold() -> float:
+    """The EVE share of Tier 1 above which the standardised measure crosses the test: the model's own threshold, read once."""
+    return {i: th for i, th, _ in c15_models.THRESHOLDS}["eve-tier1"]
 
 
 def m(x: float) -> str:
@@ -54,7 +61,7 @@ def outcomes_block(variants: dict[str, dict[str, Any]]) -> str:
     lines.append(f"| The standardised EVE measure crosses the 15 percent test only where the pesos book is long-dated | delta EVE is {pct(eve['long-uf']['delta_eve_share_tier1'])}, "
                  f"{pct(eve['short-uf']['delta_eve_share_tier1'])} and {pct(eve['floors-active']['delta_eve_share_tier1'])} percent of Tier 1 in the long UF, "
                  f"short UF and floors variants and {pct(eve['clp-steepener']['delta_eve_share_tier1'])} percent in the CLP steepener variant, which is "
-                 f"{'above' if eve['clp-steepener']['delta_eve_share_tier1'] > 0.15 else 'below'} the threshold | `eve` of `data/derived/C15/*.json` |")
+                 f"{'above' if eve['clp-steepener']['delta_eve_share_tier1'] > eve_threshold() else 'below'} the threshold | `eve` of `data/derived/C15/*.json` |")
     ic, d_nii = long_["indexation_charge"]["charge"], long_["nii"]["delta_nii"]
     lines.append(f"| The indexation of the UF position is a large part of the delta NII | in the long UF variant the standard charge is {m(ic)} CLP million, "
                  f"{pct(ic / d_nii, 0)} percent of the delta NII of {m(d_nii)}; it depends on the net UF position, not on the rate shock | "
