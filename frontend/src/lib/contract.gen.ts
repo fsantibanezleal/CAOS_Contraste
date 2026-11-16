@@ -1847,7 +1847,7 @@ export interface components {
         };
         /**
          * C06 models
-         * @description Catalog row c06-models 2.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD, the staging policy and the bootstrap intervals of the S-4 comparison.
+         * @description Catalog row c06-models 3.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD, the staging policy, the bootstrap intervals of the S-4 comparison and the hyper-parameter sensitivity of the PC-Hazard rung.
          */
         "c06-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -1943,6 +1943,7 @@ export interface components {
             ead: components["schemas"]["c06Ead"];
             staging_policy: components["schemas"]["c06StagingPolicy"];
             s4_bootstrap: components["schemas"]["c06S4Bootstrap"];
+            pch_sensitivity: components["schemas"]["c06PchSensitivity"];
         };
         c06GcaMovement: {
             /** @enum {string} */
@@ -2059,6 +2060,92 @@ export interface components {
             /** @enum {string} */
             staging_effect: "none" | "transfers-to-stage2";
             review_date: string;
+        };
+        /** @description The S-4 evaluation of one setting at this reporting date, as `details.evaluation` of the PC-Hazard model record gives it for the default: the c-index, the integrated Brier score and the mean absolute decile gap against Aalen-Johansen of both rungs, the criteria and whether the hypothesis holds at the date. */
+        c06PchEvaluation: {
+            /** @description The PC-Hazard and Cox values of one statistic of the S-4 comparison. */
+            c_index: {
+                pch: number | null;
+                cox: number | null;
+            };
+            /** @description The PC-Hazard and Cox values of one statistic of the S-4 comparison. */
+            integrated_brier: {
+                pch: number | null;
+                cox: number | null;
+            };
+            /** @description The PC-Hazard and Cox values of one statistic of the S-4 comparison. */
+            mean_decile_gap: {
+                pch: number | null;
+                cox: number | null;
+            };
+            /** @description The criteria of the S-4 hypothesis (the c-index is reported beside, not part of the verdict): true, false or null (one side not observed). */
+            criteria: {
+                lower_integrated_brier: boolean | null;
+                smaller_decile_gap: boolean | null;
+                higher_c_index: boolean | null;
+            };
+            holds_at_date: boolean | null;
+        };
+        /** @description The verdicts of the nine settings over the dates and the count of those that agree with the default's, which is the verdict of the case. */
+        c06PchOverall: {
+            dates: number;
+            /** @constant */
+            case_setting: "default";
+            case_verdict: ("holds" | "refuted") | null;
+            settings_count: number;
+            agree: number;
+            settings: components["schemas"]["c06PchOverallSetting"][];
+        };
+        /** @description The verdict of one setting over the dates (`backtest.s4_verdict` of its `holds_at_date` per date) and whether it agrees with the verdict of the case. */
+        c06PchOverallSetting: {
+            setting_id: string;
+            dates: number;
+            evaluable: number;
+            holds_at: number;
+            verdict: ("holds" | "refuted") | null;
+            agrees: boolean;
+        };
+        /** @description The hyper-parameters of one setting: the interval width in months with its interval count (their product is the 180 months every grid covers), the hidden layer sizes, the learning rate and the weight decay. */
+        c06PchParameters: {
+            interval_months: number;
+            intervals: number;
+            hidden: number[];
+            learning_rate: number;
+            weight_decay: number;
+        };
+        /** @description The hyper-parameter sensitivity of the PC-Hazard rung at this reporting date: the rung refitted under nine settings, one hyper-parameter moved at a time around the defaults (never a grid, never a tuning), on the same training loans, hold-out split and seed, each judged by the S-4 evaluation on the same out-of-time accounts. `settings` holds the nine entries in order, or none when the rung was not fitted (then `reason` says why). `selected_setting` is always null: no setting is chosen and the verdict of the case stays the default's. */
+        c06PchSensitivity: {
+            method: components["schemas"]["common-text"];
+            /** @constant */
+            kind: "one-at-a-time";
+            /** @constant */
+            covers_months: 180;
+            /** @constant */
+            same_training: true;
+            selected_setting: null;
+            evaluated: boolean;
+            seed: number | null;
+            reason: components["schemas"]["common-text"] | null;
+            settings: components["schemas"]["c06PchSetting"][];
+            overall: components["schemas"]["c06PchOverall"];
+        };
+        /** @description One setting of the sweep at this date. `status` is `fitted` (early stopping triggered), `not_converged` (the fit ran to the epoch cap; its numbers are reported) or `failed` (the fit raised or its rates are not finite; no evaluation); `reason` is null exactly when the status is `fitted`. */
+        c06PchSetting: {
+            /** @enum {string} */
+            setting_id: "default" | "width-1.5" | "width-6" | "hidden-16" | "hidden-64" | "weight-decay-1e-5" | "weight-decay-1e-3" | "learning-rate-0.003" | "learning-rate-0.03";
+            /** @enum {string} */
+            parameter: "default" | "interval_width" | "hidden_layers" | "weight_decay" | "learning_rate";
+            is_default: boolean;
+            label: components["schemas"]["common-text"];
+            parameters: components["schemas"]["c06PchParameters"];
+            /** @enum {string} */
+            status: "fitted" | "not_converged" | "failed";
+            reason: components["schemas"]["common-text"] | null;
+            epochs: number | null;
+            best_epoch: number | null;
+            holdout_nll_per_default: number | null;
+            weights_sha256: string | null;
+            evaluation: components["schemas"]["c06PchEvaluation"] | null;
         };
         c06Pit: {
             rho: number;

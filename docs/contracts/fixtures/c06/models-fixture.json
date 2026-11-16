@@ -336,6 +336,494 @@
         "holds_excluding_zero": 0,
         "verdict": "holds"
       }
+    },
+    "pch_sensitivity": {
+      "method": {
+        "en": "Sensitivity sweep of the fixture: nine settings, one hyper-parameter at a time, same training and seed.",
+        "es": "Barrido de sensibilidad del ejemplo: nueve configuraciones, un hiperparametro a la vez, mismo entrenamiento y semilla."
+      },
+      "kind": "one-at-a-time",
+      "covers_months": 180,
+      "same_training": true,
+      "selected_setting": null,
+      "evaluated": true,
+      "seed": 4506,
+      "reason": null,
+      "settings": [
+        {
+          "setting_id": "default",
+          "parameter": "default",
+          "is_default": true,
+          "label": {
+            "en": "Defaults",
+            "es": "Valores por defecto"
+          },
+          "parameters": {
+            "interval_months": 3.0,
+            "intervals": 60,
+            "hidden": [
+              32,
+              32
+            ],
+            "learning_rate": 0.01,
+            "weight_decay": 0.0001
+          },
+          "status": "fitted",
+          "reason": null,
+          "epochs": 300,
+          "best_epoch": 240,
+          "holdout_nll_per_default": 2.1,
+          "weights_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+          "evaluation": {
+            "c_index": {
+              "pch": 0.7,
+              "cox": 0.69
+            },
+            "integrated_brier": {
+              "pch": 0.0123,
+              "cox": 0.0125
+            },
+            "mean_decile_gap": {
+              "pch": 0.004,
+              "cox": 0.0045
+            },
+            "criteria": {
+              "lower_integrated_brier": true,
+              "smaller_decile_gap": true,
+              "higher_c_index": true
+            },
+            "holds_at_date": true
+          }
+        },
+        {
+          "setting_id": "width-1.5",
+          "parameter": "interval_width",
+          "is_default": false,
+          "label": {
+            "en": "Interval width 1.5 months (120 intervals)",
+            "es": "Ancho de intervalo de 1,5 meses (120 intervalos)"
+          },
+          "parameters": {
+            "interval_months": 1.5,
+            "intervals": 120,
+            "hidden": [
+              32,
+              32
+            ],
+            "learning_rate": 0.01,
+            "weight_decay": 0.0001
+          },
+          "status": "fitted",
+          "reason": null,
+          "epochs": 301,
+          "best_epoch": 241,
+          "holdout_nll_per_default": 2.101,
+          "weights_sha256": "0000000000000000000000000000000000000000000000000000000000000002",
+          "evaluation": {
+            "c_index": {
+              "pch": 0.701,
+              "cox": 0.69
+            },
+            "integrated_brier": {
+              "pch": 0.0122,
+              "cox": 0.0125
+            },
+            "mean_decile_gap": {
+              "pch": 0.0042,
+              "cox": 0.0045
+            },
+            "criteria": {
+              "lower_integrated_brier": true,
+              "smaller_decile_gap": true,
+              "higher_c_index": true
+            },
+            "holds_at_date": true
+          }
+        },
+        {
+          "setting_id": "width-6",
+          "parameter": "interval_width",
+          "is_default": false,
+          "label": {
+            "en": "Interval width 6 months (30 intervals)",
+            "es": "Ancho de intervalo de 6 meses (30 intervalos)"
+          },
+          "parameters": {
+            "interval_months": 6.0,
+            "intervals": 30,
+            "hidden": [
+              32,
+              32
+            ],
+            "learning_rate": 0.01,
+            "weight_decay": 0.0001
+          },
+          "status": "fitted",
+          "reason": null,
+          "epochs": 302,
+          "best_epoch": 242,
+          "holdout_nll_per_default": 2.102,
+          "weights_sha256": "0000000000000000000000000000000000000000000000000000000000000003",
+          "evaluation": {
+            "c_index": {
+              "pch": 0.702,
+              "cox": 0.69
+            },
+            "integrated_brier": {
+              "pch": 0.0121,
+              "cox": 0.0125
+            },
+            "mean_decile_gap": {
+              "pch": 0.0044,
+              "cox": 0.0045
+            },
+            "criteria": {
+              "lower_integrated_brier": true,
+              "smaller_decile_gap": false,
+              "higher_c_index": true
+            },
+            "holds_at_date": false
+          }
+        },
+        {
+          "setting_id": "hidden-16",
+          "parameter": "hidden_layers",
+          "is_default": false,
+          "label": {
+            "en": "Hidden layers 16 and 16",
+            "es": "Capas ocultas de 16 y 16"
+          },
+          "parameters": {
+            "interval_months": 3.0,
+            "intervals": 60,
+            "hidden": [
+              16,
+              16
+            ],
+            "learning_rate": 0.01,
+            "weight_decay": 0.0001
+          },
+          "status": "fitted",
+          "reason": null,
+          "epochs": 303,
+          "best_epoch": 243,
+          "holdout_nll_per_default": 2.103,
+          "weights_sha256": "0000000000000000000000000000000000000000000000000000000000000004",
+          "evaluation": {
+            "c_index": {
+              "pch": 0.703,
+              "cox": 0.69
+            },
+            "integrated_brier": {
+              "pch": 0.012,
+              "cox": 0.0125
+            },
+            "mean_decile_gap": {
+              "pch": 0.0046,
+              "cox": 0.0045
+            },
+            "criteria": {
+              "lower_integrated_brier": true,
+              "smaller_decile_gap": true,
+              "higher_c_index": true
+            },
+            "holds_at_date": true
+          }
+        },
+        {
+          "setting_id": "hidden-64",
+          "parameter": "hidden_layers",
+          "is_default": false,
+          "label": {
+            "en": "Hidden layers 64 and 64",
+            "es": "Capas ocultas de 64 y 64"
+          },
+          "parameters": {
+            "interval_months": 3.0,
+            "intervals": 60,
+            "hidden": [
+              64,
+              64
+            ],
+            "learning_rate": 0.01,
+            "weight_decay": 0.0001
+          },
+          "status": "not_converged",
+          "reason": {
+            "en": "The fit ran to the cap of 1,500 epochs.",
+            "es": "El ajuste llego al tope de 1.500 epocas."
+          },
+          "epochs": 1500,
+          "best_epoch": 1500,
+          "holdout_nll_per_default": 2.104,
+          "weights_sha256": "0000000000000000000000000000000000000000000000000000000000000005",
+          "evaluation": {
+            "c_index": {
+              "pch": 0.704,
+              "cox": 0.69
+            },
+            "integrated_brier": {
+              "pch": 0.0119,
+              "cox": 0.0125
+            },
+            "mean_decile_gap": {
+              "pch": 0.0048,
+              "cox": 0.0045
+            },
+            "criteria": {
+              "lower_integrated_brier": true,
+              "smaller_decile_gap": true,
+              "higher_c_index": true
+            },
+            "holds_at_date": true
+          }
+        },
+        {
+          "setting_id": "weight-decay-1e-5",
+          "parameter": "weight_decay",
+          "is_default": false,
+          "label": {
+            "en": "Weight decay 1e-5",
+            "es": "Decaimiento de pesos 1e-5"
+          },
+          "parameters": {
+            "interval_months": 3.0,
+            "intervals": 60,
+            "hidden": [
+              32,
+              32
+            ],
+            "learning_rate": 0.01,
+            "weight_decay": 1e-05
+          },
+          "status": "fitted",
+          "reason": null,
+          "epochs": 305,
+          "best_epoch": 245,
+          "holdout_nll_per_default": 2.105,
+          "weights_sha256": "0000000000000000000000000000000000000000000000000000000000000006",
+          "evaluation": {
+            "c_index": {
+              "pch": 0.705,
+              "cox": 0.69
+            },
+            "integrated_brier": {
+              "pch": 0.0118,
+              "cox": 0.0125
+            },
+            "mean_decile_gap": {
+              "pch": 0.005,
+              "cox": 0.0045
+            },
+            "criteria": {
+              "lower_integrated_brier": true,
+              "smaller_decile_gap": true,
+              "higher_c_index": true
+            },
+            "holds_at_date": true
+          }
+        },
+        {
+          "setting_id": "weight-decay-1e-3",
+          "parameter": "weight_decay",
+          "is_default": false,
+          "label": {
+            "en": "Weight decay 1e-3",
+            "es": "Decaimiento de pesos 1e-3"
+          },
+          "parameters": {
+            "interval_months": 3.0,
+            "intervals": 60,
+            "hidden": [
+              32,
+              32
+            ],
+            "learning_rate": 0.01,
+            "weight_decay": 0.001
+          },
+          "status": "fitted",
+          "reason": null,
+          "epochs": 306,
+          "best_epoch": 246,
+          "holdout_nll_per_default": 2.106,
+          "weights_sha256": "0000000000000000000000000000000000000000000000000000000000000007",
+          "evaluation": {
+            "c_index": {
+              "pch": 0.706,
+              "cox": 0.69
+            },
+            "integrated_brier": {
+              "pch": 0.0117,
+              "cox": 0.0125
+            },
+            "mean_decile_gap": {
+              "pch": 0.0052,
+              "cox": 0.0045
+            },
+            "criteria": {
+              "lower_integrated_brier": true,
+              "smaller_decile_gap": true,
+              "higher_c_index": true
+            },
+            "holds_at_date": true
+          }
+        },
+        {
+          "setting_id": "learning-rate-0.003",
+          "parameter": "learning_rate",
+          "is_default": false,
+          "label": {
+            "en": "Learning rate 0.003",
+            "es": "Tasa de aprendizaje 0,003"
+          },
+          "parameters": {
+            "interval_months": 3.0,
+            "intervals": 60,
+            "hidden": [
+              32,
+              32
+            ],
+            "learning_rate": 0.003,
+            "weight_decay": 0.0001
+          },
+          "status": "fitted",
+          "reason": null,
+          "epochs": 307,
+          "best_epoch": 247,
+          "holdout_nll_per_default": 2.107,
+          "weights_sha256": "0000000000000000000000000000000000000000000000000000000000000008",
+          "evaluation": {
+            "c_index": {
+              "pch": 0.707,
+              "cox": 0.69
+            },
+            "integrated_brier": {
+              "pch": 0.0116,
+              "cox": 0.0125
+            },
+            "mean_decile_gap": {
+              "pch": 0.0054,
+              "cox": 0.0045
+            },
+            "criteria": {
+              "lower_integrated_brier": true,
+              "smaller_decile_gap": true,
+              "higher_c_index": true
+            },
+            "holds_at_date": true
+          }
+        },
+        {
+          "setting_id": "learning-rate-0.03",
+          "parameter": "learning_rate",
+          "is_default": false,
+          "label": {
+            "en": "Learning rate 0.03",
+            "es": "Tasa de aprendizaje 0,03"
+          },
+          "parameters": {
+            "interval_months": 3.0,
+            "intervals": 60,
+            "hidden": [
+              32,
+              32
+            ],
+            "learning_rate": 0.03,
+            "weight_decay": 0.0001
+          },
+          "status": "failed",
+          "reason": {
+            "en": "The fit raised an error in the fixture.",
+            "es": "El ajuste fallo en el ejemplo."
+          },
+          "epochs": null,
+          "best_epoch": null,
+          "holdout_nll_per_default": null,
+          "weights_sha256": null,
+          "evaluation": null
+        }
+      ],
+      "overall": {
+        "dates": 1,
+        "case_setting": "default",
+        "case_verdict": "holds",
+        "settings_count": 9,
+        "agree": 7,
+        "settings": [
+          {
+            "setting_id": "default",
+            "dates": 1,
+            "evaluable": 1,
+            "holds_at": 1,
+            "verdict": "holds",
+            "agrees": true
+          },
+          {
+            "setting_id": "width-1.5",
+            "dates": 1,
+            "evaluable": 1,
+            "holds_at": 1,
+            "verdict": "holds",
+            "agrees": true
+          },
+          {
+            "setting_id": "width-6",
+            "dates": 1,
+            "evaluable": 1,
+            "holds_at": 0,
+            "verdict": "refuted",
+            "agrees": false
+          },
+          {
+            "setting_id": "hidden-16",
+            "dates": 1,
+            "evaluable": 1,
+            "holds_at": 1,
+            "verdict": "holds",
+            "agrees": true
+          },
+          {
+            "setting_id": "hidden-64",
+            "dates": 1,
+            "evaluable": 1,
+            "holds_at": 1,
+            "verdict": "holds",
+            "agrees": true
+          },
+          {
+            "setting_id": "weight-decay-1e-5",
+            "dates": 1,
+            "evaluable": 1,
+            "holds_at": 1,
+            "verdict": "holds",
+            "agrees": true
+          },
+          {
+            "setting_id": "weight-decay-1e-3",
+            "dates": 1,
+            "evaluable": 1,
+            "holds_at": 1,
+            "verdict": "holds",
+            "agrees": true
+          },
+          {
+            "setting_id": "learning-rate-0.003",
+            "dates": 1,
+            "evaluable": 1,
+            "holds_at": 1,
+            "verdict": "holds",
+            "agrees": true
+          },
+          {
+            "setting_id": "learning-rate-0.03",
+            "dates": 1,
+            "evaluable": 0,
+            "holds_at": 0,
+            "verdict": null,
+            "agrees": false
+          }
+        ]
+      }
     }
   },
   "provenance": {
