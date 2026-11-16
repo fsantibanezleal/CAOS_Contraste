@@ -89,7 +89,8 @@ from riskvalidation.validation.transitions import rating_momentum
 
 from ..io.cerep import GRADES as CEREP_GRADES
 from .c01_ladder import _t
-from .c04_bounds import bounds_rung, seed_keys as bounds_keys, verdict as bounds_verdict
+from .c04_bounds import (CLAUSE_AT, CLAUSE_REPS, bounds_rung, bounds_verdict, clause_seed_keys,
+                         seed_keys as bounds_keys)
 
 FAMILIES = ("markov", "momentum", "cycle", "withdrawals", "thin")
 GRADES = list(CEREP_GRADES)
@@ -546,11 +547,15 @@ def _thin(q: np.ndarray, obligors: list[int]) -> Family:
 
 
 def family_outputs(family: str, q: np.ndarray, obligors: list[int], case_seed: int, reps: int = 200, *,
-                   source: str = SOURCE) -> dict[str, Any]:
+                   source: str = SOURCE, clause_reps: int | None = None,
+                   real_bounds: dict[str, dict[str, Any] | None] | None = None) -> dict[str, Any]:
     """The outputs of one generator family (contract section 2): ``q`` the 8 x 8 generator (seven grades and default,
     default absorbing, finite, default reachable from every grade), ``obligors`` the cohort size by grade (positive
     integers), ``reps`` the repetitions per rung (the thin family is exact and draws nothing), ``source`` what ``q``
-    is, printed in the outputs."""
+    is, printed in the outputs. The withdrawals family's BS-14 verdict also reads the refutation rule's two clauses:
+    ``clause_reps`` repetitions (default ``reps``; the bake gives ``CLAUSE_REPS``) of the coverage study at informative
+    ``CLAUSE_AT`` on draws of their own, and ``real_bounds``, each source's ``real_bounds`` output (None for an agency
+    without a default category; omitted: no source, so the stability clause is not judged and does not hold)."""
     if family not in FAMILIES:
         raise ValueError(f"family must be one of {FAMILIES}, got {family!r}")
     qa = np.asarray(q, dtype=float)
@@ -593,5 +598,11 @@ def family_outputs(family: str, q: np.ndarray, obligors: list[int], case_seed: i
         "simulations": sims,
     }
     # BS-14's verdict: the withdrawals family's; null elsewhere (the key is always written, as the web's descriptor reads it)
-    out["bounds_verdict"] = bounds_verdict(rungs) if family == "withdrawals" else None
+    out["bounds_verdict"] = None
+    if family == "withdrawals":
+        keys = clause_seed_keys()
+        study = bounds_rung(_paths, qa, ob, seed=_seed(case_seed, keys[0]), scale_seed=_seed(case_seed, keys[1]),
+                            reps=int(clause_reps or reps), informative=CLAUSE_AT, withdrawal_rate=WITHDRAWAL_RATE,
+                            window=WINDOW, keys=keys)
+        out["bounds_verdict"] = bounds_verdict(rungs, study, real_bounds or {})
     return jsonable(out)

@@ -1765,6 +1765,8 @@ export function withdrawalBoundsCharts(v: FamilyVariant, sel: C04Sel): ChartSpec
   }));
 }
 
+const SOURCE_NAME: Record<string, string> = { sp: 'S&P', fitch: 'Fitch', moodys: "Moody's" };
+
 export function WithdrawalsBoundsView({ sel }: { sel: C04Sel | null }) {
   const lang = useShellLang();
   const v = familyOf(sel);
@@ -1781,10 +1783,17 @@ export function WithdrawalsBoundsView({ sel }: { sel: C04Sel | null }) {
     es: `Fracción de ${num('es', reps)} repeticiones cuyo intervalo al 95 % cubre la PD anual verdadera de ${grade} (${pctText('es', truth)}): eliminados y mantenidos son los tratamientos de las dos páginas de CEREP (intervalos de Jeffreys), seguidos lee el fin del año de toda calificación retirada (el conteo de la página de incumplimientos), la anclada es el intervalo de transitions.withdrawals de riskvalidation con k leído de la página de incumplimientos, la banda identificada va de k 0 a la cota de Manski. Punteado, el piso del 90 % fijado antes del estudio.`,
   };
   const s = verdict.summary;
+  const cov = s.coverage_better_than_every_treatment;
+  const stab = s.anchored_k_stable_across_years;
+  const unstable = stab.rows.filter((r) => r.status === 'unstable');
+  const sourceName = (id: string) => SOURCE_NAME[id] ?? id;
+  const points = (d: number) => `${Math.round(d * 1000) < 0 ? '-' : '+'}${num(lang, Math.abs(d) * 100, { decimals: 1 })}`;
+  const widths = cov.designs.map((d) => d.manski_width_ratio).filter((x): x is number => x !== null);
+  const bandN = cov.designs.filter((d) => d.manski_covers_as_often_or_more).length;
   const outcome = L(
     lang,
-    `Verdict on ${GRADES[verdict.grade]}: the anchored interval ${s.anchored_covers_90 ? 'covers at least 90 % in every design and k' : 'falls under 90 % somewhere'}; the existing treatments ${s.existing_under_50 ? 'all fall under 50 % at k 9' : 'do not all fall under 50 % at k 9 (the first-year cohort keeps them above it)'}; the hypothesis is ${s.refuted ? 'refuted' : 'not refuted'}.`,
-    `Veredicto sobre ${GRADES[verdict.grade]}: el intervalo anclado ${s.anchored_covers_90 ? 'cubre al menos el 90 % en todo diseño y k' : 'cae bajo el 90 % en algún caso'}; los tratamientos existentes ${s.existing_under_50 ? 'caen todos bajo el 50 % con k 9' : 'no caen todos bajo el 50 % con k 9 (la cohorte del primer año los deja sobre él)'}; la hipótesis ${s.refuted ? 'queda refutada' : 'no queda refutada'}.`,
+    `Verdict on ${GRADES[verdict.grade]}: the hypothesis is ${s.refuted ? 'refuted' : 'not refuted'}. Coverage clause (the anchored interval covers more than every treatment, Manski's identified band among them, at k ${num(lang, cov.informative)} on ${num(lang, cov.reps)} repetitions): ${cov.holds ? 'holds' : 'fails'}; the anchored interval gains ${cov.designs.map((d) => points(d.difference)).join(', ')} points over the best other treatment in the three designs and the band covers as often or more often in ${bandN} of ${cov.designs.length}${widths.length ? `, at ${num(lang, Math.min(...widths), { decimals: 1 })} to ${num(lang, Math.max(...widths), { decimals: 1 })} times the width` : ''}. Stability clause (at least ${pct0(lang, stab.threshold)} of the annual cohorts hold the pooled k): ${stab.holds ? 'holds' : 'fails'}${unstable.length ? `; under ${pct0(lang, stab.threshold)} for ${unstable.map((r) => `${sourceName(r.source)} ${r.grade} (${pct0(lang, r.share ?? 0)})`).join(', ')}` : ''}. Against the removed, kept and followed treatments alone the anchored interval ${s.anchored_covers_90 ? 'covers at least 90 % in every design and k' : 'falls under 90 % somewhere'}, and those treatments ${s.existing_under_50 ? 'all fall under 50 % at k 9' : 'do not all fall under 50 % at k 9 (the first-year cohort keeps them above it)'}.`,
+    `Veredicto sobre ${GRADES[verdict.grade]}: la hipótesis ${s.refuted ? 'queda refutada' : 'no queda refutada'}. Cláusula de cobertura (el intervalo anclado cubre más que todo tratamiento, la banda identificada de Manski entre ellos, con k ${num(lang, cov.informative)} en ${num(lang, cov.reps)} repeticiones): ${cov.holds ? 'se cumple' : 'falla'}; el intervalo anclado gana ${cov.designs.map((d) => points(d.difference)).join(', ')} puntos sobre el mejor otro tratamiento en los tres diseños y la banda cubre igual o más en ${bandN} de ${cov.designs.length}${widths.length ? `, con ${num(lang, Math.min(...widths), { decimals: 1 })} a ${num(lang, Math.max(...widths), { decimals: 1 })} veces el ancho` : ''}. Cláusula de estabilidad (al menos el ${pct0(lang, stab.threshold)} de las cohortes anuales contiene el k agrupado): ${stab.holds ? 'se cumple' : 'falla'}${unstable.length ? `; menos del ${pct0(lang, stab.threshold)} para ${unstable.map((r) => `${r.grade} de ${sourceName(r.source)} (${pct0(lang, r.share ?? 0)})`).join(', ')}` : ''}. Contra los tratamientos eliminado, mantenido y con seguimiento solos, el intervalo anclado ${s.anchored_covers_90 ? 'cubre al menos el 90 % en todo diseño y k' : 'cae bajo el 90 % en algún caso'}, y esos tratamientos ${s.existing_under_50 ? 'caen todos bajo el 50 % con k 9' : 'no caen todos bajo el 50 % con k 9 (la cohorte del primer año los deja sobre él)'}.`,
   );
   const yes = L(lang, 'Yes', 'Sí');
   const no = L(lang, 'No', 'No');
@@ -1834,6 +1843,43 @@ export function WithdrawalsBoundsView({ sel }: { sel: C04Sel | null }) {
                   <td>{rateSe(lang, { rate: r.value, se: r.mcse } as C04Rate)}</td>
                   <td>{num(lang, r.threshold * 100, { decimals: 1 })}</td>
                   <td className="ct-text">{r.holds ? yes : no}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <table className="caos-table ct-wrap-head" data-table="withdrawals-bounds-clauses">
+            <thead>
+              <tr>
+                <th className="ct-text">{L(lang, 'Refutation clause', 'Cláusula de refutación')}</th>
+                <th className="ct-text">{L(lang, 'Design or source', 'Diseño o fuente')}</th>
+                <th>{L(lang, 'Anchored, %', 'Anclada, %')}</th>
+                <th className="ct-text ct-wide-only">{L(lang, 'Best other treatment', 'Mejor otro tratamiento')}</th>
+                <th>{L(lang, 'Difference, points', 'Diferencia, puntos')}</th>
+                <th className="ct-wide-only">{L(lang, 'Band width over anchored', 'Ancho de la banda sobre la anclada')}</th>
+                <th className="ct-text">{L(lang, 'Holds', 'Se cumple')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cov.designs.map((d) => (
+                <tr key={`cov-${d.design}`} data-clause="coverage" data-design={d.design} data-holds={d.holds ? 'yes' : 'no'}>
+                  <td className="ct-text">{L(lang, 'Coverage against every treatment', 'Cobertura contra todo tratamiento')}</td>
+                  <td className="ct-text">{pick(BOUNDS_DESIGN_LABEL[d.design] ?? t('Design', 'Diseño'), lang)}</td>
+                  <td>{num(lang, d.anchored * 100, { decimals: 1 })}</td>
+                  <td className="ct-text ct-wide-only">{`${d.best_other_treatments.map((x) => pick(BOUNDS_LABEL[x as BoundsTreatment] ?? t(x, x), lang)).join(', ')} (${num(lang, d.best_other * 100, { decimals: 1 })})`}</td>
+                  <td>{points(d.difference)}</td>
+                  <td className="ct-wide-only">{num(lang, d.manski_width_ratio, { decimals: 1 })}</td>
+                  <td className="ct-text">{d.holds ? yes : no}</td>
+                </tr>
+              ))}
+              {stab.rows.map((r) => (
+                <tr key={`stab-${r.source}-${r.grade}`} data-clause="stability" data-status={r.status}>
+                  <td className="ct-text">{L(lang, 'Stability of the anchored k', 'Estabilidad del k anclado')}</td>
+                  <td className="ct-text">{`${sourceName(r.source)} ${r.grade}`}</td>
+                  <td>{r.share === null ? '' : num(lang, r.share * 100, { decimals: 0 })}</td>
+                  <td className="ct-text ct-wide-only">{`${r.cohorts_containing_pooled_k} / ${r.usable_cohorts} ${L(lang, 'cohorts hold the pooled k', 'cohortes contienen el k agrupado')}`}</td>
+                  <td />
+                  <td className="ct-wide-only" />
+                  <td className="ct-text">{r.status === 'stable' ? yes : r.status === 'unstable' ? no : L(lang, `Not judged (under ${stab.min_cohorts} cohorts)`, `No se juzga (menos de ${stab.min_cohorts} cohortes)`)}</td>
                 </tr>
               ))}
             </tbody>

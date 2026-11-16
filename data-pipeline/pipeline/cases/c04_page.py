@@ -17,6 +17,8 @@ DESIGNS = (("first_year", "first-year cohort"), ("pooled", "five cohorts pooled"
 TREATMENTS = (("industry", "removed (k 1)"), ("unfollowed", "kept (k 0)"), ("followed", "followed (oracle)"),
               ("anchored", "anchored"), ("identified", "identified band"))
 AGENCIES = (("sp", "S&P"), ("fitch", "Fitch"))
+OTHER = {"industry": "removed", "unfollowed": "kept", "followed": "followed", "identified": "Manski's band"}
+STATUS = {"stable": "yes", "unstable": "no", "too_few": "too few cohorts"}
 
 
 def _doc(derived: Path, name: str) -> dict:
@@ -32,8 +34,9 @@ def _num(x: float | None, digits: int = 3) -> str:
 
 
 def bounds_block(derived: Path) -> str:
-    """Three tables: coverage of the true PD of B by design, treatment and k; the plan's criteria with their verdict;
-    the anchored k of the real cohorts per agency and grade."""
+    """Five tables: coverage of the true PD of B by design, treatment and k; the plan's criteria; the refutation rule's
+    coverage clause (the anchored interval against every treatment, Manski's band among them) and the anchored k of the
+    real cohorts per agency and grade with its stability clause; then the verdict with each clause."""
     w = _doc(derived, "withdrawals")["outputs"]
     v = w["bounds_verdict"]
     g = v["grade"]
@@ -56,6 +59,16 @@ def bounds_block(derived: Path) -> str:
         lines.append(f"| {row['id']} | {dname[row['design']]} | {row['informative']:g} | {tname[row['treatment']]} | "
                      f"{row['value']:.1%} ({row['mcse']:.1%}) | {row['comparison'].replace('_', ' ')} {row['threshold']:.1%} | "
                      f"{'yes' if row['holds'] else 'no'} |")
+    s = v["summary"]
+    cov, stab = s["coverage_better_than_every_treatment"], s["anchored_k_stable_across_years"]
+    lines += ["", f"| Coverage clause ({cov['reps']:,} repetitions at k {cov['informative']:g}) | Anchored | Best other treatment | Difference, points | "
+              "Manski's band covers as often or more | Band width over anchored | Holds |", "|---|---|---|---|---|---|---|"]
+    for d in cov["designs"]:
+        best = " and ".join(OTHER[t] for t in d["best_other_treatments"])
+        lines.append(f"| {dname[d['design']]} | {_pct(d['anchored'])} | {_pct(d['best_other'])} ({best}) | "
+                     f"{round(100 * d['difference'], 1) + 0.0:+.1f} | {'yes' if d['manski_covers_as_often_or_more'] else 'no'} | "
+                     f"{_num(d['manski_width_ratio'], 2)} | {'yes' if d['holds'] else 'no'} |")
+    status = {(r["source"], r["grade"]): r["status"] for r in stab["rows"]}
     lines += ["", "| Agency | Grade | Pooled anchored k (band) | Cohorts whose band holds the pooled k | Stable at 80% | Tipping k to the next grade |",
               "|---|---|---|---|---|---|"]
     for code, name in AGENCIES:
@@ -67,11 +80,15 @@ def bounds_block(derived: Path) -> str:
             band = f"{_num(p['k'])} ({_num(p['k_low'])} to {_num(p['k_high'])})"
             hold = f"{st['cohorts_containing_pooled_k']} of {st['usable_cohorts']}"
             tipping = "n/a" if tip is None else f"{_num(tip['k'])} ({tip['status'].replace('_', ' ')}, to {tip['next_grade']})"
-            lines.append(f"| {name} | {gr['grade']} | {band} | {hold} | {'yes' if st['stable'] else 'no'} | {tipping} |")
-    s = v["summary"]
-    lines += ["", f"Summary on {['AAA', 'AA', 'A', 'BBB', 'BB', 'B', 'CCC-C'][g]} ({v['reps']} repetitions per design and k): anchored covers at "
-              f"least 90% everywhere: {'yes' if s['anchored_covers_90'] else 'no'}; every existing treatment under 50% at k 9: "
-              f"{'yes' if s['existing_under_50'] else 'no'}; refuted on coverage: {'yes' if s['refuted'] else 'no'}."]
+            lines.append(f"| {name} | {gr['grade']} | {band} | {hold} | {STATUS[status[(code, gr['grade'])]]} | {tipping} |")
+    unstable = [f"{dict(AGENCIES)[r['source']]}'s {r['grade']} ({_pct(r['share'])})" for r in stab["rows"] if r["status"] == "unstable"]
+    lines += ["", f"Verdict on {['AAA', 'AA', 'A', 'BBB', 'BB', 'B', 'CCC-C'][g]}: the hypothesis is {'refuted' if s['refuted'] else 'not refuted'}. "
+              f"Coverage clause (the anchored interval covers more than every treatment, Manski's band among them, at k {cov['informative']:g} "
+              f"in every design): {'holds' if cov['holds'] else 'fails'}. Stability clause (at least {stab['threshold']:.0%} of the annual cohorts "
+              f"hold the pooled k, a grade with fewer than {stab['min_cohorts']} usable cohorts not judged): {'holds' if stab['holds'] else 'fails'}"
+              + (f", under {stab['threshold']:.0%} for {', '.join(unstable)}" if unstable else "") + ". "
+              f"On the rungs alone ({v['reps']} repetitions per design and k): anchored covers at least 90% everywhere: "
+              f"{'yes' if s['anchored_covers_90'] else 'no'}; every existing treatment under 50% at k 9: {'yes' if s['existing_under_50'] else 'no'}."]
     return "\n".join(lines) + "\n"
 
 

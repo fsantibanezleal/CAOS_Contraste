@@ -970,7 +970,7 @@ export interface components {
         };
         /**
          * C04 family variant
-         * @description Catalog row c04-family 1.1.0: one simulation family of the transition estimators (outputs.kind generator).
+         * @description Catalog row c04-family 2.0.0: one simulation family of the transition estimators (outputs.kind generator).
          */
         "c04-variant-generator": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -1169,7 +1169,7 @@ export interface components {
             mean_width: (number | null)[];
             relative_bias: (number | null)[];
         };
-        /** @description BS-14's hypothesis (i) read off the rungs' coverage of one grade's true PD against the criteria fixed before the run (the anchored interval covers at least 90% at informative 1, 3 and 9; the existing treatments under 50% at 9; refuted if the anchored interval does not cover more than every existing treatment at 9). */
+        /** @description BS-14's hypothesis (i) read off the rungs' coverage of one grade's true PD against the criteria fixed before the run (the anchored interval covers at least 90% at informative 1, 3 and 9; the existing treatments under 50% at 9; refuted if the anchored interval does not cover more than every treatment at 9, Manski's identified band among them, or if the anchored k is unstable across years: `summary` carries both clauses). */
         c04BoundsVerdict: {
             grade: number;
             reps: number;
@@ -1191,8 +1191,11 @@ export interface components {
             }[];
             summary: {
                 refuted: boolean;
+                refuted_on: ("coverage_better_than_every_treatment" | "anchored_k_stable_across_years")[];
                 anchored_covers_90: boolean;
                 existing_under_50: boolean;
+                coverage_better_than_every_treatment: components["schemas"]["c04CoverageClause"];
+                anchored_k_stable_across_years: components["schemas"]["c04StabilityClause"];
             };
         };
         c04CapitalPoint: {
@@ -1216,6 +1219,36 @@ export interface components {
             events: number[] | null;
             defaulted_cohort: number[] | null;
             tab2_gap: number | null;
+        };
+        /** @description The coverage clause of BS-14's refutation rule, read at informative `informative` on `reps` repetitions of the committed generator (draws of their own): the anchored interval covers the true PD of grade `grade` more often than every other treatment, the identified (Manski) band among them, in every design. */
+        c04CoverageClause: {
+            holds: boolean;
+            informative: number;
+            grade: number;
+            level: number;
+            reps: number;
+            manski_treatment: string;
+            designs: {
+                design: string;
+                reps: number;
+                seed_key: string;
+                seed: number;
+                anchored: number;
+                anchored_mcse: number;
+                treatments: {
+                    /** @enum {string} */
+                    id: "industry" | "unfollowed" | "followed" | "identified";
+                    coverage: number;
+                    mean_width: number | null;
+                }[];
+                anchored_mean_width: number | null;
+                best_other: number;
+                best_other_treatments: ("industry" | "unfollowed" | "followed" | "identified")[];
+                difference: number;
+                manski_covers_as_often_or_more: boolean;
+                manski_width_ratio: number | null;
+                holds: boolean;
+            }[];
         };
         c04CycleRung: {
             value: number;
@@ -1546,6 +1579,24 @@ export interface components {
             };
             seed: number;
             n_rep: number;
+        };
+        /** @description The stability clause of BS-14's refutation rule on the real cohorts of each source with a default page: the anchored k is stable across years when, for every grade judged, at least `threshold` of the annual cohorts' k bands contain the pooled k. A grade with fewer than `min_cohorts` usable cohorts is `too_few`: not judged, never a pass; a clause with no grade judged does not hold. */
+        c04StabilityClause: {
+            holds: boolean;
+            threshold: number;
+            min_cohorts: number;
+            judged: number;
+            unstable: number;
+            unanchored_sources: string[];
+            rows: {
+                source: string;
+                grade: string;
+                usable_cohorts: number;
+                cohorts_containing_pooled_k: number;
+                share: number | null;
+                /** @enum {string} */
+                status: "stable" | "unstable" | "too_few";
+            }[];
         };
         c04ThinRung: {
             value: number;

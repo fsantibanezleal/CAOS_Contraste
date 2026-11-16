@@ -39,8 +39,14 @@ def test_every_rung_carries_the_study_at_the_bakes_repetitions(withdrawals):
 
 def test_the_verdict_is_what_the_rungs_say(withdrawals):
     out = withdrawals["outputs"]
-    assert out["bounds_verdict"] == json.loads(json.dumps(bnd.verdict(out["rungs"])))
     v = out["bounds_verdict"]
+    rungs_only = json.loads(json.dumps(bnd.verdict(out["rungs"])))
+    # the rungs' rows and criteria are the 200-repetition study's; the summary adds the refutation rule's two clauses
+    assert v["rows"] == rungs_only["rows"]
+    assert {k: v["summary"][k] for k in ("anchored_covers_90", "existing_under_50")} == {
+        k: rungs_only["summary"][k] for k in ("anchored_covers_90", "existing_under_50")}
+    assert v["summary"]["refuted"] == (not (v["summary"][bnd.COVERAGE_CLAUSE]["holds"]
+                                            and v["summary"][bnd.STABILITY_CLAUSE]["holds"]))
     assert v["reps"] == 200 and v["grade"] == 5
     # the criteria are the plan's, fixed before the run
     assert {(r["id"], r["threshold"]) for r in v["rows"] if r["id"] != "anchored-better"} == {
@@ -127,3 +133,35 @@ def test_the_case_page_block_is_the_documents():
     text = (root / "docs" / "cases" / "C04.md").read_text(encoding="utf-8")
     a, b = text.index(c04_page.MARK_START) + len(c04_page.MARK_START), text.index(c04_page.MARK_END)
     assert text[a:b] == "\n" + c04_page.bounds_block(root / "data" / "derived")
+
+
+def test_the_stability_clause_is_what_the_agency_documents_say():
+    summary = _doc("withdrawals")["outputs"]["bounds_verdict"]["summary"]
+    real = {a: _doc(a)["outputs"]["withdrawal_bounds"] for a in ("sp", "moodys", "fitch")}
+    assert summary[bnd.STABILITY_CLAUSE] == json.loads(json.dumps(bnd.stability_clause(real)))
+    assert summary[bnd.STABILITY_CLAUSE]["unanchored_sources"] == ["moodys"]
+
+
+def test_the_coverage_clause_reads_its_own_draws_and_agrees_with_its_rows():
+    clause = _doc("withdrawals")["outputs"]["bounds_verdict"]["summary"][bnd.COVERAGE_CLAUSE]
+    from pipeline.cases import c04_families as fam
+
+    keys = bnd.clause_seed_keys()
+    assert clause["reps"] == bnd.CLAUSE_REPS == 1000 and clause["informative"] == bnd.CLAUSE_AT == 9.0
+    for d in clause["designs"]:
+        assert d["seed_key"] in keys and d["seed"] == fam._seed(42, d["seed_key"])
+        by = {t["id"]: t["coverage"] for t in d["treatments"]}
+        assert set(by) == set(bnd.OTHER_TREATMENTS) and bnd.MANSKI in by
+        assert d["best_other"] == max(by.values())
+        assert d["difference"] == pytest.approx(d["anchored"] - d["best_other"], abs=1e-12)
+        assert d["holds"] == (d["anchored"] > d["best_other"])
+        assert d["manski_covers_as_often_or_more"] == (by[bnd.MANSKI] >= d["anchored"])
+    assert clause["holds"] == all(d["holds"] for d in clause["designs"])
+
+
+def test_the_bake_reads_no_manuscript_result_file():
+    cases = Path(__file__).resolve().parents[1] / "data-pipeline" / "pipeline" / "cases"
+    for module in ("c04_bounds.py", "c04_families.py", "c04_transitions.py", "c04_page.py"):
+        text = (cases / module).read_text(encoding="utf-8")
+        for name in ("coverage-grid", "stability.json", "scale-ladder", "experiments/results"):
+            assert name not in text, (module, name)
