@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -18,7 +20,7 @@ PIPELINE = ROOT / "data-pipeline" / "pipeline"
 MODULES = ROOT / "scripts" / "unit_constants_modules.json"
 
 CLASSES = ("probability", "ratio", "relative-tolerance", "training-hyperparameter", "single-observable-limit", "unit-conversion",
-           "source-cited-input")
+           "source-cited-input", "stated-assumption", "run-budget")
 
 
 def build(tmp: Path, sources: dict[str, str], *, method=(), parameter=(), outside: dict[str, str] | None = None,
@@ -290,3 +292,38 @@ def test_the_constant_check_runs_in_ci_and_in_the_smoke_scripts(rel):
 def test_the_constant_check_adds_no_job_to_ci():
     text = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     assert text.count("check_unit_constants.py") == 1
+
+
+POWERSHELL = shutil.which("powershell.exe")
+
+
+def _smoke_copy(tmp: Path, artifacts_exit: int, constants_exit: int) -> Path:
+    """A throwaway repo with the real smoke.ps1 and two stub checks that exit with the given codes."""
+    scripts = tmp / "scripts"
+    scripts.mkdir(parents=True)
+    shutil.copy(ROOT / "scripts" / "smoke.ps1", scripts / "smoke.ps1")
+    (scripts / "check_artifacts.py").write_text(f"import sys\nsys.exit({artifacts_exit})\n", encoding="utf-8")
+    (scripts / "check_unit_constants.py").write_text(f"import sys\nsys.exit({constants_exit})\n", encoding="utf-8")
+    return scripts / "smoke.ps1"
+
+
+@pytest.mark.skipif(POWERSHELL is None, reason="Windows PowerShell 5.1 is not on this machine")
+@pytest.mark.parametrize("artifacts_exit,constants_exit,expected", [(0, 0, 0), (0, 1, 1), (1, 0, 1), (3, 0, 3), (0, 7, 7)])
+def test_smoke_ps1_exits_with_the_failing_check_under_windows_powershell(tmp_path, artifacts_exit, constants_exit, expected):
+    """Windows PowerShell 5.1 does not propagate a native exit code to a script's own: each call needs `exit $LASTEXITCODE`."""
+    smoke = _smoke_copy(tmp_path, artifacts_exit, constants_exit)
+    env = {**os.environ, "PYTHON": sys.executable}
+    out = subprocess.run([POWERSHELL, "-NoProfile", "-NonInteractive", "-File", str(smoke)], capture_output=True, text=True,
+                         timeout=120, env=env, stdin=subprocess.DEVNULL)
+    assert out.returncode == expected, out.stdout + out.stderr
+
+
+def test_the_new_classes_are_in_the_script_and_the_design():
+    spec = importlib.util.spec_from_file_location("check_unit_constants_classes", SCRIPT)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod
+    spec.loader.exec_module(mod)
+    assert tuple(mod.CLASSES) == CLASSES
+    design = (ROOT / "docs" / "design" / "features" / "units" / "design.md").read_text(encoding="utf-8")
+    for klass in ("stated-assumption", "run-budget"):
+        assert f"`{klass}`" in design

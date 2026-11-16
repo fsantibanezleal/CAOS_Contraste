@@ -7,7 +7,9 @@ function path, ``<module>`` at top level; the ordinal numbers equal values of on
 function are two entries), with
 
 - ``class``, from the closed list ``probability``, ``ratio``, ``relative-tolerance``, ``training-hyperparameter``,
-  ``single-observable-limit``, ``unit-conversion``, ``source-cited-input``;
+  ``single-observable-limit``, ``unit-conversion``, ``source-cited-input`` (a value the module or its parameter file cites a source
+  for), ``stated-assumption`` (a case's modelling assumption that carries a unit, with no source; never compared with a measured
+  quantity) and ``run-budget`` (a wall-clock or iteration limit of a run);
 - ``unit``, the unit in words, required;
 - ``reason``, one sentence, required.
 
@@ -42,7 +44,7 @@ REPO = Path(__file__).resolve().parents[1]
 HERE = Path(__file__).resolve().parent
 RULE = "CAOS_MANAGE conventions/units-gate.md (CONTRACT 3b)"
 CLASSES = ("probability", "ratio", "relative-tolerance", "training-hyperparameter", "single-observable-limit", "unit-conversion",
-           "source-cited-input")
+           "source-cited-input", "stated-assumption", "run-budget")
 EXEMPT = frozenset({0.0, 1.0, 0.5, 2.0, 10.0})
 TINY = 1e-5
 TODO = "TODO"

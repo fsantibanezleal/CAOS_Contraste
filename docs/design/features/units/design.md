@@ -184,12 +184,28 @@ advisories (unchanged).
 - Baseline. `scripts/unit_constants_baseline.json`, one entry per literal keyed `module::qualname::value::ordinal` (Fragua's
   `module::value` collides when one value carries two units in one module, as `0.05` does in `cases/c01_retail_pd.py`), with
   `class` from a closed list (`probability`, `ratio`, `relative-tolerance`, `training-hyperparameter`, `single-observable-limit`,
-  `unit-conversion`, `source-cited-input`), `unit` (words, required) and `reason` (required, never `TODO`). `--update` adds new
+  `unit-conversion`, `source-cited-input`, `stated-assumption`, `run-budget`), `unit` (words, required) and `reason` (required, never `TODO`). `--update` adds new
   literals as `TODO` and removes entries whose literal is gone; a `TODO` fails the check. The rule's defect class (a literal
   comparable to a measured quantity in a path more than one observable can reach) has no class: such a literal is rewritten against
   a quantity (the rule's table "Write against a quantity, not against a number"), never baselined.
 - Where it runs: `ci.yml` beside `scripts/check_internal_names.py` (about 1.3 s, measured on the whole tree) and `scripts/smoke.*`,
   added by T6 when its baseline holds no `TODO` (before that the check fails by design).
+
+### The classes after the review of T6 (the fix, 2026-11-16)
+
+The closed list has nine classes. An entry's `unit` is the unit of that literal, never the group's, and its `reason` names what the
+literal is in its own code line.
+
+- `probability`, `ratio`, `relative-tolerance`, `training-hyperparameter`, `single-observable-limit`: as the rule defines them.
+  An absolute tolerance on one observable (CCF points, AUC points) is a `single-observable-limit`, not a `relative-tolerance`.
+- `unit-conversion`: only a literal that converts one unit to another (a percent, a thousand, days per year, a basis point, a
+  label-to-number map of a tenor name). A time, a maturity or a repricing time is never one by being in years.
+- `source-cited-input`: only a literal whose source the module or its parameter file cites; the reason names the source.
+- `stated-assumption`: a modelling assumption of a case that carries a unit (an amount, a rate per year, a maturity, a repricing
+  time); the unit and a reason saying what it assumes and why, no source required. It is never compared with a measured quantity:
+  a literal that is, is the rule's defect class and is rewritten against a quantity.
+- `run-budget`: a wall-clock or iteration limit of a run (a run timeout, a fetcher timeout, a back-off, a pause), its unit
+  seconds, milliseconds or iterations.
 
 ### The decisions of task T5 (`scripts/check_unit_constants.py`)
 
