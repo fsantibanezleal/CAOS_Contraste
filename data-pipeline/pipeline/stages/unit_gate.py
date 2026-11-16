@@ -11,9 +11,13 @@ one function. ``tests/test_unit_gate.py`` asserts both.
 
 Violation classes (a violation is a dict, see below)
     non_finite_prediction            a prediction is NaN or infinite                                      blocking
-    prediction_outside_observable    EVERY prediction lies outside the target's widened range             blocking
-                                     (a prediction partly inside passes; for a ``bound``, any value
-                                     outside the declared domain)
+    prediction_outside_observable    EVERY NONZERO prediction lies outside the target's widened range      blocking
+                                     (a prediction partly inside passes; an exact 0 is the same number
+                                     in every unit, so it carries no evidence about scale and is not
+                                     judged; for a ``bound``, any value outside the declared domain)
+    prediction_outside_domain        a pair that declares a ``domain`` (its observable is bounded by      blocking
+                                     definition: a probability, a share, a coverage, a count) has ANY
+                                     prediction outside it, checked element by element (M15 T2b)
     degenerate_constant_prediction   two or more predictions, all equal, over a target that varies        advisory
     missing_prediction               a prediction is null (a method with no value there, stated by its    advisory
                                      document); counted, never range-checked, never blocking. In memory
@@ -36,7 +40,10 @@ Specification (``data-pipeline/config/unit_pairs.json`` loaded as a dict, and pa
             | {"bake_only": {"hook", "reason"}}           predictions never reach an artifact with their target
             | {"withheld": [pair, ...]}                   checked in memory by the bake (the target may not be published)
             | {"not_applicable": "<why>"}}                nothing is predicted and scored against a target
-    pair = {id, file, prediction, target, kind, unit, group_by?, zero_scale?, domain?, reason?}
+    pair = {id, file, prediction, target, kind, unit, group_by?, zero_scale?, domain?, domain_reason?, reason?}
+    ``domain`` on a series, binary or scalar pair: ``[lo, hi]`` (``null`` an open end), the range its observable has by
+    definition, with ``domain_reason`` (one sentence). An observable not bounded by definition (an LGD, a CCF, a loss, a
+    return) declares none. On a ``bound`` the domain is required and ``reason`` explains it (``domain_reason`` is not used).
     ``file`` is an ``fnmatch`` glob matched against the document's path relative to ``data/derived/<case>/``.
     A case with no entry, or an entry without ``pairs``, makes ``check_document`` return an empty result whose ``entry`` says
     ``none``, ``bake_only``, ``withheld`` or ``not_applicable``; what to do with that is the caller's (T3, T4).
@@ -85,10 +92,11 @@ FLAT_REL = 1e-6
 KINDS = ("series", "binary", "scalar", "bound")
 CLASS_NON_FINITE = "non_finite_prediction"
 CLASS_OUTSIDE = "prediction_outside_observable"
+CLASS_DOMAIN = "prediction_outside_domain"
 CLASS_CONSTANT = "degenerate_constant_prediction"
 CLASS_MISSING = "missing_prediction"
 ENTRY_KINDS = ("pairs", "bake_only", "withheld", "not_applicable")
-_PAIR_KEYS = {"id", "file", "prediction", "target", "kind", "unit", "group_by", "zero_scale", "domain", "reason"}
+_PAIR_KEYS = {"id", "file", "prediction", "target", "kind", "unit", "group_by", "zero_scale", "domain", "domain_reason", "reason"}
 _SEGMENT = re.compile(r"^(?P<name>[^\[\]]+)(?P<arrays>(?:\[\])*)$")
 
 
@@ -112,6 +120,11 @@ def _text(value: Any) -> bool:
 
 def _number(value: Any) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+
+def _domain_ok(domain: Any) -> bool:
+    return (isinstance(domain, (list, tuple)) and len(domain) == 2 and all(d is None or _number(d) for d in domain)
+            and (domain[0] is None or domain[1] is None or domain[0] <= domain[1]))
 
 
 def validate_pair(pair: Any) -> None:
@@ -141,11 +154,17 @@ def validate_pair(pair: Any) -> None:
     if kind == "bound":
         if not _text(pair.get("reason")):
             raise bad("a bound pair needs its 'reason' (one sentence: why this prediction is not an estimate of a target)")
-        domain = pair.get("domain")
-        if (not isinstance(domain, (list, tuple)) or len(domain) != 2
-                or any(d is not None and not _number(d) for d in domain)
-                or (domain[0] is not None and domain[1] is not None and domain[0] > domain[1])):
+        if not _domain_ok(pair.get("domain")):
             raise bad("a bound pair needs its 'domain' as [lo, hi] with null for an open end and lo <= hi")
+        if "domain_reason" in pair:
+            raise bad("a bound pair explains its domain in 'reason'; 'domain_reason' is for the other kinds")
+    elif "domain" in pair or "domain_reason" in pair:
+        if "domain" not in pair:
+            raise bad("'domain_reason' without a 'domain'")
+        if not _domain_ok(pair["domain"]):
+            raise bad("'domain' is [lo, hi] with null for an open end and lo <= hi")
+        if not _text(pair.get("domain_reason")):
+            raise bad("a 'domain' needs its 'domain_reason' (one sentence: why the observable is bounded by definition)")
     group = pair.get("group_by")
     if group is not None:
         if not _text(group) or not group.endswith("[]"):
@@ -348,10 +367,27 @@ def _judge(case: str, rel: str, pair: dict, method: Any, element: int | None, gi
             return [violation(CLASS_OUTSIDE, True, f"predicts {_fmt(p_range)} {pair['unit']} but the declared domain is "
                               f"{_fmt(wide)}: a value lies outside the observable it is a bound of")] + noted
         return noted
-    if not inside:
-        return [violation(CLASS_OUTSIDE, True, f"predicts {_fmt(p_range)} against a widened target range {_fmt(wide)} "
-                          f"{pair['unit']}: every prediction lies outside the observable, so this method is answering "
-                          "a different question")] + noted
+    found: list[dict] = []
+    domain = pair.get("domain")
+    if domain is not None:
+        d_lo = -math.inf if domain[0] is None else domain[0]
+        d_hi = math.inf if domain[1] is None else domain[1]
+        outside = [p for p in preds if not d_lo <= p <= d_hi]
+        if outside:
+            found.append({**violation(CLASS_DOMAIN, True, f"predicts {_fmt(p_range)} {pair['unit']} but its observable is "
+                                      f"bounded by definition to {_fmt(domain)} ({pair.get('domain_reason', '').rstrip('.')}): "
+                                      f"{len(outside)} of {len(preds)} predictions lie outside it"),
+                          "target_range": list(domain)})
+    # an exact zero is the same number in every unit: it carries no evidence about scale, so the nonzero predictions judge
+    nonzero = [p for p in preds if p != 0.0]
+    if nonzero and not any(lo <= p <= hi for p in nonzero):
+        n_zero = len(preds) - len(nonzero)
+        found.append(violation(CLASS_OUTSIDE, True, f"predicts {_fmt(p_range)} against a widened target range {_fmt(wide)} "
+                               f"{pair['unit']}: every nonzero prediction lies outside the observable"
+                               f"{f' ({n_zero} exact zeros carry no evidence about scale)' if n_zero else ''}, so this method "
+                               "is answering a different question"))
+    if found:
+        return found + noted
     p_lo, p_hi = min(preds), max(preds)
     if varies and len(preds) >= 2 and p_hi - p_lo <= FLAT_REL * max(abs(p_lo), abs(p_hi), 1e-12):
         return [violation(CLASS_CONSTANT, False, f"returns the constant {p_lo:.6g} over a target that varies; recorded, "

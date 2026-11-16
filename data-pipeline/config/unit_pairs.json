@@ -7,7 +7,12 @@
         "prediction": "outputs.rungs.<m>.reliability[].pd",
         "target": "outputs.rungs.<m>.reliability[].dr",
         "kind": "binary",
-        "unit": "probability"
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
       },
       {
         "id": "c01-grade-bins",
@@ -15,7 +20,12 @@
         "prediction": "outputs.rungs.<m>.grades[].pd",
         "target": "outputs.rungs.<m>.grades[].dr",
         "kind": "binary",
-        "unit": "probability"
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
       },
       {
         "id": "c01-scorecard-sample",
@@ -24,6 +34,11 @@
         "target": "outputs.sample.targets",
         "kind": "binary",
         "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition.",
         "reason": "Only german-twin.json and holdout.json ship outputs.sample; the other variants and the models artifact do not."
       }
     ]
@@ -37,7 +52,12 @@
         "target": "outputs.rungs[].reliability[].dr",
         "kind": "binary",
         "unit": "probability",
-        "group_by": "outputs.rungs[]"
+        "group_by": "outputs.rungs[]",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
       }
     ]
   },
@@ -49,7 +69,12 @@
         "prediction": "outputs.calibration.rows[].predicted_pd",
         "target": "outputs.calibration.rows[].observed_pd",
         "kind": "binary",
-        "unit": "probability"
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
       },
       {
         "id": "c03-vintage-5y",
@@ -57,7 +82,12 @@
         "prediction": "outputs.vintage_summary.rows[].predicted_5y_pd",
         "target": "outputs.vintage_summary.rows[].observed_5y_pd",
         "kind": "binary",
-        "unit": "probability"
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
       },
       {
         "id": "c03-vintage-curves",
@@ -65,7 +95,12 @@
         "prediction": "outputs.vintage_curves[].predicted_cumulative_pd",
         "target": "outputs.vintage_curves[].observed_cumulative_pd",
         "kind": "binary",
-        "unit": "probability"
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
       }
     ]
   },
@@ -79,6 +114,11 @@
         "kind": "series",
         "unit": "probability",
         "group_by": "outputs.rungs[]",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition.",
         "reason": "Series, not scalar: the generator truth is one PD per grade (a vector of seven), so the range is the truth vector widened by its span."
       },
       {
@@ -88,7 +128,12 @@
         "target": "outputs.rungs[].pd_*.truth",
         "kind": "series",
         "unit": "probability",
-        "group_by": "outputs.rungs[]"
+        "group_by": "outputs.rungs[]",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
       },
       {
         "id": "c04-momentum-error",
@@ -98,7 +143,12 @@
         "kind": "series",
         "unit": "probability error (a difference of two PDs)",
         "group_by": "outputs.rungs[]",
-        "zero_scale": 1.0
+        "zero_scale": 1.0,
+        "domain": [
+          -1,
+          1
+        ],
+        "domain_reason": "A difference of two probabilities lies in [-1, 1] by definition."
       },
       {
         "id": "c04-momentum-coefficient",
@@ -117,7 +167,12 @@
         "target": "outputs.rungs[].pd_*.truth",
         "kind": "series",
         "unit": "probability",
-        "group_by": "outputs.rungs[]"
+        "group_by": "outputs.rungs[]",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
       },
       {
         "id": "c04-withdrawals-pd",
@@ -126,7 +181,12 @@
         "target": "outputs.rungs[].pd_*.truth",
         "kind": "series",
         "unit": "probability",
-        "group_by": "outputs.rungs[]"
+        "group_by": "outputs.rungs[]",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
       },
       {
         "id": "c04-sp-pd-matrices",
@@ -212,7 +272,12 @@
         "prediction": "outputs.engelmann.ttc_pd.recomputed",
         "target": "outputs.engelmann.ttc_pd.printed",
         "kind": "scalar",
-        "unit": "probability"
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
       },
       {
         "id": "c04-published-portfolio-pd0",
@@ -221,7 +286,12 @@
         "target": "outputs.engelmann.portfolios[].pd0.printed",
         "kind": "scalar",
         "unit": "probability",
-        "group_by": "outputs.engelmann.portfolios[]"
+        "group_by": "outputs.engelmann.portfolios[]",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
       }
     ]
   },
@@ -234,6 +304,11 @@
         "target": "outputs.default_rate1",
         "kind": "series",
         "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition.",
         "reason": "Series, not scalar: the observed default rate is one value per grade (seventeen), so the range is that vector widened by its span."
       },
       {
@@ -311,7 +386,12 @@
         "prediction": "outputs.lifetime_backtest.rows[].predicted_cumulative_pd",
         "target": "outputs.lifetime_backtest.rows[].observed_cumulative_pd",
         "kind": "binary",
-        "unit": "cumulative probability"
+        "unit": "cumulative probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A cumulative probability of default lies in [0, 1] by definition."
       },
       {
         "id": "c06-decile-calibration",
@@ -319,7 +399,12 @@
         "prediction": "outputs.decile_calibration.rows[].predicted_cumulative_pd",
         "target": "outputs.decile_calibration.rows[].observed_cumulative_pd",
         "kind": "binary",
-        "unit": "cumulative probability"
+        "unit": "cumulative probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A cumulative probability of default lies in [0, 1] by definition."
       }
     ]
   },
@@ -366,7 +451,12 @@
         "prediction": "outputs.ead_backtest.rows[].predicted_ead",
         "target": "outputs.ead_backtest.rows[].realised_ead",
         "kind": "series",
-        "unit": "USD"
+        "unit": "USD",
+        "domain": [
+          0,
+          null
+        ],
+        "domain_reason": "An exposure at default is a non-negative amount by definition."
       },
       {
         "id": "c09-ccf-by-design",
@@ -467,6 +557,11 @@
         "target": "outputs.ore_reconciliation.ore_ee.values",
         "kind": "series",
         "unit": "USD",
+        "domain": [
+          0,
+          null
+        ],
+        "domain_reason": "An expected exposure is the expectation of a positive part, so it is non-negative by definition.",
         "reason": "Skips wrong-way-risk.json (no ORE run, so no reference series; see c12-wrong-way-exposure) and models-hw1f-treasury-2000-2025.json."
       },
       {
@@ -544,6 +639,11 @@
         "unit": "share of the deposit base (fraction)",
         "group_by": "outputs.scoring.denominators[]",
         "zero_scale": 1.0,
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A share of the deposit base lies in [0, 1] by definition.",
         "reason": "Skips reverse-stress.json (no scoring block) and models-svb-liquidity.json."
       },
       {
@@ -553,6 +653,11 @@
         "target": "outputs.scoring.table_a1_scoring[].observed_share",
         "kind": "series",
         "unit": "share of the deposit base (fraction)",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A share of the deposit base lies in [0, 1] by definition.",
         "reason": "Skips reverse-stress.json (no scoring block) and models-svb-liquidity.json."
       }
     ]
