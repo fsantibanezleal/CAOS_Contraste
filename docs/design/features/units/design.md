@@ -220,6 +220,29 @@ advisories (unchanged).
 - **The outputs.** A finding names `path:line`, the value and the key; `--counts` prints the literals per list and per case group;
   `--update` prints how many entries it added, dropped and left `TODO`. The baseline is written sorted, one entry per line.
 
+### The decisions of task T6 (`scripts/unit_constants_baseline.json`)
+
+- **The classification is by group, from the code's own names.** The 2,067 literals were listed per module with their enclosing
+  assignment, dictionary key, keyword argument or call, and each group of literals sharing one meaning received one class, one unit
+  and one sentence naming the constant (the entry's reason starts with `<label> = <value>:`). 559 entries are assigned by a pattern
+  and say so (`pattern: <rule>` at the start of the reason): the name of a probability level (`LEVEL`, `ALPHA`, a quantile), a value
+  inside an expected-range dict, a percent, basis point or period conversion, a learning rate, decay or sampling fraction of a model
+  constructor. The other 1,508 were read from the listing of their group with the line they sit on.
+- **Counts by class:** ratio 637, single-observable-limit 447, source-cited-input 346, probability 338, unit-conversion 211,
+  training-hyperparameter 59, relative-tolerance 29 (the sum is 2,067; the baseline is the record, `--counts` gives the per group
+  figures).
+- **An expected-range dict is a `single-observable-limit`.** Each range is read by the check of its own key only (`expectations.check`
+  looks the key up), so the one observable that reaches it is the key; the reason says so and the entry's unit is the key's unit.
+  A run timeout (`RUN_MS`), a fetcher timeout and a back-off are `single-observable-limit` too: the only quantity that reaches them is
+  the wall-clock time of the run itself, which no case observable enters.
+- **A named constant of a parameter module is `source-cited-input`** when its file gives it a source, a standard text or an
+  assumption of the case stated in the file; a share or a probability the file calls an assumption is classed `ratio` or `probability`.
+- **No literal of the defect class was found** (a constant comparable to a measured quantity in a path that more than one observable can
+  reach). The literals examined for it, each reached by one observable (named in its entry), are in the T6 report: the C09 CCF features
+  (log limit 8.0, score 700 and 100), the C09 generator clips, the C12 cube-mean tolerance 0.02, the C14 open-bucket stand-in 1e9
+  years, the C17 severity-scale bounds 100 to 1e7 EUR, the C06 unemployment dead band 0.1, the C10 correlation grid bounds, the C15
+  and C18 UR floor, and the C20 `(-1e9, 1e9)` stand-in range, which every dimensionless C20 key can reach and none can approach.
+
 ## What it does not do
 
 It does not judge accuracy, never fails an honest method for being wrong, and never reads or writes a withheld series' range. It

@@ -261,4 +261,32 @@ def test_the_real_tree_runs_in_about_two_seconds():
     start = time.monotonic()
     out = subprocess.run([sys.executable, "-I", str(SCRIPT)], capture_output=True, text=True, timeout=120)
     assert time.monotonic() - start < 10.0
-    assert out.returncode in (0, 1) and "check_unit_constants:" in out.stdout and "199 modules walked" in out.stdout
+    assert out.returncode == 0 and "check_unit_constants:" in out.stdout and "199 modules walked" in out.stdout
+
+
+def test_the_committed_baseline_classifies_every_literal_with_a_specific_reason():
+    """T6: no entry is TODO, every class is in the closed list, unit and reason are written and a reason is never a class name."""
+    base = json.loads((ROOT / "scripts" / "unit_constants_baseline.json").read_text(encoding="utf-8"))
+    assert base, "the baseline is empty"
+    for key, entry in base.items():
+        assert entry["class"] in CLASSES, key
+        for name in ("unit", "reason"):
+            assert entry[name].strip() and entry[name].strip() != "TODO", (key, name)
+        assert entry["reason"].strip() not in CLASSES and len(entry["reason"]) > 40, key
+
+
+def test_the_real_tree_passes_the_constant_check():
+    out = subprocess.run([sys.executable, "-I", str(SCRIPT)], capture_output=True, text=True, timeout=120)
+    assert out.returncode == 0, out.stdout[-2000:]
+    assert "check_unit_constants: OK" in out.stdout
+
+
+@pytest.mark.parametrize("rel", (".github/workflows/ci.yml", "scripts/smoke.sh", "scripts/smoke.ps1"))
+def test_the_constant_check_runs_in_ci_and_in_the_smoke_scripts(rel):
+    """CT-2409: the check is a step of the existing job and of both smoke scripts, never a job of its own."""
+    assert "check_unit_constants.py" in (ROOT / rel).read_text(encoding="utf-8")
+
+
+def test_the_constant_check_adds_no_job_to_ci():
+    text = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    assert text.count("check_unit_constants.py") == 1

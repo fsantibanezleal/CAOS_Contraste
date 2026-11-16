@@ -6,3 +6,4 @@ $py = Join-Path ".venv-pipeline" "Scripts\python.exe"
 if (-not (Test-Path $py)) { $py = Join-Path ".venv-pipeline" "bin/python" }
 if (-not (Test-Path $py)) { $py = if ($env:PYTHON) { $env:PYTHON } else { "python" } }
 & $py scripts/check_artifacts.py
+& $py scripts/check_unit_constants.py
