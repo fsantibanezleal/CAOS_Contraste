@@ -188,7 +188,37 @@ advisories (unchanged).
   literals as `TODO` and removes entries whose literal is gone; a `TODO` fails the check. The rule's defect class (a literal
   comparable to a measured quantity in a path more than one observable can reach) has no class: such a literal is rewritten against
   a quantity (the rule's table "Write against a quantity, not against a number"), never baselined.
-- Where it runs: `ci.yml` beside `scripts/check_internal_names.py` (about 2 s) and `scripts/smoke.*`.
+- Where it runs: `ci.yml` beside `scripts/check_internal_names.py` (about 1.3 s, measured on the whole tree) and `scripts/smoke.*`,
+  added by T6 when its baseline holds no `TODO` (before that the check fails by design).
+
+### The decisions of task T5 (`scripts/check_unit_constants.py`)
+
+- **The lists were reviewed, not copied from the sizing's heuristic.** All 277 modules were read by docstring and, where they hold a
+  non-exempt float literal, by the literals themselves. The rule of the review: a module is `outside` only when no unit-bearing
+  float literal can live in it (a package marker, a command line, the rendering of a case page from committed documents, a
+  fetcher whose floats are timeouts in seconds, a reader of text formats, the registry, the schemas, the rng, the lineage); every
+  `outside` entry carries its one-sentence reason in the file. A module that fits or applies a method, builds a document of numbers,
+  holds expected ranges or thresholds (`bake`, `_case`, `documents`, `build`), reads a source into a family with a conversion (a
+  percent into a decimal, cents into a rate) or holds a named constant with its source is walked: `method` or `parameter`. The two
+  walked lists are treated alike by the check; the split is for the reader of the baseline.
+- **Result: 172 method modules (1,523 literals), 27 parameter modules (544), 78 outside (58 literals, not walked: display scales,
+  level keys and timeouts), 277 in all.** Against the sizing's 99 modules with 1,161 literals (and 19 with 456): 75 modules join
+  the method list (356 literals: 137 in the `bake` modules' expected ranges and grids, 99 in the `documents` modules' thresholds and
+  confidence levels, 35 in the `build` modules, 33 in the `_case` objects, 52 in panels, readers and others); `100.0` and `1000.0`,
+  which the sizing exempted, are 42 of the 1,523 (37 and 5); `cases/c11/run` goes outside (a command line) and `cases/c12/book` to the parameter list (its
+  docstring: "the named parameters of C12"), which also takes the models documents of C12, C16 and C18, `core/gate`, the contract-1
+  field bounds (`io/contract`), the examples (`io/examples`) and the published tables (`io/papers`). The workload of T6 is therefore
+  2,067 literals, not the sizing's 1,617.
+- **The key** is `module::qualname::value::ordinal` with the module as the path under `data-pipeline/pipeline/` without suffix, the
+  qualname the enclosing class and function path (a default argument and a decorator belong to the function, a lambda to its
+  enclosing function), the value as Python's `repr` of the float (`1e-05`, `-0.25`, `100.0`), and the ordinal the position among the
+  equal values of the same scope in source order. A negative literal is one entry, with its sign. A literal inserted above an equal
+  one in the same function shifts the ordinals below it: `--update` then rewrites those keys as new `TODO` entries, and the review
+  of the diff shows it.
+- **A stale entry fails.** A baseline entry with no literal in the walked modules fails the check (and `--update` drops it), so the
+  baseline never keeps a justification for code that is gone.
+- **The outputs.** A finding names `path:line`, the value and the key; `--counts` prints the literals per list and per case group;
+  `--update` prints how many entries it added, dropped and left `TODO`. The baseline is written sorted, one entry per line.
 
 ## What it does not do
 
