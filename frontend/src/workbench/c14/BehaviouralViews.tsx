@@ -6,6 +6,7 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type Bi
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
+import { signedRange } from '../barRange';
 import { IrrbbTestsTable, NoBreakDates, UnavailableCard, assumptionValue } from './C14Common';
 import {
   CALIBRATION_SHORT, CATEGORY_TEXT, SHOCK_TEXT, SOURCE_KIND_TEXT, axisOf, cell, fitOf, nmdModelOf, outputsOf, scaleUnit, text, type C14Sel,
@@ -49,7 +50,7 @@ export function WithWithoutView({ sel }: { sel: C14Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={mine.map((r) => ({ id: r.shock, label: text(SHOCK_TEXT, r.shock), value: r.difference / axis.div, tone: r.difference < 0 ? ('good' as const) : ('bad' as const), highlight: r.shock === sel.shock }))}
-              axis={{ label: { en: `Difference, ${sel.calibration} calibration`, es: `Diferencia, calibración ${sel.calibration}` }, unit: axis.unit, format: { digits: 4 } }}
+              axis={{ label: { en: `Difference, ${sel.calibration} calibration`, es: `Diferencia, calibración ${sel.calibration}` }, unit: axis.unit, format: { digits: 4 }, range: signedRange(mine.map((r) => r.difference / axis.div)) }}
             />
           }
         >
