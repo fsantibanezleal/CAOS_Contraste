@@ -2061,9 +2061,9 @@
 "model/scorecard::fit_scorecard::50.0::0": {"class": "source-cited-input", "unit": "score points (PDO, base score or base odds)", "reason": "default = 50.0: scorecard scaling default: points to double the odds, base odds and base score"},
 "model/scorecard::fit_scorecard::600.0::0": {"class": "source-cited-input", "unit": "score points (PDO, base score or base odds)", "reason": "default = 600.0: scorecard scaling default: points to double the odds, base odds and base score"},
 "regulatory/bake::<module>::1000.0::0": {"class": "single-observable-limit", "unit": "milliseconds of wall time", "reason": "RUN_MS = 1000.0: timeout of the regulatory bake; reached only by the wall-clock time of its own run"},
-"stages/evaluate::<module>::0.04::0": {"class": "TODO", "unit": "TODO", "reason": "TODO"},
-"stages/evaluate::cutoff_curve::0.02::0": {"class": "TODO", "unit": "TODO", "reason": "TODO"},
-"stages/evaluate::distribution::0.001::0": {"class": "TODO", "unit": "TODO", "reason": "TODO"},
-"stages/split::stratified_split::0.2::0": {"class": "TODO", "unit": "TODO", "reason": "TODO"},
-"stages/split::stratified_split::0.3::0": {"class": "TODO", "unit": "TODO", "reason": "TODO"}
+"stages/evaluate::<module>::0.04::0": {"class": "source-cited-input", "unit": "asset correlation (dimensionless)", "reason": "QRRE_RHO = 0.04: CRE31.15: asset correlation of qualifying revolving retail exposures"},
+"stages/evaluate::cutoff_curve::0.02::0": {"class": "probability", "unit": "probability (quantile level)", "reason": "pattern: name of a probability level; cuts = 0.02: lowest quantile of the cutoff curve grid"},
+"stages/evaluate::distribution::0.001::0": {"class": "ratio", "unit": "probability (width of the histogram bin)", "reason": "hi = 0.001: width added to a degenerate histogram range so the bin is not empty"},
+"stages/split::stratified_split::0.2::0": {"class": "ratio", "unit": "share of the rows", "reason": "default = 0.2: default holdout and calibration shares of the stratified split"},
+"stages/split::stratified_split::0.3::0": {"class": "ratio", "unit": "share of the rows", "reason": "default = 0.3: default holdout and calibration shares of the stratified split"}
 }
