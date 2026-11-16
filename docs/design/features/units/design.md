@@ -244,9 +244,10 @@ literal is in its own code line.
   and say so (`pattern: <rule>` at the start of the reason): the name of a probability level (`LEVEL`, `ALPHA`, a quantile), a value
   inside an expected-range dict, a percent, basis point or period conversion, a learning rate, decay or sampling fraction of a model
   constructor. The other 1,508 were first read from the listing of their group with the line they sit on; the review of T6 found that wrong for about one entry in six, and the fix (2026-11-16) reread every one of them in its own code line, with the function where the line did not settle the meaning (see below).
-- **Counts by class after the fix:** ratio 544, single-observable-limit 452, probability 364, stated-assumption 267, source-cited-input 242,
-  unit-conversion 122, training-hyperparameter 54, run-budget 25, relative-tolerance 16 (the sum is 2,086; the baseline is the record, `--counts` gives the per group
-  figures).
+- **Counts by class after the second fix:** ratio 552, single-observable-limit 448, probability 363, stated-assumption 269,
+  source-cited-input 230, unit-conversion 124, training-hyperparameter 53, run-budget 28, relative-tolerance 16 (the sum is 2,083; the baseline is the
+  record, `--counts` gives the per group figures). After the first fix the sum was 2,086: the three entries of the C20 stand-in range and the C15 page
+  threshold are gone with their literals.
 - **An expected-range dict is a `single-observable-limit`.** Each range is read by the check of its own key only (`expectations.check`
   looks the key up), so the one observable that reaches it is the key; the reason says so and the entry's unit is the key's unit.
   A run timeout (`RUN_MS`), a fetcher timeout and a back-off are `run-budget` (the wall-clock time of the run enters no case observable;
@@ -258,7 +259,8 @@ literal is in its own code line.
   reach). The literals examined for it, each reached by one observable (named in its entry), are in the T6 report: the C09 CCF features
   (log limit 8.0, score 700 and 100), the C09 generator clips, the C12 cube-mean tolerance 0.02, the C14 open-bucket stand-in 1e9
   years, the C17 severity-scale bounds 100 to 1e7 EUR, the C06 unemployment dead band 0.1, the C10 correlation grid bounds, the C15
-  and C18 UR floor, and the C20 `(-1e9, 1e9)` stand-in range, which every dimensionless C20 key can reach and none can approach.
+  and C18 UR floor. The C20 `(-1e9, 1e9)` stand-in range, which every dimensionless C20 key could reach, WAS the defect class by the
+  letter of the rule and is rewritten in the second fix below.
 
 ### The fix of task T6 after its review (2026-11-16)
 
@@ -276,10 +278,26 @@ minors, and no literal of the defect class in substance. What the fix did:
   `method` list with 19 literals classified, so the lists are 175 method, 27 parameter and 75 outside (202 walked, 2,086 literals).
 - **A reason that quotes code quotes its own line.** `tests/test_unit_constants.py` checks that the `(code: ...)` of every reason is on the
   line of its literal. The correctness of the words stays with the reviewer.
-- **Open, outside this unit's scope (pipeline code):** the C20 subsample stand-in `(-1e9, 1e9)` (`cases/c20/bake.py:335`) is baselined as a
-  `stated-assumption` that says it is not a limit; the review asks to skip the range check in a subsample run instead of a number. The C02
-  and C21 expected ranges assigned by key prefix with an `else` fallback (m6) and the C15 page threshold repeated from `c15/models.py:25`
-  (m8) are code changes of their own.
+- **Open after the first fix, closed by the second fix below:** the C20 stand-in range, the C02 and C21 prefix fallbacks (m6) and the C15 page threshold (m8).
+
+### The second fix of task T6 (2026-11-16)
+
+The re-review of the fix (CHANGES REQUIRED: a fresh sample of 150 read in its functions, 4.0 percent wrong overall but 5 of 60 in the 939
+entries the first fix had confirmed from the code line alone) left three code findings, three run timeouts, 197 hedged units and a stratum
+to reread. What the second fix did:
+
+- **Three code findings rewritten against their source, each with a test** (`tests/test_t6_code_findings.py`). The C20 bake no longer
+  compares a fixed interval with the observables: `expected_ranges` checks the declared ranges in the release bake and, in a subsample run
+  (the tests), records the declared range of each observable without judging a subsample against it. No manifest form changes, so the
+  contract version stays. The C02 and C21 `expect_ranges` match each key prefix explicitly and raise `ExpectationError` for a key of none
+  of them. The C15 page reads the EVE threshold from `models.THRESHOLDS` (`eve_threshold()`), no copy of 0.15.
+- **Three run timeouts to `run-budget`** (`RUN_MS` of C01, C04 and C05) and a test that every `RUN_MS` literal is one.
+- **No unit hedges.** The 197 units containing the word "or" are split one literal one unit (an expected-range key names the unit of its
+  own observable; a line with two roles has one entry per role), and a test fails any unit with the plain word `or`.
+- **The 939 line-confirmed entries read in their enclosing functions**, module by module (the whole function up to 45 lines, else the
+  window around the literal with its signature), each corrected where its unit, class or reason was not its own, and the re-review's error
+  kinds swept over the whole baseline: a unit of the computed result instead of the literal, one reason covering literals of different roles, a
+  conversion factor checked against its arithmetic, a citation the module does not make (those literals are `stated-assumption`).
 
 ## What it does not do
 
