@@ -124,6 +124,9 @@
   "M-37": [
    "14-validating-the-validator/08-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb"
   ],
+  "M-38": [
+   "07-market-risk/07-dynamic-semiparametric-es.ipynb"
+  ],
   "BS-1": [
    "13-ml-and-ai-risk/09-measured-size-and-power-of-the-corrected-tests.ipynb",
    "14-validating-the-validator/09-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb"

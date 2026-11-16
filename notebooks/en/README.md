@@ -8,7 +8,7 @@ Levels: 1 fundamentals, 2 the method in practice, 3 comparison with published me
 
 ## Topics
 
-A topic without a level 3 notebook says why on its row; every topic from 02 to 14 has one.
+A topic without a level 3 notebook says why on its row; every topic from 02 to 14 has one except 06, 08 and 09, whose rows say why.
 
 | Topic | Needs | Level 3 |
 |---|---|---|
@@ -17,10 +17,10 @@ A topic without a level 3 notebook says why on its row; every topic from 02 to 1
 | [03-ratings-and-calibration](03-ratings-and-calibration/) | topic 01 | Level 3: Duration and EM estimators, macro-conditioned matrices and a reference library; The calibration approaches of Tasche compared on S&P 2010 and 2011 |
 | [04-provisions](04-provisions/) | topics 01 and 03 | Level 3: Lifetime PD by survival, competing risks and macro satellites |
 | [05-lgd-and-ead](05-lgd-and-ead/) | topics 01 and 04 | Level 3: LGD and EAD models against the benchmark evidence |
-| [06-portfolio-capital](06-portfolio-capital/) | topic 03 | Level 3: Structural, actuarial and rare-event portfolio models, and the open-source gap |
+| [06-portfolio-capital](06-portfolio-capital/) | topic 03 | No level 3: every method of the topic is an established model or a regulatory standard and no newer published method is run, so the comparison with the published models is notebook 07, at level 2 |
 | [07-market-risk](07-market-risk/) | topic 01 | Level 3: Dynamic semiparametric ES, neural challengers and the comparative-backtest frame |
-| [08-counterparty-and-regulatory-calculators](08-counterparty-and-regulatory-calculators/) | topics 06 and 07 | Level 3: The reference engine ORE, QuantLib and what stays offline |
-| [09-irrbb](09-irrbb/) | topic 01 | Level 3: Curve fitting, stochastic rates, deposit models, the 2024 recalibration and the open-source gap |
+| [08-counterparty-and-regulatory-calculators](08-counterparty-and-regulatory-calculators/) | topics 06 and 07 | No level 3: every method of the topic is an established model or a regulatory standard and no newer published method is run, so the comparison with the reference engines is notebook 07, at level 2 |
+| [09-irrbb](09-irrbb/) | topic 01 | No level 3: every method of the topic is an established model or a regulatory standard and no newer published method is run, so the comparison with the published curve and deposit models is notebook 07, at level 2 |
 | [10-liquidity](10-liquidity/) | topics 04 and 09 | Level 3: Smooth run-offs against the run speeds of 2023, and the 2019 sensitivity analysis of the ECB |
 | [11-operational-risk](11-operational-risk/) | topic 01 | Level 3: Why the AMA was removed, the SMA debate and the heavy-tail instability |
 | [12-capital-and-stress](12-capital-and-stress/) | topics 06, 07, 09 and 11 | Level 3: The supervisory stress-test models, vine copulas, growth-at-risk and Bayesian VARs |
@@ -76,7 +76,7 @@ A topic without a level 3 notebook says why on its row; every topic from 02 to 1
 | [06-portfolio-capital/04-creditrisk-plus-and-the-granularity-adjustment.ipynb](06-portfolio-capital/04-creditrisk-plus-and-the-granularity-adjustment.ipynb) | 2 | CreditRisk+ and the granularity adjustment |
 | [06-portfolio-capital/05-euler-contributions-concentration-and-importance-sampling.ipynb](06-portfolio-capital/05-euler-contributions-concentration-and-importance-sampling.ipynb) | 2 | Euler contributions, concentration and importance sampling |
 | [06-portfolio-capital/06-the-portfolio-validation-battery.ipynb](06-portfolio-capital/06-the-portfolio-validation-battery.ipynb) | 2 | The portfolio validation battery: tail back-test, convergence, additivity, recursion against Monte Carlo, correlation size and power |
-| [06-portfolio-capital/07-portfolio-credit-models.ipynb](06-portfolio-capital/07-portfolio-credit-models.ipynb) | 3 | Structural, actuarial and rare-event portfolio models, and the open-source gap |
+| [06-portfolio-capital/07-portfolio-credit-models.ipynb](06-portfolio-capital/07-portfolio-credit-models.ipynb) | 2 | Structural, actuarial and rare-event portfolio models, and the open-source gap |
 | [06-portfolio-capital/08-an-engine-reconciled-to-its-anchors.ipynb](06-portfolio-capital/08-an-engine-reconciled-to-its-anchors.ipynb) | 4 | Reconciling a portfolio engine to independent anchors, and the size and power of its correlation test |
 | [07-market-risk/01-var-and-es-sign-convention-and-a-first-exceedance-count.ipynb](07-market-risk/01-var-and-es-sign-convention-and-a-first-exceedance-count.ipynb) | 1 | VaR and ES of a portfolio: sign convention, historical simulation and a first exceedance count |
 | [07-market-risk/02-the-estimator-ladder.ipynb](07-market-risk/02-the-estimator-ladder.ipynb) | 2 | The estimator ladder: from historical simulation to GARCH, EVT, CAViaR and GAS-FZ |
@@ -93,7 +93,7 @@ A topic without a level 3 notebook says why on its row; every topic from 02 to 1
 | [08-counterparty-and-regulatory-calculators/04-sa-ccr-on-the-five-official-netting-sets.ipynb](08-counterparty-and-regulatory-calculators/04-sa-ccr-on-the-five-official-netting-sets.ipynb) | 2 | SA-CCR on the five official netting sets |
 | [08-counterparty-and-regulatory-calculators/05-the-other-regulatory-calculators.ipynb](08-counterparty-and-regulatory-calculators/05-the-other-regulatory-calculators.ipynb) | 2 | The other regulatory calculators: standardised credit RWA, BA-CVA, FRTB sensitivities and the output floor |
 | [08-counterparty-and-regulatory-calculators/06-validating-an-exposure-engine.ipynb](08-counterparty-and-regulatory-calculators/06-validating-an-exposure-engine.ipynb) | 2 | How good is a simulated exposure? The closed form, path convergence and the PIT back-test |
-| [08-counterparty-and-regulatory-calculators/07-the-reference-engine-ore-quantlib.ipynb](08-counterparty-and-regulatory-calculators/07-the-reference-engine-ore-quantlib.ipynb) | 3 | The reference engine ORE, QuantLib and what stays offline |
+| [08-counterparty-and-regulatory-calculators/07-the-reference-engine-ore-quantlib.ipynb](08-counterparty-and-regulatory-calculators/07-the-reference-engine-ore-quantlib.ipynb) | 2 | The reference engine ORE, QuantLib and what stays offline |
 | [08-counterparty-and-regulatory-calculators/08-exposure-reconciled-to-a-reference-engine.ipynb](08-counterparty-and-regulatory-calculators/08-exposure-reconciled-to-a-reference-engine.ipynb) | 4 | Exposure reconciled to a reference engine within Monte Carlo error, and golden values for wrong-way risk |
 | [09-irrbb/01-a-balance-sheet-in-19-time-bands.ipynb](09-irrbb/01-a-balance-sheet-in-19-time-bands.ipynb) | 1 | A balance sheet in 19 time bands: the repricing gap, the duration gap and a first EVE |
 | [09-irrbb/02-the-six-bcbs-shocks-step-by-step.ipynb](09-irrbb/02-the-six-bcbs-shocks-step-by-step.ipynb) | 2 | The six BCBS shocks step by step: the 0.417 scalar, the +25.4 bp steepener and the -1.6 bp flattener |
@@ -101,7 +101,7 @@ A topic without a level 3 notebook says why on its row; every topic from 02 to 1
 | [09-irrbb/04-dynamic-nii-ear-and-evar.ipynb](09-irrbb/04-dynamic-nii-ear-and-evar.ipynb) | 2 | Dynamic NII, earnings at risk and EVaR under Hull-White and dynamic Nelson-Siegel scenarios |
 | [09-irrbb/05-the-irrbb-validation-tests.ipynb](09-irrbb/05-the-irrbb-validation-tests.ipynb) | 2 | The IRRBB validation tests: golden shocks, sum of parts, parameter stability and the change at a limit breach |
 | [09-irrbb/06-chile-ran-21-13-annex-1.ipynb](09-irrbb/06-chile-ran-21-13-annex-1.ipynb) | 2 | Chile: RAN 21-13 Annex 1 on a CLP and UF balance sheet |
-| [09-irrbb/07-curves-deposits-and-recalibration.ipynb](09-irrbb/07-curves-deposits-and-recalibration.ipynb) | 3 | Curve fitting, stochastic rates, deposit models, the 2024 recalibration and the open-source gap |
+| [09-irrbb/07-curves-deposits-and-recalibration.ipynb](09-irrbb/07-curves-deposits-and-recalibration.ipynb) | 2 | Curve fitting, stochastic rates, deposit models, the 2024 recalibration and the open-source gap |
 | [09-irrbb/08-the-uf-and-the-breach-test.ipynb](09-irrbb/08-the-uf-and-the-breach-test.ipynb) | 4 | The UF as its own currency and a test that catches a behavioural assumption changed at a limit breach |
 | [10-liquidity/01-the-liquidity-ladder-nlp-and-survival-period.ipynb](10-liquidity/01-the-liquidity-ladder-nlp-and-survival-period.ipynb) | 1 | The liquidity ladder, the net liquidity position and the survival period |
 | [10-liquidity/02-run-off-by-daily-compounding.ipynb](10-liquidity/02-run-off-by-daily-compounding.ipynb) | 2 | The daily compounding of run-off: from a rate per day to the runs of 2023 |

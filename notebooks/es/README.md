@@ -8,7 +8,7 @@ Niveles: 1 fundamentos, 2 el método en la práctica, 3 comparación con método
 
 ## Temas
 
-Un tema sin notebook de nivel 3 explica por qué en su fila; todos los temas del 02 al 14 tienen uno.
+Un tema sin notebook de nivel 3 explica por qué en su fila; todos los temas del 02 al 14 tienen uno salvo el 06, el 08 y el 09, cuyas filas dicen por qué.
 
 | Tema | Requiere | Nivel 3 |
 |---|---|---|
@@ -17,10 +17,10 @@ Un tema sin notebook de nivel 3 explica por qué en su fila; todos los temas del
 | [03-ratings-and-calibration](03-ratings-and-calibration/) | tema 01 | Nivel 3: Estimadores de duración y EM, matrices condicionadas a la macro y una biblioteca de referencia; Los enfoques de calibración de Tasche comparados sobre S&P 2010 y 2011 |
 | [04-provisions](04-provisions/) | temas 01 y 03 | Nivel 3: PD de vida completa por supervivencia, riesgos competitivos y satélites macroeconómicos |
 | [05-lgd-and-ead](05-lgd-and-ead/) | temas 01 y 04 | Nivel 3: Modelos de LGD y EAD frente a la evidencia comparada |
-| [06-portfolio-capital](06-portfolio-capital/) | tema 03 | Nivel 3: Modelos de cartera estructurales, actuariales y de eventos raros, y la brecha de código abierto |
+| [06-portfolio-capital](06-portfolio-capital/) | tema 03 | Sin nivel 3: todos los métodos del tema son modelos establecidos o estándares regulatorios y no se ejecuta ningún método publicado más nuevo, así que la comparación con los modelos publicados es el notebook 07, de nivel 2 |
 | [07-market-risk](07-market-risk/) | tema 01 | Nivel 3: ES semiparamétrica dinámica, retadores neuronales y el marco de prueba retrospectiva comparativa |
-| [08-counterparty-and-regulatory-calculators](08-counterparty-and-regulatory-calculators/) | temas 06 y 07 | Nivel 3: El motor de referencia ORE, QuantLib y lo que queda fuera de línea |
-| [09-irrbb](09-irrbb/) | tema 01 | Nivel 3: Ajuste de curvas, tasas estocásticas, modelos de depósitos, la recalibración de 2024 y la brecha de código abierto |
+| [08-counterparty-and-regulatory-calculators](08-counterparty-and-regulatory-calculators/) | temas 06 y 07 | Sin nivel 3: todos los métodos del tema son modelos establecidos o estándares regulatorios y no se ejecuta ningún método publicado más nuevo, así que la comparación con los motores de referencia es el notebook 07, de nivel 2 |
+| [09-irrbb](09-irrbb/) | tema 01 | Sin nivel 3: todos los métodos del tema son modelos establecidos o estándares regulatorios y no se ejecuta ningún método publicado más nuevo, así que la comparación con los modelos publicados de curvas y depósitos es el notebook 07, de nivel 2 |
 | [10-liquidity](10-liquidity/) | temas 04 y 09 | Nivel 3: Fugas suaves frente a las velocidades de corrida de 2023 y el análisis de sensibilidad de 2019 del BCE |
 | [11-operational-risk](11-operational-risk/) | tema 01 | Nivel 3: Por qué se eliminó el AMA, el debate sobre el SMA y la inestabilidad de colas pesadas |
 | [12-capital-and-stress](12-capital-and-stress/) | temas 06, 07, 09 y 11 | Nivel 3: Los modelos supervisores de pruebas de estrés, cópulas vine, crecimiento en riesgo y VAR bayesianos |
@@ -76,7 +76,7 @@ Un tema sin notebook de nivel 3 explica por qué en su fila; todos los temas del
 | [06-portfolio-capital/04-creditrisk-plus-and-the-granularity-adjustment.ipynb](06-portfolio-capital/04-creditrisk-plus-and-the-granularity-adjustment.ipynb) | 2 | CreditRisk+ y el ajuste por granularidad |
 | [06-portfolio-capital/05-euler-contributions-concentration-and-importance-sampling.ipynb](06-portfolio-capital/05-euler-contributions-concentration-and-importance-sampling.ipynb) | 2 | Contribuciones de Euler, concentración y muestreo por importancia |
 | [06-portfolio-capital/06-the-portfolio-validation-battery.ipynb](06-portfolio-capital/06-the-portfolio-validation-battery.ipynb) | 2 | La batería de validación de cartera: prueba retrospectiva de cola, convergencia, aditividad, recursión frente a Monte Carlo, tamaño y potencia de la correlación |
-| [06-portfolio-capital/07-portfolio-credit-models.ipynb](06-portfolio-capital/07-portfolio-credit-models.ipynb) | 3 | Modelos de cartera estructurales, actuariales y de eventos raros, y la brecha de código abierto |
+| [06-portfolio-capital/07-portfolio-credit-models.ipynb](06-portfolio-capital/07-portfolio-credit-models.ipynb) | 2 | Modelos de cartera estructurales, actuariales y de eventos raros, y la brecha de código abierto |
 | [06-portfolio-capital/08-an-engine-reconciled-to-its-anchors.ipynb](06-portfolio-capital/08-an-engine-reconciled-to-its-anchors.ipynb) | 4 | Conciliar un motor de cartera con anclas independientes, y el tamaño y la potencia de su prueba de correlación |
 | [07-market-risk/01-var-and-es-sign-convention-and-a-first-exceedance-count.ipynb](07-market-risk/01-var-and-es-sign-convention-and-a-first-exceedance-count.ipynb) | 1 | VaR y ES de una cartera: convención de signos, simulación histórica y un primer conteo de excepciones |
 | [07-market-risk/02-the-estimator-ladder.ipynb](07-market-risk/02-the-estimator-ladder.ipynb) | 2 | La escalera de estimadores: de la simulación histórica a GARCH, EVT, CAViaR y GAS-FZ |
@@ -93,7 +93,7 @@ Un tema sin notebook de nivel 3 explica por qué en su fila; todos los temas del
 | [08-counterparty-and-regulatory-calculators/04-sa-ccr-on-the-five-official-netting-sets.ipynb](08-counterparty-and-regulatory-calculators/04-sa-ccr-on-the-five-official-netting-sets.ipynb) | 2 | SA-CCR sobre los cinco conjuntos de neteo oficiales |
 | [08-counterparty-and-regulatory-calculators/05-the-other-regulatory-calculators.ipynb](08-counterparty-and-regulatory-calculators/05-the-other-regulatory-calculators.ipynb) | 2 | Las otras calculadoras regulatorias: APR estandarizado de crédito, BA-CVA, sensibilidades FRTB y el piso de capital |
 | [08-counterparty-and-regulatory-calculators/06-validating-an-exposure-engine.ipynb](08-counterparty-and-regulatory-calculators/06-validating-an-exposure-engine.ipynb) | 2 | ¿Qué tan buena es una exposición simulada? La forma cerrada, la convergencia en trayectorias y la prueba retrospectiva PIT |
-| [08-counterparty-and-regulatory-calculators/07-the-reference-engine-ore-quantlib.ipynb](08-counterparty-and-regulatory-calculators/07-the-reference-engine-ore-quantlib.ipynb) | 3 | El motor de referencia ORE, QuantLib y lo que queda fuera de línea |
+| [08-counterparty-and-regulatory-calculators/07-the-reference-engine-ore-quantlib.ipynb](08-counterparty-and-regulatory-calculators/07-the-reference-engine-ore-quantlib.ipynb) | 2 | El motor de referencia ORE, QuantLib y lo que queda fuera de línea |
 | [08-counterparty-and-regulatory-calculators/08-exposure-reconciled-to-a-reference-engine.ipynb](08-counterparty-and-regulatory-calculators/08-exposure-reconciled-to-a-reference-engine.ipynb) | 4 | Exposición conciliada con un motor de referencia dentro del error de Monte Carlo y valores de referencia para el riesgo de correlación adversa |
 | [09-irrbb/01-a-balance-sheet-in-19-time-bands.ipynb](09-irrbb/01-a-balance-sheet-in-19-time-bands.ipynb) | 1 | Un balance en 19 bandas de tiempo: la brecha de repreciación, la brecha de duración y un primer EVE |
 | [09-irrbb/02-the-six-bcbs-shocks-step-by-step.ipynb](09-irrbb/02-the-six-bcbs-shocks-step-by-step.ipynb) | 2 | Los seis choques de Basilea paso a paso: el escalar 0,417, el empinamiento de +25,4 pb y el aplanamiento de -1,6 pb |
@@ -101,7 +101,7 @@ Un tema sin notebook de nivel 3 explica por qué en su fila; todos los temas del
 | [09-irrbb/04-dynamic-nii-ear-and-evar.ipynb](09-irrbb/04-dynamic-nii-ear-and-evar.ipynb) | 2 | NII dinámico, ganancias en riesgo y EVaR con escenarios de Hull-White y Nelson-Siegel dinámico |
 | [09-irrbb/05-the-irrbb-validation-tests.ipynb](09-irrbb/05-the-irrbb-validation-tests.ipynb) | 2 | Las pruebas de validación de IRRBB: choques de referencia, suma de partes, estabilidad de parámetros y el cambio ante un incumplimiento de límite |
 | [09-irrbb/06-chile-ran-21-13-annex-1.ipynb](09-irrbb/06-chile-ran-21-13-annex-1.ipynb) | 2 | Chile: Anexo 1 de la RAN 21-13 sobre un balance en pesos y UF |
-| [09-irrbb/07-curves-deposits-and-recalibration.ipynb](09-irrbb/07-curves-deposits-and-recalibration.ipynb) | 3 | Ajuste de curvas, tasas estocásticas, modelos de depósitos, la recalibración de 2024 y la brecha de código abierto |
+| [09-irrbb/07-curves-deposits-and-recalibration.ipynb](09-irrbb/07-curves-deposits-and-recalibration.ipynb) | 2 | Ajuste de curvas, tasas estocásticas, modelos de depósitos, la recalibración de 2024 y la brecha de código abierto |
 | [09-irrbb/08-the-uf-and-the-breach-test.ipynb](09-irrbb/08-the-uf-and-the-breach-test.ipynb) | 4 | La UF como moneda propia y una prueba que detecta un supuesto de comportamiento cambiado ante un incumplimiento de límite |
 | [10-liquidity/01-the-liquidity-ladder-nlp-and-survival-period.ipynb](10-liquidity/01-the-liquidity-ladder-nlp-and-survival-period.ipynb) | 1 | La escalera de liquidez, la posición neta de liquidez y el período de supervivencia |
 | [10-liquidity/02-run-off-by-daily-compounding.ipynb](10-liquidity/02-run-off-by-daily-compounding.ipynb) | 2 | La capitalización diaria de la fuga: de una tasa por día a las corridas de 2023 |
