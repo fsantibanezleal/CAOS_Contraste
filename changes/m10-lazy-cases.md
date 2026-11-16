@@ -5,4 +5,4 @@
   shows the shell's pending state; a failed import shows the absent instrument or the section's absence with its reason.
 - A Methodology section is now two files, `<name>.meta.ts` (`methodologyMeta`: id, group, order, title; eager) and `<name>.tsx` (the lazy
   body, `methodologySection`); the registry pairs them by stem and fails at load, naming the file, on an orphan on either side.
-- `npm run check:chunks` is not wired yet; `frontend/scripts/check-chunk-sizes.mjs` lists the chunks of `dist/assets` and exits 1 for any at or over 500,000 bytes.
+- `node scripts/check-chunk-sizes.mjs` (in `frontend/`, after `npm run build`) lists the chunks of `dist/assets` and exits 1 for any at or over 500,000 bytes.
