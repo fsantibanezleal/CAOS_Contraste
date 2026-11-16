@@ -775,6 +775,7 @@ requirement of both repositories with its gate and the gate's result in the rele
 | U16 | `docs/design/features/release-1-0/` | CV-001 to CV-013 (13 requirements): the generated convergence verdict of release 1.0 |
 | U17 | `docs/design/features/notebooks/` | NB-001 to NB-021 (21 requirements): the product notebooks |
 | U17 | `docs/design/features/repository/` | RP-001 to RP-005 (5 requirements): the README states the repository by areas |
+| BL-113 | `docs/design/features/benchmark-methods/` | BM-001 to BM-012 (12 requirements): the methods compared across the questions of the benchmark |
 | engine | `CAOS_RiskValidation` `docs/design/features/` | RV- requirements (21 feature folders, 514 requirement rows at the engine head of 2026-10-21), stated and gated in the engine repository; the verdict lists them beside the product's (`docs/design/features/release-1-0/`) |
 
 ## Oracles

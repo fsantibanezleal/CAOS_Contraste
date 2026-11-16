@@ -135,6 +135,150 @@ export interface components {
             amber_limit: number;
         };
         /**
+         * Methods compared
+         * @description Catalog row benchmark-methods 1.0.0: the methods of each benchmark question side by side (data/derived/benchmark/methods-compared.json), every value copied from a committed case document or manuscript result file with its path, JSON pointer and SHA-256, every method with its standing read from the SDD method ladder, every reading generated from the numbers by the declared rule of each metric.
+         */
+        "benchmark-methods": {
+            /** @constant */
+            case_id: "BENCHMARK-METHODS";
+            /** @constant */
+            schema: "contraste.benchmark.methods-compared/v1";
+            schema_version: string;
+            provenance: components["schemas"]["bmProvenance"];
+            questions: components["schemas"]["bmQuestion"][];
+            left_out: components["schemas"]["bmLeftOut"][];
+            not_built: components["schemas"]["bmNotBuilt"][];
+        };
+        bmAbsent: {
+            method: components["schemas"]["bmText"];
+            ladder_id: null | components["schemas"]["bmLadderId"];
+            /** @enum {string|null} */
+            standing: "established" | "recent" | "proposed" | null;
+            reason: components["schemas"]["bmText"];
+            backlog: string | null;
+        };
+        bmCell: {
+            metric: string;
+            column: string;
+            value: number | string | boolean;
+            null_reason: null;
+            cited: components["schemas"]["bmCite"];
+        } | {
+            metric: string;
+            column: string;
+            value: null;
+            null_reason: components["schemas"]["bmText"];
+            cited: null | components["schemas"]["bmCite"];
+        };
+        bmCite: {
+            /** @description Repository path of the committed file the value was copied from. */
+            path: string;
+            /** @description RFC 6901 JSON pointer of the value in that file. */
+            pointer: string;
+            sha256: components["schemas"]["bmSha256"];
+        };
+        bmColumn: {
+            id: string;
+            label: components["schemas"]["bmText"];
+        };
+        bmLadderId: string;
+        bmLeftOut: {
+            ladder_id: components["schemas"]["bmLadderId"];
+            method: components["schemas"]["bmText"];
+            reason: components["schemas"]["bmText"];
+        };
+        bmMetric: {
+            id: string;
+            label: components["schemas"]["bmText"];
+            run_id: string;
+            /** @description The declared rule: lower, higher, nearer:<value>, nearer-metric:<metric>, order:<best>,... or none (context, never ranked). */
+            better: string;
+            unit: components["schemas"]["bmText"];
+            columns: string[];
+        };
+        bmNegativeResult: {
+            rows: string[];
+            manuscript: string;
+            text: components["schemas"]["bmText"];
+        };
+        bmNotBuilt: {
+            id: string;
+            title: components["schemas"]["bmText"];
+            reason: components["schemas"]["bmText"];
+        };
+        bmProvenance: {
+            code_version: string;
+            generators: string[];
+            ladder: {
+                path: string;
+                rows_sha256: components["schemas"]["bmSha256"];
+            };
+            documents: {
+                path: string;
+                sha256: components["schemas"]["bmSha256"];
+            }[];
+            hash_rule: string;
+        };
+        bmQuestion: {
+            id: string;
+            title: components["schemas"]["bmText"];
+            case_ids: string[];
+            protocol: components["schemas"]["bmText"];
+            runs: components["schemas"]["bmRun"][];
+            metrics: components["schemas"]["bmMetric"][];
+            rows: components["schemas"]["bmRow"][];
+            absent: components["schemas"]["bmAbsent"][];
+            standings: components["schemas"]["bmStanding"][];
+            reading: components["schemas"]["bmText"];
+            negative_results: components["schemas"]["bmNegativeResult"][];
+        };
+        bmRow: {
+            id: string;
+            method: components["schemas"]["bmText"];
+            /** @description The SDD method-ladder id: kept for the tests, never rendered. */
+            ladder_id: null | components["schemas"]["bmLadderId"];
+            /**
+             * @description Read from the tier of the ladder row; reference when the row has no ladder id.
+             * @enum {string}
+             */
+            standing: "established" | "recent" | "proposed" | "reference";
+            ranked: boolean;
+            note: null | components["schemas"]["bmText"];
+            source: null | components["schemas"]["bmSource"];
+            year: number | null;
+            cells: components["schemas"]["bmCell"][];
+        };
+        bmRun: {
+            id: string;
+            label: components["schemas"]["bmText"];
+            protocol: components["schemas"]["bmText"];
+            seed: null | components["schemas"]["bmSeed"];
+            /** @description The committed files this run's cells cite; no file serves two runs of one question. */
+            files: string[];
+            columns: components["schemas"]["bmColumn"][];
+        };
+        bmSeed: {
+            value: number;
+            cited: components["schemas"]["bmCite"];
+        };
+        bmSha256: string;
+        bmSource: {
+            text: string;
+            url: string | null;
+        };
+        bmStanding: {
+            metric: string;
+            column: string;
+            best: string[];
+            value: number | string | boolean;
+            tie: boolean;
+            n_ranked: number;
+        };
+        bmText: {
+            en: string;
+            es: string;
+        };
+        /**
          * C01 models
          * @description Catalog row c01-models 1.0.0: a C01 models artifact (one per fit_id: german, taiwan, taiwan-small).
          */
