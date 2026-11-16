@@ -10,6 +10,7 @@
 import { Callout, Cite, DocSection, Figure, SubTabs } from '@fasl-work/caos-app-shell';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './liquidity.meta';
 
 const W = 480;
 const H = 276;
@@ -267,10 +268,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'liquidity',
-  group: 'balance',
-  order: 130,
-  title: { en: 'Liquidity (LCR and stress)', es: 'Liquidez (LCR y estrés)' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

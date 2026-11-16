@@ -10,6 +10,7 @@ import { Callout, Cite, DocSection, Figure } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './market-conformal.meta';
 import { GroupedBars } from '../MethodFigures';
 
 const NB = 'https://github.com/fsantibanezleal/CAOS_Contraste/blob/main/notebooks';
@@ -152,10 +153,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'conformal-var',
-  group: 'market',
-  order: 150,
-  title: { en: 'Adaptive conformal recalibration of the VaR', es: 'Recalibración conforme adaptativa del VaR' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };
