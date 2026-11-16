@@ -32,6 +32,12 @@ array and its target:
 `RANGE_SLACK = 1.0` (one full range on each side, as the rule and Fragua). A prediction partly inside the widened range passes:
 the gate is about units, never accuracy, and a method may be reported as badly wrong.
 
+A null prediction (decided by the main session on 2026-11-15, T1's open question) is a missing value: counted as the advisory
+`missing_prediction`, never range-checked and never blocking. The bake meets NaN and infinity in memory before any null is written,
+as `non_finite_prediction`, which blocks; a null in a committed artifact is therefore a deliberate missing value (an analytic rung
+with no Monte Carlo scenario, a method not fitted, each stated by its document). T3 calls the gate on the document as the case
+built it, before any conversion of NaN to null. A null in a target is left out of its range; a target of nulls only is an error.
+
 ### The target kinds (decisions of 2026-11-14, and this design's for 0/1 outcomes)
 
 | Kind | Target | Widened range | Where |

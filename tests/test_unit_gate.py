@@ -138,10 +138,27 @@ def test_booleans_and_text_are_not_numbers():
         run(pair(), {"pred": ["0.2"], "target": [10, 20]})
 
 
-def test_a_null_in_a_prediction_is_refused_never_passed():
-    # the rule and the design do not class a JSON null (how an artifact writes NaN); the gate refuses it loudly
-    with pytest.raises(ug.UnitGateError, match="null"):
-        run(pair(), {"pred": [15.0, None], "target": [10, 20]})
+def test_a_null_prediction_is_missing_recorded_and_never_checked():
+    # the main session's ruling (2026-11-15): a null is a missing value, counted as an advisory, never range-checked, never
+    # blocking; NaN and infinity, which the bake meets in memory before any null is written, stay non-finite and blocking
+    r = run(pair(), {"pred": [15.0, None], "target": [10, 20]})
+    assert r.violations == []
+    assert [(a["class"], a["blocking"]) for a in r.advisories] == [("missing_prediction", False)]
+    assert "1 of 2 predictions are null" in r.advisories[0]["detail"]
+    only = run(pair(), {"pred": [None, None], "target": [10, 20]})
+    assert only.violations == [] and [a["class"] for a in only.advisories] == ["missing_prediction"]
+    outside = run(pair(), {"pred": [500.0, None], "target": [10, 20]})
+    assert [v["class"] for v in outside.violations] == ["prediction_outside_observable"]
+    assert [a["class"] for a in outside.advisories] == ["missing_prediction"]
+    nan = run(pair(), {"pred": [float("nan"), None], "target": [10, 20]})
+    assert [v["class"] for v in nan.violations] == ["non_finite_prediction"]
+
+
+def test_adversarial_a_target_of_nulls_only_is_an_error_and_a_null_target_value_is_left_out():
+    with pytest.raises(ug.UnitGateError, match="nulls only"):
+        run(pair(), {"pred": [15.0], "target": [None, None]})
+    r = run(pair(), {"pred": [15.0], "target": [10, None, 20]})
+    assert r.violations == [] and r.advisories == []
 
 
 # ---- path expressions -----------------------------------------------------------------------------------------------

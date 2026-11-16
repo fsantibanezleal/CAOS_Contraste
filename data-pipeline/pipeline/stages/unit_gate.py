@@ -15,6 +15,12 @@ Violation classes (a violation is a dict, see below)
                                      (a prediction partly inside passes; for a ``bound``, any value
                                      outside the declared domain)
     degenerate_constant_prediction   two or more predictions, all equal, over a target that varies        advisory
+    missing_prediction               a prediction is null (a method with no value there, stated by its    advisory
+                                     document); counted, never range-checked, never blocking. In memory
+                                     the bake meets NaN and infinity first, as non-finite; a null in a
+                                     committed artifact is therefore a deliberate missing value. A null
+                                     in a target is left out of its range; a target of nulls only is an
+                                     error (main session ruling, 2026-11-15)
 
 Target kinds (``RANGE_SLACK = 1.0``: one full range on each side)
     series   an observed series: [lo - span, hi + span]. A span of 0 needs the pair's ``zero_scale`` (then [lo - zs, hi + zs]).
@@ -80,6 +86,7 @@ KINDS = ("series", "binary", "scalar", "bound")
 CLASS_NON_FINITE = "non_finite_prediction"
 CLASS_OUTSIDE = "prediction_outside_observable"
 CLASS_CONSTANT = "degenerate_constant_prediction"
+CLASS_MISSING = "missing_prediction"
 ENTRY_KINDS = ("pairs", "bake_only", "withheld", "not_applicable")
 _PAIR_KEYS = {"id", "file", "prediction", "target", "kind", "unit", "group_by", "zero_scale", "domain", "reason"}
 _SEGMENT = re.compile(r"^(?P<name>[^\[\]]+)(?P<arrays>(?:\[\])*)$")
@@ -244,14 +251,14 @@ def _method(bind: _Bind) -> Any:
     return bind[0] if bind[0] is not None else bind[1]
 
 
-def _numbers(value: Any, where: str) -> list[float]:
-    """The numbers of a leaf: a number, or a list of numbers (nested lists flatten)."""
+def _numbers(value: Any, where: str) -> list[float | None]:
+    """The numbers of a leaf: a number, or a list of numbers (nested lists flatten); a null is kept as None (missing)."""
     if isinstance(value, bool) or isinstance(value, (str, dict)):
         raise UnitGateError(f"{where}: {value!r} is not a number")
     if value is None:
-        raise UnitGateError(f"{where}: a null where a number is expected (a null is not classed: refused)")
+        return [None]
     if isinstance(value, (list, tuple)):
-        out: list[float] = []
+        out: list[float | None] = []
         for v in value:
             out.extend(_numbers(v, where))
         return out
@@ -314,37 +321,42 @@ def _target_range(pair: dict, tvals: list[float] | None, where: str) -> tuple[li
     return [lo - RANGE_SLACK * span, hi + RANGE_SLACK * span], span > FLAT_REL * max(abs(lo), abs(hi), 1e-12)
 
 
-def _judge(case: str, rel: str, pair: dict, method: Any, element: int | None, preds: list[float],
+def _judge(case: str, rel: str, pair: dict, method: Any, element: int | None, given: list[float | None],
            tvals: list[float] | None, where: str) -> list[dict]:
     wide, varies = _target_range(pair, tvals, where)
-    p_range = _range(preds)
+    preds = [p for p in given if p is not None]
+    missing = len(given) - len(preds)
+    p_range = _range(preds) if preds else [None, None]
     head = {"case": case, "file": rel, "pair": pair["id"], "method": method, "element": element, "kind": pair["kind"],
-            "unit": pair["unit"], "prediction_range": p_range, "target_range": wide, "n_predictions": len(preds)}
+            "unit": pair["unit"], "prediction_range": p_range, "target_range": wide, "n_predictions": len(given)}
     who = f"{pair['id']}" + (f" method {method}" if method is not None else "") + (f" element {element}" if element is not None else "")
 
     def violation(cls: str, is_blocking: bool, detail: str) -> dict:
         return {**head, "class": cls, "blocking": is_blocking, "detail": f"{who}: {detail}"}
 
+    noted = [violation(CLASS_MISSING, False, f"{missing} of {len(given)} predictions are null (missing, not checked)")] if missing else []
+    if not preds:
+        return noted
     bad = [p for p in preds if not math.isfinite(p)]
     if bad:
-        return [violation(CLASS_NON_FINITE, True, f"{len(bad)} of {len(preds)} predictions are not finite")]
+        return [violation(CLASS_NON_FINITE, True, f"{len(bad)} of {len(given)} predictions are not finite")] + noted
     lo = -math.inf if wide[0] is None else wide[0]
     hi = math.inf if wide[1] is None else wide[1]
     inside = [p for p in preds if lo <= p <= hi]
     if pair["kind"] == "bound":
         if len(inside) != len(preds):
             return [violation(CLASS_OUTSIDE, True, f"predicts {_fmt(p_range)} {pair['unit']} but the declared domain is "
-                              f"{_fmt(wide)}: a value lies outside the observable it is a bound of")]
-        return []
+                              f"{_fmt(wide)}: a value lies outside the observable it is a bound of")] + noted
+        return noted
     if not inside:
         return [violation(CLASS_OUTSIDE, True, f"predicts {_fmt(p_range)} against a widened target range {_fmt(wide)} "
                           f"{pair['unit']}: every prediction lies outside the observable, so this method is answering "
-                          "a different question")]
+                          "a different question")] + noted
     p_lo, p_hi = min(preds), max(preds)
     if varies and len(preds) >= 2 and p_hi - p_lo <= FLAT_REL * max(abs(p_lo), abs(p_hi), 1e-12):
         return [violation(CLASS_CONSTANT, False, f"returns the constant {p_lo:.6g} over a target that varies; recorded, "
-                          "not blocking (a flat answer is legitimate when the driver does not move enough)")]
-    return []
+                          "not blocking (a flat answer is legitimate when the driver does not move enough)")] + noted
+    return noted
 
 
 def _sort_key(v: dict) -> tuple:
@@ -378,6 +390,10 @@ def _check_scope(case: str, rel: str, scope: Any, pair: dict, element: int | Non
             tvals = targets[method]
         else:
             raise UnitGateError(f"pair {pid!r}: the target path {target_path!r} binds methods and none is {method!r}{where}")
+        if tvals is not None:
+            tvals = [t for t in tvals if t is not None]  # a null in a target is left out of its range
+            if not tvals:
+                raise UnitGateError(f"pair {pid!r}: the target path {target_path!r} resolves to nulls only{where}")
         out.extend(_judge(case, rel, pair, method, element, preds[method], tvals, where))
     return out
 
