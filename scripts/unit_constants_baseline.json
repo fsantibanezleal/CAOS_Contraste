@@ -1,8 +1,8 @@
 {
-"cases/bootstrap::<module>::0.95::0": {"class": "TODO", "unit": "TODO", "reason": "TODO"},
-"cases/bootstrap::<module>::0.9::0": {"class": "TODO", "unit": "TODO", "reason": "TODO"},
-"cases/bootstrap::percentile_interval::100.0::0": {"class": "TODO", "unit": "TODO", "reason": "TODO"},
-"cases/bootstrap::percentile_interval::100.0::1": {"class": "TODO", "unit": "TODO", "reason": "TODO"},
+"cases/bootstrap::<module>::0.95::0": {"class": "probability", "unit": "probability (confidence level)", "reason": "pattern: name of a probability level; LEVEL = 0.95: default confidence level of the percentile bootstrap interval"},
+"cases/bootstrap::<module>::0.9::0": {"class": "ratio", "unit": "share of the bootstrap replicates", "reason": "MIN_VALID_SHARE = 0.9: least share of finite replicates before an interval is reported"},
+"cases/bootstrap::percentile_interval::100.0::0": {"class": "unit-conversion", "unit": "percent from probability", "reason": "pattern: percent, basis point, million or period conversion; (lo, hi) = 100.0: np.percentile takes percent, so the tail probabilities (1 - level) / 2 are multiplied by 100"},
+"cases/bootstrap::percentile_interval::100.0::1": {"class": "unit-conversion", "unit": "percent from probability", "reason": "pattern: percent, basis point, million or period conversion; (lo, hi) = 100.0: np.percentile takes percent, so the tail probabilities (1 - level) / 2 are multiplied by 100"},
 "cases/c01_capital::<module>::0.3::0": {"class": "TODO", "unit": "TODO", "reason": "TODO"},
 "cases/c01_capital::parity_points::0.0002::0": {"class": "TODO", "unit": "TODO", "reason": "TODO"},
 "cases/c01_capital::parity_points::0.0007::0": {"class": "TODO", "unit": "TODO", "reason": "TODO"},
