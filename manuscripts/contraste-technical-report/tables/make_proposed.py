@@ -760,7 +760,15 @@ def build() -> dict:
             "ThreeCost": "nSeedsThreeCost", "ThreeCostSe": "nSeedsThreeCostSe", "UpThreeMed": "nSeedsUpThreeMed",
             "UpThreeCost": "nSeedsUpThreeCost", "UpThreeCostSe": "nSeedsUpThreeCostSe", "RhoAvg": "nRhoZeroThreeAvg",
             "VasTrue": "nPdcZeroThreeVasTrueEvery", "MatchedSize": "nPdcMatchedSize", "ChiMatched": "nPdcOneZeroFiveChiMatched",
-            "PdAvg": "nPdOneZeroFiveAvg", "ChiSim": "nPdcOneZeroFiveChiSim"}),
+            "PdAvg": "nPdOneZeroFiveAvg", "ChiSim": "nPdcOneZeroFiveChiSim",
+            # the published e-backtest (BS-15's comparator, section on M-39): size, delay, power, the real windows
+            "Reps": "nReps", "WwzNull": "nNullSizeWwz", "WwzEnd": "nHorizonEndWwz", "HorizonDays": "nHorizonDays",
+            "WwzThreeMed": "nMedThreeWwz", "WwzFourMed": "nMedFourWwz", "WwzThreeBy": "nByThreeWwz", "WwzFourBy": "nByFourWwz",
+            "WwzThreeEver": "nEverThreeWwz", "WwzFourEver": "nEverFourWwz", "WwzGapThree": "nGapThreeWwz", "WwzGapFour": "nGapFourWwz",
+            "EThreeMed": "nMedThreeE", "EFourMed": "nMedFourE", "EThreeBy": "nByThreeE", "EFourBy": "nByFourE",
+            "WwzEquity": "nCElevenEquityNinetyWwzFlag", "WwzEquityMed": "nCElevenEquityNinetyWwzMed",
+            "WwzFx": "nCElevenFxNinetyWwzFlag", "WwzFxMed": "nCElevenFxNinetyWwzMed",
+            "WwzCalm": "nCElevenCalmNinetyWwzFlag", "WwzCalmMed": "nCElevenCalmNinetyWwzMed"}),
         "Sixteen": ("adaptive-conformal-recalibration-of-var", {
             "DevUnw": "tenHitDevUnw", "DevAci": "tenHitDevAci", "WorstFz": "tenWorstFz", "PassAci": "tenPassAci", "Runs": "tenRuns",
             "PassUnw": "tenPassUnw", "DispAci": "dispBOneOneAciPass", "DispUnw": "dispBOneOneUnwPass", "WrapCal": "dispCWrapCal",

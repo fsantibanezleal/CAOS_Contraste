@@ -203,52 +203,6 @@ location fixed at zero, and a fit with fewer than 10 exceedances is refused. Whe
 ES is undefined: the day is recorded as such and no number is reported. The threshold is the main model risk; the shape is unstable
 in short windows. The AR(1) mean term of the original paper is not used.
 
-\subsubsection{Quantile regression and score-driven models}
-The CAViaR models of \citet{market:engleManganelli2004} model the VaR $f_t$ directly as an autoregression on its own past and on the
-last return. The symmetric absolute value and the asymmetric slope specifications are
-\begin{align}
-f_t&=b_1+b_2f_{t-1}+b_3|y_{t-1}|, \label{eq:mk-sav}\\
-f_t&=b_1+b_2f_{t-1}+b_3\,(y_{t-1})^{+}+b_4\,(y_{t-1})^{-}, \label{eq:mk-as}
-\end{align}
-with $(y)^+=\max(y,0)$ and $(y)^-=-\min(y,0)$. The coefficients minimise the tick loss
-\begin{equation}
-\sum_t\left(\alpha-\indic\{y_t<f_t\}\right)(y_t-f_t),
-\label{eq:mk-tick}
-\end{equation}
-whose expected value is minimised by the true quantile. The objective is not convex, so the fit uses \mkCaviarStarts{} starts, the
-first of them the constant benchmark $b=(q,0,0)$ with $q$ the empirical quantile of the window, and polishes each with two
-Nelder--Mead runs; the reported loss therefore never exceeds that of any constant. The recursion is a linear filter. CAViaR gives the VaR
-only. The ES extension of \citet{market:taylor2019} writes $\ES_t=\mathrm{VaR}_t-x_t$ with a nonnegative gap that is updated only
-after an exceedance,
-\begin{equation}
-x_t=\begin{cases}\gamma_0+\gamma_1\left(\mathrm{VaR}_{t-1}-r_{t-1}\right)+\gamma_2\,x_{t-1}&r_{t-1}\le\mathrm{VaR}_{t-1},\\x_{t-1}&\text{otherwise},\end{cases}
-\label{eq:mk-escaviar}
-\end{equation}
-and is estimated by maximising the asymmetric Laplace likelihood \citep{market:taylor2019,market:liuluger2026}
-\begin{equation}
-f(r)=\frac{\alpha-1}{\ES_t}\exp\!\left(\frac{(r-\mathrm{VaR}_t)\left(\alpha-\indic\{r\le\mathrm{VaR}_t\}\right)}{\alpha\,\ES_t}\right).
-\label{eq:mk-ald}
-\end{equation}
-The implementation is two-step: the VaR path of the tick-loss fit is fixed, and the likelihood is maximised over $(\gamma_0,\gamma_1,\gamma_2)$ with
-$\gamma_0,\gamma_1\ge0$ and $0\le\gamma_2<1$, so that $x_t\ge0$ and $\ES_t\le\mathrm{VaR}_t$ hold on every day; joint estimation of the
-paper, over the VaR and the ES parameters together, would be a different estimator, and the two-step choice is a declared deviation.
-
-The GAS-FZ models of \citet{market:pattonziegelchen2019} drive the pair $(v_t,e_t)$ by the score of the joint loss of equation~\eqref{eq:mk-fz0}
-below. The one-factor model ties the pair to a single dynamic factor and the hybrid model adds the logarithm of the absolute return to the
-factor recursion,
-\begin{align}
-v_t&=a\,e^{\kappa_t},\quad e_t=b\,e^{\kappa_t},\quad b<a<0,\qquad
-\kappa_{t+1}=\beta\kappa_t+\gamma\,\frac{-1}{e_t}\left(\frac1\alpha\indic\{y_t\le v_t\}\,y_t-e_t\right), \label{eq:mk-gas1}\\
-\kappa_{t+1}&=\beta\kappa_t+\gamma\,\frac{-1}{e_t}\left(\frac1\alpha\indic\{y_t\le v_t\}\,y_t-e_t\right)+\delta\ln|y_t|. \label{eq:mk-gash}
-\end{align}
-The two-factor model updates the two numbers by their own scores, $(v_{t+1},e_{t+1})'=w+B(v_t,e_t)'+A(\lambda_{v,t},\lambda_{e,t})'$ with
-$\lambda_{v,t}=-v_t(\indic\{y_t\le v_t\}-\alpha)$ and $\lambda_{e,t}=\frac1\alpha\indic\{y_t\le v_t\}y_t-e_t$, a diagonal matrix $B$ and a
-full matrix $A$. The intercept of the one-factor and hybrid recursions is not identified under this loss and is fixed at zero. Estimation
-minimises the average FZ0 loss of the window by Nelder--Mead from \mkGasStarts{} starts, the first of them the constant empirical VaR and
-ES, so the fitted loss never exceeds that benchmark's; a path that leaves the domain $e_t\le v_t<0$ costs a large constant, so every fitted
-path stays inside it. A fit that does not converge is a result and not an error. The recursions react to a return only through a VaR
-violation, and the estimation is unstable for small $\alpha$ and short windows.
-
 \subsubsection{The joint scoring rule}
 All the estimators above are ranked by one loss. Let $Y$ be a realised return, $(v,e)$ a forecast pair with $e\le v<0$, and $G_1$,
 $G_2$ functions with $G_1$ weakly increasing, $G_2$ strictly increasing and positive, $\mathcal G_2'=G_2$. The Fissler--Ziegel class of
@@ -293,20 +247,87 @@ The cost of an estimator is set by the length $N$ of the window, the number $T$ 
 of one fit. Historical simulation and the age-weighted variant sort the window each day, $O(TN\log N)$ in all; the delta-normal and
 Cornish--Fisher estimators compute moments of the window, $O(TN)$; the EWMA is $O(N+T)$ because the recursion updates in constant time. A
 GARCH-family fit evaluates the likelihood recursion, which costs $O(N)$ per evaluation, $I$ times in the optimiser, and runs $T/R$ times: $O\big((T/R)\,I\,N\big)$, with
-$R=1$ in the case. Filtered historical simulation and the extreme-value model add a sort of the residuals per day. A CAViaR or a GAS-FZ fit
-costs $O(SIN)$ for $S$ starts and $I$ evaluations per start, every $R=\mkCaviarRefit{}$ or $\mkGasRefit{}$ days, and the objective is non-smooth, so
-$I$ is large. The scoring is $O(T)$ per model and level.
+$R=1$ in the case. Filtered historical simulation and the extreme-value model add a sort of the residuals per day. The scoring is $O(T)$ per model and level.
 
-The engine implements every estimator of this subsection in the \texttt{riskvalidation} package, release 1.1.0:
+The engine implements the estimators of this subsection in the \texttt{riskvalidation} package, release 1.1.0:
 \mkfn{riskvalidation.market.historical} (the sample estimator, age-weighted simulation, filtered and volatility-updated simulation),
 \mkfn{riskvalidation.market.parametric} (delta-normal, Cornish--Fisher, EWMA), \mkfn{riskvalidation.market.garch} and
 \mkfn{riskvalidation.market.evt} (the GARCH family through the optional \texttt{arch} package, the generalised Pareto tail),
-\mkfn{riskvalidation.market.caviar}, \mkfn{riskvalidation.market.gas_fz}, \mkfn{riskvalidation.market.scoring} (FZ0 and tick loss) and
+\mkfn{riskvalidation.market.scoring} (FZ0 and tick loss) and
 \mkfn{riskvalidation.market.conventions} (the sign convention). Each function receives no data of the day it forecasts. The pipeline of
 case C11 only slices the window, schedules the refits and collects the numbers, in \mkfn{data-pipeline/pipeline/cases/c11/forecast.py}
 (\mkfn{run_model}) and \mkfn{hyper.py}. The acceptance criterion of the product is that each estimator runs over the full rolling schedule
 with no look-ahead, that the forecast of the Student-$t$ GARCH agrees, at fixed parameters, with the filter of the \texttt{arch} package within a relative $10^{-9}$ and its closed-form expected shortfall with the quadrature of the definition within $10^{-4}$ (the fit itself is the \texttt{arch} package, so no second likelihood is compared; the test is \mkfn{test_garch_forecast_student_t_closed_form}), and that FZ0 losses are computed for every
 estimator that forecasts an ES. The estimators are compared with one another on the same days by the tests of \cref{sec:m19}.
+
+% ----------------------------------------------------------------------------------------------------------------------------------
+\subsection{CAViaR and the score-driven models}
+\label{sec:m38}
+The estimators of \cref{sec:m18} first describe the distribution of the return and read the pair $(v_t,e_t)$ of equation~\eqref{eq:mk-def} off
+it. The two families of this subsection do not: they model the VaR, or the pair, as a quantity that moves with its own past and with the last
+returns, and they are fitted by minimising the loss that elicits it, the tick loss for the VaR and the FZ0 loss of
+equation~\eqref{eq:mk-fz0} for the pair. They are the estimators of the ladder that use the joint scoring rule not only to rank
+but also to estimate, which is why they are set apart from the distributional estimators: their fit is an optimisation of a non-smooth,
+non-convex objective, and their behaviour in a short window or at a small tail level is a property of that optimisation as much as of the model.
+
+The CAViaR models of \citet{market:engleManganelli2004} model the VaR $f_t$ directly as an autoregression on its own past and on the
+last return. The symmetric absolute value and the asymmetric slope specifications are
+\begin{align}
+f_t&=b_1+b_2f_{t-1}+b_3|y_{t-1}|, \label{eq:mk-sav}\\
+f_t&=b_1+b_2f_{t-1}+b_3\,(y_{t-1})^{+}+b_4\,(y_{t-1})^{-}, \label{eq:mk-as}
+\end{align}
+with $(y)^+=\max(y,0)$ and $(y)^-=-\min(y,0)$. The coefficients minimise the tick loss
+\begin{equation}
+\sum_t\left(\alpha-\indic\{y_t<f_t\}\right)(y_t-f_t),
+\label{eq:mk-tick}
+\end{equation}
+whose expected value is minimised by the true quantile. The objective is not convex, so the fit uses \mkCaviarStarts{} starts, the
+first of them the constant benchmark $b=(q,0,0)$ with $q$ the empirical quantile of the window, and polishes each with two
+Nelder--Mead runs; the reported loss therefore never exceeds that of any constant. The recursion is a linear filter. CAViaR gives the VaR
+only. The ES extension of \citet{market:taylor2019} writes $\ES_t=\mathrm{VaR}_t-x_t$ with a nonnegative gap that is updated only
+after an exceedance,
+\begin{equation}
+x_t=\begin{cases}\gamma_0+\gamma_1\left(\mathrm{VaR}_{t-1}-r_{t-1}\right)+\gamma_2\,x_{t-1}&r_{t-1}\le\mathrm{VaR}_{t-1},\\x_{t-1}&\text{otherwise},\end{cases}
+\label{eq:mk-escaviar}
+\end{equation}
+and is estimated by maximising the asymmetric Laplace likelihood \citep{market:taylor2019,market:liuluger2026}
+\begin{equation}
+f(r)=\frac{\alpha-1}{\ES_t}\exp\!\left(\frac{(r-\mathrm{VaR}_t)\left(\alpha-\indic\{r\le\mathrm{VaR}_t\}\right)}{\alpha\,\ES_t}\right).
+\label{eq:mk-ald}
+\end{equation}
+The implementation is two-step: the VaR path of the tick-loss fit is fixed, and the likelihood is maximised over $(\gamma_0,\gamma_1,\gamma_2)$ with
+$\gamma_0,\gamma_1\ge0$ and $0\le\gamma_2<1$, so that $x_t\ge0$ and $\ES_t\le\mathrm{VaR}_t$ hold on every day; joint estimation of the
+paper, over the VaR and the ES parameters together, would be a different estimator, and the two-step choice is a declared deviation.
+
+The GAS-FZ models of \citet{market:pattonziegelchen2019} drive the pair $(v_t,e_t)$ by the score of the joint loss of equation~\eqref{eq:mk-fz0}
+of \cref{sec:m18}. The one-factor model ties the pair to a single dynamic factor and the hybrid model adds the logarithm of the absolute return to the
+factor recursion,
+\begin{align}
+v_t&=a\,e^{\kappa_t},\quad e_t=b\,e^{\kappa_t},\quad b<a<0,\qquad
+\kappa_{t+1}=\beta\kappa_t+\gamma\,\frac{-1}{e_t}\left(\frac1\alpha\indic\{y_t\le v_t\}\,y_t-e_t\right), \label{eq:mk-gas1}\\
+\kappa_{t+1}&=\beta\kappa_t+\gamma\,\frac{-1}{e_t}\left(\frac1\alpha\indic\{y_t\le v_t\}\,y_t-e_t\right)+\delta\ln|y_t|. \label{eq:mk-gash}
+\end{align}
+The two-factor model updates the two numbers by their own scores, $(v_{t+1},e_{t+1})'=w+B(v_t,e_t)'+A(\lambda_{v,t},\lambda_{e,t})'$ with
+$\lambda_{v,t}=-v_t(\indic\{y_t\le v_t\}-\alpha)$ and $\lambda_{e,t}=\frac1\alpha\indic\{y_t\le v_t\}y_t-e_t$, a diagonal matrix $B$ and a
+full matrix $A$. The intercept of the one-factor and hybrid recursions is not identified under this loss and is fixed at zero. Estimation
+minimises the average FZ0 loss of the window by Nelder--Mead from \mkGasStarts{} starts, the first of them the constant empirical VaR and
+ES, so the fitted loss never exceeds that benchmark's; a path that leaves the domain $e_t\le v_t<0$ costs a large constant, so every fitted
+path stays inside it. A fit that does not converge is a result and not an error. The recursions react to a return only through a VaR
+violation, and the estimation is unstable for small $\alpha$ and short windows.
+
+\subsubsection{Parameters, complexity and implementation}
+The parameters that the fit needs are the number of starts, \mkCaviarStarts{} for CAViaR and \mkGasStarts{} for the GAS-FZ models, and the refit
+interval, \mkCaviarRefit{} forecast days for CAViaR and \mkGasRefit{} for the GAS-FZ models, against a daily refit
+for the volatility models of \cref{sec:m18} and for the ES step of CAViaR; the seed \mkSeed{} is fixed. They are set by the compute limit and the
+determinism requirement and are not tuned on the test windows. A CAViaR or a GAS-FZ fit costs $O(SIN)$ for $S$ starts and $I$ evaluations per
+start on a window of $N$ days, every $R$ forecast days, and the objective is non-smooth, so $I$ is large; the scoring is $O(T)$ per model and level.
+
+The two families are implemented in the engine in \mkfn{riskvalidation.market.caviar} and \mkfn{riskvalidation.market.gas_fz}, and they are scored by
+\mkfn{riskvalidation.market.scoring}. As for every estimator of the ladder, each function receives no data of the day it forecasts, and the pipeline of
+case C11 only slices the window, schedules the refits and collects the numbers. The acceptance criterion of the product for these two families is
+that each runs over the full rolling schedule with no look-ahead and that an FZ0 loss is computed for every rung that forecasts an ES, the GAS-FZ models and the ES extension of CAViaR; the VaR-only CAViaR
+models are scored by the tick loss and never by a number invented for the ES. The fit keeps every GAS-FZ path inside the domain $e_t\le v_t<0$ of the loss, as the estimation above describes. The families are compared with the other estimators on the same days by the tests of
+\cref{sec:m19}.
 
 % ----------------------------------------------------------------------------------------------------------------------------------
 \subsection{Back-tests of value at risk and expected shortfall}
@@ -441,6 +462,76 @@ $r_t=(\ell_t-\ES_t)/\sigma_t$ should be independent with mean zero, and tests th
 approaches exist: a spectral-measure back-test \citep{market:costanzinocurran2015} and multinomial back-tests of the VaR at several levels as an implicit
 test of the ES \citep{market:kratzlokmcneil2018}. The plain asymptotic versions ignore parameter estimation uncertainty. The size and power of every test
 of the section, measured on data with a known truth, are in \cref{tab:market-sizepower}.
+
+\subsubsection{The published e-backtests of value at risk and expected shortfall}
+\label{sec:m39}
+The tests of the preceding subsubsections are read once, on a window fixed in advance. A desk reads a back-test every morning, and a test read
+every day on a growing or a sliding window rejects a correct model far more often than its level; the proposed monitor of \cref{sec:bs15}
+removes that inflation with an e-process, and the published construction it is compared with is the e-backtest of \citet{proposed:wang2022}.
+The paper defines a backtest e-statistic as a function of the forecast and of the realised loss whose expectation does not exceed one when the
+forecast is correct, characterises such statistics for value at risk and for expected shortfall, and builds e-processes from them with a betting
+process that is estimated from the past. It is model-free and valid at any stopping time.
+
+For the exceedance $h_t=\indic\{\ell_t>\mathrm{VaR}_t\}$ of a value at risk with tail probability $\alpha$, the e-statistic is the exceedance
+indicator divided by the tail probability, which has conditional expectation one given the past when the VaR is correct,
+\begin{equation}
+e_t=\frac{h_t}{\alpha},\qquad \mathbb E\left[e_t\mid\mathcal F_{t-1}\right]=1,\qquad
+M_t=\prod_{s=1}^{t}\bigl(1-\lambda_s+\lambda_s\,e_s\bigr),\quad 0\le\lambda_s\le\gamma,
+\label{eq:mk-ebt}
+\end{equation}
+where the betting fraction $\lambda_s$ is decided before day $s$ from the days before it and $\gamma=\tfrac12$ is the cap. A factor is at least
+$1-\gamma$ because $e_s\ge0$, so $M_t$ is a non-negative martingale with $M_0=1$ under the null, and by Ville's inequality
+$\mathbb P(\sup_tM_t\ge1/a)\le a$ \citep{proposed:ramdas2023}: the monitor that rejects on the first day with $M_t\ge1/a=\pxFifteenThreshold{}$ has
+size at most $a=\pxFifteenAlpha{}\,\%$ however often it is read and whenever the analyst stops. The betting process of the product's implementation
+is the growth-rate rule of the paper estimated on all past days. With $H_{t-1}$ the number of exceedances before day $t$,
+\begin{equation}
+\lambda_t=\min\!\left\{\gamma,\ \max\!\left\{0,\ \frac{H_{t-1}/\alpha-(t-1)}{H_{t-1}\left(1/\alpha-1\right)^{2}+\left(t-1-H_{t-1}\right)}\right\}\right\},
+\label{eq:mk-ebt-lambda}
+\end{equation}
+the ratio of the sum of $e_s-1$ over the past days to the sum of its square (the numerator is $H_{t-1}/\alpha-(t-1)$ and the denominator
+$H_{t-1}(1/\alpha-1)^2+(t-1-H_{t-1})$, because $e_s-1$ is $1/\alpha-1$ on an exceedance day and $-1$ otherwise); the experiment code of the
+monitors manuscript implements this rule and checks the bet against the closed form of its source. The same paper gives statistics for expected
+shortfall; they are not run in this product, which carries only the exceedance statistic, so the report gives no equation for them.
+
+The guarantee has a cost that equation~\eqref{eq:mk-ebt-lambda} shows. The bet is positive only when $H_{t-1}>\alpha(t-1)$, that is only when the
+past exceedances outnumber those expected, and the first day bets nothing. While the betting process is learned the process does not move, and a
+bet estimated from few exceedances stays small; at a level of 1\,\% a model with a few exceedances in its first hundreds of days starts to
+accumulate evidence late. Two limits follow from the statistic itself. It reads the exceedance indicator and not the size of the loss beyond the VaR,
+and the process has no term for the clustering of exceedances, which the monitor of \cref{sec:bs15} adds. The implementation compared here is one:
+only the growth-rate betting rule on all past days is run, not the other betting rules or the rolling window the paper also proposes.
+
+\Cref{tab:mk-ebacktest} gives the measured behaviour on the generator of known truth of the monitors manuscript (\pxPpFifteenReps{} streams per
+point, a VaR level of 1\,\%, read every day, the rejection threshold $\pxFifteenThreshold{}$ for both processes), next to the rate e-process of
+\cref{sec:bs15}. Read every day over 1{,}000 days the e-backtest rejects a correct model in \pxPpFifteenWwzNull{}\,\% of the streams, and in
+\pxPpFifteenWwzEnd{}\,\% by day \pxPpFifteenHorizonDays{}: it keeps its size, and it is conservative. At a hit rate three times the nominal its
+median first-rejection day is \pxPpFifteenWwzThreeMed{} and \pxPpFifteenWwzFourMed{} at four times, against \pxPpFifteenEThreeMed{} and
+\pxPpFifteenEFourMed{} for the rate e-process, \pxPpFifteenWwzGapThree{} and \pxPpFifteenWwzGapFour{} days later. By day 250 it has rejected
+\pxPpFifteenWwzThreeBy{}\,\% of the streams at three times and \pxPpFifteenWwzFourBy{}\,\% at four times, against \pxPpFifteenEThreeBy{}\,\% and
+\pxPpFifteenEFourBy{}\,\%; within the 1{,}000 days it rejects \pxPpFifteenWwzThreeEver{}\,\% and \pxPpFifteenWwzFourEver{}\,\%. The e-backtest
+therefore has the size guarantee and loses on delay and on power to a monitor whose bets are fixed in advance on a grid of alternatives, which is
+the third difference the monitors manuscript draws: what each process knows before the first exceedance.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{The e-backtest of Wang, Wang and Ziegel and the rate e-process of the proposed monitors on the same hit streams (a VaR level of 1\,\%, \pxPpFifteenReps{} streams per row, read every day): the share of correct models rejected over 1{,}000 days, the median first-rejection day and the share rejected by day 250 at a hit rate three and four times the nominal. Every value is read from the number file of the monitors manuscript through \texttt{tables/make\_proposed.py}.}
+\label{tab:mk-ebacktest}
+\begin{tabular}{lrrrrr}
+\toprule
+Process & Size (\%) & Median day, $3\times$ & Median day, $4\times$ & By day 250, $3\times$ (\%) & By day 250, $4\times$ (\%) \\
+\midrule
+E-backtest & \pxPpFifteenWwzNull & \pxPpFifteenWwzThreeMed & \pxPpFifteenWwzFourMed & \pxPpFifteenWwzThreeBy & \pxPpFifteenWwzFourBy \\
+Rate e-process & \pxPpFifteenENull & \pxPpFifteenEThreeMed & \pxPpFifteenEFourMed & \pxPpFifteenEThreeBy & \pxPpFifteenEFourBy \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+On the real exceedances of case C11 at the 99\,\% level the e-backtest flags \pxPpFifteenWwzEquity{} of the models in the equity crisis of 2007 to
+2009 at a median day of \pxPpFifteenWwzEquityMed{}, \pxPpFifteenWwzFx{} models in the foreign-exchange window of 2008 at a median day of
+\pxPpFifteenWwzFxMed{}, and \pxPpFifteenWwzCalm{} model in the calm window of 2004 to 2006 (median day \pxPpFifteenWwzCalmMed{}). No truth is known in
+those windows, so the counts are counts and not a power. The size and the delay of the test of \citet{proposed:wang2022} are properties of the
+betting process; the monitors of \cref{sec:bs15} do not replace the e-statistic of that paper but compare with it, and the extension of the
+construction to expected shortfall is a stated next step of the monitors manuscript.
 
 \subsubsection{Comparison, eligibility and the champion}
 The comparative evidence is the average FZ0 loss of equation~\eqref{eq:mk-fz0} over the forecast days, a lower value meaning a better forecast of the pair.
