@@ -37,7 +37,7 @@ import { atApproval, CHAMPION, challengers, defaultChallenger, provenanceOf, run
 import { ModelGroup } from './ModelViews';
 import { ValidationGroup } from './ValidationViews';
 import { VariantsView } from './VariantsView';
-import { useRegisteredInstrument } from './registry';
+import { failedInstrument, instrumentSlot, pendingInstrument, useInstrumentModule, useInstrumentPublication } from './instrumentHost';
 import { absentInstrument, plannedReason, unreadableReason } from '../readiness/Planned';
 import { ReadinessNote } from '../readiness/ReadinessNote';
 import { isPlanned, rowsForCase, entryFor } from '../readiness/readiness';
@@ -185,9 +185,11 @@ export function Workbench() {
     () => (data && chosen && data.manifest.case_id === 'C01' ? { data, challenger: chosen, alphas, approval, lgd, applicant } : null),
     [data, chosen, alphas, approval, lgd, applicant],
   );
-  // every registered case's instrument hook runs on every render (the set is fixed at build time, so hooks keep their
-  // order); the selected case picks which is shown
-  const registered = useRegisteredInstrument(data, setVariantId);
+  // the selected case's instrument module loads on demand; one runner keyed by the case id calls its hook (instrumentHost.tsx),
+  // so a case change mounts a new runner and no hook of another case runs (BL-102)
+  const module = useInstrumentModule(selected);
+  const { published, publish } = useInstrumentPublication(selected);
+  const registered = module.status.state === 'ready' ? published : null;
 
   const entries = index.state === 'ready' ? index.data.cases : [];
   const entry = entries.find((c) => c.case_id === selected) ?? null;
@@ -202,7 +204,14 @@ export function Workbench() {
           : loaded.state === 'error' && entry
             ? absentInstrument(unreadableReason(entry.title, loaded.error), entry)
             : null;
-  const inst = registered ?? absent;
+  const inst =
+    registered ??
+    absent ??
+    (module.status.state === 'failed' && selected
+      ? failedInstrument(selected, module.status.message, entry)
+      : module.status.state === 'loading'
+        ? pendingInstrument(entry)
+        : null);
   const PLANNED_MARK = { en: ' (planned)', es: ' (planificado)' };
   const cases: CaseDef[] = entries.map((c) => ({
     id: c.case_id,
@@ -354,6 +363,8 @@ export function Workbench() {
   const compare = { ...own.compare, content: noted(own.compare.content) };
   const context = { content: noted(own.context.content) };
   return (
+    <>
+    {module.status.state === 'ready' && module.hook && selected ? instrumentSlot({ caseId: selected, hook: module.hook, data, setVariantId, onInstrument: publish }) : null}
     <CaseWorkbench
       caseId={selected ?? ''}
       source={prov}
@@ -382,5 +393,6 @@ export function Workbench() {
       compare={compare}
       context={context}
     />
+    </>
   );
 }

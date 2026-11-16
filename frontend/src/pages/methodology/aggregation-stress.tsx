@@ -13,6 +13,7 @@
 import { Callout, Cite, DocSection, Figure, SubTabs, formatNumber, useShellLang } from '@fasl-work/caos-app-shell';
 import { Equation, P, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './aggregation-stress.meta';
 
 const W = 480;
 const H = 276;
@@ -407,10 +408,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'aggregation-stress',
-  group: 'capital',
-  order: 140,
-  title: { en: 'Aggregation and stress testing', es: 'Agregación y pruebas de estrés' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

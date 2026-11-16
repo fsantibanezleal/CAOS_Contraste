@@ -1,18 +1,24 @@
 // ADR-0071 rule 5 (gate G3): no row of sub-tabs holds more than six peers. Every group of every registered instrument, on every
 // committed variant of every case, is rendered and its peer tabs counted; and the views that moved to make the rows fit are
 // still reachable (the validation row of an agency keeps its seven views across the two rows that hold them now).
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { setLang } from './c03/u6-testkit';
 import { committedData, manifestOf, render, variantIds } from './c03/u16f2-kit';
-import { useRegisteredInstrument } from './registry';
+import { instrumentOf, loadInstrument } from './registry';
 
 const CASES = ['C02', 'C03', 'C04', 'C05', 'C06', 'C07', 'C08', 'C09', 'C10', 'C11', 'C12', 'C13', 'C14', 'C15', 'C16', 'C17', 'C18', 'C20', 'C21', 'C22'];
 const MAX_PEERS = 6;
 afterEach(() => setLang('en'));
+// the instruments load on demand in the app; the test loads each case's module once, then renders it as the workbench's host does
+beforeAll(async () => {
+  await Promise.all(CASES.map((c) => loadInstrument(c)));
+});
 
 /** The labels of the peer tabs of every group of a case's variant, by group id. */
 function Groups({ caseId, variant }: { caseId: string; variant: string }) {
-  const inst = useRegisteredInstrument(committedData(caseId, variant), () => undefined);
+  const useInstrument = instrumentOf(caseId);
+  if (!useInstrument) throw new Error(`${caseId}: no instrument loaded`);
+  const inst = useInstrument(committedData(caseId, variant), () => undefined);
   return (
     <div>
       {(inst?.groups ?? []).map((g) => (

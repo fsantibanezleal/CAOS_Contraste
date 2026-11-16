@@ -9,6 +9,7 @@
 import { Callout, Cite, DocSection, Figure, SubTabs } from '@fasl-work/caos-app-shell';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './portfolio-capital.meta';
 
 const W = 480;
 const H = 276;
@@ -243,10 +244,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'portfolio-capital',
-  group: 'capital',
-  order: 120,
-  title: { en: 'Portfolio credit capital', es: 'Capital de crédito de cartera' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

@@ -10,6 +10,7 @@
 import { Callout, Cite, DocSection, Figure, SubTabs, formatNumber, useShellLang } from '@fasl-work/caos-app-shell';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './oprisk.meta';
 
 const W = 480;
 const H = 276;
@@ -227,10 +228,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'oprisk',
-  group: 'capital',
-  order: 210,
-  title: { en: 'Operational risk', es: 'Riesgo operacional' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

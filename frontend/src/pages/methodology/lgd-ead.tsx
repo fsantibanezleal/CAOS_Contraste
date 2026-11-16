@@ -11,6 +11,7 @@
 import { Callout, Cite, DocSection, Figure, SubTabs } from '@fasl-work/caos-app-shell';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './lgd-ead.meta';
 
 const W = 480;
 const H = 276;
@@ -181,10 +182,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'lgd-ead',
-  group: 'loss',
-  order: 110,
-  title: { en: 'LGD and EAD', es: 'LGD y EAD' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

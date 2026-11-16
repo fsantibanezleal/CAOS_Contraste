@@ -46,6 +46,7 @@ import { loadReadiness, unavailableRow } from '../../readiness/readiness';
 import type { RailSelectOption } from '../../workbench/c06/RailSelect';
 import { Pending, Unavailable } from '../../workbench/Pending';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './regulation.meta';
 
 // ---------------------------------------------------------------------------------------------------------------------
 // the document: loaded once, or declared absent with its reason (a missing artifact is a state, never an empty chart)
@@ -1484,10 +1485,4 @@ export function DocSelect({ id, label, options, value, onChange }: { id: string;
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'regulation',
-  group: 'capital',
-  order: 230,
-  title: { en: 'Regulation map (Basel calculators)', es: 'Mapa regulatorio (calculadoras de Basilea)' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

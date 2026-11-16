@@ -11,6 +11,7 @@ import { Callout, Cite, DocSection, Figure } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './pc-hazard.meta';
 import { GroupedBars } from '../MethodFigures';
 
 const NB = 'https://github.com/fsantibanezleal/CAOS_Contraste/blob/main/notebooks';
@@ -119,10 +120,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'pc-hazard',
-  group: 'loss',
-  order: 150,
-  title: { en: 'PC-Hazard', es: 'PC-Hazard' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };
