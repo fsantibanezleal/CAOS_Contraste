@@ -77,6 +77,7 @@ class C06:
         from ... import __version__
         from . import build as bd
         from ...io import sba as readers
+        from . import pch_sensitivity as pchs
         from . import s4_bootstrap as s4b
         from .panel import prepare
         from .variant import bake_variant
@@ -120,6 +121,17 @@ class C06:
             raise ValueError(f"the S-4 count over the dates disagrees with the dates: {findings}")
         for blk in blocks:
             blk["overall"] = dict(overall)
+        # the sensitivity of the PC-Hazard rung to its hyper-parameters (CT-521 to CT-523): the verdict of each setting over the dates, and
+        # the count of settings that agree with the default's, which stays the verdict of the case
+        sweeps = [r.models["fit"]["pch_sensitivity"] for r in baked]
+        sweep_holds = pchs.holds_by_setting(sweeps)
+        sweep_overall = pchs.overall(sweep_holds)
+        if sweep_overall["case_verdict"] != overall["verdict"]:
+            raise ValueError(f"the default setting's verdict {sweep_overall['case_verdict']} is not the case verdict {overall['verdict']}")
+        for blk in sweeps:
+            blk["overall"] = pchs.overall(sweep_holds)
+        _log(f"PC-Hazard sensitivity: {sweep_overall['agree']} of {sweep_overall['settings_count']} settings agree with the verdict "
+             f"{sweep_overall['case_verdict']}")
         _log(f"S-4 over {overall['dates']} dates: holds at {overall['holds_at']} of {overall['evaluable']} evaluable, "
              f"{overall['holds_excluding_zero']} of them with both intervals excluding zero; verdict {overall['verdict']}")
         for res in baked:

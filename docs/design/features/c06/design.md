@@ -78,6 +78,20 @@ against `s4_evaluation`, which the bake asserts before it writes an interval). T
 differences. A date with fewer than 30 defaults followed, a date where the rung was not fitted, and a measure with no observed horizon give a
 null interval with its reason. `fit.s4_bootstrap.overall` counts the dates where the hypothesis holds with both intervals excluding zero.
 
+## The PC-Hazard sensitivity (CT-521 to CT-523)
+
+The reader review of the technical report asked how much the S-4 result rests on the fixed settings of the PC-Hazard rung. Beside the
+verdict, each date's models document carries `fit.pch_sensitivity` (`pch_sensitivity.py`): the rung refitted under nine settings, one
+hyper-parameter moved at a time around the defaults (never a grid, never a tuning): the interval width of 1.5, 3 (the default) and 6
+months with the interval count set to 120, 60 and 30 so that every grid covers the same 180 months, the hidden layers (16, 16), (32, 32)
+and (64, 64), the weight decay 1e-5, 1e-4 and 1e-3, and the learning rate 0.003, 0.01 and 0.03. Each refit trains on the loans known at the
+date with the hold-out split and the seed of the main fit, and its predictions are judged by `s4_evaluation` on the same out-of-time
+accounts, so the numbers are the ones the hypothesis reads. The default entry is the main fit's own evaluation. A fit that raises is
+recorded as `failed` and one that runs to the epoch cap as `not_converged`, both with their reason (a non-converged fit still reports its
+numbers). Each setting gets the verdict `s4_verdict` gives over the dates; the verdict of the case stays the default's, and
+`fit.pch_sensitivity.overall` counts the settings whose verdict agrees with it. No setting is chosen: the sweep reports how much the
+verdict depends on the settings and nothing else.
+
 ## Decisions taken without the owner (to confirm)
 
 - No management overlay is invented for the public portfolio (the overlays array is empty).

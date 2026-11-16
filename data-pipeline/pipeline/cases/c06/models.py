@@ -83,9 +83,9 @@ def ladder_blocks(run: DateRun, cleaning: dict[str, int] | None = None, evaluati
             details = {"method": ("PC-Hazard (Kvamme and Borgan 2019, arXiv 1910.06724): a feed-forward network maps the loan covariates to a "
                                   "piecewise-constant hazard rate per three-month interval of loan age; the likelihood is the discrete-time "
                                   "one of the interval counts (defaults and exposure)"),
-                       "architecture": {"inputs": len(m.names), "hidden": list(m.hidden), "activation": "relu", "outputs": neural.N_INTERVALS,
+                       "architecture": {"inputs": len(m.names), "hidden": list(m.hidden), "activation": "relu", "outputs": int(m.rates.shape[1]),
                                         "output_transform": "softplus (a positive rate per month)"},
-                       "grid": {"interval_months": neural.WIDTH, "intervals": neural.N_INTERVALS, "last_interval": "open: its rate holds beyond"},
+                       "grid": {"interval_months": m.width, "intervals": int(m.rates.shape[1]), "last_interval": "open: its rate holds beyond"},
                        "training": {"optimiser": "adam", "learning_rate": neural.LEARNING_RATE, "weight_decay": neural.WEIGHT_DECAY,
                                     "batch": "full", "max_epochs": neural.MAX_EPOCHS, "patience": neural.PATIENCE,
                                     "holdout_share": neural.VAL_SHARE, "epochs_run": m.epochs, "best_epoch": m.best_epoch,

@@ -15,6 +15,7 @@ from . import backtest as bt
 from . import build as bd
 from . import macro as mc
 from . import models as md
+from . import pch_sensitivity as pchs
 from . import s4_bootstrap as s4b
 from .panel import Loans
 from ...io.sba import FREDDIE_REASON, FedTables
@@ -86,6 +87,7 @@ def bake_variant(loans: Loans, fed: FedTables, reporting_date: np.datetime64, se
     life = bt.lifetime_results(loans, run1, follow)
     s4 = bt.s4_evaluation(run1, follow, life)
     s4_interval = s4b.s4_bootstrap(run1, follow, s4, seed=seed)
+    sweep = pchs.sensitivity(loans, run1, follow, s4)
 
     stage = run1.stage.astype(np.int64)
     ids = list(run1.scenario_ids)
@@ -149,6 +151,7 @@ def bake_variant(loans: Loans, fed: FedTables, reporting_date: np.datetime64, se
     document = {"model": md.model_summaries(run1), "outputs": outputs, "tests": tests, "impact": impact, "findings": finds}
     fit = md.fit_block(run1)
     fit["s4_bootstrap"] = s4_interval
+    fit["pch_sensitivity"] = sweep
     values = {
         f"coverage@{iso}": model_total / float(run1.gca.sum()), f"stage2_share@{iso}": stage2_share,
         f"pd12_mean@{iso}": float(run1.pd12.mean()), f"accounts@{iso}": float(run1.a),

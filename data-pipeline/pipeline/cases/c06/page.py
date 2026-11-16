@@ -82,7 +82,8 @@ def pch_rows(derived: Path) -> list[dict]:
             continue
         d = json.loads((derived / a["path"]).read_text(encoding="utf-8"))
         rec = next(m for m in d["model"] if m["id"] == "L3-pch")
-        rows.append({"date": d["fit"]["ladder"][0]["training_cutoff"], "ev": rec["details"].get("evaluation"), "boot": d["fit"]["s4_bootstrap"]})
+        rows.append({"date": d["fit"]["ladder"][0]["training_cutoff"], "ev": rec["details"].get("evaluation"), "boot": d["fit"]["s4_bootstrap"],
+                     "sweep": d["fit"]["pch_sensitivity"]})
     return rows
 
 
@@ -95,6 +96,49 @@ def _interval(d: dict, scale: float, fmt: str) -> str:
     if d["lo"] is None:
         return f"{head} (no interval)"
     return f"{head} [{format(scale * d['lo'], '+' + fmt)}, {format(scale * d['hi'], '+' + fmt)}]"
+
+
+def sensitivity_block(derived: Path) -> str:
+    """The hyper-parameter sensitivity of the PC-Hazard rung: the S-4 numbers of every setting at every date, the verdict of each setting over the
+    dates and how many agree with the default's, which stays the verdict of the case."""
+    rows = pch_rows(derived)
+    first = next((r["sweep"] for r in rows if r["sweep"]["evaluated"]), None)
+    if first is None:
+        return "No date fitted the PC-Hazard rung: the sensitivity sweep was not written.\n"
+    head = ("| Setting | Reporting date | Status | c-index L3 | Integrated Brier L3 | Mean decile gap vs Aalen-Johansen L3 (points) | "
+            "Lower Brier than Cox | Smaller decile gap than Cox | Hypothesis at the date |\n|---|---|---|---|---|---|---|---|---|")
+    yn = {None: "n/a", True: "yes", False: "no"}
+    labels = {e["setting_id"]: e["label"]["en"] for e in first["settings"]}
+    body = []
+    for sid, label in labels.items():
+        for r in rows:
+            e = next(x for x in r["sweep"]["settings"] if x["setting_id"] == sid) if r["sweep"]["evaluated"] else None
+            if e is None:
+                body.append(f"| {label} | {r['date']} | not written | n/a | n/a | n/a | n/a | n/a | n/a |")
+                continue
+            ev = e["evaluation"]
+            if ev is None:
+                body.append(f"| {label} | {r['date']} | {e['status']} | n/a | n/a | n/a | n/a | n/a | n/a |")
+                continue
+            g = ev["mean_decile_gap"]["pch"]
+            holds = "not evaluable" if ev["holds_at_date"] is None else ("holds" if ev["holds_at_date"] else "does not hold")
+            body.append(f"| {label} | {r['date']} | {e['status']} | {_f(ev['c_index']['pch'], '.4f')} | {_f(ev['integrated_brier']['pch'], '.5f')} | "
+                        f"{_f(None if g is None else 100 * g, '.2f')} | {yn[ev['criteria']['lower_integrated_brier']]} | "
+                        f"{yn[ev['criteria']['smaller_decile_gap']]} | {holds} |")
+    o = first["overall"]
+    verdicts = ["| Setting | Dates where the hypothesis holds | Evaluable dates | Verdict | Agrees with the default's verdict |", "|---|---|---|---|---|"]
+    for s in o["settings"]:
+        verdicts.append(f"| {labels[s['setting_id']]} | {s['holds_at']} | {s['evaluable']} | {s['verdict'] or 'cannot be judged'} | "
+                        f"{'yes' if s['agrees'] else 'no'} |")
+    word = {"holds": "HOLDS", "refuted": "IS REFUTED", None: "CANNOT BE JUDGED"}[o["case_verdict"]]
+    off = [f"{labels[e['setting_id']]} at {r['date']} ({e['status']})" for r in rows if r["sweep"]["evaluated"]
+           for e in r["sweep"]["settings"] if e["status"] != "fitted"]
+    note = "every fit stopped early" if not off else "not stopped early or failed, with their numbers reported where they exist: " + "; ".join(off)
+    tail = (f"\nThe verdict is the default's: the hypothesis {word}. The verdict of a setting agrees with it in {o['agree']} of {o['settings_count']} "
+            "settings (the default counted once; a setting with no verdict does not agree). No setting was chosen on the out-of-time data: each "
+            "refit trains on the same loans, hold-out split and seed as the main fit and is judged on the same out-of-time accounts, and every "
+            f"grid covers {first['covers_months']} months. Status of the fits: {note}.\n")
+    return "\n".join(["**Sensitivity to the hyper-parameters.** " + first["method"]["en"], "", head, *body, "", *verdicts]) + "\n" + tail
 
 
 def pch_block(derived: Path) -> str:
@@ -136,7 +180,7 @@ def pch_block(derived: Path) -> str:
             "are held fixed (nothing is refit), so it measures the sampling noise of the comparison on this book, not the uncertainty of the fits. "
             "A negative difference favours PC-Hazard. The verdict above is the rule written before the run and the intervals do not change it: "
             f"{n_excl} of the {v['holds_at']} dates where the hypothesis holds have both intervals excluding zero.\n")
-    return "\n".join([head, *body]) + "\n" + tail
+    return "\n".join([head, *body]) + "\n" + tail + "\n" + sensitivity_block(derived)
 
 
 def update(page: Path, derived: Path) -> None:
