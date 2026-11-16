@@ -302,6 +302,8 @@ export const RUNG_OUTPUTS = {
     } satisfies Record<keyof RungOutputs['cutoff'], Kind>,
   },
   reliability_raw: { nullable: RELIABILITY },
+  brier: num,
+  brier_raw: nNum,
 } satisfies Record<keyof RungOutputs, Kind>;
 
 export const C01_IRB = {

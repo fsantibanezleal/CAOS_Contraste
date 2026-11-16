@@ -25,9 +25,9 @@
     "sha256": "9d858573b6c0e44c8d76f17a3be5605bea6a1c44819a3f2d9c69d48b5f78f71c"
   },
   "c01-variant": {
-    "version": "3.0.0",
+    "version": "4.0.0",
     "schema": "docs/contracts/schemas/c01/variant.schema.json",
-    "sha256": "4f8ac03b3d1dd179e4762c1ecf1946f335a25b0dcbc68cc626139e0f333c8567"
+    "sha256": "498e279bc2468e793e294077388b2bc7ab2dd861b08151e0a6d403eb449b14c7"
   },
   "c01-models": {
     "version": "1.0.0",
@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "39.0.0",
+    "version": "40.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "a7ec9e764ba9c5b85918aa38980280cfd9e423eff7ced190803615cd6c3fad2c"
+    "sha256": "bf0389ec0248c38bad8cd9ba8f245c5a808d16a66b0606434538a4db30ce0baa"
   },
   "readiness": {
     "version": "1.0.1",

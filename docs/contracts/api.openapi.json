@@ -1348,7 +1348,9 @@
           "cap",
           "distribution",
           "cutoff",
-          "reliability_raw"
+          "reliability_raw",
+          "brier",
+          "brier_raw"
         ],
         "properties": {
           "grades": {
@@ -1522,7 +1524,26 @@
                 "type": "null"
               }
             ],
-            "description": "The same with the six-month full payers as transactors (the cards only; null for the loans)."
+            "description": "The reliability table of the raw score before the calibration map, on the same bins and rows as reliability; null for a rung with no map."
+          },
+          "brier": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "The Brier score of the evaluated PD (after the calibration map where the rung has one): the mean squared error of the PD against the 0/1 outcome (Brier 1950); the value of the pd.brier row of the same rung."
+          },
+          "brier_raw": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The Brier score of the raw score before the calibration map, on the same rows; null for a rung with no map (M-5: the Brier before and after the calibration)."
           }
         }
       },

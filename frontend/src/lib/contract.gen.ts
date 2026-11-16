@@ -361,8 +361,12 @@ export interface components {
                     [key: string]: number[];
                 } | null;
             };
-            /** @description The same with the six-month full payers as transactors (the cards only; null for the loans). */
+            /** @description The reliability table of the raw score before the calibration map, on the same bins and rows as reliability; null for a rung with no map. */
             reliability_raw: components["schemas"]["c01ReliabilityBin"][] | null;
+            /** @description The Brier score of the evaluated PD (after the calibration map where the rung has one): the mean squared error of the PD against the 0/1 outcome (Brier 1950); the value of the pd.brier row of the same rung. */
+            brier: number;
+            /** @description The Brier score of the raw score before the calibration map, on the same rows; null for a rung with no map (M-5: the Brier before and after the calibration). */
+            brier_raw: number | null;
         };
         c01ScoredSample: {
             ids: string[];
