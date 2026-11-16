@@ -555,16 +555,12 @@ def _planted_ids():
     return [(c, p["id"]) for c, _, p in pairs_of(load_spec(), ("pairs",))] if SPEC_PATH.exists() else []
 
 
-# The gate asks whether EVERY prediction lies outside the widened range, so a percent-for-fraction defect (x100) is seen only
-# when no prediction stays inside: it stays inside where every PD or loss is below the range's upper end divided by 100 (a PD
-# of 0.01 written as 1 is a valid fraction of the binary range [-1, 2]) or where one prediction is exactly 0. The pairs below
-# need a larger factor on the committed data; the test pins each one so that a change of the data or of the rule surfaces.
-# The factor ladder is x100, x1000, x1e6; a sign flip is the defect of a non-negative bound.
-NEEDS_MORE_THAN_PERCENT = {
-    "c03-calibration-rows": 1000.0, "c03-vintage-curves": 1e6, "c04-markov-estimators": 1e6, "c04-momentum-error": 1000.0,
-    "c04-cycle-pd": 1000.0, "c04-withdrawals-pd": 1e6, "c05-bound-scaled-central": 1000.0, "c06-lifetime-backtest": 1000.0,
-    "c06-decile-calibration": 1000.0,
-}
+# A percent-for-fraction defect (x100) is seen when the nonzero predictions all lie outside the widened range (an exact zero carries
+# no evidence about scale, M15 T2b) or when one prediction lies outside the declared domain of a bounded observable (a probability,
+# a share, a cumulative PD: [0, 1]). Only a bound whose values stay below 1/100 (c05 scaled central tendency, PDs near 0.005) stays
+# inside [0, 1] at x100: no rule about units can see it, and the test pins the factor that does. The ladder is x100, x1000, x1e6;
+# a sign flip is the defect of a non-negative bound.
+NEEDS_MORE_THAN_PERCENT = {"c05-bound-scaled-central": 1000.0}
 ALL_NULL = {"c04-moodys-generators"}  # moodys.json ships null estimator vectors: nothing to plant, the pair stays for the day it ships values
 
 
@@ -573,7 +569,7 @@ def first_detecting_factor(case, p, spec):
     for factor in ladder:
         for rel in matched_files(case, p):
             result = ug.check_document(case, rel, plant(read(case, rel), p, factor), spec)
-            if any(v["pair"] == p["id"] and v["class"] == ug.CLASS_OUTSIDE for v in result.violations):
+            if any(v["pair"] == p["id"] and v["class"] in (ug.CLASS_OUTSIDE, ug.CLASS_DOMAIN) for v in result.violations):
                 return factor
     return None
 
@@ -600,3 +596,106 @@ def test_a_withheld_pair_fails_a_planted_defect_on_the_in_memory_document():
             assert [v for v in ug.check_pair(case, rel, doc, p) if v["blocking"]] == [], (rel, p["id"])
             planted = [v for f in (100.0, 1000.0) for v in ug.check_pair(case, rel, plant(doc, p, f), p) if v["blocking"]]
             assert planted and {v["class"] for v in planted} == {ug.CLASS_OUTSIDE}, (rel, p["id"])
+
+
+# ---- M15 T2b (CT-2402, CT-2410): an exact zero carries no evidence about scale; a bounded observable checks every prediction ----
+
+def _pd_pair(**kw):
+    return pair(kind="binary", target=None, unit="probability", **kw)
+
+
+def test_a_percent_pd_vector_with_one_exact_zero_is_refused():
+    # 0 is the same number in every unit, so the nonzero predictions judge: 22 and 25 lie outside [-1, 2]
+    v = run(_pd_pair(), {"pred": [0.0, 22.0, 25.0]}).violations
+    assert [x["class"] for x in v] == ["prediction_outside_observable"]
+    assert run(pair(kind="series"), {"pred": [0.0, 5000.0], "target": [10, 20]}).violations != []  # thousands with a zero
+    assert run(pair(kind="scalar"), {"pred": [0.0, 5000.0], "target": 1.0}).violations != []
+
+
+def test_a_zero_with_an_honest_nonzero_prediction_passes():
+    assert run(_pd_pair(), {"pred": [0.0, 0.3]}).violations == []
+    assert run(_pd_pair(), {"pred": [0.0, 0.3, 22.0]}).violations == []  # partly inside still passes
+
+
+def test_an_all_zero_prediction_stays_advisory_and_never_blocks():
+    r = run(pair(kind="series"), {"pred": [0.0, 0.0, 0.0], "target": [10, 20]})
+    assert r.violations == [] and [a["class"] for a in r.advisories] == ["degenerate_constant_prediction"]
+    assert run(_pd_pair(), {"pred": [0.0]}).violations == []
+    # zeros mixed with nulls: nothing nonzero to judge, the null is the advisory
+    mixed = run(pair(kind="series"), {"pred": [0.0, None], "target": [10, 20]})
+    assert mixed.violations == [] and [a["class"] for a in mixed.advisories] == ["missing_prediction"]
+
+
+def test_the_nonzero_rule_judges_nonzero_values_among_nulls():
+    assert run(_pd_pair(), {"pred": [0.0, None, 22.0]}).violations != []
+
+
+def test_a_bounded_observable_checks_every_prediction_against_its_domain():
+    p = _pd_pair(domain=[0, 1], domain_reason="A probability lies in [0, 1] by definition.")
+    assert run(p, {"pred": [0.0, 0.5, 1.0]}).violations == []  # the edges are inside
+    # a PD in percent whose smallest value is 0.01: the 0.01 stays inside [-1, 2] but 22 is outside the domain
+    v = run(p, {"pred": [0.01, 22.0]}).violations
+    assert [x["class"] for x in v] == ["prediction_outside_domain"] and v[0]["blocking"] is True
+    assert v[0]["target_range"] == [0, 1] and v[0]["prediction_range"] == [0.01, 22.0]
+    assert run(p, {"pred": [0.2, 1.0000001]}).violations != []
+    assert run(p, {"pred": [-0.0001, 0.2]}).violations != []
+
+
+def test_a_domain_with_an_open_end_and_the_element_by_element_check():
+    p = pair(kind="series", domain=[0, None], domain_reason="An exposure is non-negative by definition.")
+    assert run(p, {"pred": [0.0, 25.0], "target": [10, 20]}).violations == []
+    assert run(p, {"pred": [15.0, -3.0], "target": [10, 20]}).violations[0]["class"] == "prediction_outside_domain"
+    g = pair(kind="binary", target=None, group_by="rungs[]", prediction="rungs[].pd", domain=[0, 1],
+             domain_reason="A probability lies in [0, 1] by definition.")
+    doc = {"rungs": [{"pd": [0.1, 0.2]}, {"pd": [0.3, 40.0]}]}
+    v = run(g, doc).violations
+    assert [(x["class"], x["element"]) for x in v] == [("prediction_outside_domain", 1)]
+
+
+def test_a_nan_is_not_finite_before_it_is_outside_a_domain():
+    p = _pd_pair(domain=[0, 1], domain_reason="A probability lies in [0, 1] by definition.")
+    assert [v["class"] for v in run(p, {"pred": [float("nan"), 0.2]}).violations] == ["non_finite_prediction"]
+
+
+def test_domain_and_domain_reason_validity():
+    base = {"id": "p", "file": "*.json", "prediction": "x", "target": "y", "kind": "series", "unit": "USD"}
+    ok = {**base, "domain": [0, None], "domain_reason": "An exposure is non-negative by definition."}
+    ug.validate_spec({"CX": {"pairs": [ok]}})
+    with pytest.raises(ug.UnitGateError, match="domain_reason"):
+        ug.validate_spec({"CX": {"pairs": [{**base, "domain": [0, 1]}]}})  # a domain without its reason
+    with pytest.raises(ug.UnitGateError, match="domain_reason"):
+        ug.validate_spec({"CX": {"pairs": [{**base, "domain_reason": "A reason alone."}]}})  # a reason without a domain
+    with pytest.raises(ug.UnitGateError, match="domain_reason"):
+        ug.validate_spec({"CX": {"pairs": [{**ok, "domain_reason": "  "}]}})
+    with pytest.raises(ug.UnitGateError, match="domain"):
+        ug.validate_spec({"CX": {"pairs": [{**ok, "domain": [1, 0]}]}})
+    with pytest.raises(ug.UnitGateError, match="domain"):
+        ug.validate_spec({"CX": {"pairs": [{**ok, "domain": [0]}]}})
+
+
+def test_an_unknown_violation_class_is_not_in_the_gate():
+    assert ug.CLASS_DOMAIN == "prediction_outside_domain"
+    assert ug.CLASS_DOMAIN not in (ug.CLASS_OUTSIDE, ug.CLASS_NON_FINITE, ug.CLASS_CONSTANT, ug.CLASS_MISSING)
+
+
+def test_every_domain_of_the_specification_has_its_reason_and_is_a_bounded_unit():
+    declared = [(c, p) for c, _, p in pairs_of(load_spec()) if p["kind"] != "bound" and "domain" in p]
+    assert declared
+    for case, p in declared:
+        assert p["domain_reason"].strip().endswith("."), (case, p["id"])
+        assert p["unit"].split()[0] in ("probability", "cumulative", "share", "USD"), (case, p["id"], p["unit"])
+
+
+def test_adversarial_ct2410_a_percent_defect_passes_when_the_domain_is_removed_and_fails_when_it_is_declared():
+    # the plant of CT-2410 on a committed document: C03's calibration rows hold PDs below 0.01 beside larger ones, so written in
+    # percent one prediction stays inside the widened range [-1, 2] and only the domain sees the error
+    spec = load_spec()
+    case, p = "C03", next(q for c, _, q in pairs_of(spec) if q["id"] == "c03-calibration-rows")
+    stripped = {k: v for k, v in p.items() if k not in ("domain", "domain_reason")}
+    for rel in matched_files(case, p):
+        planted = plant(read(case, rel), p, 100.0)
+        with_domain = ug.check_pair(case, rel, planted, p)
+        without = ug.check_pair(case, rel, planted, stripped)
+        assert [v["class"] for v in with_domain if v["blocking"]] == [ug.CLASS_DOMAIN], rel
+        assert [v for v in without if v["blocking"]] == [], rel  # the defect ships when the domain check is removed
+        assert [v for v in ug.check_pair(case, rel, read(case, rel), p) if v["blocking"]] == [], rel  # the clean copy passes

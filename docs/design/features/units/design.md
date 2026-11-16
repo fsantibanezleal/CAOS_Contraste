@@ -26,11 +26,36 @@ array and its target:
 | Class | Meaning | Effect |
 |---|---|---|
 | `non_finite_prediction` | a prediction is NaN or infinite | blocking |
-| `prediction_outside_observable` | every prediction lies outside the target's widened range | blocking |
+| `prediction_outside_observable` | every NONZERO prediction lies outside the target's widened range (an exact 0 is not judged) | blocking |
+| `prediction_outside_domain` | a pair that declares a `domain` has ANY prediction outside it, element by element | blocking |
 | `degenerate_constant_prediction` | the prediction is constant while the target varies | advisory, recorded |
 
 `RANGE_SLACK = 1.0` (one full range on each side, as the rule and Fragua). A prediction partly inside the widened range passes:
 the gate is about units, never accuracy, and a method may be reported as badly wrong.
+
+### The scale rule (main session ruling of 2026-11-16, after T2's finding)
+
+T2 found that a scale defect (a PD in percent, an amount in thousands) escaped the range rule wherever one prediction stayed
+inside the widened range: an exact 0, or a PD below 0.02 written in percent. Two rules close it, both faithful to the binding
+rule (units, never accuracy):
+
+1. **An exact zero carries no evidence about scale.** Zero is the same number in every unit, so the series, binary and scalar
+   kinds judge the NONZERO predictions: `prediction_outside_observable` fires when at least one prediction is nonzero and every
+   nonzero prediction lies outside the widened range. An all-zero prediction over a varying target stays the advisory
+   `degenerate_constant_prediction`; zeros beside nulls leave only the advisory `missing_prediction`.
+2. **A bounded observable checks every prediction against its domain.** A pair whose observable is bounded by its definition
+   declares `domain` (`[lo, hi]`, `null` an open end) with a one-sentence `domain_reason`: a probability, a default or exceedance
+   rate, a coverage, a share is `[0, 1]`; a count or a variance, or an amount that is non-negative by definition, `[0, null]`; a
+   difference of two probabilities `[-1, 1]`. The gate checks every prediction against it, element by element: ONE prediction
+   outside blocks as `prediction_outside_domain`, because no honest method writes a probability of 22; the edges are inside. An
+   observable that is not bounded by definition (an LGD or a CCF, which a workout or a drawn line can push past 1; a loss; a
+   return; a yield; a correlation estimate) declares no domain, and a domain is never added to make a defect catchable. A `bound`
+   pair keeps its own `domain` and `reason` (its class stays `prediction_outside_observable`); `domain_reason` is the field of the
+   other kinds, and the specification is invalid with a domain without its reason, a reason without its domain, or an empty or
+   inverted domain (CT-2410).
+
+The 21 domains of the specification: the PD, cumulative PD and published PD pairs of C01 to C06 (`[0, 1]`), the C04 momentum error
+(`[-1, 1]`), the C09 EAD and the C12 expected exposure (`[0, null]`) and the C16 shares (`[0, 1]`).
 
 A null prediction (decided by the main session on 2026-11-15, T1's open question) is a missing value: counted as the advisory
 `missing_prediction`, never range-checked and never blocking. The bake meets NaN and infinity in memory before any null is written,
@@ -58,7 +83,7 @@ the rule forbids. A `bound` pair carries a one-sentence `reason` in the specific
 
 `data-pipeline/config/unit_pairs.json`, one entry per built case (the registry's `built_cases()`), each one of:
 
-- `pairs`: a list of `{id, file, prediction, target, kind, unit, group_by?, zero_scale?, domain?, reason?}`. `file` is a glob under
+- `pairs`: a list of `{id, file, prediction, target, kind, unit, group_by?, zero_scale?, domain?, domain_reason?, reason?}`. `file` is a glob under
   `data/derived/<case>/`; `prediction` and `target` are path expressions in the dotted syntax of the sizing (`outputs.rungs.<m>.
   reliability[].pd`: `[]` walks an array, `<m>` walks a map's keys and binds the method id the violation names). `unit` is the
   observable's unit in words (`probability`, `USD`, `decimal of portfolio value`).
@@ -118,13 +143,17 @@ What the sizing left unmapped, each decided from the document:
 | C07, C15 scenario files | not mapped: the amounts compare methods with each other on a synthetic bank (no target); only the generator calibration is paired. |
 | C18 `reverse-stress.json`, `t-copula-baseline.json` | not mapped: no backcast block. |
 
-A limit the planted tests pin. The gate blocks only when EVERY prediction lies outside the widened range, so a percent-for-fraction
-defect (x100) is blocked by 29 of the 37 non-bound pairs and 11 of the 14 bounds (51 pairs in all) on their committed documents; the
-others need a larger factor (x1000 or x1e6: C03 calibration rows and vintage curves, C04 markov estimators, momentum errors, cycle
-and withdrawals PDs, C05 scaled central tendency, C06 both pairs), the C12 wrong-way bound is planted by a sign flip, and
-`c04-moodys-generators` holds only null vectors today (nothing to plant), because a PD below 0.02 written as a percentage is a valid fraction of `[-1, 2]` or because one prediction is exactly 0.
+A limit the planted tests pin. Before the scale rule the gate blocked only when EVERY prediction lay outside the widened range, so
+a percent-for-fraction defect (x100) was caught on 51 of the pairs on their committed documents and 9 needed x1000 or x1e6 (C03
+calibration rows and vintage curves, C04 markov estimators, momentum errors, cycle and withdrawals PDs, C05 scaled central tendency,
+C06 both pairs), because a PD below 0.02 written as a percentage is a valid fraction of `[-1, 2]` or because one prediction is
+exactly 0. With the scale rule (T2b) every one of them is caught at x100 except `c05-bound-scaled-central`: its scaled central
+tendency is below 0.01 everywhere, so a PD written in percent (0.5 for 0.005) is a valid probability and no rule about units can
+see it (its domain [0, 1] is already declared). The C12 wrong-way bound is planted by a sign flip, and `c04-moodys-generators`
+holds only null vectors today (nothing to plant).
 `tests/test_unit_gate.py::test_a_percent_for_fraction_defect_planted_in_a_committed_document_fails_the_pair` records the factor of each
-pair. Whether the rule should also look at a share of predictions outside is the main session's decision on the rule, not this table's.
+pair. T2b dry run over the committed documents of the 21 cases: 162 documents, 169 pair checks, 0 blocking violations, 70
+advisories (unchanged).
 
 ### Where it runs
 
