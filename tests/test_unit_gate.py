@@ -377,3 +377,226 @@ def test_the_module_loads_by_path_without_the_package():
     r = mod.check_document("CX", "a.json", {"pred": [999.0], "target": [1.0, 2.0]},
                            {"CX": {"pairs": [pair()]}})
     assert [v["class"] for v in r.violations] == ["prediction_outside_observable"]
+
+
+# ---- M15 T2 (CT-2405): the specification of every built case -----------------------------------------------------------
+
+import fnmatch  # noqa: E402
+
+from pipeline import registry  # noqa: E402
+
+ROOT = MODULE.parents[3]
+SPEC_PATH = ROOT / "data-pipeline" / "config" / "unit_pairs.json"
+DERIVED = ROOT / "data" / "derived"
+
+
+def _no_duplicate_keys(pairs):
+    keys = [k for k, _ in pairs]
+    dup = sorted({k for k in keys if keys.count(k) > 1})
+    assert not dup, f"duplicate key(s) {dup} in {SPEC_PATH.name}"
+    return dict(pairs)
+
+
+def load_spec():
+    return json.loads(SPEC_PATH.read_text(encoding="utf-8"), object_pairs_hook=_no_duplicate_keys)
+
+
+def committed(case):
+    return sorted(p.name for p in (DERIVED / case).glob("*.json"))
+
+
+def pairs_of(spec, keys=("pairs", "withheld")):
+    for case, entry in spec.items():
+        for key in keys:
+            for p in entry.get(key, []):
+                yield case, key, p
+
+
+def matched_files(case, p):
+    return [f for f in committed(case) if fnmatch.fnmatchcase(f, p["file"])]
+
+
+def read(case, rel):
+    return json.loads((DERIVED / case / rel).read_text(encoding="utf-8"))
+
+
+def test_every_built_case_is_covered():
+    spec = load_spec()
+    built = [c.id for c in registry.built_cases()]
+    assert sorted(spec) == sorted(built), (
+        f"missing from unit_pairs.json: {sorted(set(built) - set(spec))}; not a built case: {sorted(set(spec) - set(built))}")
+    for case, entry in spec.items():
+        assert set(entry) <= set(ug.ENTRY_KINDS), case
+        assert entry.keys() & {"pairs", "bake_only", "not_applicable"}, f"{case} has no pairs, bake_only or not_applicable"
+
+
+def test_the_specification_is_valid():
+    ug.validate_spec(load_spec())
+
+
+def test_a_bound_pair_without_a_reason_is_invalid():
+    bound = {"id": "b", "file": "*.json", "prediction": "x", "target": None, "kind": "bound", "unit": "probability", "domain": [0, 1]}
+    with pytest.raises(ug.UnitGateError, match="reason"):
+        ug.validate_spec({"CX": {"pairs": [bound]}})
+    ug.validate_spec({"CX": {"pairs": [{**bound, "reason": "an upper bound is conservative by design"}]}})
+
+
+def test_an_unknown_kind_and_an_unknown_field_are_invalid():
+    base = {"id": "p", "file": "*.json", "prediction": "x", "target": "y", "kind": "series", "unit": "USD"}
+    with pytest.raises(ug.UnitGateError, match="kind"):
+        ug.validate_spec({"CX": {"pairs": [{**base, "kind": "ratio"}]}})
+    with pytest.raises(ug.UnitGateError, match="unknown field"):
+        ug.validate_spec({"CX": {"pairs": [{**base, "tolerance": 0.1}]}})
+
+
+def test_every_bound_of_the_specification_has_its_reason_and_domain():
+    bounds = [(c, p) for c, _, p in pairs_of(load_spec()) if p["kind"] == "bound"]
+    assert bounds
+    for case, p in bounds:
+        assert p["reason"].strip().endswith("."), (case, p["id"])
+        assert p["target"] is None and len(p["domain"]) == 2, (case, p["id"])
+
+
+def test_a_case_missing_from_the_specification_is_detected():
+    spec = load_spec()
+    built = {c.id for c in registry.built_cases()}
+    spec.pop("C01")
+    assert built - set(spec) == {"C01"}
+
+
+def test_every_file_glob_matches_a_committed_file():
+    for case, key, p in pairs_of(load_spec()):
+        assert matched_files(case, p), f"{case} {p['id']}: the glob {p['file']!r} matches no committed file"
+
+
+def test_every_pair_resolves_on_every_committed_file_it_matches():
+    for case, key, p in pairs_of(load_spec(), ("pairs",)):
+        for rel in matched_files(case, p):
+            try:
+                ug.check_pair(case, rel, read(case, rel), p)
+            except ug.UnitGateError as exc:
+                pytest.fail(f"{case} {p['id']} on {rel}: {exc}")
+
+
+def test_a_withheld_pair_resolves_its_prediction_on_the_committed_file_and_its_target_is_withheld():
+    for case, key, p in pairs_of(load_spec(), ("withheld",)):
+        for rel in matched_files(case, p):
+            doc = read(case, rel)
+            assert ug._collect(doc, p["prediction"], p["id"], "prediction", "", (None, None, ())), (rel, p["id"])
+            with pytest.raises(ug.UnitGateError, match="nulls only"):
+                ug.check_pair(case, rel, doc, p)  # the committed artifact never carries the withheld series
+
+
+def test_a_path_that_resolves_to_nothing_on_its_committed_file_fails():
+    spec = load_spec()
+    case, p = "C03", next(p for c, _, p in pairs_of(spec) if p["id"] == "c03-vintage-5y")
+    rel = matched_files(case, p)[0]
+    doc = read(case, rel)
+    del doc["outputs"]["vintage_summary"]["rows"][0]["predicted_5y_pd"]
+    del doc["outputs"]["vintage_summary"]["rows"][1:]
+    with pytest.raises(ug.UnitGateError, match="resolves to nothing"):
+        ug.check_document(case, rel, doc, spec)
+
+
+def test_the_committed_artifacts_pass_the_gate_and_every_pair_is_checked():
+    spec = load_spec()
+    checked = {p["id"]: 0 for _, _, p in pairs_of(spec, ("pairs",))}
+    for case, entry in spec.items():
+        for rel in committed(case):
+            result = ug.check_document(case, rel, read(case, rel), spec)
+            assert result.violations == [], (case, rel, result.violations)
+            for p in entry.get("pairs", []):
+                if fnmatch.fnmatchcase(rel, p["file"]):
+                    checked[p["id"]] += 1
+    assert all(n > 0 for n in checked.values()), [i for i, n in checked.items() if n == 0]
+    assert ug.check_document("C21", "pair-2018-19.json", {}, spec).entry == "not_applicable"
+    assert ug.check_document("C13", "none.json", {}, spec).entry == "bake_only"
+
+
+# a defect planted in a committed document: every prediction of the pair is multiplied (a fraction written in percent)
+
+def _scale_leaf(value, factor):
+    if isinstance(value, list):
+        return [_scale_leaf(v, factor) for v in value]
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return value * factor
+    return value
+
+
+def _apply(node, depth, fn):
+    if depth == 0:
+        return fn(node)
+    return [_apply(e, depth - 1, fn) for e in node] if isinstance(node, list) else node
+
+
+def _scale(node, segments, i, factor):
+    if i == len(segments):
+        return _scale_leaf(node, factor)
+    if not isinstance(node, dict):
+        return node
+    seg = segments[i]
+    if seg.kind == "key":
+        keys = [seg.name] if seg.name in node else []
+    else:
+        keys = [k for k in sorted(node, key=str) if seg.kind == "map" or fnmatch.fnmatchcase(str(k), seg.name)]
+    for k in keys:
+        node[k] = _apply(node[k], seg.depth, lambda x: _scale(x, segments, i + 1, factor))
+    return node
+
+
+def plant(doc, p, factor):
+    out = copy.deepcopy(doc)
+    _scale(out, ug._parse(p["prediction"], p["id"], "prediction"), 0, factor)
+    return out
+
+
+def _planted_ids():
+    # an absent specification yields no parameters here; test_every_built_case_is_covered reports the absence
+    return [(c, p["id"]) for c, _, p in pairs_of(load_spec(), ("pairs",))] if SPEC_PATH.exists() else []
+
+
+# The gate asks whether EVERY prediction lies outside the widened range, so a percent-for-fraction defect (x100) is seen only
+# when no prediction stays inside: it stays inside where every PD or loss is below the range's upper end divided by 100 (a PD
+# of 0.01 written as 1 is a valid fraction of the binary range [-1, 2]) or where one prediction is exactly 0. The pairs below
+# need a larger factor on the committed data; the test pins each one so that a change of the data or of the rule surfaces.
+# The factor ladder is x100, x1000, x1e6; a sign flip is the defect of a non-negative bound.
+NEEDS_MORE_THAN_PERCENT = {
+    "c03-calibration-rows": 1000.0, "c03-vintage-curves": 1e6, "c04-markov-estimators": 1e6, "c04-momentum-error": 1000.0,
+    "c04-cycle-pd": 1000.0, "c04-withdrawals-pd": 1e6, "c05-bound-scaled-central": 1000.0, "c06-lifetime-backtest": 1000.0,
+    "c06-decile-calibration": 1000.0,
+}
+ALL_NULL = {"c04-moodys-generators"}  # moodys.json ships null estimator vectors: nothing to plant, the pair stays for the day it ships values
+
+
+def first_detecting_factor(case, p, spec):
+    ladder = (-1.0,) if p["kind"] == "bound" and p["domain"][1] is None else (100.0, 1000.0, 1e6)
+    for factor in ladder:
+        for rel in matched_files(case, p):
+            result = ug.check_document(case, rel, plant(read(case, rel), p, factor), spec)
+            if any(v["pair"] == p["id"] and v["class"] == ug.CLASS_OUTSIDE for v in result.violations):
+                return factor
+    return None
+
+
+@pytest.mark.parametrize("case,pair_id", _planted_ids())
+def test_a_percent_for_fraction_defect_planted_in_a_committed_document_fails_the_pair(case, pair_id):
+    spec = load_spec()
+    p = next(q for c, _, q in pairs_of(spec, ("pairs",)) if c == case and q["id"] == pair_id)
+    if pair_id in ALL_NULL:
+        assert all(plant(read(case, rel), p, 100.0) == read(case, rel) for rel in matched_files(case, p))
+        return
+    expected = -1.0 if p["kind"] == "bound" and p["domain"][1] is None else NEEDS_MORE_THAN_PERCENT.get(pair_id, 100.0)
+    assert first_detecting_factor(case, p, spec) == expected, f"{case} {pair_id}"
+
+
+def test_a_withheld_pair_fails_a_planted_defect_on_the_in_memory_document():
+    spec = load_spec()
+    for case, key, p in pairs_of(spec, ("withheld",)):
+        field = p["prediction"].rsplit(".", 1)[1]
+        for rel in matched_files(case, p):
+            doc = read(case, rel)
+            levels = doc["outputs"]["models"][0]["by_level"]
+            doc["outputs"]["grid"]["realised_loss"]["loss"] = list(levels[0][field])  # the bake holds the series in memory
+            assert [v for v in ug.check_pair(case, rel, doc, p) if v["blocking"]] == [], (rel, p["id"])
+            planted = [v for f in (100.0, 1000.0) for v in ug.check_pair(case, rel, plant(doc, p, f), p) if v["blocking"]]
+            assert planted and {v["class"] for v in planted} == {ug.CLASS_OUTSIDE}, (rel, p["id"])

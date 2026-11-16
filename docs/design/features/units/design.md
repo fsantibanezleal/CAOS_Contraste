@@ -75,6 +75,57 @@ What the sizing left unmapped is mapped or given its reason in task T2: C22's si
 `ldp-published.json`, C12's `wrong-way-risk.json`, C14's two dates without a realised year, C16's reverse stress, C04's agency
 and thin variants.
 
+### The mapping decisions of task T2 (`data-pipeline/config/unit_pairs.json`)
+
+The specification holds the 21 built cases (C01 to C18, C20 to C22): 18 with `pairs` (C11 also with `withheld`), C13 and C20
+`bake_only`, C21 `not_applicable`. Every `file` glob matches at least one committed file and every pair resolves on every file it
+matches; a pair whose glob is narrower than its family says which files it skips in its `reason` (the field is free on any kind and
+required only on a `bound`). The tests `test_every_built_case_is_covered`, `test_every_file_glob_matches_a_committed_file` and
+`test_every_pair_resolves_on_every_committed_file_it_matches` keep that true; a case built later fails the first until it is added.
+Dry run on the 171 committed documents: 169 pair checks, 0 blocking violations, 70 advisories (63 `missing_prediction`, 7
+`degenerate_constant_prediction`, the C01 P0 control).
+
+Kinds decided from the document's content (two differ from the labels of the brief, recorded here):
+
+- `binary`: C01 (reliability and grade bins, the 50-row scorecard sample), C02, C03 (calibration rows, the 5-year vintage summary, the
+  vintage curves), C06 (lifetime backtest, decile calibration). The sizing's violations 1 to 4 pass; the replay of the sizing's own
+  `series` rule on the same fields reproduces exactly those four.
+- `scalar`: C04 `coefficient` and the published parity (Engelmann `ttc_pd` and each portfolio's `pd0`, recomputed against printed), C07
+  and C15 calibration targets, C09 CCF per design (`group_by` the row), C10 grid correlation per cell, C14, C16 denominators per
+  element, C17 capital quantiles, C22 `null.json` estimators. `zero_scale` 1.0 is declared where the truth can be exactly 0 by
+  construction (a share, a rate, a correlation, a coefficient, a difference of two PDs).
+- `series` where the target is a vector, not one truth: C04's generator PDs (`estimators.<m>`, `pd_*`, `error_*`; the truth is one PD
+  per grade, a vector of seven) and C05 `approaches.<m>.pd` against `default_rate1` (one observed rate per grade, seventeen). `scalar`
+  needs exactly one value and would raise on both; this differs from the brief's list (C04, C05 approaches `scalar`).
+- `bound` with domain [0, 1] and a reason: C05 `outputs.bounds.*` (the five families, `ldp-published.json` included because a bound
+  needs no target), C04's agency PD matrices and estimator vectors (`sp`, `fitch`, `moodys`: real histories, no known truth), C10
+  grid rejection rates, C22 simulated rejection rates (`[0, 1]`), C12 `wrong-way-risk.json` exposure (`[0, null]`, the sign every
+  exposure has).
+- `withheld` (C11): the four `withheld-derived-only` windows, one pair for the VaR and one for the ES, the same paths as the two
+  published windows; the committed file holds a null realised loss, so only the bake can run them (T3) on the in-memory document.
+
+What the sizing left unmapped, each decided from the document:
+
+| File | Decision and why |
+|---|---|
+| C22 simulations (`outputs.simulations[].rates`) of all nine variants | `bound` [0, 1]. The exact reference (`exact.p<..>`) exists for 9 of 48 clustering scenarios only and a pair under `group_by` fails on an element without it, so the elementwise pairing is the case's own parity (`golden`, `exact_curves`). |
+| C10 `grid-22.json`, `grid-40.json` | `mean_estimate` against `known_rho` per cell (`scalar`) and `rejection_rate` `bound`. |
+| C05 `ldp-published.json` | the bounds as `bound` (no `true_pd` in a published example); `scaled_central_tendency` only where shipped (`ldp-*[!0].json`). |
+| C12 `wrong-way-risk.json` | no ORE run (the reconciliation is null), so no reference series: `bound` [0, null]. |
+| C14 `vd-2022-q2.json`, `vd-2022-q4.json` | not mapped: `out_of_sample.applicable` is false and projected and realised are null; the pair's `reason` says so. |
+| C16 `reverse-stress.json` | not mapped: no `scoring` block. |
+| C04 `thin.json` | not mapped: the document ships coverage and interval lengths of the known-truth design, no estimate. `published.json`: mapped (parity). Agency variants: `bound`. |
+| C07, C15 scenario files | not mapped: the amounts compare methods with each other on a synthetic bank (no target); only the generator calibration is paired. |
+| C18 `reverse-stress.json`, `t-copula-baseline.json` | not mapped: no backcast block. |
+
+A limit the planted tests pin. The gate blocks only when EVERY prediction lies outside the widened range, so a percent-for-fraction
+defect (x100) is blocked by 29 of the 37 non-bound pairs and 11 of the 14 bounds (51 pairs in all) on their committed documents; the
+others need a larger factor (x1000 or x1e6: C03 calibration rows and vintage curves, C04 markov estimators, momentum errors, cycle
+and withdrawals PDs, C05 scaled central tendency, C06 both pairs), the C12 wrong-way bound is planted by a sign flip, and
+`c04-moodys-generators` holds only null vectors today (nothing to plant), because a PD below 0.02 written as a percentage is a valid fraction of `[-1, 2]` or because one prediction is exactly 0.
+`tests/test_unit_gate.py::test_a_percent_for_fraction_defect_planted_in_a_committed_document_fails_the_pair` records the factor of each
+pair. Whether the rule should also look at a share of predictions outside is the main session's decision on the rule, not this table's.
+
 ### Where it runs
 
 1. In the bake, at the single choke point. `stages/export.py::write_artifact` (37 call sites in 21 case modules) calls
