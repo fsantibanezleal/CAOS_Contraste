@@ -355,3 +355,28 @@ def test_a_reason_quotes_the_code_line_of_its_own_literal():
         if snippet and snippet not in _norm(src[lit.line - 1]):
             wrong.append(f"{lit.path}:{lit.line} {lit.key}")
     assert not wrong, wrong[:10]
+
+
+def _real_baseline() -> dict:
+    return json.loads((ROOT / "scripts" / "unit_constants_baseline.json").read_text(encoding="utf-8"))
+
+
+def test_no_unit_hedges_with_the_word_or():
+    """Second fix of T6 (R6): a unit is the unit of its own literal, one unit and never "x or y". The selector is the plain word
+    `or` in the unit text (the first fix counted 26 and the re-review found 197 with this selector)."""
+    hedged = sorted(k for k, e in _real_baseline().items() if re.search(r"\bor\b", e["unit"]))
+    assert not hedged, hedged[:10]
+
+
+def test_every_run_timeout_is_a_run_budget():
+    """Second fix of T6 (R3): a literal named RUN_MS (or RUN_MS_GATE) is the wall-clock limit of a run, whatever the case."""
+    wrong = sorted(k for k, e in _real_baseline().items() if re.match(r"RUN_MS(_GATE)?\b", e["reason"]) and e["class"] != "run-budget")
+    assert not wrong, wrong
+
+
+def test_the_c20_stand_in_range_and_the_c15_page_threshold_are_not_baselined():
+    """Second fix of T6 (R1 and R8): the stand-in range of a C20 subsample run and the C15 page's copy of the EVE threshold are
+    rewritten against their source, so no entry is kept for either (the code tests are in tests/test_t6_code_findings.py)."""
+    keys = _real_baseline()
+    assert not [k for k in keys if k.startswith("cases/c20/bake::bake_case::") and "1000000000.0" in k]
+    assert not [k for k in keys if k.startswith("cases/c15/page::")]
