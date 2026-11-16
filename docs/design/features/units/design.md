@@ -243,21 +243,43 @@ literal is in its own code line.
   and one sentence naming the constant (the entry's reason starts with `<label> = <value>:`). 559 entries are assigned by a pattern
   and say so (`pattern: <rule>` at the start of the reason): the name of a probability level (`LEVEL`, `ALPHA`, a quantile), a value
   inside an expected-range dict, a percent, basis point or period conversion, a learning rate, decay or sampling fraction of a model
-  constructor. The other 1,508 were read from the listing of their group with the line they sit on.
-- **Counts by class:** ratio 637, single-observable-limit 447, source-cited-input 346, probability 338, unit-conversion 211,
-  training-hyperparameter 59, relative-tolerance 29 (the sum is 2,067; the baseline is the record, `--counts` gives the per group
+  constructor. The other 1,508 were first read from the listing of their group with the line they sit on; the review of T6 found that wrong for about one entry in six, and the fix (2026-11-16) reread every one of them in its own code line, with the function where the line did not settle the meaning (see below).
+- **Counts by class after the fix:** ratio 544, single-observable-limit 452, probability 364, stated-assumption 267, source-cited-input 242,
+  unit-conversion 122, training-hyperparameter 54, run-budget 25, relative-tolerance 16 (the sum is 2,086; the baseline is the record, `--counts` gives the per group
   figures).
 - **An expected-range dict is a `single-observable-limit`.** Each range is read by the check of its own key only (`expectations.check`
   looks the key up), so the one observable that reaches it is the key; the reason says so and the entry's unit is the key's unit.
-  A run timeout (`RUN_MS`), a fetcher timeout and a back-off are `single-observable-limit` too: the only quantity that reaches them is
-  the wall-clock time of the run itself, which no case observable enters.
-- **A named constant of a parameter module is `source-cited-input`** when its file gives it a source, a standard text or an
-  assumption of the case stated in the file; a share or a probability the file calls an assumption is classed `ratio` or `probability`.
+  A run timeout (`RUN_MS`), a fetcher timeout and a back-off are `run-budget` (the wall-clock time of the run enters no case observable;
+  the review of T6 found `single-observable-limit` a stretch for them).
+- **A named constant of a parameter module is `source-cited-input`** only when the module or its parameter file cites its source (the
+  entry's reason names it). A dimensionless assumption of the case is `ratio` or `probability`; one that carries a unit (an amount, a rate
+  per year, a maturity, a repricing time) is `stated-assumption`, with its own unit and a reason saying what it assumes and why.
 - **No literal of the defect class was found** (a constant comparable to a measured quantity in a path that more than one observable can
   reach). The literals examined for it, each reached by one observable (named in its entry), are in the T6 report: the C09 CCF features
   (log limit 8.0, score 700 and 100), the C09 generator clips, the C12 cube-mean tolerance 0.02, the C14 open-bucket stand-in 1e9
   years, the C17 severity-scale bounds 100 to 1e7 EUR, the C06 unemployment dead band 0.1, the C10 correlation grid bounds, the C15
   and C18 UR floor, and the C20 `(-1e9, 1e9)` stand-in range, which every dimensionless C20 key can reach and none can approach.
+
+### The fix of task T6 after its review (2026-11-16)
+
+The opus review of T6 (CHANGES REQUIRED) found 20 of 120 sampled listing-classed entries wrong (16.7 percent), four majors and nine
+minors, and no literal of the defect class in substance. What the fix did:
+
+- **Two classes** (`stated-assumption`, `run-budget`; the main session's decision on the review's question Q1) and the exit code of
+  `scripts/smoke.ps1` under Windows PowerShell 5.1 (`exit $LASTEXITCODE` after each native call; a test runs the real script with stub
+  checks under `powershell.exe`).
+- **Every listing-classed entry reread in its code line** (1,508 entries, module by module): 570 of the 2,067 entries changed in
+  class, unit or reason, 398 of them in class. A literal that shares a line with another meaning (a repricing time and its share, an
+  effective rate and a correlation, a PD and a test level) is classified one by one, never with the line's unit. `unit-conversion` is kept
+  for a literal that converts one unit to another (percent, basis points, days per year, a tenor label to years).
+- **Three `outside` reasons were false** (`cases/c15/page`, `cases/c08/page`, `cases/c11/page` compute a value of their own); they join the
+  `method` list with 19 literals classified, so the lists are 175 method, 27 parameter and 75 outside (202 walked, 2,086 literals).
+- **A reason that quotes code quotes its own line.** `tests/test_unit_constants.py` checks that the `(code: ...)` of every reason is on the
+  line of its literal. The correctness of the words stays with the reviewer.
+- **Open, outside this unit's scope (pipeline code):** the C20 subsample stand-in `(-1e9, 1e9)` (`cases/c20/bake.py:335`) is baselined as a
+  `stated-assumption` that says it is not a limit; the review asks to skip the range check in a subsample run instead of a number. The C02
+  and C21 expected ranges assigned by key prefix with an `else` fallback (m6) and the C15 page threshold repeated from `c15/models.py:25`
+  (m8) are code changes of their own.
 
 ## What it does not do
 
