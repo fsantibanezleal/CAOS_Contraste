@@ -58,7 +58,7 @@ def test_target_kinds():
     scalar = pair(kind="scalar")
     assert run(scalar, {"pred": [1.9], "target": 1.0}).violations == []
     assert run(scalar, {"pred": [2.1], "target": 1.0}).violations[0]["target_range"] == [0.0, 2.0]
-    assert run(scalar, {"pred": [-2.9], "target": -1.0}).violations == []  # t negative: [-2, 0]
+    assert run(scalar, {"pred": [-1.9], "target": -1.0}).violations == []  # t negative: [-2, 0]
     assert run(scalar, {"pred": [-2.5], "target": -1.0}).violations[0]["target_range"] == [-2.0, 0.0]
     # scalar 0: the pair's zero_scale, else a spec error
     assert run(pair(kind="scalar", zero_scale=0.5), {"pred": [0.4], "target": 0.0}).violations == []
@@ -308,7 +308,7 @@ def _shuffled(node, rng):
 def test_violations_are_ordered_by_pair_method_and_element_whatever_the_dict_order():
     doc = {"o": {f"m{i}": {"v": [900.0 + i]} for i in range(6)}, "q": {f"n{i}": {"v": [-900.0]} for i in range(3)},
            "t": [1.0, 2.0]}
-    spec = {"CX": {"pairs": [pair(id="zeta", prediction="o.<m>.v"), pair(id="alpha", prediction="q.<m>.v")]}}
+    spec = {"CX": {"pairs": [pair(id="zeta", prediction="o.<m>.v", target="t"), pair(id="alpha", prediction="q.<m>.v", target="t")]}}
     base = ug.check_document("CX", "a.json", doc, spec)
     order = [(v["pair"], v["method"]) for v in base.violations]
     assert order == sorted(order) and order[0][0] == "alpha" and len(order) == 9
