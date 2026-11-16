@@ -764,7 +764,7 @@ Q3 = {
         _m("detection", T("Detection rate, planted defect", "Tasa de detección, defecto plantado"), "desk", "higher", T("share of replications", "proporción de réplicas"), [c["id"] for c in Q3_COLS[1:]], Q3_F),
     ],
     "rows": [
-        _row("pla", T("Profit-and-loss attribution test of the Basel market-risk standard (Spearman and Kolmogorov-Smirnov, amber or red)", "Prueba de atribución de pérdidas y ganancias del estándar de riesgo de mercado de Basilea (Spearman y Kolmogorov-Smirnov, ámbar o rojo)"), "M-21",
+        _row("pla", T("Profit-and-loss attribution test of the Basel market-risk standard (Spearman and Kolmogorov-Smirnov, amber or red)", "Prueba de atribución de pérdidas y ganancias del estándar de riesgo de mercado de Basilea (Spearman y Kolmogorov-Smirnov, ámbar o rojo)"), "M-19",
              {"false_alarm": "outputs.detection.share_amber_or_red", "detection": "outputs.detection.share_amber_or_red"}),
         _row("complement", T("Scale-and-level complement to the attribution test (family-wise size 1%)", "Complemento de escala y nivel a la prueba de atribución (tamaño conjunto 1%)"), "BS-13",
              {"false_alarm": "outputs.pla_complement.flags.family.any.rate", "detection": "outputs.pla_complement.flags.family.any.rate"}),
@@ -815,8 +815,8 @@ Q4 = {
         _m("v_stable", T("Verdict clause: the anchored parameter is stable across years", "Cláusula del veredicto: el parámetro anclado es estable entre años"), "withdrawals", "none", T("verdict", "veredicto"), ["verdict"], Q4_F),
     ],
     "rows": [
-        _q4_row("industry", "Cohort estimator with the withdrawn ratings removed", "Estimador de cohortes con las calificaciones retiradas eliminadas", "industry", "M-9"),
-        _q4_row("unfollowed", "Cohort estimator with the withdrawn ratings kept", "Estimador de cohortes con las calificaciones retiradas conservadas", "unfollowed", "M-9"),
+        _q4_row("industry", "Cohort estimator with the withdrawn ratings removed", "Estimador de cohortes con las calificaciones retiradas eliminadas", "industry", "M-7"),
+        _q4_row("unfollowed", "Cohort estimator with the withdrawn ratings kept", "Estimador de cohortes con las calificaciones retiradas conservadas", "unfollowed", "M-7"),
         _q4_row("followed", "Withdrawn ratings followed to their outcome", "Calificaciones retiradas seguidas hasta su desenlace", "followed", None, None, False,
                 T("an oracle reading that needs the outcome of every withdrawn name", "una lectura de oráculo que necesita el desenlace de cada nombre retirado")),
         _q4_row("identified", "Identified band (Manski)", "Banda identificada (Manski)", "identified", None, "manski"),
