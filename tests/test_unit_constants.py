@@ -7,6 +7,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -263,7 +264,7 @@ def test_the_real_tree_runs_in_about_two_seconds():
     start = time.monotonic()
     out = subprocess.run([sys.executable, "-I", str(SCRIPT)], capture_output=True, text=True, timeout=120)
     assert time.monotonic() - start < 10.0
-    assert out.returncode == 0 and "check_unit_constants:" in out.stdout and "199 modules walked" in out.stdout
+    assert out.returncode == 0 and "check_unit_constants:" in out.stdout and "202 modules walked" in out.stdout
 
 
 def test_the_committed_baseline_classifies_every_literal_with_a_specific_reason():
@@ -327,3 +328,30 @@ def test_the_new_classes_are_in_the_script_and_the_design():
     design = (ROOT / "docs" / "design" / "features" / "units" / "design.md").read_text(encoding="utf-8")
     for klass in ("stated-assumption", "run-budget"):
         assert f"`{klass}`" in design
+
+
+def _norm(text: str) -> str:
+    return " ".join(re.sub(r"[^\x00-\x7f]", "_", text).replace('"', "'").split())
+
+
+def test_a_reason_quotes_the_code_line_of_its_own_literal():
+    """Review of T6 (m9): a reason that quotes code (`(code: ...)`) quotes the line its literal sits on, so a reason written for
+    another literal fails. The correctness of the words stays with the reader; this guards the commonest slip."""
+    spec = importlib.util.spec_from_file_location("check_unit_constants_reasons", SCRIPT)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod
+    spec.loader.exec_module(mod)
+    lists, _ = mod.load_lists(MODULES)
+    found = mod.walk(PIPELINE, [*lists["method"], *lists["parameter"]])
+    base = json.loads((ROOT / "scripts" / "unit_constants_baseline.json").read_text(encoding="utf-8"))
+    lines: dict[str, list[str]] = {}
+    wrong = []
+    for lit in found.literals:
+        reason = base[lit.key]["reason"]
+        if "(code: " not in reason:
+            continue
+        snippet = _norm(reason.rsplit("(code: ", 1)[1].rstrip(")"))[:40]
+        src = lines.setdefault(lit.path, (ROOT / lit.path).read_text(encoding="utf-8").split("\n"))
+        if snippet and snippet not in _norm(src[lit.line - 1]):
+            wrong.append(f"{lit.path}:{lit.line} {lit.key}")
+    assert not wrong, wrong[:10]
