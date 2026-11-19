@@ -66,6 +66,136 @@ def num(x: float, d: int = 3) -> str:
 
 
 # ---------------------------------------------------------------------------------------------------------------------
+# C06: the loan-level bootstrap intervals of the PC-Hazard comparison and the sensitivity of the rung to its hyper-parameters
+
+
+def math(x: float, d: int) -> str:
+    """A number in math mode so that a negative value prints with a true minus sign."""
+    return f"${fixed(x, d)}$"
+
+
+def _text(value) -> str:
+    """A reason of a document as one English sentence fragment (a bilingual text carries ``en``)."""
+    if isinstance(value, dict):
+        return str(value.get("en") or "")
+    return str(value or "")
+
+
+def _excludes(x: dict | None) -> bool | None:
+    """Whether the interval of a difference excludes zero, read from its bounds (never from the stored flag); None where it has none."""
+    if not x or x.get("lo") is None or x.get("hi") is None:
+        return None
+    return bool(x["lo"] > 0 or x["hi"] < 0)
+
+
+def boot_row(date: str, models: dict) -> dict:
+    """The evaluation bootstrap of the PC-Hazard against Cox at one reporting date (``fit.s4_bootstrap``). A date whose document has no
+    block, or whose block was not evaluated, is returned with ``evaluated`` false and its reason: it is stated in the table, never dropped."""
+    b = models.get("fit", {}).get("s4_bootstrap")
+    if not b:
+        return {"date": date, "evaluated": False, "reason": "the document holds no bootstrap block"}
+    diffs = {x["measure"]: x for x in b.get("differences") or []}
+    ibs, gap = diffs.get("integrated_brier"), diffs.get("mean_decile_gap")
+    if not b.get("evaluated") or ibs is None or gap is None:
+        return {"date": date, "evaluated": False, "reason": _text(b.get("reason")) or "the block carries no difference"}
+    e_ibs, e_gap = _excludes(ibs), _excludes(gap)
+    return {"date": date, "evaluated": True, "reason": "", "accounts": b["accounts"], "replicates": b["replicates"], "ibs": ibs, "gap": gap,
+            "both": bool(e_ibs and e_gap), "ibs_excl": e_ibs, "gap_excl": e_gap}
+
+
+def boot_cells(row: dict, holds: bool | None = None) -> list[str]:
+    """The table cells of one date: the accounts, each difference with its 95 percent interval, whether both exclude zero and whether the
+    criterion of the specification holds at the date."""
+    h = "n/e" if holds is None else ("yes" if holds else "no")
+    if not row["evaluated"]:
+        return [row["date"], "not evaluated", "--", "--", "--", "--", "--", h]
+    ci = lambda x: f"$[{fixed(x['lo'], 6)}, {fixed(x['hi'], 6)}]$"  # noqa: E731
+    return [row["date"], f"${num(row['accounts'], 0)}$", math(row["ibs"]["difference"], 6), ci(row["ibs"]),
+            math(row["gap"]["difference"], 6), ci(row["gap"]), "yes" if row["both"] else "no", h]
+
+
+SENS_PARAMETER = {"default": "none", "interval_width": "Interval width", "hidden_layers": "Hidden layers", "weight_decay": "Weight decay",
+                  "learning_rate": "Learning rate"}
+
+
+def tables_c06_uncertainty() -> None:
+    models = {d: c06m(d) for d in DATES}
+    rows = [boot_row(d, models[d]) for d in DATES]
+    holds = [bool(rung(models[d], "L3-pch")["details"]["evaluation"]["holds_at_date"]) for d in DATES]
+    ev = [r for r in rows if r["evaluated"]]
+    macro("BootDates", str(len(DATES)))
+    macro("BootEvaluated", str(len(ev)))
+    macro("BootNotEvaluated", str(len(DATES) - len(ev)))
+    macro("BootReplicates", f"{ev[0]['replicates']:,}".replace(",", "{,}") if ev else "0")
+    macro("BootBoth", str(sum(r["both"] for r in ev)))
+    macro("BootHolds", str(sum(holds)))
+    macro("BootHoldsExcl", str(sum(1 for r, h in zip(rows, holds) if h and r["evaluated"] and r["both"])))
+    macro("BootIbsWorse", str(sum(1 for r in ev if r["ibs"]["lo"] > 0)))
+    macro("BootIbsBetter", str(sum(1 for r in ev if r["ibs"]["hi"] < 0)))
+    macro("BootGapWorse", str(sum(1 for r in ev if r["gap"]["lo"] > 0)))
+    macro("BootGapBetter", str(sum(1 for r in ev if r["gap"]["hi"] < 0)))
+    macro("BootIbsAbsMax", fixed(max(abs(r["ibs"]["difference"]) for r in ev), 6) if ev else "0")
+    macro("BootGapAbsMax", fixed(max(abs(r["gap"]["difference"]) for r in ev), 6) if ev else "0")
+    macro("BootAccountsMin", num(min(r["accounts"] for r in ev), 0) if ev else "0")
+    macro("BootAccountsMax", num(max(r["accounts"] for r in ev), 0) if ev else "0")
+    figkit.table(OUT / "provisions-t-boot.tex",
+                 ["Date", "Accounts", "PBS difference", "95\\% interval of the PBS difference", "Gap difference",
+                  "95\\% interval of the gap difference", "Both exclude zero", "Criteria hold"],
+                 [boot_cells(r, h) for r, h in zip(rows, holds)],
+                 caption=("Loan-level bootstrap of the PC-Hazard against Cox at the six reporting dates of case C06: the out-of-time accounts are "
+                          "resampled with replacement 1,000 times with the predictions held fixed, and the table gives for the pooled Brier "
+                          "score (PBS) and for the mean absolute decile gap the difference PC-Hazard minus Cox with the 2.5 and 97.5 percentiles "
+                          "of its replicates, whether both intervals exclude zero, and whether the criterion of the specification holds at the date."),
+                 label="tab:prov-boot", align="lrrrrrrr", wide=True)
+
+    # the nine settings of the sensitivity of the rung, one hyper-parameter moved at a time
+    sens = {d: models[d]["fit"]["pch_sensitivity"] for d in DATES}
+    first = sens[DATES[0]]
+    overall = {s["setting_id"]: s for s in first["overall"]["settings"]}
+    per_setting: dict[str, list[dict]] = {}
+    unfitted = 0
+    for d in DATES:
+        for st in sens[d]["settings"]:
+            if st.get("evaluation"):
+                per_setting.setdefault(st["setting_id"], []).append(st["evaluation"])
+            if st.get("status") != "fitted":
+                unfitted += 1
+    fitted = sum(1 for d in DATES for st in sens[d]["settings"] if st.get("status") == "fitted")
+    c_all = [e["c_index"]["pch"] for v in per_setting.values() for e in v]
+    macro("SensSettings", str(first["overall"]["settings_count"]))
+    macro("SensAgree", str(first["overall"]["agree"]))
+    macro("SensDefaultHolds", str(overall["default"]["holds_at"]))
+    macro("SensFitted", str(fitted))
+    macro("SensNotConverged", str(unfitted))
+    macro("SensCindexMin", fixed(min(c_all), 2))
+    macro("SensCindexMax", fixed(max(c_all), 2))
+    macro("SensHoldsMin", str(min(s["holds_at"] for s in overall.values())))
+    macro("SensHoldsMax", str(max(s["holds_at"] for s in overall.values())))
+    macro("SensIbsExcessMax", fixed(max(e["integrated_brier"]["pch"] - e["integrated_brier"]["cox"] for v in per_setting.values() for e in v), 5))
+    srows = []
+    for s in first["overall"]["settings"]:
+        sid = s["setting_id"]
+        st = next(x for x in first["settings"] if x["setting_id"] == sid)
+        ev_s = per_setting.get(sid, [])
+        label = "Defaults" if sid == "default" else _text(st["label"]).strip()
+        cs = [e["c_index"]["pch"] for e in ev_s]
+        excess = [e["integrated_brier"]["pch"] - e["integrated_brier"]["cox"] for e in ev_s]
+        srows.append([label, SENS_PARAMETER.get(st["parameter"], st["parameter"]), s["holds_at"], s["evaluable"], s["verdict"],
+                      "yes" if s["agrees"] else "no",
+                      f"{fixed(min(cs), 3)} to {fixed(max(cs), 3)}" if cs else "--",
+                      math(max(excess), 5) if excess else "--"])
+    figkit.table(OUT / "provisions-t-sens.tex",
+                 ["Setting", "Parameter moved", "Dates holding", "Dates evaluable", "Verdict", "Agrees with the defaults",
+                  "PC-Hazard c-index over the dates", "Largest PBS excess over Cox"],
+                 srows,
+                 caption=("Sensitivity of the PC-Hazard rung of case C06 to its hyper-parameters: the nine settings, each moving one hyper-parameter "
+                          "around the defaults on the same loans, hold-out split and seed, with the number of reporting dates at which both criteria "
+                          "hold, the verdict that count gives, whether it agrees with the verdict of the defaults, the range of the c-index "
+                          "over the dates and the largest excess of the pooled Brier score over the Cox rung."),
+                 label="tab:prov-sens", align="llrrllrr", wide=True)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
 # C06: the lifetime PD rungs and the PC-Hazard network
 
 
@@ -489,6 +619,7 @@ def tables_c03() -> None:
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     tables_c06()
+    tables_c06_uncertainty()
     curve_and_decile_macros()
     worked_example()
     tables_c07()

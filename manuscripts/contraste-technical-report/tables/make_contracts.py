@@ -317,6 +317,15 @@ INTERNAL = [
     (re.compile(r"\s*\(U\d+-[A-Z]\d*\)"), ""),
     (re.compile(r"\s*\(R\d+ of the U\d+ sizing\)"), ""),
     (re.compile(r"\s*\(W\d+-\d+\)"), ""),
+    # the numbering of the product's own requirements, backlog rows and design decisions is process vocabulary
+    (re.compile(r"\s*\((?:CT-\d+(?:,\s*)?)+\)"), ""),
+    (re.compile(r"Requirement ids CT-\d+ onward"), "Requirement ids the output answers"),
+    (re.compile(r"\s*\(decision Q\d+\)"), ""),
+    (re.compile(r"\s+of decision Q\d+(?=:)"), ""),
+    (re.compile(r"U\d+ G\d+: "), ""),
+    (re.compile(r"\s*BL-\d+(?: T\d+)?"), ""),
+    # a schema description that narrates the version that added a block names a second version beside the one the contract carries
+    (re.compile(r"(?<![\d.])\d+\.\d+\.\d+ adds (?=the )"), "It carries "),
     (re.compile(r"\s*\bU\d+-[A-Z]\d*\b"), ""),
     # references to the research notes and the plan are process vocabulary: the cited section goes, the content stays
     (re.compile(r"\s*\(dossier \d+ [A-Z]\.\d+(?: and [A-Z]\.\d+)?(?:, row \d+)?\)(?=[:,;.])"), ""),
@@ -325,6 +334,18 @@ INTERNAL = [
     (re.compile(r"\bthe verdict of the plan's hypothesis"), "the outcome of the hypothesis"),
     (re.compile(r"\bbeside the verdict\b"), "beside the outcome of the rule"),
 ]
+
+
+_CATALOG_ROW = re.compile(r"^Catalog row \S+ \d+\.\d+\.\d+(?: \([^)]*\))?\s*[:;,.]?\s*")
+
+
+def strip_catalog_prefix(desc: str) -> str:
+    """A schema description without its leading ``Catalog row <id> <version>:``: the version is the one the catalog row held when
+    the schema was written, and the appendix states the catalog's own version beside it. The first letter of the rest is capitalised."""
+    out = _CATALOG_ROW.sub("", desc.strip())
+    if out == desc.strip():
+        return out
+    return out[:1].upper() + out[1:]
 
 
 def producer_text(owner: str) -> str:
@@ -387,7 +408,7 @@ def subsection(row: dict[str, str]) -> str:
         if title in _TITLES_USED and "-" in cid:
             title = f"{title} ({cid.split('-', 1)[1].replace('-', ' ')})"
         _TITLES_USED.add(title)
-    desc = schema.get("description", "") if schema else ""
+    desc = strip_catalog_prefix(schema.get("description", "")) if schema else ""
     lines = [f"\\subsubsection{{\\texttt{{{figkit.tex_escape(cid)}}}" + (f": {figkit.tex_escape(title)}" if title else "") + "}",
              f"\\label{{sec:contract-{cid}}}", ""]
     para = []
