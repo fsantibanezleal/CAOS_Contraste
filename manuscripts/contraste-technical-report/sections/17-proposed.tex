@@ -32,16 +32,19 @@ it rests on, its equations, its assumptions, its parameters, its cost, its imple
 \texttt{riskvalidation} or in the pipeline of the product, what it is compared against and the criterion by which it is accepted
 or refuted; the criterion of each proposed method was fixed before its evaluation, and each is reported whatever its result.
 
-Five cases carry the evaluation of the proposed methods. Case C01 asks whether a champion scorecard and its challengers rank and
-calibrate retail credit-card defaults on a locked holdout, and its protocol is the one of the leakage-safe design. Case C04 asks what the
-through-the-cycle default probability of each rating grade is when the agencies' transition tables are the only data and some ratings
-leave the cohort before they default. Case C11 asks whether value-at-risk and expected-shortfall forecasts of an eighteen-model ladder
-pass their back-tests in the stress windows of 2007 to 2009, 2020 and 2022, with strictly rolling estimation. Case C13 asks whether a
-desk-level risk model with a known planted deficiency is caught by the profit-and-loss attribution test and by the desk back-test.
-Case C22 asks how often each validation test rejects a correct model and a defective one, on generators whose truth is known. The
-other measurements of the section read the stored documents of the cases that carry them (C12 for the exposure engine, C15 and C14
-for interest-rate risk, C16 for liquidity, C17 for operational risk, C18 for aggregation, C06 and C07 for provisions, C10 for portfolio
-capital and C20 and C21 for the machine-learning and fairness batteries); the case is named where it is used.
+Nine cases carry the evaluation of the proposed methods. Case C14, an interest-rate risk case, carries the test of a behavioural
+assumption changed at a limit breach (\cref{sec:bs8}). Cases C20 and C21, the machine-learning and fairness batteries, carry the
+corrections of three tests (\cref{sec:bs10}). Case C16, the liquidity case, carries the reverse stress with its refusal rule
+(\cref{sec:bs11}). Case C13 asks whether a desk-level risk model with a known planted deficiency is caught by the profit-and-loss
+attribution test and by the desk back-test (\cref{sec:bs13}). Case C04 asks what the through-the-cycle default probability of each
+rating grade is when the agencies' transition tables are the only data and some ratings leave the cohort before they default
+(\cref{sec:bs14}). Case C22 asks how often each validation test rejects a correct model and a defective one, on generators whose
+truth is known; with case C11 and the small-business scorecard of case C03 it carries the sequential monitors (\cref{sec:bs15}).
+Case C11 asks whether value-at-risk and expected-shortfall forecasts of an eighteen-model ladder pass their back-tests in the stress
+windows of 2007 to 2009, 2020 and 2022, with strictly rolling estimation, and carries the conformal recalibration
+(\cref{sec:bs16}). The measurements, protocols and reconciliations of the section read the stored documents of the cases that carry
+them (C01 for the leakage-safe protocol on a locked holdout, C12 for the exposure engine, C15 for interest-rate risk, C17 for
+operational risk, C18 for aggregation, C06 and C07 for provisions and C10 for portfolio capital); the case is named where it is used.
 
 The results of every method on the stored documents are collected in Section~\ref{sec:results-proposed}. The notation is the one of
 the notation section of the report; the symbols that a method adds are defined where it first uses them. Each method has a manuscript of its
