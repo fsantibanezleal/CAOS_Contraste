@@ -250,8 +250,8 @@ def table_plan(q: dict) -> list[dict]:
 
 
 def colspec(n_values: int) -> str:
-    share = min(0.14, round(0.58 / max(n_values, 1), 3))
-    return (">{\\raggedright\\arraybackslash}p{0.30\\textwidth}"
+    share = min(0.14, round(0.63 / max(n_values, 1), 3))
+    return (">{\\raggedright\\arraybackslash}p{0.25\\textwidth}"
             + ("".join([f">{{\\raggedleft\\arraybackslash}}p{{{share}\\textwidth}}"] * n_values)))
 
 
