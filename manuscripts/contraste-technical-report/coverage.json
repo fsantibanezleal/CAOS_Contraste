@@ -148,6 +148,7 @@
     "governance-findings": "sec:contract-governance-findings",
     "governance-report": "sec:contract-governance-report",
     "governance-appetite": "sec:contract-governance-appetite",
-    "engine-governance-api": "sec:contract-engine-governance-api"
+    "engine-governance-api": "sec:contract-engine-governance-api",
+    "benchmark-methods": "sec:contract-benchmark-methods"
   }
 }

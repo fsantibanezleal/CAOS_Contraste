@@ -312,6 +312,7 @@ INTERNAL = [
     (re.compile(r"\bbeyond the " + _ART + r":?\s*", re.I), ""),
     (re.compile(r"\b" + _ART + r"\b", re.I), "published"),
     (re.compile(r"\bSO" + r"TA\b"), "published"),
+    (re.compile(r"\bthe SDD\b"), "the design document"),
     (re.compile(r"\bSDD\b"), "the design document"),
     (re.compile(r"\s*\(U\d+-[A-Z]\d*\)"), ""),
     (re.compile(r"\s*\(R\d+ of the U\d+ sizing\)"), ""),
@@ -332,6 +333,9 @@ def producer_text(owner: str) -> str:
     out = re.sub(r"implemented by U\d+-[A-Z]\d* in ", "implemented in ", out)
     out = re.sub(r"(\w) U\d+-[A-Z]\d*( in)", r"\1\2", out)
     out = re.sub(r"\bU\d+-[A-Z]\d*\b", "", out)
+    # a backlog row and task id (BL-113 T2) is process vocabulary too: the producer and consumer paths stay
+    out = re.sub(r"^BL-\d+ T\d+ \(producer (.*)\)$", r"\1", out)
+    out = re.sub(r"\bconsumer BL-\d+ T\d+ in\b", "consumer in", out)
     out = re.sub(r"\breleased v(\d)", r"release \1", out)  # an engine release number, not a document version
     out = re.sub(r"\breleased in engine v(\d)", r"released in engine \1", out)
     return re.sub(r"\s{2,}", " ", out).strip()
