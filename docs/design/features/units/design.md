@@ -244,7 +244,7 @@ literal is in its own code line.
   and say so (`pattern: <rule>` at the start of the reason): the name of a probability level (`LEVEL`, `ALPHA`, a quantile), a value
   inside an expected-range dict, a percent, basis point or period conversion, a learning rate, decay or sampling fraction of a model
   constructor. The other 1,508 were first read from the listing of their group with the line they sit on; the review of T6 found that wrong for about one entry in six, and the fix (2026-11-16) reread every one of them in its own code line, with the function where the line did not settle the meaning (see below).
-- **Counts by class after the third fix:** ratio 553, single-observable-limit 448, probability 364, stated-assumption 267,
+- **Counts by class after the fourth review (accepted 2026-11-19, its minor corrections applied):** ratio 556, single-observable-limit 448, probability 361, stated-assumption 267,
   source-cited-input 230, unit-conversion 124, training-hyperparameter 53, run-budget 28, relative-tolerance 16 (the sum is 2,083; the baseline is the
   record, `--counts` gives the per group figures). After the first fix the sum was 2,086: the three entries of the C20 stand-in range and the C15 page
   threshold are gone with their literals.
