@@ -44,6 +44,8 @@ jobs:
           python -c "import sys, yaml, pathlib; [yaml.safe_load(p.read_text()) for p in pathlib.Path('.github/workflows').glob('*.yml')]; print('workflows: OK')"
       - name: CONTRACT 2, manifests and artifacts consistent
         run: python scripts/check_artifacts.py
+      - name: The committed artifacts pass the bake's unit rule (units rule, CONTRACT 3; loads the gate by path, standard library only)
+        run: python scripts/check_units.py
       - name: Every committed document valid against its schema file, each governed by one catalog row (ADR-0080)
         run: python scripts/check_documents.py
       - name: Every artifact carries true provenance (CT-003)
