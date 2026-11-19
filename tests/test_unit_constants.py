@@ -368,6 +368,49 @@ def test_no_unit_hedges_with_the_word_or():
     assert not hedged, hedged[:10]
 
 
+def test_no_unit_lists_several_meanings():
+    """Third fix of T6 (F3): the word-"or" selector found 0 while 38 units still listed several meanings in another form
+    ("as its key: default rate, AUC, PSI, p-value, share", "(coverage, stage 2 share)", "learning rate ...; L2 leaf ..."). The unit of
+    a literal is one unit: no "as its key", no semicolon and no comma inside a parenthesis (a list of names)."""
+    hedged = sorted(k for k, e in _real_baseline().items() if re.search(r"as its key|;|\([^()]*,[^()]*\)", e["unit"]))
+    assert not hedged, hedged[:10]
+
+
+def test_a_reason_names_one_role_not_two_with_or():
+    """Third fix of T6 (item 4): a reason names the one role its literal has at its line. The word `or` stays only in a quoted
+    phrase (a docstring or a source's wording), a name or a state of the data, never between two roles of the literal."""
+    allowed = ("3 months or less", "three months or less", "'convention or case assumption'", "category 6 or worse", "at or above",
+               "Black or African American", "arrears or in default")
+    wrong = sorted(k for k, e in _real_baseline().items()
+                   if re.search(r"\bor\b", e["reason"].split(" (code: ")[0]) and not any(a in e["reason"] for a in allowed))
+    assert not wrong, wrong[:10]
+
+
+def test_a_dimensionless_class_does_not_carry_a_dimension_and_a_stated_assumption_does_not_say_dimensionless():
+    """Third fix of T6 (F1): the three error kinds of the third review. A `ratio` or `probability` whose unit names percentage points,
+    a rate per period, basis points or a currency (C15 `cpi` 2.5 pp, a C17 axis in "decades of EUR"); a `stated-assumption` whose unit
+    says dimensionless (C12 `IID_CRITICAL`, C13 `ecdf_step`)."""
+    base = _real_baseline()
+    dimension = re.compile(r"percentage points?|\bpp\b|\bper (year|day|quarter|month|period)\b|basis points?|\bof (USD|EUR|CLP)\b")
+    with_dimension = sorted(k for k, e in base.items() if e["class"] in ("ratio", "probability") and dimension.search(e["unit"]))
+    dimensionless_assumption = sorted(k for k, e in base.items() if e["class"] == "stated-assumption" and re.search(r"dimensionless", e["unit"], re.I))
+    assert not with_dimension, with_dimension[:10]
+    assert not dimensionless_assumption, dimensionless_assumption[:10]
+
+
+def test_the_entries_of_the_third_review_say_what_their_code_does():
+    base = _real_baseline()
+    swap = [e for k, e in base.items() if k.startswith("cases/c22_validator::<module>::") and e["reason"].startswith("SWAP = ")]
+    assert len(swap) == 4
+    for e in swap:
+        assert "fraction of the gap" in e["reason"] and "share of grades swapped" not in e["reason"]
+    assert base["cases/c15/book::<module>::2.5::0"]["class"] == "stated-assumption"
+    assert {base[f"cases/c12/backtest::<module>::{v}::0"]["class"] for v in ("2.492", "3.88")} == {"ratio"}
+    assert base["cases/c13/params::<module>::0.004::0"]["class"] == "probability"
+    count = base["cases/c22_validator::<module>::25.0::0"]
+    assert "count" in count["unit"] and "rejection rate" not in count["unit"]
+
+
 def test_every_run_timeout_is_a_run_budget():
     """Second fix of T6 (R3): a literal named RUN_MS (or RUN_MS_GATE) is the wall-clock limit of a run, whatever the case."""
     wrong = sorted(k for k, e in _real_baseline().items() if re.match(r"RUN_MS(_GATE)?\b", e["reason"]) and e["class"] != "run-budget")

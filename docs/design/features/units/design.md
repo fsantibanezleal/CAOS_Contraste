@@ -244,7 +244,7 @@ literal is in its own code line.
   and say so (`pattern: <rule>` at the start of the reason): the name of a probability level (`LEVEL`, `ALPHA`, a quantile), a value
   inside an expected-range dict, a percent, basis point or period conversion, a learning rate, decay or sampling fraction of a model
   constructor. The other 1,508 were first read from the listing of their group with the line they sit on; the review of T6 found that wrong for about one entry in six, and the fix (2026-11-16) reread every one of them in its own code line, with the function where the line did not settle the meaning (see below).
-- **Counts by class after the second fix:** ratio 552, single-observable-limit 448, probability 363, stated-assumption 269,
+- **Counts by class after the third fix:** ratio 553, single-observable-limit 448, probability 364, stated-assumption 267,
   source-cited-input 230, unit-conversion 124, training-hyperparameter 53, run-budget 28, relative-tolerance 16 (the sum is 2,083; the baseline is the
   record, `--counts` gives the per group figures). After the first fix the sum was 2,086: the three entries of the C20 stand-in range and the C15 page
   threshold are gone with their literals.
@@ -298,6 +298,24 @@ to reread. What the second fix did:
   window around the literal with its signature), each corrected where its unit, class or reason was not its own, and the re-review's error
   kinds swept over the whole baseline: a unit of the computed result instead of the literal, one reason covering literals of different roles, a
   conversion factor checked against its arithmetic, a citation the module does not make (those literals are `stated-assumption`).
+
+### The third fix of task T6 (2026-11-19)
+
+The third review found every code finding closed and 3 errors in 60 (5.0 percent) in the stratum of entries once confirmed by their
+code line alone, against the rule of under 5 percent in each stratum. What the fix did:
+
+- **Eight entries**: the four `SWAP` reasons say what the code at `c22_validator.py:1104-1107` does (a fraction of the gap between the
+  true PDs of grades 3 and 4); C15 `cpi` 2.5 is a `stated-assumption` (percentage points); the two C12 `IID_CRITICAL` values are
+  `ratio`; C13 `ecdf_step` is `probability`. Three sweeps over the whole baseline found 4 more entries: C22
+  `other_studies_above_size` (a count of studies, its unit said rejection rate), the C17 exceedance axis (unit "decades of EUR",
+  now decades), and the pattern prefixes that named several roles (the penalised regression `C_GRID` was filed as a learning rate).
+- **C02 planted run**: a planted run records the declared ranges and compares none (the form of C20 and C10); the strict path is
+  unchanged. The guards refuse any literal interval in the bake paths and assert what `expectations.check` is called with.
+- **Units**: 38 units that listed several meanings (17 C01, 19 C06, 2 C08) are one unit each; 44 units with a comma inside a
+  parenthesis were reworded, and a guard refuses "as its key", a semicolon and a comma inside a parenthesis.
+- **Reasons**: where a reason hedged between roles with "or", the code line decided (C04 and C22 by key, C05 by the cited source,
+  C15 margins by item kind, C22 correlations by true or assumed); a guard allows "or" only in a quoted phrase.
+- The baseline keeps 2,083 entries for 2,083 literals.
 
 ## What it does not do
 
