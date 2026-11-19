@@ -24,11 +24,11 @@ ADR-0071, so no seventh group is made.
 
 | Q | Question | Case | Runs (protocol and seed) | Metrics (rule) |
 |---|---|---|---|---|
-| Q1 | VaR and ES forecasts in stress windows | C11 | one rolling schedule, six windows, seed of the documents | FZ0 at two levels (lower), exceedances (nearer the expected count), Basel zone (order), Kupiec and conditional-coverage p (higher) |
-| Q2 | Monitoring calibration and back-tests over time | C22, C11, C03 | four runs: case generator (seed 42), manuscript generator (seed 20261104), real windows, real vintages | size (lower), power (higher), median first-flag day (lower); the real runs are shown and never ranked |
+| Q1 | VaR and ES forecasts in stress windows | C11 | one rolling schedule, six windows, seed of the documents | FZ0 at two levels (lower), exceedances (nearer the expected count), Basel zone (order), Kupiec and conditional-coverage p (context: a p-value is evidence against a null, never ranked) |
+| Q2 | Monitoring calibration and back-tests over time | C22, C11, C03 | four runs: case generator (seed 42), manuscript generator (seed 20261104), real windows, real vintages | size (lower), power (higher), median first-flag day of the planted columns (lower; the no-change column is context, a first flag there is a false alarm); the real runs are shown and never ranked |
 | Q3 | P&L attribution of a trading desk | C13 | desk replications | false alarm (lower), detection (higher) |
 | Q4 | PD under informative rating withdrawals | C04 | the withdrawal generator, 200 repetitions per design | coverage (higher), width (lower), relative bias (nearer 0), the committed verdict |
-| Q5 | Default prediction on a retail book | C01 | two runs: the Taiwan holdout and the German twin | AUC (higher), Brier (lower), expected calibration error (lower), Spiegelhalter p (higher) |
+| Q5 | Default prediction on a retail book | C01 | two runs: the Taiwan holdout and the German twin | AUC (higher), Brier (lower), expected calibration error (lower), Spiegelhalter p (context, never ranked) |
 | Q6 | Lifetime PD by survival models | C06 | out-of-time, six reporting dates | integrated Brier (lower), C-index (higher), gap at 12 months (nearer 0), lifetime back-test gap (lower) |
 | Q7 | LGD on defaulted loans | C08 | out-of-time, six default cohorts | rmse, mae (lower), R squared, Spearman (higher), gap (nearer 0) |
 | Q8 | Operational-risk capital | C17 | independent histories of known truth, four tail indices | median ratio (nearer 1), spread (lower), share understating (nearer one half) |
@@ -60,7 +60,9 @@ Rules the document keeps:
   `nearer-metric:<metric>`, `order:<best>,...`), ties stated, a null never ranked; the words of `reading` are built from those standings. A
   proposed method that loses is shown losing and the question cites the manuscript that reports the negative or partial result (BS-14 refuted on
   both clauses in the committed C04 verdict; BS-15 not as stated; BS-8 losing on false flags).
-- **Nulls.** A cell the product does not have is null with its reason and the backlog row that fills it (BL-119, K-1 to K-12). Nothing is estimated.
+- **Nulls.** A cell the product does not have is null with its reason and the backlog row that fills it (BL-119, K-1 to K-12). Nothing is estimated. The Kupiec and conditional-coverage p-values of Q1 are not among them: they are copied from the `tests` of every case document for all 18 models, and a test the document does not evaluate is null with that document's own note.
+- **No p-value is ranked.** A p-value is evidence against a null, never a score of quality (it rewards a rule with few exceedances as much as one near the target): every metric whose value is a p-value is declared `none` (context). The traffic light and the distance of the exceedance count from its expected value are the ranked readings.
+- **The rule is per metric.** The schema declares `better` once per metric, so a column that needs another rule is a metric of its own: the no-change column of the median first-flag day (Q2) is `gen_median_null` and `man_median_null`, declared `none`, beside `gen_median` and `man_median` over the planted columns (`lower`). The contract is unchanged.
 - **Q10 (F-8).** The multiplier of the reverse liquidity stress is a threshold on a base, not a forecast: its row shows the score of its
   calibrated fast-run base and its multipliers, and is not ranked.
 
@@ -73,7 +75,7 @@ committed file, refuted on both clauses since BL-118.
 
 ## Tests and gates
 
-`tests/test_benchmark_methods.py` (BM-001 to BM-012, [`requirements.md`](requirements.md)); the contract checks of `docs/contracts/catalog.md`
+`tests/test_benchmark_methods.py` (BM-001 to BM-016, [`requirements.md`](requirements.md)); the contract checks of `docs/contracts/catalog.md`
 (`scripts/check_contract_versions.py`, `npm run check:contracts`); `scripts/check_internal_names.py` for the words of the page.
 
 ## Where it runs
