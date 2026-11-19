@@ -323,6 +323,7 @@ INTERNAL = [
     (re.compile(r"\s*[;,]?\s*\bdossier \d+ (?:[A-Z]|l)\.\d+(?: and [A-Z]\.\d+)?(?:, row \d+)?(?:\s*[;:]\s*)?"), ""),
     (re.compile(r"\bthe dossier UNVERIFIED list"), "the list of unverified items"),
     (re.compile(r"\bthe verdict of the plan's hypothesis"), "the outcome of the hypothesis"),
+    (re.compile(r"\bbeside the verdict\b"), "beside the outcome of the rule"),
 ]
 
 
