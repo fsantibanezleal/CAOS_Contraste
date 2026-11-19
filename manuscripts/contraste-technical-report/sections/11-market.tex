@@ -480,7 +480,7 @@ M_t=\prod_{s=1}^{t}\bigl(1-\lambda_s+\lambda_s\,e_s\bigr),\quad 0\le\lambda_s\le
 \label{eq:mk-ebt}
 \end{equation}
 where the betting fraction $\lambda_s$ is decided before day $s$ from the days before it and $\gamma=\tfrac12$ is the cap. A factor is at least
-$1-\gamma$ because $e_s\ge0$, so $M_t$ is a non-negative martingale with $M_0=1$ under the null, and by Ville's inequality
+$1-\gamma$ because $e_s\ge0$, so $M_t$ is a non-negative supermartingale with $M_0=1$ under the one-sided null of \cref{eq:mk-ebt-null} (a martingale when the value at risk is exact), and by Ville's inequality
 $\mathbb P(\sup_tM_t\ge1/a)\le a$ \citep{proposed:ramdas2023}: the monitor that rejects on the first day with $M_t\ge1/a=\pxFifteenThreshold{}$ has
 size at most $a=\pxFifteenAlpha{}\,\%$ however often it is read and whenever the analyst stops. The betting process of the product's implementation
 is the growth-rate rule of the paper estimated on all past days. With $H_{t-1}$ the number of exceedances before day $t$,
@@ -498,12 +498,13 @@ H_0^{\mathrm{ES}}:\ \mathrm{ES}_t\ge\mathrm{ES}^{*}_t\ \text{ with }\ \mathrm{Va
 \label{eq:mk-ebt-null}
 \end{equation}
 and its backtest e-statistic for the expected shortfall (its equation~(3)) is the excess of the loss over the forecast value at risk, divided by the tail probability and by the gap between the two forecasts,
-\begin{equation}
-e^{\mathrm{ES}}_t=\frac{(\ell_t-\mathrm{VaR}_t)_{+}}{\alpha\,(\mathrm{ES}_t-\mathrm{VaR}_t)},\qquad
-\mathbb E\!\left[e^{\mathrm{ES}}_t\mid\mathcal F_{t-1}\right]=\frac{\mathrm{ES}^{*}_t-\mathrm{VaR}^{*}_t}{\mathrm{ES}_t-\mathrm{VaR}_t}\le1\ \text{ when }\ \mathrm{VaR}_t=\mathrm{VaR}^{*}_t,\ \mathrm{ES}_t\ge\mathrm{ES}^{*}_t,
-\label{eq:mk-ebt-es}
-\end{equation}
-where $(x)_{+}=\max\{x,0\}$. The expectation identity is Theorem~1 of the paper: it follows from the representation of the expected shortfall as the minimum over $z$ of $z+\mathbb E[(\ell-z)_{+}]/\alpha$, attained at the value at risk, so that $\mathbb E[(\ell_t-\mathrm{VaR}^{*}_t)_{+}\mid\mathcal F_{t-1}]=\alpha\,(\mathrm{ES}^{*}_t-\mathrm{VaR}^{*}_t)$. Under $H_0^{\mathrm{ES}}$ the statistic of \cref{eq:mk-ebt-es} has conditional mean at most one, so the product of \cref{eq:mk-ebt} with $e^{\mathrm{ES}}_s$ in place of $e_s$ is a non-negative supermartingale and Ville's inequality applies as for the value at risk \citep{proposed:wang2022}. The paper shows that, among the one-sided e-statistics, the exceedance statistic of \cref{eq:mk-ebt} and the statistic of \cref{eq:mk-ebt-es} are essentially the only useful ones. What the product runs is the value-at-risk statistic only: the comparison of this subsubsection and of the monitors manuscript uses the exceedance statistic of \cref{eq:mk-ebt} through the reference function \texttt{wwz\_log\_e} of \texttt{manuscripts/e-process-sequential-monitors/experiments/common.py}, and the expected shortfall statistic is not run, so no measured result in this report depends on \cref{eq:mk-ebt-es}.
+\begin{align}
+e^{\mathrm{ES}}_t&=\frac{(\ell_t-\mathrm{VaR}_t)_{+}}{\alpha\,(\mathrm{ES}_t-\mathrm{VaR}_t)},\label{eq:mk-ebt-es}\\
+\text{if }\mathrm{VaR}_t=\mathrm{VaR}^{*}_t:\quad
+\mathbb E\!\left[e^{\mathrm{ES}}_t\mid\mathcal F_{t-1}\right]&=\frac{\mathrm{ES}^{*}_t-\mathrm{VaR}^{*}_t}{\mathrm{ES}_t-\mathrm{VaR}_t},\qquad
+\text{and }\le1\ \text{when }\mathrm{ES}_t\ge\mathrm{ES}^{*}_t.\notag
+\end{align}
+where $(x)_{+}=\max\{x,0\}$. The identity holds under the condition that the value at risk forecast is exact, and the bound when the expected shortfall forecast is not below the true one; it is Theorem~1 of the paper and follows from the representation of the expected shortfall as the minimum over $z$ of $z+\mathbb E[(\ell-z)_{+}]/\alpha$, attained at the value at risk, so that $\mathbb E[(\ell_t-\mathrm{VaR}^{*}_t)_{+}\mid\mathcal F_{t-1}]=\alpha\,(\mathrm{ES}^{*}_t-\mathrm{VaR}^{*}_t)$. Under $H_0^{\mathrm{ES}}$ the statistic of \cref{eq:mk-ebt-es} has conditional mean at most one, so the product of \cref{eq:mk-ebt} with $e^{\mathrm{ES}}_s$ in place of $e_s$ is a non-negative supermartingale and Ville's inequality applies as for the value at risk \citep{proposed:wang2022}. The paper shows that, among the one-sided e-statistics, the exceedance statistic of \cref{eq:mk-ebt} and the statistic of \cref{eq:mk-ebt-es} are essentially the only useful ones. What the product runs is the value-at-risk statistic only: the comparison of this subsubsection and of the monitors manuscript uses the exceedance statistic of \cref{eq:mk-ebt} through the reference function \texttt{wwz\_log\_e} of \texttt{manuscripts/e-process-sequential-monitors/experiments/common.py}, and the expected shortfall statistic is not run, so no measured result in this report depends on \cref{eq:mk-ebt-es}.
 
 The guarantee has a cost that equation~\eqref{eq:mk-ebt-lambda} shows. The bet is positive only when $H_{t-1}>\alpha(t-1)$, that is only when the
 past exceedances outnumber those expected, and the first day bets nothing. While the betting process is learned the process does not move, and a

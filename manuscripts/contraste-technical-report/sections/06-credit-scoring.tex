@@ -281,8 +281,9 @@ J_b=\frac{|\mathcal{S}\cap\mathcal{S}_b|}{|\mathcal{S}\cup\mathcal{S}_b|},\qquad
 \label{eq:cs-jaccard}
 \end{equation}
 the Jaccard index between the rules selected on the full training slice and on the resample, with $J_b=1$ when both sets are
-empty. The acceptance criterion of the method is that the rule set is stable across 20 bootstraps and
-that the Jaccard index is reported; the index is a measurement, and Section~\ref{sec:results-credit-scoring} reads its value.
+empty. The acceptance criterion of the method is that the stability of the rule set across 20 bootstraps is measured and reported, as the mean and the minimum of
+the Jaccard index, and that the model is never tuned to raise it; the index is a measurement and not a pass mark. On these data the rule sets are unstable, a partial result: the mean index is \csFitTwPlJm{} on the Taiwan fit,
+\csFitSmPlJm{} on its small sample and \csFitGePlJm{} on the German fit (Table~\ref{tab:cs-checks}), and Section~\ref{sec:results-credit-scoring} reads these values.
 
 The assumptions are those of the penalised logistic regression, and one more: that interactions of at most two variables and
 thresholds learned by a tree capture the non-linearity that matters. The parameters are the tree depths (one and two), the
