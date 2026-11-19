@@ -56,7 +56,6 @@ def esc(text: str) -> str:
 SCRUB = [
     (re.compile(r"\s*\(backlog BL-\d+, K-\d+\)"), ""),
     (re.compile(r";? backlog BL-\d+ \(K-\d+\) adds the treatment"), "; a later computation adds the treatment"),
-    (re.compile(r"the other rules wait for backlog BL-\d+ \(K-\d+\)"), "the other rules carry no value in the committed documents"),
     (re.compile(r"the verdict block of the same document"), "the block of the same document that holds the outcome of the rule"),
     (re.compile(r"\b(?:Document verdict|Verdict of the document)\b"), "Outcome of the rule"),
     (re.compile(r"\bVerdict clause\b"), "Clause of the rule"),
@@ -183,8 +182,11 @@ def cite(key: str | None) -> str:
 # ----------------------------------------------------------------------------------------------------------------------
 # numbers
 
-def value_text(value, unit: str) -> str:
-    """One document value as a table cell: a word for a string, yes or no for a flag, else a number rounded half up."""
+def value_text(value, unit: str, extra: int = 0) -> str:
+    """One document value as a table cell: a word for a string, yes or no for a flag, else a number rounded half up.
+
+    ``extra`` adds digits to a decimal number: ``value_table`` asks for them where rounding would print a cell that is not the best
+    exactly as the best cell of its column."""
     if isinstance(value, bool):
         return "yes" if value else "no"
     if isinstance(value, str):
@@ -196,8 +198,8 @@ def value_text(value, unit: str) -> str:
         return "0.000"
     a = abs(x)
     if a < 0.001:
-        return sci(x, 1)
-    digits = 1 if a >= 100 else 2 if a >= 10 else 3 if a >= 0.01 else 4
+        return sci(x, 1 + extra)
+    digits = (1 if a >= 100 else 2 if a >= 10 else 3 if a >= 0.01 else 4) + extra
     out = fixed(x, digits)
     return out.replace("-", "$-$") if out.startswith("-") else out
 
@@ -255,6 +257,23 @@ def colspec(n_values: int) -> str:
             + ("".join([f">{{\\raggedleft\\arraybackslash}}p{{{share}\\textwidth}}"] * n_values)))
 
 
+def separating_digits(key, rows: list[dict], cells: dict, best_ids: set, unit: str) -> int:
+    """The digits to add to a column so that no cell that is not best prints as a best cell (a rounded tie hides the order).
+
+    A ranked cell equal to the best at full precision is itself best (ties are all in bold), so any plain ranked cell that prints like a
+    best one differs from it in a digit that the print cut (a row the document does not rank takes no part: it may equal a best cell); the column gets one digit more, up to six, until the two are told apart."""
+    held = {r["id"]: cells[(r["id"], key[0], key[1])]["value"] for r in rows if r["ranked"] and (r["id"], key[0], key[1]) in cells}
+    numeric = {rid: v for rid, v in held.items() if isinstance(v, (int, float)) and not isinstance(v, bool)}
+    best_values = {rid: v for rid, v in numeric.items() if rid in best_ids}
+    if not best_values:
+        return 0
+    for extra in range(0, 7):
+        shown_best = {value_text(v, unit, extra) for v in best_values.values()}
+        if not any(value_text(v, unit, extra) in shown_best for rid, v in numeric.items() if rid not in best_ids):
+            return extra
+    return 6
+
+
 def value_table(q: dict, plan: dict, label: str) -> tuple[str, list[str]]:
     """``(latex, notes)``: the longtable of one plan and the sentences that state the reason of its null cells."""
     metrics = {m["id"]: m for m in q["metrics"]}
@@ -268,11 +287,13 @@ def value_table(q: dict, plan: dict, label: str) -> tuple[str, list[str]]:
         m, c = key
         return column_label(run, c) if plan["by"] == "column" else txt(metrics[m]["label"])
 
+    extra = {key: separating_digits(key, rows, cells, best.get(key, set()), metrics[key[0]]["unit"]["en"]) for key in keys}
+
     def cell_text(r, key):
         c = cells.get((r["id"], key[0], key[1]))
         if c is None or c["value"] is None:
             return "--"
-        t = value_text(c["value"], metrics[key[0]]["unit"]["en"])
+        t = value_text(c["value"], metrics[key[0]]["unit"]["en"], extra[key])
         return f"\\textbf{{{t}}}" if r["id"] in best.get(key, set()) else t
 
     units = []

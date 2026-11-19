@@ -259,3 +259,126 @@ def test_every_table_with_a_dash_states_a_reason_in_its_note_and_the_methods_tab
     assert "\\citep{market:kupiec1995}" in rendered["methods-compared-q2.tex"]
     assert "\\citep{proposed:contraste-eprocess}" in rendered["methods-compared-q2.tex"]
     assert "\\citep{proposed:contraste-anchored}" in rendered["methods-compared-q4.tex"]
+
+
+# --- BL-113 T2 correction after the reader review (F17, F19, F20 and the readings of Q1, Q2, Q8, Q10, Q12) ---------------------------------------
+
+
+def _bold_texts_by_column(rendered):
+    """``{(qid, orient, colkey): (set of bold texts, [(rowkey, text)] of the non-bold numeric cells)}``."""
+    out = {}
+    for qid, rows, colkeys, orient in parse_tables(rendered):
+        for j, colkey in enumerate(colkeys):
+            bold, other = set(), []
+            for rowkey, values, _n in rows:
+                printed = values[j].strip()
+                number, _dec, is_bold = _numeric(printed)
+                if number is None:
+                    continue
+                key = printed[len("\\textbf{"):-1] if is_bold else printed
+                if is_bold:
+                    bold.add(key)
+                else:
+                    other.append((rowkey, key))
+            out[(qid, orient, colkey)] = (bold, other)
+        if orient == "transposed":
+            pass
+    return out
+
+
+def test_f17_a_rounded_tie_never_hides_the_order_no_plain_cell_prints_the_text_of_a_bold_one_in_its_column(rendered, doc):
+    # a normal table has the columns of the metric; a transposed one has a method per column and a column per row: compare along each ranking unit
+    seen = 0
+    unranked = {(q["id"], r["id"]) for q in doc["questions"] for r in q["rows"] if not r["ranked"]}
+    for qid, rows, colkeys, orient in parse_tables(rendered):
+        units = []
+        if orient == "normal":
+            for j in range(len(colkeys)):
+                units.append([(r[0], r[1][j]) for r in rows])
+        else:
+            for r in rows:
+                units.append([(colkeys[j], r[1][j]) for j in range(len(colkeys))])
+        for unit in units:
+            bold = {t.strip()[len("\\textbf{"):-1] for _k, t in unit if t.strip().startswith("\\textbf{")}
+            for k, t in unit:
+                t = t.strip()
+                if t.startswith("\\textbf{") or _numeric(t)[0] is None or (qid, k) in unranked:
+                    continue
+                assert t not in bold, (qid, k, t, "prints the same as a best cell but is not best")
+                seen += 1
+    assert seen > 500
+
+
+def test_f17_the_two_cells_that_printed_alike_in_the_review_now_print_apart(rendered):
+    q1 = rendered["methods-compared-q1.tex"]
+    calm = [ln for ln in q1.splitlines() if "bm-row ewma" in ln or "bm-row gjr-t" in ln]
+    assert calm, "the Q1 rows are in the table"
+    assert not re.search(r"4\.659(?!\d)", "\n".join(calm)), "the rounded tie of the FZ0 loss in the calm window must show a further digit"
+
+
+def test_adversarial_f17_two_values_that_round_alike_print_with_the_digits_that_separate_them(gen, doc):
+    plant = copy.deepcopy(doc)
+    q = plant["questions"][2]  # the desk question
+    rows = [r for r in q["rows"] if r["ranked"]]
+    metric = next(m for m in q["metrics"] if m["better"] == "higher")
+    col = metric["columns"][0]
+    vals = {}
+    for r in rows[:2]:
+        c = next(c for c in r["cells"] if c["metric"] == metric["id"] and c["column"] == col)
+        vals[r["id"]] = c
+    a, b = list(vals.values())
+    a["value"], b["value"] = 0.50004, 0.50001
+    for s in q["standings"]:
+        if s["metric"] == metric["id"] and s["column"] == col:
+            s["best"] = [list(vals)[0]]
+            s["tie"] = False
+    out = gen.render(plant)["methods-compared-q3.tex"]
+    texts = {rid: None for rid in vals}
+    for qid, prows, colkeys, orient in parse_tables({"q3": out}):
+        for rowkey, values, _n in prows:
+            for colkey, printed in zip(colkeys, values):
+                if orient == "normal" and rowkey in texts and colkey == f"{metric['id']}/{col}":
+                    texts[rowkey] = printed.strip()
+    first, second = texts.values()
+    assert first.startswith("\\textbf{") and not second.startswith("\\textbf{"), texts
+    assert first[len("\\textbf{"):-1] != second, texts
+
+
+def test_f19_no_generated_reading_runs_two_sentences_together(rendered):
+    for name, text in rendered.items():
+        flat = re.sub(r"\s+", " ", text)
+        assert not re.search(r"[a-z0-9)] A null cell is never ranked", flat), name
+    assert "the multiplier. A null cell is never ranked" in re.sub(r"\s+", " ", rendered["methods-compared-q10.tex"])
+
+
+def _reading_paragraphs() -> dict[int, str]:
+    """The ``What the tables show`` paragraph of each question, by number, from the section file (inside the methods-compared subsection)."""
+    text = SECTION.read_text(encoding="utf-8")
+    sub = text[text.index("\\label{sec:results-methods-compared}"):]
+    out = {}
+    for m in re.finditer(r"\\input\{tables/methods-compared-q(\d+)\}\s*\n\n\\paragraph\{What the tables show\.\}(.*?)(?=\n\n)", sub, re.S):
+        out[int(m.group(1))] = m.group(2)
+    return out
+
+
+def test_f20_every_value_table_of_a_question_is_read_in_its_what_the_tables_show_paragraph(rendered):
+    paras = _reading_paragraphs()
+    assert sorted(paras) == list(range(1, 13))
+    for i, para in paras.items():
+        labels = re.findall(r"\\label\{(tab:bm-q" + str(i) + r"-\d+)\}", rendered[f"methods-compared-q{i}.tex"])
+        refs = set()
+        for m in re.finditer(r"\\[Cc]ref\{([^}]*)\}", para):
+            refs.update(m.group(1).split(","))
+        missing = [lab for lab in labels if lab not in refs]
+        assert not missing, (i, missing)
+
+
+def test_the_readings_state_what_the_review_found_wrong():
+    paras = _reading_paragraphs()
+    assert "wrapped rule or to the rule it wraps" not in paras[1] and "only those rules carry the two p-values" not in paras[1]
+    assert re.search(r"p-values? .*evidence", paras[1]) and "never ranked" in paras[1]
+    assert "no such claim is made" not in paras[2] and "tab:mk-ebacktest" in paras[2] and "sec:m39" in paras[2]
+    assert "not in the comparison" not in paras[2]
+    assert "is not a method of the ladder" not in paras[8]
+    assert "mean signed bias" in paras[12] and "mean absolute bias" in paras[12]
+    assert "multiplier" in paras[10] and "tab:bm-q10-2" in paras[10]

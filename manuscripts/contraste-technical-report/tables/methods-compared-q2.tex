@@ -22,23 +22,25 @@ Rate e-process & Proposed in this work & -- & \ref{sec:bs15} \\
 }
 
 {\footnotesize\setlength{\tabcolsep}{3pt}
-% bm-table Q2 normal cols=gen_size/null
-\begin{longtable}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}}
-\caption{Monitoring calibration and back-tests over time: Share of streams flagged at any day, no change (size) (share of streams; lower is better), for each method, on the run Generator streams, case document. The best value of a column by the declared rule is in bold, ties all in bold; a dash marks a cell without a value, and the notes below the table state why.}\label{tab:bm-q2-1}\\
-\toprule Method & No change (size) \\ \midrule \endfirsthead
-\toprule Method & No change (size) \\ \midrule \endhead
-\multicolumn{2}{l}{\emph{Long-established}} \\
-Christoffersen independence test on the trailing 250 days & 0.077 \\ % bm-row independence_trailing
-Kupiec POF on all days so far & 0.338 \\ % bm-row kupiec_cumulative
-Kupiec POF on the trailing 250 days & 0.665 \\ % bm-row kupiec_trailing
-Basel traffic light (5 exceptions) & 0.587 \\ % bm-row traffic_light
-\multicolumn{2}{l}{\emph{Proposed in this work}} \\
-Battery e-process & 0.013 \\ % bm-row e_battery
-Clustering e-process & \textbf{0.0045} \\ % bm-row e_cluster
-Rate e-process & 0.019 \\ % bm-row e_rate
+% bm-table Q2 normal cols=gen_size/null;gen_median_null/null
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}}
+\caption{Monitoring calibration and back-tests over time: Share of streams flagged at any day, no change (size) (share of streams; lower is better); Median first-flag day, no change (a false alarm: context, not ranked) (days; context, not ranked), for each method, on the run Generator streams, case document. The best value of a column by the declared rule is in bold, ties all in bold; a dash marks a cell without a value, and the notes below the table state why.}\label{tab:bm-q2-1}\\
+\toprule Method & Share of streams flagged at any day, no change (size) & Median first-flag day, no change (a false alarm: context, not ranked) \\ \midrule \endfirsthead
+\toprule Method & Share of streams flagged at any day, no change (size) & Median first-flag day, no change (a false alarm: context, not ranked) \\ \midrule \endhead
+\multicolumn{3}{l}{\emph{Long-established}} \\
+Christoffersen independence test on the trailing 250 days & 0.077 & -- \\ % bm-row independence_trailing
+Kupiec POF on all days so far & 0.338 & -- \\ % bm-row kupiec_cumulative
+Kupiec POF on the trailing 250 days & 0.665 & 704 \\ % bm-row kupiec_trailing
+Basel traffic light (5 exceptions) & 0.587 & 840 \\ % bm-row traffic_light
+\multicolumn{3}{l}{\emph{Proposed in this work}} \\
+Battery e-process & 0.013 & -- \\ % bm-row e_battery
+Clustering e-process & \textbf{0.0045} & -- \\ % bm-row e_cluster
+Rate e-process & 0.019 & -- \\ % bm-row e_rate
 \bottomrule
 \end{longtable}
 }
+
+A dash in Table~\ref{tab:bm-q2-1} is a cell the product does not compute, for the stated reason: the median stream is never flagged within the horizon (Christoffersen independence test on the trailing 250 days, Kupiec POF on all days so far, Battery e-process, Clustering e-process and Rate e-process).
 
 {\footnotesize\setlength{\tabcolsep}{3pt}
 % bm-table Q2 normal cols=gen_power/rate-x2;gen_power/rate-x3;gen_power/rate-x4;gen_power/cluster-0.1;gen_power/cluster-0.2;gen_power/cluster-0.4
@@ -47,33 +49,33 @@ Rate e-process & 0.019 \\ % bm-row e_rate
 \toprule Method & Hit rate x2 & Hit rate x3 & Hit rate x4 & Clustering 0.1 & Clustering 0.2 & Clustering 0.4 \\ \midrule \endfirsthead
 \toprule Method & Hit rate x2 & Hit rate x3 & Hit rate x4 & Clustering 0.1 & Clustering 0.2 & Clustering 0.4 \\ \midrule \endhead
 \multicolumn{7}{l}{\emph{Long-established}} \\
-Christoffersen independence test on the trailing 250 days & 0.156 & 0.152 & 0.170 & 0.571 & 0.780 & 0.921 \\ % bm-row independence_trailing
-Kupiec POF on all days so far & 0.879 & 0.999 & \textbf{1.000} & 0.395 & 0.495 & 0.702 \\ % bm-row kupiec_cumulative
-Kupiec POF on the trailing 250 days & 0.869 & 0.998 & \textbf{1.000} & \textbf{0.755} & \textbf{0.831} & \textbf{0.951} \\ % bm-row kupiec_trailing
-Basel traffic light (5 exceptions) & \textbf{0.992} & \textbf{1.000} & \textbf{1.000} & 0.612 & 0.615 & 0.668 \\ % bm-row traffic_light
+Christoffersen independence test on the trailing 250 days & 0.156 & 0.152 & 0.1695 & 0.571 & 0.780 & 0.921 \\ % bm-row independence_trailing
+Kupiec POF on all days so far & 0.879 & 0.999 & \textbf{1.0000} & 0.395 & 0.495 & 0.702 \\ % bm-row kupiec_cumulative
+Kupiec POF on the trailing 250 days & 0.869 & 0.998 & \textbf{1.0000} & \textbf{0.755} & \textbf{0.831} & \textbf{0.951} \\ % bm-row kupiec_trailing
+Basel traffic light (5 exceptions) & \textbf{0.992} & \textbf{1.000} & \textbf{1.0000} & 0.612 & 0.615 & 0.668 \\ % bm-row traffic_light
 \multicolumn{7}{l}{\emph{Proposed in this work}} \\
-Battery e-process & 0.456 & 0.974 & 0.999 & 0.231 & 0.509 & 0.796 \\ % bm-row e_battery
-Clustering e-process & 0.028 & 0.074 & 0.190 & 0.253 & 0.538 & 0.781 \\ % bm-row e_cluster
-Rate e-process & 0.539 & 0.981 & 1.000 & 0.047 & 0.072 & 0.182 \\ % bm-row e_rate
+Battery e-process & 0.456 & 0.974 & 0.9990 & 0.231 & 0.509 & 0.796 \\ % bm-row e_battery
+Clustering e-process & 0.028 & 0.074 & 0.1900 & 0.253 & 0.538 & 0.781 \\ % bm-row e_cluster
+Rate e-process & 0.539 & 0.981 & 0.9995 & 0.047 & 0.072 & 0.182 \\ % bm-row e_rate
 \bottomrule
 \end{longtable}
 }
 
 {\footnotesize\setlength{\tabcolsep}{3pt}
-% bm-table Q2 normal cols=gen_median/null;gen_median/rate-x2;gen_median/rate-x3;gen_median/rate-x4;gen_median/cluster-0.1;gen_median/cluster-0.2;gen_median/cluster-0.4
-\begin{longtable}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}}
-\caption{Monitoring calibration and back-tests over time: Median first-flag day (days; lower is better), for each method, on the run Generator streams, case document. The best value of a column by the declared rule is in bold, ties all in bold; a dash marks a cell without a value, and the notes below the table state why.}\label{tab:bm-q2-3}\\
-\toprule Method & No change (size) & Hit rate x2 & Hit rate x3 & Hit rate x4 & Clustering 0.1 & Clustering 0.2 & Clustering 0.4 \\ \midrule \endfirsthead
-\toprule Method & No change (size) & Hit rate x2 & Hit rate x3 & Hit rate x4 & Clustering 0.1 & Clustering 0.2 & Clustering 0.4 \\ \midrule \endhead
-\multicolumn{8}{l}{\emph{Long-established}} \\
-Christoffersen independence test on the trailing 250 days & -- & -- & -- & -- & 844.5 & 484.5 & 297 \\ % bm-row independence_trailing
-Kupiec POF on all days so far & -- & 292 & \textbf{114} & \textbf{68} & -- & -- & \textbf{229.5} \\ % bm-row kupiec_cumulative
-Kupiec POF on the trailing 250 days & \textbf{704} & 412.5 & 250 & 250 & \textbf{611} & \textbf{481} & 365 \\ % bm-row kupiec_trailing
-Basel traffic light (5 exceptions) & 840 & \textbf{250} & 250 & 250 & 763 & 742 & 670.5 \\ % bm-row traffic_light
-\multicolumn{8}{l}{\emph{Proposed in this work}} \\
-Battery e-process & -- & -- & 299 & 156 & -- & 984 & 529 \\ % bm-row e_battery
-Clustering e-process & -- & -- & -- & -- & -- & 937 & 530 \\ % bm-row e_cluster
-Rate e-process & -- & 924 & 244 & 129 & -- & -- & -- \\ % bm-row e_rate
+% bm-table Q2 normal cols=gen_median/rate-x2;gen_median/rate-x3;gen_median/rate-x4;gen_median/cluster-0.1;gen_median/cluster-0.2;gen_median/cluster-0.4
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedleft\arraybackslash}p{0.105\textwidth}>{\raggedleft\arraybackslash}p{0.105\textwidth}>{\raggedleft\arraybackslash}p{0.105\textwidth}>{\raggedleft\arraybackslash}p{0.105\textwidth}>{\raggedleft\arraybackslash}p{0.105\textwidth}>{\raggedleft\arraybackslash}p{0.105\textwidth}}
+\caption{Monitoring calibration and back-tests over time: Median first-flag day, planted change (delay) (days; lower is better), for each method, on the run Generator streams, case document. The best value of a column by the declared rule is in bold, ties all in bold; a dash marks a cell without a value, and the notes below the table state why.}\label{tab:bm-q2-3}\\
+\toprule Method & Hit rate x2 & Hit rate x3 & Hit rate x4 & Clustering 0.1 & Clustering 0.2 & Clustering 0.4 \\ \midrule \endfirsthead
+\toprule Method & Hit rate x2 & Hit rate x3 & Hit rate x4 & Clustering 0.1 & Clustering 0.2 & Clustering 0.4 \\ \midrule \endhead
+\multicolumn{7}{l}{\emph{Long-established}} \\
+Christoffersen independence test on the trailing 250 days & -- & -- & -- & 844.5 & 484.5 & 297 \\ % bm-row independence_trailing
+Kupiec POF on all days so far & 292 & \textbf{114} & \textbf{68} & -- & -- & \textbf{229.5} \\ % bm-row kupiec_cumulative
+Kupiec POF on the trailing 250 days & 412.5 & 250 & 250 & \textbf{611} & \textbf{481} & 365 \\ % bm-row kupiec_trailing
+Basel traffic light (5 exceptions) & \textbf{250} & 250 & 250 & 763 & 742 & 670.5 \\ % bm-row traffic_light
+\multicolumn{7}{l}{\emph{Proposed in this work}} \\
+Battery e-process & -- & 299 & 156 & -- & 984 & 529 \\ % bm-row e_battery
+Clustering e-process & -- & -- & -- & -- & 937 & 530 \\ % bm-row e_cluster
+Rate e-process & 924 & 244 & 129 & -- & -- & -- \\ % bm-row e_rate
 \bottomrule
 \end{longtable}
 }
@@ -81,23 +83,25 @@ Rate e-process & -- & 924 & 244 & 129 & -- & -- & -- \\ % bm-row e_rate
 A dash in Table~\ref{tab:bm-q2-3} is a cell the product does not compute, for the stated reason: the median stream is never flagged within the horizon (Christoffersen independence test on the trailing 250 days, Kupiec POF on all days so far, Battery e-process, Clustering e-process and Rate e-process).
 
 {\footnotesize\setlength{\tabcolsep}{3pt}
-% bm-table Q2 normal cols=man_size/null
-\begin{longtable}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}}
-\caption{Monitoring calibration and back-tests over time: Share of streams flagged at any day, no change (size) (share of streams; lower is better), for each method, on the run Generator streams, manuscript run. The best value of a column by the declared rule is in bold, ties all in bold; a dash marks a cell without a value, and the notes below the table state why.}\label{tab:bm-q2-4}\\
-\toprule Method & No change (size) \\ \midrule \endfirsthead
-\toprule Method & No change (size) \\ \midrule \endhead
-\multicolumn{2}{l}{\emph{Long-established}} \\
-Christoffersen independence test on the trailing 250 days & 0.079 \\ % bm-row independence_trailing
-Kupiec POF on all days so far & 0.319 \\ % bm-row kupiec_cumulative
-Kupiec POF on the trailing 250 days & 0.657 \\ % bm-row kupiec_trailing
-Basel traffic light (5 exceptions) & 0.588 \\ % bm-row traffic_light
-\multicolumn{2}{l}{\emph{Proposed in this work}} \\
-Battery e-process & 0.012 \\ % bm-row e_battery
-Clustering e-process & \textbf{0.0050} \\ % bm-row e_cluster
-Rate e-process & 0.024 \\ % bm-row e_rate
+% bm-table Q2 normal cols=man_size/null;man_median_null/null
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}}
+\caption{Monitoring calibration and back-tests over time: Share of streams flagged at any day, no change (size) (share of streams; lower is better); Median first-flag day, no change (a false alarm: context, not ranked) (days; context, not ranked), for each method, on the run Generator streams, manuscript run. The best value of a column by the declared rule is in bold, ties all in bold; a dash marks a cell without a value, and the notes below the table state why.}\label{tab:bm-q2-4}\\
+\toprule Method & Share of streams flagged at any day, no change (size) & Median first-flag day, no change (a false alarm: context, not ranked) \\ \midrule \endfirsthead
+\toprule Method & Share of streams flagged at any day, no change (size) & Median first-flag day, no change (a false alarm: context, not ranked) \\ \midrule \endhead
+\multicolumn{3}{l}{\emph{Long-established}} \\
+Christoffersen independence test on the trailing 250 days & 0.079 & -- \\ % bm-row independence_trailing
+Kupiec POF on all days so far & 0.319 & -- \\ % bm-row kupiec_cumulative
+Kupiec POF on the trailing 250 days & 0.657 & 718.5 \\ % bm-row kupiec_trailing
+Basel traffic light (5 exceptions) & 0.588 & 812 \\ % bm-row traffic_light
+\multicolumn{3}{l}{\emph{Proposed in this work}} \\
+Battery e-process & 0.012 & -- \\ % bm-row e_battery
+Clustering e-process & \textbf{0.0050} & -- \\ % bm-row e_cluster
+Rate e-process & 0.024 & -- \\ % bm-row e_rate
 \bottomrule
 \end{longtable}
 }
+
+A dash in Table~\ref{tab:bm-q2-4} is a cell the product does not compute, for the stated reason: the median stream is never flagged within the horizon (Christoffersen independence test on the trailing 250 days, Kupiec POF on all days so far, Battery e-process, Clustering e-process and Rate e-process).
 
 {\footnotesize\setlength{\tabcolsep}{3pt}
 % bm-table Q2 normal cols=man_power/rate-x2;man_power/rate-x3;man_power/rate-x4;man_power/cluster-0.1;man_power/cluster-0.2;man_power/cluster-0.4
@@ -119,20 +123,20 @@ Rate e-process & 0.563 & 0.975 & \textbf{1.000} & 0.049 & 0.069 & 0.186 \\ % bm-
 }
 
 {\footnotesize\setlength{\tabcolsep}{3pt}
-% bm-table Q2 normal cols=man_median/null;man_median/rate-x2;man_median/rate-x3;man_median/rate-x4;man_median/cluster-0.1;man_median/cluster-0.2;man_median/cluster-0.4
-\begin{longtable}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}}
-\caption{Monitoring calibration and back-tests over time: Median first-flag day (days; lower is better), for each method, on the run Generator streams, manuscript run. The best value of a column by the declared rule is in bold, ties all in bold; a dash marks a cell without a value, and the notes below the table state why.}\label{tab:bm-q2-6}\\
-\toprule Method & No change (size) & Hit rate x2 & Hit rate x3 & Hit rate x4 & Clustering 0.1 & Clustering 0.2 & Clustering 0.4 \\ \midrule \endfirsthead
-\toprule Method & No change (size) & Hit rate x2 & Hit rate x3 & Hit rate x4 & Clustering 0.1 & Clustering 0.2 & Clustering 0.4 \\ \midrule \endhead
-\multicolumn{8}{l}{\emph{Long-established}} \\
-Christoffersen independence test on the trailing 250 days & -- & -- & -- & -- & 816 & \textbf{479.5} & 303 \\ % bm-row independence_trailing
-Kupiec POF on all days so far & -- & 292 & \textbf{117} & \textbf{68} & -- & 939 & \textbf{236} \\ % bm-row kupiec_cumulative
-Kupiec POF on the trailing 250 days & \textbf{718.5} & 400 & 250 & 250 & \textbf{583} & 510.5 & 357 \\ % bm-row kupiec_trailing
-Basel traffic light (5 exceptions) & 812 & \textbf{250} & 250 & 250 & 729 & 747.5 & 621.5 \\ % bm-row traffic_light
-\multicolumn{8}{l}{\emph{Proposed in this work}} \\
-Battery e-process & -- & -- & 319.5 & 157.5 & -- & 956 & 501.5 \\ % bm-row e_battery
-Clustering e-process & -- & -- & -- & -- & -- & 915.5 & 502 \\ % bm-row e_cluster
-Rate e-process & -- & 862.5 & 259 & 130.5 & -- & -- & -- \\ % bm-row e_rate
+% bm-table Q2 normal cols=man_median/rate-x2;man_median/rate-x3;man_median/rate-x4;man_median/cluster-0.1;man_median/cluster-0.2;man_median/cluster-0.4
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedleft\arraybackslash}p{0.105\textwidth}>{\raggedleft\arraybackslash}p{0.105\textwidth}>{\raggedleft\arraybackslash}p{0.105\textwidth}>{\raggedleft\arraybackslash}p{0.105\textwidth}>{\raggedleft\arraybackslash}p{0.105\textwidth}>{\raggedleft\arraybackslash}p{0.105\textwidth}}
+\caption{Monitoring calibration and back-tests over time: Median first-flag day, planted change (delay) (days; lower is better), for each method, on the run Generator streams, manuscript run. The best value of a column by the declared rule is in bold, ties all in bold; a dash marks a cell without a value, and the notes below the table state why.}\label{tab:bm-q2-6}\\
+\toprule Method & Hit rate x2 & Hit rate x3 & Hit rate x4 & Clustering 0.1 & Clustering 0.2 & Clustering 0.4 \\ \midrule \endfirsthead
+\toprule Method & Hit rate x2 & Hit rate x3 & Hit rate x4 & Clustering 0.1 & Clustering 0.2 & Clustering 0.4 \\ \midrule \endhead
+\multicolumn{7}{l}{\emph{Long-established}} \\
+Christoffersen independence test on the trailing 250 days & -- & -- & -- & 816 & \textbf{479.5} & 303 \\ % bm-row independence_trailing
+Kupiec POF on all days so far & 292 & \textbf{117} & \textbf{68} & -- & 939 & \textbf{236} \\ % bm-row kupiec_cumulative
+Kupiec POF on the trailing 250 days & 400 & 250 & 250 & \textbf{583} & 510.5 & 357 \\ % bm-row kupiec_trailing
+Basel traffic light (5 exceptions) & \textbf{250} & 250 & 250 & 729 & 747.5 & 621.5 \\ % bm-row traffic_light
+\multicolumn{7}{l}{\emph{Proposed in this work}} \\
+Battery e-process & -- & 319.5 & 157.5 & -- & 956 & 501.5 \\ % bm-row e_battery
+Clustering e-process & -- & -- & -- & -- & 915.5 & 502 \\ % bm-row e_cluster
+Rate e-process & 862.5 & 259 & 130.5 & -- & -- & -- \\ % bm-row e_rate
 \bottomrule
 \end{longtable}
 }
@@ -209,7 +213,7 @@ Vintage 2020 & green \\ % bm-row c03_light/2020
 \end{longtable}
 }
 
-The document reads the tables of this question by the declared rule of each metric. Share of streams flagged at any day, no change (size) (lower is better): best in Clustering e-process 1 of 1. Share of streams flagged at any day, planted change (power) (higher is better): best in Kupiec POF on the trailing 250 days 4 of 6, Basel traffic light (5 exceptions) 3 of 6, Kupiec POF on all days so far 1 of 6; ties count for each method tied. Median first-flag day (lower is better): best in Kupiec POF on all days so far 3 of 7, Kupiec POF on the trailing 250 days 3 of 7, Basel traffic light (5 exceptions) 1 of 7. Share of streams flagged at any day, no change (size) (lower is better): best in Clustering e-process 1 of 1. Share of streams flagged at any day, planted change (power) (higher is better): best in Kupiec POF on the trailing 250 days 4 of 6, Basel traffic light (5 exceptions) 3 of 6, Kupiec POF on all days so far 2 of 6; ties count for each method tied. Median first-flag day (lower is better): best in Kupiec POF on all days so far 3 of 7, Kupiec POF on the trailing 250 days 2 of 7, Christoffersen independence test on the trailing 250 days 1 of 7. Battery e-process, proposed in this work, is best in 1 of 22 scored cells and not best in 21. Clustering e-process, proposed in this work, is best in 2 of 18 scored cells and not best in 16. Rate e-process, proposed in this work, is best in 1 of 20 scored cells and not best in 19. A null cell is never ranked; each states why it is null.
+The document reads the tables of this question by the declared rule of each metric. Share of streams flagged at any day, no change (size) (lower is better): best in Clustering e-process 1 of 1. Share of streams flagged at any day, planted change (power) (higher is better): best in Kupiec POF on the trailing 250 days 4 of 6, Basel traffic light (5 exceptions) 3 of 6, Kupiec POF on all days so far 1 of 6; ties count for each method tied. Median first-flag day, planted change (delay) (lower is better): best in Kupiec POF on all days so far 3 of 6, Kupiec POF on the trailing 250 days 2 of 6, Basel traffic light (5 exceptions) 1 of 6. Share of streams flagged at any day, no change (size) (lower is better): best in Clustering e-process 1 of 1. Share of streams flagged at any day, planted change (power) (higher is better): best in Kupiec POF on the trailing 250 days 4 of 6, Basel traffic light (5 exceptions) 3 of 6, Kupiec POF on all days so far 2 of 6; ties count for each method tied. Median first-flag day, planted change (delay) (lower is better): best in Kupiec POF on all days so far 3 of 6, Christoffersen independence test on the trailing 250 days 1 of 6, Kupiec POF on the trailing 250 days 1 of 6. Battery e-process, proposed in this work, is best in 1 of 22 scored cells and not best in 21. Clustering e-process, proposed in this work, is best in 2 of 18 scored cells and not best in 16. Rate e-process, proposed in this work, is best in 1 of 20 scored cells and not best in 19. A null cell is never ranked; each states why it is null.
 
 The document leaves out of this question E-backtest of Wang, Wang and Ziegel (2022)~\citep{proposed:wang2022}: The published e-backtest is scored only in the manuscript result files and the method ladder has no row for it yet, so it has no standing in this comparison and its cells are not shown.
 

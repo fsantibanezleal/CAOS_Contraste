@@ -307,6 +307,24 @@ def _cite(corpus: Corpus, rel: str, pointer: str) -> dict[str, str]:
     return {"path": rel, "pointer": pointer, "sha256": corpus.load(rel)[1]}
 
 
+#: The notes a case document gives for a test it does not evaluate, in Spanish (an unknown note stops the build: no reason is guessed).
+NOTE_ES = {"not evaluated: no exceedance": "no evaluado: sin excesos"}
+
+
+def _note_reason(doc: Any, pointer: str, metric: dict[str, Any]) -> dict[str, str] | None:
+    """The reason a null p-value cell gives: the ``notes`` the case document itself writes beside it (metrics with ``note_reason`` only)."""
+    if not metric.get("note_reason"):
+        return None
+    parent = pointer_get(doc, pointer.rsplit("/", 1)[0])
+    note = (parent.get("notes") or "").strip() if isinstance(parent, dict) else ""
+    if not note:
+        return None
+    if note not in NOTE_ES:
+        raise BenchmarkError(f"the case document's note {note!r} has no Spanish text in NOTE_ES: the reason is not guessed")
+    return T(f"the case document gives no p-value for this model in this window and states: {note}",
+             f"el documento del caso no trae un valor p para este modelo en esta ventana e indica: {NOTE_ES[note]}")
+
+
 def build_cells(q: dict[str, Any], corpus: Corpus) -> dict[str, list[dict[str, Any]]]:
     """``{row id: cells}``: every cell copied from its cited path, or null with its reason."""
     runs = {r["id"]: r for r in q["runs"]}
@@ -336,8 +354,8 @@ def build_cells(q: dict[str, Any], corpus: Corpus) -> dict[str, list[dict[str, A
                     cell["value"] = value
                     cell["cited"] = _cite(corpus, rel, pointer)
                     if value is None:
-                        cell["null_reason"] = row.get("null_reasons", {}).get(metric["id"]) or metric.get("null_reason") or \
-                            T("the committed document holds no value here", "el documento versionado no trae un valor aquí")
+                        cell["null_reason"] = (row.get("null_reasons", {}).get(metric["id"]) or _note_reason(doc, pointer, metric) or metric.get("null_reason")
+                                               or T("the committed document holds no value here", "el documento versionado no trae un valor aquí"))
                 cells.append(cell)
         out[row["id"]] = cells
     return out
@@ -390,6 +408,12 @@ def standings_of(metrics: list[dict[str, Any]], rows: list[dict[str, Any]]) -> l
     return out
 
 
+def _full_stop(text: str) -> str:
+    """The text ending in a full stop (a note of a row is a clause with none; the reading joins sentences)."""
+    t = text.strip()
+    return t if t.endswith((".", "?", "!")) else t + "."
+
+
 def reading_of(metrics: list[dict[str, Any]], rows: list[dict[str, Any]], standings: list[dict[str, Any]]) -> dict[str, str]:
     """The reading in words, generated from the standings: the method that does best on each metric, how often, and where a proposed method stands."""
     name = {r["id"]: r["method"] for r in rows}
@@ -420,8 +444,8 @@ def reading_of(metrics: list[dict[str, Any]], rows: list[dict[str, Any]], standi
         if r["standing"] != "proposed":
             continue
         if not r["ranked"]:
-            en.append(f"{r['method']['en']}, proposed in this work, is not ranked: " + (r["note"]["en"] if r["note"] else "it has no score on these metrics."))
-            es.append(f"{r['method']['es']}, propuesto en este trabajo, no se clasifica: " + (r["note"]["es"] if r["note"] else "no tiene puntaje en estas métricas."))
+            en.append(f"{r['method']['en']}, proposed in this work, is not ranked: " + _full_stop(r["note"]["en"] if r["note"] else "it has no score on these metrics."))
+            es.append(f"{r['method']['es']}, propuesto en este trabajo, no se clasifica: " + _full_stop(r["note"]["es"] if r["note"] else "no tiene puntaje en estas métricas."))
             continue
         scored = [s for s in standings if any(c["metric"] == s["metric"] and c["column"] == s["column"] and c["value"] is not None for c in r["cells"])]
         won = [s for s in scored if r["id"] in s["best"]]
@@ -549,8 +573,9 @@ MS_BS10 = "manuscripts/measured-corrections-of-validation-tests"
 K_BACKLOG = "BL-119"
 
 
-def _m(mid: str, label: dict[str, str], run: str, better: str, unit: dict[str, str], columns: list[str], file: str, null_reason: dict[str, str] | None = None) -> dict[str, Any]:
-    return {"id": mid, "label": label, "run": run, "better": better, "unit": unit, "columns": columns, "file": file, "null_reason": null_reason}
+def _m(mid: str, label: dict[str, str], run: str, better: str, unit: dict[str, str], columns: list[str], file: str, null_reason: dict[str, str] | None = None,
+       note_reason: bool = False) -> dict[str, Any]:
+    return {"id": mid, "label": label, "run": run, "better": better, "unit": unit, "columns": columns, "file": file, "null_reason": null_reason, "note_reason": note_reason}
 
 
 def _row(rid: str, method: dict[str, str], ladder: str | None, cells: dict[str, Any], source: str | None = None, ranked: bool = True,
@@ -570,12 +595,14 @@ def _c11(mid: str, field: str, level: str = "0.01") -> str:
     return f"outputs.models[model_id={mid}].by_level[alpha={level}].{field}"
 
 
+def _c11t(test: str, mid: str, level: str = "0.01") -> str:
+    return f"tests[test_id={test},model_id={mid},segment=alpha={level}].p_value"
+
+
 def _c11w(mid: str, side: str, field: str, level: str = "0.01") -> str:
     return f"outputs.conformal.rows[model_id={mid},alpha={level}].{side}.{field}"
 
 
-_K1 = Null(T(f"not computed yet: only the three models wrapped by adaptive conformal recalibration carry a Kupiec and a conditional-coverage p-value; the other rules wait for backlog {K_BACKLOG} (K-1)",
-              f"aún no se calcula: solo los tres modelos envueltos por la recalibración conformal adaptativa traen un valor p de Kupiec y de cobertura condicional; las demás reglas esperan la fila {K_BACKLOG} del backlog (K-1)"))
 _FZ0_NULL = T("the rule forecasts no expected shortfall, so its FZ0 loss is undefined", "la regla no pronostica la pérdida esperada de cola, así que su pérdida FZ0 no está definida")
 
 # (model id, English, Spanish, ladder id, source key)
@@ -604,14 +631,13 @@ _Q1_WRAPPED = [("hs-250", "Historical simulation, 250 days", "Simulación histó
 
 
 def _q1_rows() -> list[dict[str, Any]]:
-    wrapped_ids = {m for m, _, _ in _Q1_WRAPPED}
     rows = []
     for mid, en, es, ladder, src in _Q1_RULES:
         cells: dict[str, Any] = {
             "fz0_1": _c11(mid, "fz0_mean"), "fz0_25": _c11(mid, "fz0_mean", "0.025"), "exceed_1": _c11(mid, "n_exceedances"),
             "zone_1": _c11(mid, "traffic_light.final_zone"),
-            "kupiec_1": _c11w(mid, "unwrapped", "kupiec_p") if mid in wrapped_ids else _K1,
-            "cc_1": _c11w(mid, "unwrapped", "conditional_coverage_p") if mid in wrapped_ids else _K1,
+            "kupiec_1": _c11t("market.kupiec_pof", mid),
+            "cc_1": _c11t("market.christoffersen_conditional_coverage", mid),
         }
         rows.append(_row(mid, T(en, es), ladder, cells, src))
     for mid, en, es in _Q1_WRAPPED:
@@ -638,8 +664,8 @@ Q1 = {
         _m("exceed_1", T("Exceedances, 1% level", "Excesos, nivel 1%"), "rolling", "nearer-metric:expected_1", T("days", "días"), [c["id"] for c in Q1_WINDOWS], C11),
         _m("expected_1", T("Expected exceedances, 1% level", "Excesos esperados, nivel 1%"), "rolling", "none", T("days", "días"), [c["id"] for c in Q1_WINDOWS], C11),
         _m("zone_1", T("Basel zone of the last 250 days, 1% level", "Zona de Basilea de los últimos 250 días, nivel 1%"), "rolling", "order:green,amber,red", T("zone", "zona"), [c["id"] for c in Q1_WINDOWS], C11),
-        _m("kupiec_1", T("Kupiec p-value, 1% level", "Valor p de Kupiec, nivel 1%"), "rolling", "higher", T("p-value", "valor p"), [c["id"] for c in Q1_WINDOWS], C11),
-        _m("cc_1", T("Conditional-coverage p-value, 1% level", "Valor p de cobertura condicional, nivel 1%"), "rolling", "higher", T("p-value", "valor p"), [c["id"] for c in Q1_WINDOWS], C11),
+        _m("kupiec_1", T("Kupiec p-value, 1% level", "Valor p de Kupiec, nivel 1%"), "rolling", "none", T("p-value", "valor p"), [c["id"] for c in Q1_WINDOWS], C11, None, True),
+        _m("cc_1", T("Conditional-coverage p-value, 1% level", "Valor p de cobertura condicional, nivel 1%"), "rolling", "none", T("p-value", "valor p"), [c["id"] for c in Q1_WINDOWS], C11, None, True),
     ],
     "rows": _q1_rows(),
     "absent": [],
@@ -674,7 +700,7 @@ def _q2_rows() -> list[dict[str, Any]]:
     rows = []
     for key, en, es, ladder, src in _Q2_RULES:
         cells: dict[str, Any] = {}
-        for field, suffix in (("ever", "size"), ("ever", "power"), ("median_day", "median")):
+        for field, suffix in (("ever", "size"), ("ever", "power"), ("median_day", "median"), ("median_day", "median_null")):
             cells[f"gen_{suffix}"] = f"outputs.sequential.hits.scenarios[id={{v}}].{key}.{field}"
             cells[f"man_{suffix}"] = f"scenarios['{{v}}'].methods.{key}.{field}"
         if key in ("e_rate", "kupiec_cumulative", "kupiec_trailing", "traffic_light"):
@@ -720,10 +746,12 @@ Q2 = {
     "metrics": [
         _m("gen_size", T("Share of streams flagged at any day, no change (size)", "Proporción de series señaladas en algún día, sin cambio (tamaño)"), "generator", "lower", T("share of streams", "proporción de series"), ["null"], Q2_GEN),
         _m("gen_power", T("Share of streams flagged at any day, planted change (power)", "Proporción de series señaladas en algún día, cambio plantado (potencia)"), "generator", "higher", T("share of streams", "proporción de series"), Q2_POWER, Q2_GEN),
-        _m("gen_median", T("Median first-flag day", "Mediana del primer día de alerta"), "generator", "lower", T("days", "días"), [c["id"] for c in Q2_COLS], Q2_GEN, _NEVER),
+        _m("gen_median", T("Median first-flag day, planted change (delay)", "Mediana del primer día de alerta, cambio plantado (retraso)"), "generator", "lower", T("days", "días"), Q2_POWER, Q2_GEN, _NEVER),
+        _m("gen_median_null", T("Median first-flag day, no change (a false alarm: context, not ranked)", "Mediana del primer día de alerta, sin cambio (una falsa alarma: contexto, sin clasificar)"), "generator", "none", T("days", "días"), ["null"], Q2_GEN, _NEVER),
         _m("man_size", T("Share of streams flagged at any day, no change (size)", "Proporción de series señaladas en algún día, sin cambio (tamaño)"), "manuscript", "lower", T("share of streams", "proporción de series"), ["null"], Q2_MAN),
         _m("man_power", T("Share of streams flagged at any day, planted change (power)", "Proporción de series señaladas en algún día, cambio plantado (potencia)"), "manuscript", "higher", T("share of streams", "proporción de series"), Q2_POWER, Q2_MAN),
-        _m("man_median", T("Median first-flag day", "Mediana del primer día de alerta"), "manuscript", "lower", T("days", "días"), [c["id"] for c in Q2_COLS], Q2_MAN, _NEVER),
+        _m("man_median", T("Median first-flag day, planted change (delay)", "Mediana del primer día de alerta, cambio plantado (retraso)"), "manuscript", "lower", T("days", "días"), Q2_POWER, Q2_MAN, _NEVER),
+        _m("man_median_null", T("Median first-flag day, no change (a false alarm: context, not ranked)", "Mediana del primer día de alerta, sin cambio (una falsa alarma: contexto, sin clasificar)"), "manuscript", "none", T("days", "días"), ["null"], Q2_MAN, _NEVER),
         _m("real_median", T("Median first-flag day over the models flagged", "Mediana del primer día de alerta entre los modelos señalados"), "real-windows", "none", T("days", "días"), [c["id"] for c in Q1_WINDOWS], Q2_REAL,
            T("no model of the window is flagged by this rule", "ningún modelo de la ventana es señalado por esta regla")),
         _m("c03_month", T("Month of the e-process rejection", "Mes del rechazo del proceso e"), "vintages", "none", T("months", "meses"), [str(y) for _, y in Q2_C03], "data/derived/C03/{file}.json",
@@ -879,7 +907,7 @@ def _q5_metrics() -> list[dict[str, Any]]:
             _m(f"{pre}_auc", T("Area under the ROC curve", "Área bajo la curva ROC"), run, "higher", T("AUC", "AUC"), [colid], f),
             _m(f"{pre}_brier", T("Brier score", "Puntaje de Brier"), run, "lower", T("Brier", "Brier"), [colid], f),
             _m(f"{pre}_ece", T("Expected calibration error", "Error de calibración esperado"), run, "lower", T("error", "error"), [colid], f),
-            _m(f"{pre}_sph", T("Spiegelhalter calibration p-value (higher: not rejected)", "Valor p de calibración de Spiegelhalter (mayor: no rechazado)"), run, "higher", T("p-value", "valor p"), [colid], f),
+            _m(f"{pre}_sph", T("Spiegelhalter calibration p-value (evidence against calibration, not a score)", "Valor p de calibración de Spiegelhalter (evidencia contra la calibración, no un puntaje)"), run, "none", T("p-value", "valor p"), [colid], f),
         ]
     return out
 
@@ -999,7 +1027,7 @@ def _q8_rows() -> list[dict[str, Any]]:
         rows.append(_row(key, T(en, es), ladder, {"ratio": f"{base}.ratio_to_truth.median", "iqr": f"{base}.iqr_over_truth", "under": f"{base}.share_underestimating",
                                                   "defined": f"{base}.n_defined"},
                          "shevchenko" if key.startswith("lda_") else None, ranked,
-                         T("a control for the robust estimators, not a method of the ladder", "un control para los estimadores robustos, no un método de la escalera") if not ranked else None,
+                         T("a control for the robust estimators: the Cramer-von Mises criterion with a lognormal severity, shown with the standing of that group and not ranked", "un control para los estimadores robustos: el criterio de Cramer-von Mises con una severidad lognormal, mostrado con el lugar de ese grupo y sin clasificar") if not ranked else None,
                          None, {m: _Q8_MEAN_UNDEFINED for m in ("ratio", "iqr", "under", "defined")} if key == "sla_mean_corrected" else {}))
     return rows
 
@@ -1200,8 +1228,8 @@ Q12 = {
     "runs": [{"id": "twin", "label": T("German credit twin, 100 replications", "Gemelo del crédito alemán, 100 réplicas"),
               "protocol": T("1,000 rows, acceptance share 0.6.", "1.000 filas, proporción de aceptación 0,6."), "seed": (Q12_F, "provenance.seed"), "columns": Q12_COLS}],
     "metrics": [
-        _m("bias", T("Absolute bias of the portfolio PD", "Sesgo absoluto de la PD de la cartera"), "twin", "lower", T("PD", "PD"), Q12_ALL, Q12_F),
-        _m("reduction", T("Reduction of the accepted-only bias", "Reducción del sesgo del modelo solo con aceptados"), "twin", "higher", T("ratio", "razón"), Q12_ALL, Q12_F),
+        _m("bias", T("Mean absolute bias of the portfolio PD over the replications", "Sesgo absoluto medio de la PD de la cartera sobre las réplicas"), "twin", "lower", T("PD", "PD"), Q12_ALL, Q12_F),
+        _m("reduction", T("Reduction of the mean signed bias of the accepted-only model", "Reducción del sesgo medio con signo del modelo solo con aceptados"), "twin", "higher", T("ratio", "razón"), Q12_ALL, Q12_F),
         _m("auc_gain", T("Gain in the area under the curve over the accepted-only model", "Ganancia del área bajo la curva sobre el modelo solo con aceptados"), "twin", "higher", T("area", "área"), Q12_ALL, Q12_F),
     ],
     "rows": _q12_rows(), "absent": [], "negative_results": [],

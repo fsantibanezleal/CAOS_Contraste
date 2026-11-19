@@ -26,21 +26,21 @@ One-variable PD & Reference & -- & -- \\
 {\footnotesize\setlength{\tabcolsep}{3pt}
 % bm-table Q5 normal cols=tw_auc/holdout;tw_brier/holdout;tw_ece/holdout;tw_sph/holdout
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}}
-\caption{Default prediction on a retail book: Area under the ROC curve (AUC; higher is better); Brier score (Brier; lower is better); Expected calibration error (error; lower is better); Spiegelhalter calibration p-value (higher: not rejected) (p-value; higher is better), for each method, on the run Taiwan credit-card holdout. The best value of a column by the declared rule is in bold, ties all in bold; a dash marks a cell without a value, and the notes below the table state why.}\label{tab:bm-q5-1}\\
-\toprule Method & Area under the ROC curve & Brier score & Expected calibration error & Spiegelhalter calibration p-value (higher: not rejected) \\ \midrule \endfirsthead
-\toprule Method & Area under the ROC curve & Brier score & Expected calibration error & Spiegelhalter calibration p-value (higher: not rejected) \\ \midrule \endhead
+\caption{Default prediction on a retail book: Area under the ROC curve (AUC; higher is better); Brier score (Brier; lower is better); Expected calibration error (error; lower is better); Spiegelhalter calibration p-value (evidence against calibration, not a score) (p-value; context, not ranked), for each method, on the run Taiwan credit-card holdout. The best value of a column by the declared rule is in bold, ties all in bold; a dash marks a cell without a value, and the notes below the table state why.}\label{tab:bm-q5-1}\\
+\toprule Method & Area under the ROC curve & Brier score & Expected calibration error & Spiegelhalter calibration p-value (evidence against calibration, not a score) \\ \midrule \endfirsthead
+\toprule Method & Area under the ROC curve & Brier score & Expected calibration error & Spiegelhalter calibration p-value (evidence against calibration, not a score) \\ \midrule \endhead
 \multicolumn{5}{l}{\emph{Long-established}} \\
-Weight-of-evidence logistic scorecard & 0.759 & 0.139 & 0.016 & 0.022 \\ % bm-row P1-scorecard
-L1-penalised logistic regression on weight-of-evidence & 0.759 & 0.139 & 0.015 & 0.024 \\ % bm-row P2a-l1
+Weight-of-evidence logistic scorecard & 0.759 & 0.1393 & 0.016 & 0.022 \\ % bm-row P1-scorecard
+L1-penalised logistic regression on weight-of-evidence & 0.759 & 0.1393 & 0.015 & 0.024 \\ % bm-row P2a-l1
 \multicolumn{5}{l}{\emph{Recent published}} \\
-Penalised logistic tree regression & 0.775 & 0.137 & \textbf{0.011} & 0.084 \\ % bm-row P2b-pltr
-Explainable boosting machine & 0.775 & 0.137 & 0.012 & 0.231 \\ % bm-row P3-ebm
-Monotone gradient boosting (LightGBM) with isotonic calibration & \textbf{0.777} & 0.136 & 0.013 & 0.115 \\ % bm-row P4-lightgbm
-Monotone gradient boosting (XGBoost), second engine & 0.775 & \textbf{0.136} & 0.012 & \textbf{0.240} \\ % bm-row P4-xgboost
+Penalised logistic tree regression & 0.775 & 0.1367 & \textbf{0.011} & 0.084 \\ % bm-row P2b-pltr
+Explainable boosting machine & 0.775 & 0.1367 & 0.012 & 0.231 \\ % bm-row P3-ebm
+Monotone gradient boosting (LightGBM) with isotonic calibration & \textbf{0.777} & 0.1361 & 0.013 & 0.115 \\ % bm-row P4-lightgbm
+Monotone gradient boosting (XGBoost), second engine & 0.775 & \textbf{0.1359} & 0.012 & 0.240 \\ % bm-row P4-xgboost
 TabPFN & -- & -- & -- & -- \\ % bm-row P5-tabpfn
 \multicolumn{5}{l}{\emph{Reference}} \\
-Constant PD & 0.500 & 0.172 & 0.017 & 0.497 \\ % bm-row P0-constant
-One-variable PD & 0.692 & 0.143 & 0.014 & 0.110 \\ % bm-row P0-single
+Constant PD & 0.500 & 0.1723 & 0.017 & 0.497 \\ % bm-row P0-constant
+One-variable PD & 0.692 & 0.1431 & 0.014 & 0.110 \\ % bm-row P0-single
 \bottomrule
 \end{longtable}
 }
@@ -50,12 +50,12 @@ A dash in Table~\ref{tab:bm-q5-1} is a cell the product does not compute, for th
 {\footnotesize\setlength{\tabcolsep}{3pt}
 % bm-table Q5 normal cols=de_auc/german-twin;de_brier/german-twin;de_ece/german-twin;de_sph/german-twin
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}}
-\caption{Default prediction on a retail book: Area under the ROC curve (AUC; higher is better); Brier score (Brier; lower is better); Expected calibration error (error; lower is better); Spiegelhalter calibration p-value (higher: not rejected) (p-value; higher is better), for each method, on the run German credit twin. The best value of a column by the declared rule is in bold, ties all in bold; a dash marks a cell without a value, and the notes below the table state why.}\label{tab:bm-q5-2}\\
-\toprule Method & Area under the ROC curve & Brier score & Expected calibration error & Spiegelhalter calibration p-value (higher: not rejected) \\ \midrule \endfirsthead
-\toprule Method & Area under the ROC curve & Brier score & Expected calibration error & Spiegelhalter calibration p-value (higher: not rejected) \\ \midrule \endhead
+\caption{Default prediction on a retail book: Area under the ROC curve (AUC; higher is better); Brier score (Brier; lower is better); Expected calibration error (error; lower is better); Spiegelhalter calibration p-value (evidence against calibration, not a score) (p-value; context, not ranked), for each method, on the run German credit twin. The best value of a column by the declared rule is in bold, ties all in bold; a dash marks a cell without a value, and the notes below the table state why.}\label{tab:bm-q5-2}\\
+\toprule Method & Area under the ROC curve & Brier score & Expected calibration error & Spiegelhalter calibration p-value (evidence against calibration, not a score) \\ \midrule \endfirsthead
+\toprule Method & Area under the ROC curve & Brier score & Expected calibration error & Spiegelhalter calibration p-value (evidence against calibration, not a score) \\ \midrule \endhead
 \multicolumn{5}{l}{\emph{Long-established}} \\
 Weight-of-evidence logistic scorecard & 0.788 & 0.162 & 0.045 & 0.407 \\ % bm-row P1-scorecard
-L1-penalised logistic regression on weight-of-evidence & \textbf{0.791} & \textbf{0.161} & 0.052 & \textbf{0.617} \\ % bm-row P2a-l1
+L1-penalised logistic regression on weight-of-evidence & \textbf{0.791} & \textbf{0.161} & 0.052 & 0.617 \\ % bm-row P2a-l1
 \multicolumn{5}{l}{\emph{Recent published}} \\
 Penalised logistic tree regression & 0.786 & 0.166 & 0.048 & 0.371 \\ % bm-row P2b-pltr
 Explainable boosting machine & 0.787 & 0.167 & 0.058 & 0.0074 \\ % bm-row P3-ebm
@@ -71,4 +71,4 @@ One-variable PD & 0.723 & 0.182 & 0.074 & 0.713 \\ % bm-row P0-single
 
 A dash in Table~\ref{tab:bm-q5-2} is a cell the product does not compute, for the stated reason: the German document runs one gradient-boosting engine only (Monotone gradient boosting (XGBoost), second engine).
 
-The document reads the tables of this question by the declared rule of each metric. Area under the ROC curve (higher is better): best in Monotone gradient boosting (LightGBM) with isotonic calibration 1 of 1. Brier score (lower is better): best in Monotone gradient boosting (XGBoost), second engine 1 of 1. Expected calibration error (lower is better): best in Penalised logistic tree regression 1 of 1. Spiegelhalter calibration p-value (higher: not rejected) (higher is better): best in Monotone gradient boosting (XGBoost), second engine 1 of 1. Area under the ROC curve (higher is better): best in L1-penalised logistic regression on weight-of-evidence 1 of 1. Brier score (lower is better): best in L1-penalised logistic regression on weight-of-evidence 1 of 1. Expected calibration error (lower is better): best in TabPFN 1 of 1. Spiegelhalter calibration p-value (higher: not rejected) (higher is better): best in L1-penalised logistic regression on weight-of-evidence 1 of 1. A null cell is never ranked; each states why it is null.
+The document reads the tables of this question by the declared rule of each metric. Area under the ROC curve (higher is better): best in Monotone gradient boosting (LightGBM) with isotonic calibration 1 of 1. Brier score (lower is better): best in Monotone gradient boosting (XGBoost), second engine 1 of 1. Expected calibration error (lower is better): best in Penalised logistic tree regression 1 of 1. Area under the ROC curve (higher is better): best in L1-penalised logistic regression on weight-of-evidence 1 of 1. Brier score (lower is better): best in L1-penalised logistic regression on weight-of-evidence 1 of 1. Expected calibration error (lower is better): best in TabPFN 1 of 1. A null cell is never ranked; each states why it is null.
