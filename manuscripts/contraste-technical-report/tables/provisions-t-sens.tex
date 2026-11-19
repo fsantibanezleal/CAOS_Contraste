@@ -1,16 +1,16 @@
 \begin{table*}[htbp]
 \centering
 \small
-\caption{Sensitivity of the PC-Hazard rung of case C06 to its hyper-parameters: the nine settings, each moving one hyper-parameter around the defaults on the same loans, hold-out split and seed, with the number of reporting dates at which both criteria hold, the verdict that count gives, whether it agrees with the verdict of the defaults, the range of the c-index over the dates and the largest excess of the pooled Brier score over the Cox rung.}
+\caption{Sensitivity of the PC-Hazard rung of case C06 to its hyper-parameters: the nine settings, each moving one hyper-parameter around the defaults on the same loans, hold-out split and seed, with the number of reporting dates at which both criteria hold, the outcome that count gives, whether it agrees with the outcome of the defaults, the range of the c-index over the dates and the largest excess of the pooled Brier score over the Cox rung.}
 \label{tab:prov-sens}
 \fitwidth{%
 \begin{tabular}{llrrllrr}
 \toprule
-Setting & Parameter moved & Dates holding & Dates evaluable & Verdict & Agrees with the defaults & PC-Hazard c-index over the dates & Largest PBS excess over Cox \\
+Setting & Moved & Holds at & Dates & Outcome & Agrees & c-index range & Largest PBS excess \\
 \midrule
 Defaults & none & 4 & 6 & holds & yes & 0.730 to 0.809 & $0.00049$ \\
-Interval width 1.5 months (120 intervals) & Interval width & 4 & 6 & holds & yes & 0.730 to 0.809 & $0.00047$ \\
-Interval width 6 months (30 intervals) & Interval width & 4 & 6 & holds & yes & 0.730 to 0.809 & $0.00051$ \\
+Interval width 1.5 months & Interval width & 4 & 6 & holds & yes & 0.730 to 0.809 & $0.00047$ \\
+Interval width 6 months & Interval width & 4 & 6 & holds & yes & 0.730 to 0.809 & $0.00051$ \\
 Hidden layers 16 and 16 & Hidden layers & 4 & 6 & holds & yes & 0.729 to 0.809 & $0.00051$ \\
 Hidden layers 64 and 64 & Hidden layers & 4 & 6 & holds & yes & 0.729 to 0.809 & $0.00051$ \\
 Weight decay 1e-5 & Weight decay & 4 & 6 & holds & yes & 0.729 to 0.809 & $0.00051$ \\

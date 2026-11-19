@@ -10,6 +10,7 @@ statutory parameters and the worked example of the non-linearity of the expected
 from __future__ import annotations
 
 import pathlib
+import re
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -139,8 +140,7 @@ def tables_c06_uncertainty() -> None:
     macro("BootAccountsMin", num(min(r["accounts"] for r in ev), 0) if ev else "0")
     macro("BootAccountsMax", num(max(r["accounts"] for r in ev), 0) if ev else "0")
     figkit.table(OUT / "provisions-t-boot.tex",
-                 ["Date", "Accounts", "PBS difference", "95\\% interval of the PBS difference", "Gap difference",
-                  "95\\% interval of the gap difference", "Both exclude zero", "Criteria hold"],
+                 ["Date", "Accounts", "PBS diff.", "95\\% interval", "Gap diff.", "95\\% interval", "Both exclude 0", "Criteria hold"],
                  [boot_cells(r, h) for r, h in zip(rows, holds)],
                  caption=("Loan-level bootstrap of the PC-Hazard against Cox at the six reporting dates of case C06: the out-of-time accounts are "
                           "resampled with replacement 1,000 times with the predictions held fixed, and the table gives for the pooled Brier "
@@ -167,17 +167,23 @@ def tables_c06_uncertainty() -> None:
     macro("SensDefaultHolds", str(overall["default"]["holds_at"]))
     macro("SensFitted", str(fitted))
     macro("SensNotConverged", str(unfitted))
+    macro("SensFits", str(sum(len(sens[d]["settings"]) for d in DATES)))
+    holding = {sid: tuple(d for d in DATES if next(x for x in sens[d]["settings"] if x["setting_id"] == sid).get("evaluation", {}).get("holds_at_date"))
+               for sid in overall}
+    macro("SensSameDates", str(sum(1 for sid in overall if holding[sid] == holding["default"])))
     macro("SensCindexMin", fixed(min(c_all), 2))
     macro("SensCindexMax", fixed(max(c_all), 2))
     macro("SensHoldsMin", str(min(s["holds_at"] for s in overall.values())))
     macro("SensHoldsMax", str(max(s["holds_at"] for s in overall.values())))
+    hmin, hmax = min(s["holds_at"] for s in overall.values()), max(s["holds_at"] for s in overall.values())
+    macro("SensHoldsRange", str(hmin) if hmin == hmax else f"{hmin} to {hmax}")
     macro("SensIbsExcessMax", fixed(max(e["integrated_brier"]["pch"] - e["integrated_brier"]["cox"] for v in per_setting.values() for e in v), 5))
     srows = []
     for s in first["overall"]["settings"]:
         sid = s["setting_id"]
         st = next(x for x in first["settings"] if x["setting_id"] == sid)
         ev_s = per_setting.get(sid, [])
-        label = "Defaults" if sid == "default" else _text(st["label"]).strip()
+        label = "Defaults" if sid == "default" else re.sub(r"\s*\(\d+ intervals\)$", "", _text(st["label"]).strip())
         cs = [e["c_index"]["pch"] for e in ev_s]
         excess = [e["integrated_brier"]["pch"] - e["integrated_brier"]["cox"] for e in ev_s]
         srows.append([label, SENS_PARAMETER.get(st["parameter"], st["parameter"]), s["holds_at"], s["evaluable"], s["verdict"],
@@ -185,12 +191,11 @@ def tables_c06_uncertainty() -> None:
                       f"{fixed(min(cs), 3)} to {fixed(max(cs), 3)}" if cs else "--",
                       math(max(excess), 5) if excess else "--"])
     figkit.table(OUT / "provisions-t-sens.tex",
-                 ["Setting", "Parameter moved", "Dates holding", "Dates evaluable", "Verdict", "Agrees with the defaults",
-                  "PC-Hazard c-index over the dates", "Largest PBS excess over Cox"],
+                 ["Setting", "Moved", "Holds at", "Dates", "Outcome", "Agrees", "c-index range", "Largest PBS excess"],
                  srows,
                  caption=("Sensitivity of the PC-Hazard rung of case C06 to its hyper-parameters: the nine settings, each moving one hyper-parameter "
                           "around the defaults on the same loans, hold-out split and seed, with the number of reporting dates at which both criteria "
-                          "hold, the verdict that count gives, whether it agrees with the verdict of the defaults, the range of the c-index "
+                          "hold, the outcome that count gives, whether it agrees with the outcome of the defaults, the range of the c-index "
                           "over the dates and the largest excess of the pooled Brier score over the Cox rung."),
                  label="tab:prov-sens", align="llrrllrr", wide=True)
 

@@ -144,6 +144,11 @@ def test_c06_pch_sensitivity_macros_equal_the_documents() -> None:
     assert m["SensSettings"] == str(ov["settings_count"]) == "9"
     assert m["SensAgree"] == str(ov["agree"])
     assert m["SensDefaultHolds"] == str(ov["settings"][0]["holds_at"])
+    assert m["SensFits"] == str(sum(len(s["settings"]) for s in docs)) == "54"
+    def holding(s: dict, sid: str) -> list[bool]:
+        return [bool(next(x for x in sd["settings"] if x["setting_id"] == sid)["evaluation"]["holds_at_date"]) for sd in docs]
+    same = sum(1 for x in ov["settings"] if holding(None, x["setting_id"]) == holding(None, "default"))
+    assert m["SensSameDates"] == str(same)
     fitted = sum(1 for s in docs for st in s["settings"] if st["status"] == "fitted")
     assert m["SensFitted"] == str(fitted)
     assert m["SensNotConverged"] == str(sum(1 for s in docs for st in s["settings"] if st["status"] != "fitted"))
@@ -152,6 +157,7 @@ def test_c06_pch_sensitivity_macros_equal_the_documents() -> None:
     hold_min = min(x["holds_at"] for x in ov["settings"])
     hold_max = max(x["holds_at"] for x in ov["settings"])
     assert (m["SensHoldsMin"], m["SensHoldsMax"]) == (str(hold_min), str(hold_max))
+    assert m["SensHoldsRange"] == (str(hold_min) if hold_min == hold_max else f"{hold_min} to {hold_max}")
 
 
 def test_c06_pch_sensitivity_table_lists_every_setting() -> None:
@@ -190,6 +196,7 @@ def test_c08_interval_macros_equal_the_documents() -> None:
     others = [a for b in blocks for a in b["against"] if a["rung_id"] != b["against_best"]["rung_id"]]
     assert m["ml-boot-other-total"] == str(len(others))
     assert m["ml-boot-other-excl"] == str(sum(1 for a in others if a["lo"] > 0 or a["hi"] < 0))
+    assert m["ml-boot-other-better"] == str(sum(1 for a in others if a["lo"] > 0))
 
 
 def test_c08_row_without_a_bootstrap_block_is_stated_not_skipped() -> None:
@@ -316,7 +323,10 @@ def _printed(path: Path) -> str:
 def test_no_section_counts_four_proposed_methods_or_twelve_other_contributions() -> None:
     files = [TR / "main.tex", SECTIONS / "01-introduction.tex", SECTIONS / "17-proposed.tex", SECTIONS / "19-results.tex",
              SECTIONS / "21-discussion.tex", TABLES / "make_proposed.py", TABLES / "proposed-summary.tex"]
-    bad = re.compile(r"\b(?:four|twelve|Four|Twelve)\b[^.\n]{0,40}\b(?:methods?|contributions?|of its sixteen|of the sixteen)\b", re.I)
+    # the product proposes seven methods and nine other contributions; "twelve of the sixteen" (a table's rows) and "the other four" (the
+    # methods of sections 17.13 to 17.16 among the seven) are counts of something else
+    bad = re.compile(r"\bfour (?:proposed )?methods\b|\bof the four (?:proposed )?methods\b|\b(?:other|its) twelve\b|\btwelve (?:other )?contributions\b|"
+                     r"\bTwelve of the contributions\b|\bone of the four proposed\b", re.I)
     for f in files:
         text = f.read_text(encoding="utf-8") if f.suffix == ".py" else _printed(f)
         assert not [m.group(0) for m in bad.finditer(text)], f.name
@@ -324,6 +334,6 @@ def test_no_section_counts_four_proposed_methods_or_twelve_other_contributions()
 
 def test_the_abstract_and_the_introduction_name_seven_methods_and_nine_contributions() -> None:
     abstract = re.search(r"\\begin\{abstract\}(.*?)\\end\{abstract\}", (TR / "main.tex").read_text(encoding="utf-8"), re.S).group(1)
-    assert "seven methods" in abstract and "nine other contributions" in abstract
+    assert "seven methods" in abstract and "other nine contributions" in abstract
     intro = _printed(SECTIONS / "01-introduction.tex")
     assert "seven methods" in intro

@@ -415,11 +415,11 @@ def table_mlboot() -> None:
     put("ml-boot-worse-excl", str(sum(1 for r in ev if r["excludes"] and r["best"]["difference"] < 0)))
     put("ml-boot-other-total", str(sum(len(r["others"]) for r in ev)))
     put("ml-boot-other-excl", str(sum(r["others_excl"] for r in ev)))
+    put("ml-boot-other-better", str(sum(1 for r in ev for x in r["others"] if _excludes(x) and x["difference"] > 0)))
     put("ml-boot-gain-max", fixed(max(abs(r["best"]["difference"]) for r in ev), 4) if ev else "0")
     figkit.table(
         HERE / "lgd-ead-mlboot.tex",
-        ["Cohort", "Test defaults", "Better of forest and network", "RMSE difference", "95\\% interval of the difference",
-         "Excludes zero", "Other earlier rungs excluding zero"],
+        ["Cohort", "Defaults", "Better ML rung", "RMSE diff.", "95\\% interval", "Excludes 0", "Other rungs excluding 0"],
         [mlboot_cells(r) for r in rows],
         caption="Loan-level bootstrap of the machine-learning hypothesis in each test cohort of case C08: the test defaults are resampled with "
                 "replacement 1,000 times with the predictions held fixed, and the table gives the RMSE of the best of the six earlier rungs minus "
