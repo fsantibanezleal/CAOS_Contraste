@@ -3,8 +3,8 @@
 // every number, every best mark and every reading is the document's. The words for a method's standing are "Long-established",
 // "Recent published" and "Proposed in this work" (and "Reference" for the rows that set the scale); each method is named with its source
 // and year. A cell the product does not compute shows its reason; a long table is split by column, never scrolled sideways.
-import { BarChart, DocSection, PlotCard, Verdict, formatNumber, pick, useShellLang, type BarDatum, type BiText, type Lang, type Provenance } from '@fasl-work/caos-app-shell';
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import { BarChart, ChipGroup, DocSection, PlotCard, Verdict, formatNumber, pick, useShellLang, type BarDatum, type BiText, type Lang, type Provenance } from '@fasl-work/caos-app-shell';
+import { useState, type CSSProperties } from 'react';
 import { useT } from '../../content/bi';
 import {
   STANDING_LABEL,
@@ -19,6 +19,7 @@ import {
   overviewRows,
   runOf,
   columnPrecision,
+  docText,
   tableGroups,
   useMethodsCompared,
   type CellValue,
@@ -32,10 +33,12 @@ import {
 import type { Text } from '../../lib/contract.types';
 import { Table } from '../U6Sections';
 
+/** A document text with its decimals in the form of each language, for a shell prop that takes both. */
+const loc = (t: Text): Text => ({ en: docText(t, 'en'), es: docText(t, 'es') });
+
 /** The box of a table: a safety net at the narrowest width; the tables are split by column so it rarely scrolls. */
-const BOX: CSSProperties = { overflowX: 'auto', maxWidth: '100%', minWidth: 0 };
-const CONTROLS: CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: '0.75rem 1.25rem', alignItems: 'flex-end', margin: '0.75rem 0' };
-const FIELD: CSSProperties = { display: 'flex', flexDirection: 'column', gap: '0.25rem', minWidth: 0, maxWidth: '100%' };
+const BOX: CSSProperties = { overflowX: 'auto', maxWidth: '100%', minWidth: 0, position: 'relative' };
+const CONTROLS: CSSProperties = { display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '0.75rem 0', minWidth: 0, maxWidth: '100%' };
 const BEST: CSSProperties = { fontWeight: 700, textDecoration: 'underline', textDecorationThickness: '2px', textUnderlineOffset: '3px' };
 /** Columns of a table per page: a method name beside three values fits a phone. */
 const COLUMNS_PER_PAGE = 3;
@@ -66,7 +69,7 @@ function ruleText(q: McQuestion, m: McMetric, lang: Lang): string {
   if (b === 'none') return lang === 'es' ? 'contexto: no se ordena' : 'context: not ranked';
   if (b.startsWith('nearer-metric:')) {
     const other = q.metrics.find((x) => x.id === b.slice('nearer-metric:'.length));
-    const name = other ? pick(other.label, lang) : '';
+    const name = other ? docText(other.label, lang) : '';
     return lang === 'es' ? `más cerca de «${name}» es mejor` : `nearer “${name}” is better`;
   }
   if (b.startsWith('nearer:')) {
@@ -106,10 +109,10 @@ function MethodCell({ row }: { row: McRow }) {
   const t = useT();
   return (
     <td className="caos-col-text" style={{ minWidth: '11rem' }}>
-      {pick(row.method, lang)}
+      {docText(row.method, lang)}
       {!row.ranked && row.standing !== 'reference' ? <span className="ct-note"> ({t('shown, not ranked', 'se muestra, no se ordena')})</span> : null}
       <Source row={row} />
-      {row.note ? <span className="ct-note" style={{ display: 'block', margin: '0.1rem 0 0' }}>{pick(row.note, lang)}</span> : null}
+      {row.note ? <span className="ct-note" style={{ display: 'block', margin: '0.1rem 0 0' }}>{docText(row.note, lang)}</span> : null}
     </td>
   );
 }
@@ -172,13 +175,13 @@ function QuestionTable({ q, metric, columns, lang }: { q: McQuestion; metric: Mc
       <div data-table-box="" style={BOX}>
         <table className="caos-table ct-wrap-head ct-top">
           <caption className="ct-note" style={{ textAlign: 'left' }}>
-            {pick(metric.label, lang)} ({pick(metric.unit, lang)}; {ruleText(q, metric, lang)})
+            {docText(metric.label, lang)} ({docText(metric.unit, lang)}; {ruleText(q, metric, lang)})
           </caption>
           <thead>
             <tr>
               <th className="caos-col-text">{t('Method', 'Método')}</th>
               {columns.map((c) => (
-                <th key={c}>{pick(columnLabel(q, metric, c), lang)}</th>
+                <th key={c}>{docText(columnLabel(q, metric, c), lang)}</th>
               ))}
             </tr>
           </thead>
@@ -192,7 +195,7 @@ function QuestionTable({ q, metric, columns, lang }: { q: McQuestion; metric: Mc
         <ol className="ct-note" style={{ paddingLeft: '1.25rem' }} data-null-reasons="">
           {reasons.map((r, i) => (
             <li key={i} id={`${q.id.toLowerCase()}-null-${i + 1}`}>
-              {pick(r, lang)}
+              {docText(r, lang)}
             </li>
           ))}
         </ol>
@@ -213,7 +216,7 @@ function Chart({ q, metric, column }: { q: McQuestion; metric: McMetric; column:
   }
   const data: BarDatum[] = points.map((p) => ({
     id: p.id,
-    label: p.method,
+    label: loc(p.method),
     value: p.value,
     // the best bar of a ranked metric is the accent and the others fade; a reference bar is neutral, so it reads as the scale
     highlight: isRanked(metric) && p.best,
@@ -224,16 +227,18 @@ function Chart({ q, metric, column }: { q: McQuestion; metric: McMetric; column:
   return (
     <div data-methods-chart="" data-metric={metric.id} data-column={column}>
       <PlotCard
-        title={{ en: `${metric.label.en}: ${col.en}`, es: `${metric.label.es}: ${col.es}` }}
+        title={{ en: `${loc(metric.label).en}: ${loc(col).en}`, es: `${loc(metric.label).es}: ${loc(col).es}` }}
         lane="replay"
         provenance={provenanceOf(q, metric)}
         note={{ en: `${ruleText(q, metric, 'en')}. The bars read from the table; the groups are the standing of each method.`, es: `${ruleText(q, metric, 'es')}. Las barras se leen de la tabla; los grupos son el lugar de cada método.` }}
       >
         <BarChart
-          title={{ en: `${metric.label.en}, ${col.en}, by method`, es: `${metric.label.es}, ${col.es}, por método` }}
+          title={{ en: `${loc(metric.label).en}, ${loc(col).en}, by method`, es: `${loc(metric.label).es}, ${loc(col).es}, por método` }}
           data={data}
-          axis={{ label: metric.label, unit: metric.unit, format: { digits: 4 } }}
+          axis={{ label: loc(metric.label), unit: loc(metric.unit), format: { digits: 4 } }}
           orientation="horizontal"
+          values={points.every((p) => p.value >= 0)}
+          zoomOff={points.length <= 8 ? { en: 'Few enough bars to read at once: there is nothing to zoom.', es: 'Hay pocas barras y se leen a la vez: no hay nada que ampliar.' } : undefined}
         />
       </PlotCard>
     </div>
@@ -256,86 +261,72 @@ export function MethodsQuestionView({ doc, question: q, initialMetric, initialPa
   const runs = [...new Set(metrics.map((m) => m.run_id))];
   const byRun = runs.map((id) => ({ run: q.runs.find((r) => r.id === id)!, metrics: metrics.filter((m) => m.run_id === id) }));
   const seed = run.seed ? run.seed.value : null;
-  const label = (m: McMetric) => `${pick(m.label, lang)} (${pick(m.unit, lang)})`;
-  const select = (id: string, text: string, value: string, onChange: (v: string) => void, children: ReactNode) => (
-    <div style={FIELD}>
-      <label htmlFor={id}>{text}</label>
-      <select id={id} className="select" value={value} onChange={(e) => onChange(e.target.value)} style={{ maxWidth: '100%' }}>
-        {children}
-      </select>
-    </div>
-  );
+  // a measure is named with its run when the question has several, so two runs' alike measures stay apart
+  const measureLabel = (m: McMetric): BiText => {
+    const r = q.runs.find((x) => x.id === m.run_id);
+    const suffix = (l: 'en' | 'es') => (byRun.length > 1 && r ? ` [${r.label[l]}]` : '');
+    return { en: `${docText(m.label, 'en')} (${docText(m.unit, 'en')})${suffix('en')}`, es: `${docText(m.label, 'es')} (${docText(m.unit, 'es')})${suffix('es')}` };
+  };
   const here = q.negative_results.filter((n) => n.rows.some((id) => q.rows.some((r) => r.id === id)));
   return (
     <DocSection
       id={`methods-${q.id.toLowerCase()}`}
       area="comparison"
-      title={{ en: `${q.id}: ${q.title.en}`, es: `${q.id}: ${q.title.es}` }}
+      title={{ en: `${q.id}: ${loc(q.title).en}`, es: `${q.id}: ${loc(q.title).es}` }}
       noRefsReason={{ en: 'Read from the committed methods-compared document, which cites the file and path of every number.', es: 'Leído del documento versionado de métodos comparados, que cita el archivo y la ruta de cada número.' }}
     >
       <div data-methods-question={q.id} data-state="ready">
         <p>
-          <strong>{t('Protocol', 'Protocolo')}.</strong> {pick(q.protocol, lang)}
+          <strong>{t('Protocol', 'Protocolo')}.</strong> {docText(q.protocol, lang)}
         </p>
-        <Verdict compact title={{ en: 'What the comparison shows', es: 'Lo que muestra la comparación' }} tone="accent" verdict={q.reading} />
-        <div style={CONTROLS}>
-          {select(
-            `methods-${q.id}-metric`,
-            t('Measure', 'Medida'),
-            metric.id,
-            (v) => {
-              setMetricId(v);
-              setPage(0);
-              setChartCol(null);
-            },
-            byRun.length > 1
-              ? byRun.map((g) => (
-                  <optgroup key={g.run.id} label={`${pick(g.run.label, lang)}${g.run.seed ? ` (${t('seed', 'semilla')} ${g.run.seed.value})` : ''}`}>
-                    {g.metrics.map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {label(m)}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))
-              : metrics.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {label(m)}
-                  </option>
-                )),
+        <Verdict compact title={{ en: 'What the comparison shows', es: 'Lo que muestra la comparación' }} tone="accent" verdict={{ en: docText(q.reading, 'en'), es: docText(q.reading, 'es') }} />
+        <div style={CONTROLS} data-methods-controls="">
+          {metrics.length > 1 && (
+            <ChipGroup
+              id={`methods-${q.id}-metric`}
+              label={{ en: 'Measure', es: 'Medida' }}
+              options={metrics.map((m) => ({ id: m.id, label: measureLabel(m) }))}
+              value={metric.id}
+              onChange={(v) => {
+                setMetricId(v);
+                setPage(0);
+                setChartCol(null);
+              }}
+            />
           )}
-          {pages.length > 1 &&
-            select(
-              `methods-${q.id}-page`,
-              t('Columns shown', 'Columnas mostradas'),
-              String(Math.min(page, pages.length - 1)),
-              (v) => {
+          {pages.length > 1 && (
+            <ChipGroup
+              id={`methods-${q.id}-page`}
+              label={{ en: 'Columns shown in the table', es: 'Columnas mostradas en la tabla' }}
+              options={pages.map((p, i) => ({ id: String(i), label: { en: `Columns ${i * COLUMNS_PER_PAGE + 1} to ${i * COLUMNS_PER_PAGE + p.length}`, es: `Columnas ${i * COLUMNS_PER_PAGE + 1} a ${i * COLUMNS_PER_PAGE + p.length}` } }))}
+              value={String(Math.min(page, pages.length - 1))}
+              onChange={(v) => {
                 setPage(Number(v));
                 setChartCol(null);
-              },
-              pages.map((p, i) => (
-                <option key={p[0]} value={i}>
-                  {p.map((c) => pick(columnLabel(q, metric, c), lang)).join(', ')}
-                </option>
-              )),
-            )}
+              }}
+            />
+          )}
         </div>
         <p className="ct-note" data-methods-run="">
           {byRun.length > 1 || seed !== null ? (
             <>
-              <strong>{t('Run', 'Corrida')}:</strong> {pick(run.label, lang)}
-              {seed !== null ? `, ${t('seed', 'semilla')} ${seed}` : ''}. {byRun.length > 1 ? pick(run.protocol, lang) : ''}
+              <strong>{t('Run', 'Corrida')}:</strong> {docText(run.label, lang)}
+              {seed !== null ? `, ${t('seed', 'semilla')} ${seed}` : ''}. {byRun.length > 1 ? docText(run.protocol, lang) : ''}
             </>
           ) : null}
         </p>
         <QuestionTable q={q} metric={metric} columns={columns} lang={lang} />
-        {metric.columns.length > 1 && isChartable(q, metric)
-          ? select(`methods-${q.id}-chart`, t('Chart column', 'Columna del gráfico'), column, setChartCol, metric.columns.map((c) => (
-              <option key={c} value={c}>
-                {pick(columnLabel(q, metric, c), lang)}
-              </option>
-            )))
-          : null}
+        {metric.columns.length > 1 && isChartable(q, metric) ? (
+          <div style={CONTROLS}>
+            <ChipGroup
+              id={`methods-${q.id}-chart`}
+              label={{ en: 'Chart column', es: 'Columna del gráfico' }}
+              options={metric.columns.map((c) => ({ id: c, label: loc(columnLabel(q, metric, c)) }))}
+              value={column}
+              onChange={setChartCol}
+            />
+          </div>
+        ) : null}
         <Chart q={q} metric={metric} column={column} />
         {q.absent.length > 0 && (
           <div data-methods-absent="">
@@ -345,7 +336,7 @@ export function MethodsQuestionView({ doc, question: q, initialMetric, initialPa
             <ul>
               {q.absent.map((a, i) => (
                 <li key={i}>
-                  {pick(a.method, lang)}: {pick(a.reason, lang)}
+                  {docText(a.method, lang)}: {docText(a.reason, lang)}
                 </li>
               ))}
             </ul>
@@ -356,7 +347,7 @@ export function MethodsQuestionView({ doc, question: q, initialMetric, initialPa
         </p>
         {here.map((n, i) => (
           <p key={i} data-methods-negative="">
-            <strong>{t('A proposed method that does not win', 'Un método propuesto que no gana')}.</strong> {pick(n.text, lang)} <span className="ct-note" translate="no">{n.manuscript}</span>
+            <strong>{t('A proposed method that does not win', 'Un método propuesto que no gana')}.</strong> {docText(n.text, lang)} <span className="ct-note" translate="no">{n.manuscript}</span>
           </p>
         ))}
       </div>
@@ -408,9 +399,9 @@ function OverviewBest({ row, lang }: { row: OverviewRow; lang: Lang }) {
       {row.best.map((b) => (
         <li key={b.metric.id}>
           <span className="ct-note" style={{ margin: 0 }}>
-            {pick(b.metric.label, lang)}:
+            {docText(b.metric.label, lang)}:
           </span>{' '}
-          {b.winners.map((w) => `${pick(w.method, lang)} (${formatNumber(w.wins, lang)}/${formatNumber(w.of, lang)})`).join('; ')}
+          {b.winners.map((w) => `${docText(w.method, lang)} (${formatNumber(w.wins, lang)}/${formatNumber(w.of, lang)})`).join('; ')}
         </li>
       ))}
     </ul>
@@ -448,13 +439,13 @@ export function MethodsOverviewView({ doc, onOpen }: { doc: MethodsCompared; onO
             wide={3}
             rows={rows.map((r) => [
               <span key="q">
-                <strong>{`${r.question.id}: ${pick(r.question.title, lang)}`}</strong>
+                <strong>{`${r.question.id}: ${docText(r.question.title, lang)}`}</strong>
                 <br />
-                <button type="button" data-open-question={r.question.id} onClick={() => onOpen(r.question.id, r.home)}>
+                <button type="button" className="btn" data-open-question={r.question.id} onClick={() => onOpen(r.question.id, r.home)}>
                   {t(`Open in ${r.home}`, `Abrir en ${r.home}`)}
                 </button>
               </span>,
-              <span key="p">{pick(r.protocol, lang)}</span>,
+              <span key="p">{docText(r.protocol, lang)}</span>,
               <OverviewBest key="b" row={r} lang={lang} />,
               <span key="x">{proposed(r)}</span>,
             ])}
@@ -470,7 +461,7 @@ export function MethodsOverviewView({ doc, onOpen }: { doc: MethodsCompared; onO
         <Table
           head={[t('Question', 'Pregunta'), t('Why it is not compared', 'Por qué no se compara')]}
           wide={2}
-          rows={doc.not_built.map((n) => [`${n.id}: ${pick(n.title, lang)}`, pick(n.reason, lang)])}
+          rows={doc.not_built.map((n) => [`${n.id}: ${docText(n.title, lang)}`, docText(n.reason, lang)])}
         />
       </DocSection>
     </>

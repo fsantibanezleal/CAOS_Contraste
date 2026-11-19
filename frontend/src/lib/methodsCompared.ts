@@ -163,6 +163,15 @@ export function unplacedQuestions(doc: MethodsCompared, sections: readonly strin
   return doc.questions.map((q) => q.id).filter((id) => !sections.includes(`methods:${id}`) || !QUESTION_HOME[id]);
 }
 
+/** A document text in the page language, its decimals in the Spanish form (a comma) on the Spanish page: the document writes a decimal with a point in both
+ * languages. A number with a zero integer part, or a fraction of other than three digits, is a decimal; "1.000" stays a thousand. */
+export function localDecimals(text: string, lang: 'en' | 'es'): string {
+  if (lang === 'en') return text;
+  return text.replace(/(?<![\w.,])(\d+)\.(\d+)(?![\w.])/g, (m, a: string, b: string) => (a === '0' || b.length !== 3 ? `${a},${b}` : m));
+}
+/** The text of a bilingual document field in the page language. */
+export const docText = (t: Text, lang: 'en' | 'es'): string => localDecimals(lang === 'es' ? t.es : t.en, lang);
+
 export const isRanked = (m: McMetric) => m.better !== 'none';
 export const isNumeric = (v: CellValue | null): v is number => typeof v === 'number' && Number.isFinite(v);
 

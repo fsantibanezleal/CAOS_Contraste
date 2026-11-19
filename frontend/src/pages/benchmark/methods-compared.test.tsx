@@ -3,11 +3,11 @@
 // the standing labels, the nulls with their reasons, the best marks, no tier word, no raw id. Requirements BM-102 to BM-110
 // (docs/design/features/benchmark-methods/requirements.md); BM-101 is in benchmark-tabs.test.tsx.
 import { readFileSync } from 'node:fs';
-import { pick } from '@fasl-work/caos-app-shell';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { MethodsCompared, McQuestion } from '../../lib/methodsCompared';
 import {
   METHODS_CASES,
+  localDecimals,
   OMITTED_METRICS,
   QUESTION_HOME,
   STANDING_LABEL,
@@ -16,6 +16,7 @@ import {
   bestPerMetric,
   chunkColumns,
   columnDigits,
+  docText,
   defaultMetric,
   isRanked,
   metricsOf,
@@ -112,17 +113,17 @@ describe('BM-103: the overview tab lists every question and every question not b
       const markup = overview(lang);
       const text = plain(markup);
       for (const q of doc.questions) {
-        expect(text, `${q.id} title`).toContain(pick(q.title, lang));
+        expect(text, `${q.id} title`).toContain(docText(q.title, lang));
         expect(markup, `${q.id} link`).toContain(`data-open-question="${q.id}"`);
       }
       for (const n of doc.not_built) {
-        expect(text, `${n.id} title`).toContain(pick(n.title, lang));
-        expect(text, `${n.id} reason`).toContain(pick(n.reason, lang));
+        expect(text, `${n.id} title`).toContain(docText(n.title, lang));
+        expect(text, `${n.id} reason`).toContain(docText(n.reason, lang));
       }
       expect((markup.match(/data-open-question="/g) ?? []).length).toBe(doc.questions.length);
       for (const r of overviewRows(doc)) {
-        expect(text, r.question.id).toContain(pick(r.protocol, lang));
-        for (const b of r.best) for (const w of b.winners) expect(text, `${r.question.id} ${b.metric.id}`).toContain(pick(w.method, lang));
+        expect(text, r.question.id).toContain(docText(r.protocol, lang));
+        for (const b of r.best) for (const w of b.winners) expect(text, `${r.question.id} ${b.metric.id}`).toContain(docText(w.method, lang));
       }
       expect(text).not.toMatch(BAD);
       expect(text).not.toMatch(TIER);
@@ -284,8 +285,8 @@ describe('BM-106: a cell the product does not compute shows its reason in the pa
     const page = chunkColumns(m.columns).findIndex((p) => p.includes(cell.column));
     for (const lang of LANGS) {
       const text = plain(render(q, lang, m.id, page));
-      expect(text).toContain(pick(cell.null_reason!, lang));
-      const row = pick(cell.null_reason!, lang).match(/BL-\d+/);
+      expect(text).toContain(docText(cell.null_reason!, lang));
+      const row = docText(cell.null_reason!, lang).match(/BL-\d+/);
       if (row) expect(text).toContain(row[0]);
     }
   });
@@ -297,7 +298,7 @@ describe('BM-106: a cell the product does not compute shows its reason in the pa
           const nulls = q.rows.flatMap((r) => r.cells).filter((c) => c.metric === m.id && c.value === null && pages[i].includes(c.column));
           if (!nulls.length) return;
           const text = plain(render(q, 'es', m.id, i));
-          for (const c of nulls) expect(text, `${q.id} ${m.id} ${c.column}`).toContain(pick(c.null_reason!, 'es'));
+          for (const c of nulls) expect(text, `${q.id} ${m.id} ${c.column}`).toContain(docText(c.null_reason!, 'es'));
         });
       }
     }
@@ -332,7 +333,8 @@ describe('BM-107: a long table is split by column, never scrolled sideways', () 
         const markup = render(q, 'en', m.id);
         const head = markup.slice(markup.indexOf('<thead>'), markup.indexOf('</thead>'));
         expect((head.match(/<th[ >]/g) ?? []).length, `${q.id} ${m.id}`).toBeLessThanOrEqual(4);
-        if (m.columns.length > 3) expect(markup, `${q.id} ${m.id}`).toContain(`id="methods-${q.id}-page"`);
+        if (m.columns.length > 3) expect(markup, `${q.id} ${m.id}`).toContain('Columns 1 to 3');
+        else expect(markup, `${q.id} ${m.id}`).not.toContain('Columns 1 to');
       }
     }
   });
@@ -341,8 +343,8 @@ describe('BM-107: a long table is split by column, never scrolled sideways', () 
     const pages = chunkColumns(m.columns);
     expect(pages.length).toBeGreaterThan(1);
     const table = tableOf(render(q2, 'en', m.id, pages.length - 1));
-    for (const c of pages[pages.length - 1]) expect(table).toContain(pick(columnLabelOf(q2, m.id, c), 'en'));
-    expect(table).not.toContain(`${pick(columnLabelOf(q2, m.id, m.columns[0]), 'en')} `);
+    for (const c of pages[pages.length - 1]) expect(table).toContain(docText(columnLabelOf(q2, m.id, c), 'en'));
+    expect(table).not.toContain(`${docText(columnLabelOf(q2, m.id, m.columns[0]), 'en')} `);
   });
   afterEach(() => setLang('en'));
 });
@@ -401,16 +403,16 @@ describe('BM-109: both languages, no tier word, no raw id', () => {
         const markup = render(q, lang);
         const text = plain(markup);
         expect(markup, q.id).toContain(`id="methods-${q.id.toLowerCase()}"`);
-        expect(text, q.id).toContain(pick(q.title, lang));
-        expect(text, q.id).toContain(pick(q.protocol, lang));
-        expect(text, q.id).toContain(pick(q.reading, lang));
+        expect(text, q.id).toContain(docText(q.title, lang));
+        expect(text, q.id).toContain(docText(q.protocol, lang));
+        expect(text, q.id).toContain(docText(q.reading, lang));
         const m = defaultMetric(q);
         for (const g of tableGroups(q, m, chunkColumns(m.columns)[0])) {
-          expect(text, `${q.id} ${g.standing}`).toContain(pick(STANDING_LABEL[g.standing], lang));
-          for (const r of g.rows) expect(text, `${q.id} ${r.row.id}`).toContain(pick(r.row.method, lang));
+          expect(text, `${q.id} ${g.standing}`).toContain(docText(STANDING_LABEL[g.standing], lang));
+          for (const r of g.rows) expect(text, `${q.id} ${r.row.id}`).toContain(docText(r.row.method, lang));
         }
         const other = lang === 'en' ? 'es' : 'en';
-        for (const s of STANDING_ORDER) if (pick(STANDING_LABEL[s], other) !== pick(STANDING_LABEL[s], lang)) expect(text, `${q.id} ${lang}`).not.toContain(pick(STANDING_LABEL[s], other));
+        for (const s of STANDING_ORDER) if (docText(STANDING_LABEL[s], other) !== docText(STANDING_LABEL[s], lang)) expect(text, `${q.id} ${lang}`).not.toContain(docText(STANDING_LABEL[s], other));
         expect(text, q.id).not.toMatch(BAD);
         expect(text, q.id).not.toMatch(TIER);
         expect(text.match(RAW_IDS)?.[0], q.id).toBeUndefined();
@@ -431,9 +433,9 @@ describe('BM-109: both languages, no tier word, no raw id', () => {
   });
   it('shows the manuscript that reports a proposed method losing, and the methods a question states absent', () => {
     const q2 = question('Q2');
-    expect(plain(render(q2, 'en'))).toContain(pick(q2.negative_results[0].text, 'en'));
-    expect(plain(render(question('Q4'), 'es'))).toContain(pick(question('Q4').negative_results[0].text, 'es'));
-    for (const a of q2.absent) expect(plain(render(q2, 'en'))).toContain(pick(a.reason, 'en'));
+    expect(plain(render(q2, 'en'))).toContain(docText(q2.negative_results[0].text, 'en'));
+    expect(plain(render(question('Q4'), 'es'))).toContain(docText(question('Q4').negative_results[0].text, 'es'));
+    for (const a of q2.absent) expect(plain(render(q2, 'en'))).toContain(docText(a.reason, 'en'));
   });
   it('adversarial: a tier word planted in a method name or a reading is caught by the pattern the page is held to', () => {
     for (const planted of ['a method of the beyond tier', 'a state of the art method', 'a classical estimator', 'BS-14 refuted', 'M-18 variant', 'un método clásico', 'más allá del estado del arte']) expect(planted, planted).toMatch(TIER);
@@ -441,6 +443,23 @@ describe('BM-109: both languages, no tier word, no raw id', () => {
     const q3 = dirty.questions.find((q) => q.id === 'Q3')!;
     q3.rows[0].method.en = 'A classical attribution test';
     expect(plain(render(q3, 'en', undefined, undefined, dirty))).toMatch(TIER);
+  });
+  afterEach(() => setLang('en'));
+});
+
+describe('BM-109 decimals: the Spanish page writes the decimals of the document in the Spanish form', () => {
+  it('adversarial: a decimal planted in a Spanish text is written with a comma and a thousand is left alone', () => {
+    expect(localDecimals('cerca de 0.85 con 2.5 y 1.000 días', 'es')).toBe('cerca de 0,85 con 2,5 y 1.000 días');
+    expect(localDecimals('near 0.85 with 2.5', 'en')).toBe('near 0.85 with 2.5');
+    const planted = clone(doc);
+    const q = planted.questions.find((x) => x.id === 'Q3')!;
+    q.reading.es = 'Lectura sembrada con un corte de 0.85 en la prueba.';
+    expect(plain(render(q, 'es', undefined, undefined, planted))).toContain('corte de 0,85 en la prueba');
+  });
+  it('writes no decimal point in the Spanish text of any question or of the overview', () => {
+    const point = /(?<![\w.,])\d+\.\d{1,2}(?![\w.])/;
+    for (const q of doc.questions) expect(plain(render(q, 'es')).match(point)?.[0], q.id).toBeUndefined();
+    expect(plain(overview('es')).match(point)?.[0]).toBeUndefined();
   });
   afterEach(() => setLang('en'));
 });
@@ -459,7 +478,10 @@ describe('BM-110: the section of a question extends what its case tab shows and 
     q1.metrics.sort((a, b) => exceed(a.id) - exceed(b.id));
     expect(q1.metrics[0].id).toMatch(/exceed|expected/);
     expect(defaultMetric(q1).id).not.toMatch(/exceed|expected/);
-    expect(render(q1, 'en', 'exceed_1', 0, planted)).not.toContain('value="exceed_1"');
+    const markup = render(q1, 'en', 'exceed_1', 0, planted);
+    const controls = markup.slice(markup.indexOf('data-methods-controls'), markup.indexOf('data-methods-run'));
+    expect(controls.length).toBeGreaterThan(0);
+    for (const id of OMITTED_METRICS.Q1) expect(controls).not.toContain(docText(q1.metrics.find((m) => m.id === id)!.label, 'en'));
   });
   afterEach(() => setLang('en'));
 });
