@@ -268,9 +268,11 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, *, manifest: 
     write_json(root / RAW_REL, built.raw_sources)
     sums.append(_sum(root, RAW_REL))
     (root / SUMS_REL).write_text("\n".join(sums) + "\n", encoding="utf-8", newline="\n")
-    # the declared ranges are those of the real files; a planted run (tests) passes strict_expect=False and records the widest range
-    wanted = expect_ranges(built.values) if strict_expect else {k: (-1.0, 1.0) for k in built.values}
-    ranges = expectations.check(CASE_ID, wanted, built.values)
+    # the declared ranges are those of the real files; a planted run (tests) passes strict_expect=False, records them and does not
+    # judge its small synthetic numbers by them
+    wanted = expect_ranges(built.values)
+    ranges = (expectations.check(CASE_ID, wanted, built.values) if strict_expect
+              else {k: [float(lo), float(hi)] for k, (lo, hi) in sorted(wanted.items())})
     manifest_doc = build_case_manifest(
         depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=dict(CASE.title), category={"en": "Credit scoring", "es": "Puntuación crediticia"}, question=dict(CASE.question),
