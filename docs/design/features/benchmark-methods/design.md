@@ -2,7 +2,7 @@
 
 Status: live. Transcribed from the draft of CAOS_MANAGE `wip/contraste/bl113-methods-compared-design-2026-11-15/design.md` and the accepted
 sizing `wip/contraste/bl113-t1-sizing-2026-11-15.md` (its D1 per question, D2 and D3), with the decisions of the main session of 2026-11-15
-and 2026-11-16. Contract: `benchmark-methods` 1.0.0 (`docs/contracts/schemas/benchmark-methods.schema.json`). It closes gap 1 of the M12
+and 2026-11-16. Contract: `benchmark-methods` 2.0.0 (`docs/contracts/schemas/benchmark-methods.schema.json`). It closes gap 1 of the M12
 audit: the binding rule asks that the benchmark compare the long-established, recent published and proposed methods on the same data and
 protocol, and today only C11 ranks them on one protocol, inside its own Compare view.
 
@@ -43,11 +43,11 @@ with its reason. The recent published rows with no question (M-11, M-31, M-36, M
 ## The document
 
 Closed objects (the schema forbids any other key). `questions[]`: `id`, `title`, `case_ids`, `protocol`, `runs[]` (`id`, `label`, `protocol`,
-`seed` with its citation, `files`, `columns`), `metrics[]` (`id`, `label`, `run_id`, `better`, `unit`, `columns`), `rows[]`, `absent[]`,
-`standings[]`, `reading`, `negative_results[]`. `rows[]`: `method`, `ladder_id` (kept for the tests, never rendered), `standing`, `ranked`,
+`seed` with its citation, `files`, `truth_status`, `columns`), `metrics[]` (`id`, `label`, `run_id`, `better`, `unit`, `columns`), `rows[]`, `absent[]`,
+`standings[]`, `reading`, `negative_results[]` (`rows`, `manuscript`, `concept_doi`, `text`). `rows[]`: `method`, `ladder_id` (kept for the tests, never rendered), `standing`, `ranked`,
 `note`, `source` and `year` where the SDD gives them, `cells[]` (`metric`, `column`, `value`, `null_reason`, `cited` with `path`, `pointer`,
 `sha256`). Every text is `{en, es}`. The document also holds `provenance` (code version, the digest of the ladder rows read, every file read
-with its hash), `left_out[]` and `not_built[]`.
+with its hash), `left_out[]` (`ladder_id`, `method`, `reason`, `backlog`) and `not_built[]`.
 
 Rules the document keeps:
 
@@ -60,9 +60,17 @@ Rules the document keeps:
   `nearer-metric:<metric>`, `order:<best>,...`), ties stated, a null never ranked; the words of `reading` are built from those standings. A
   proposed method that loses is shown losing and the question cites the manuscript that reports the negative or partial result (BS-14 refuted on
   both clauses in the committed C04 verdict; BS-15 not as stated; BS-8 losing on false flags).
-- **Nulls.** A cell the product does not have is null with its reason and the backlog row that fills it (BL-119, K-1 to K-12). Nothing is estimated. The Kupiec and conditional-coverage p-values of Q1 are not among them: they are copied from the `tests` of every case document for all 18 models, and a test the document does not evaluate is null with that document's own note.
+- **Nulls.** A cell the product does not have is null with its reason; the backlog row that fills a method the comparison does not show or leaves out (BL-119, K-1 to K-12) is the structured field `backlog` of its `absent[]` or `left_out[]` entry, never a reader text (BM-019). Nothing is estimated. The Kupiec and conditional-coverage p-values of Q1 are not among them: they are copied from the `tests` of every case document for all 18 models, and a test the document does not evaluate is null with that document's own note.
 - **No p-value is ranked.** A p-value is evidence against a null, never a score of quality (it rewards a rule with few exceedances as much as one near the target): every metric whose value is a p-value is declared `none` (context). The traffic light and the distance of the exceedance count from its expected value are the ranked readings.
 - **The rule is per metric.** The schema declares `better` once per metric, so a column that needs another rule is a metric of its own: the no-change column of the median first-flag day (Q2) is `gen_median_null` and `man_median_null`, declared `none`, beside `gen_median` and `man_median` over the planted columns (`lower`). The contract is unchanged.
+- **The truth status of a run (BM-018).** Each chart is labelled real, synthetic or published by what its data rest on, and that is a fact of the
+  case documents the run cites, not of the page: the builder copies `provenance.truth_status` from every case document of the run and stops
+  when they disagree or one lacks it (no "mixed", no default), so a new run cannot be labelled by a default nobody decided. Two runs were
+  mislabelled by the list of run ids the page first held (Q10's labelled run is `synthetic-calibrated`, Q12's twin `real-outcomes`). The
+  manuscript result files state no status, so a run that cites only those declares one in the specification, with its reason, read against the
+  experiment script the file names (the generator of known truth, the plant, or the committed real windows); a run that cites case documents
+  declares nothing, and one that cites both takes the case documents' status. The same change keeps a manuscript's concept DOI in each
+  negative result (read from its `conceptdoi` macro, checked against `product.json`) so the page shows the published title and not a file path.
 - **Q10 (F-8).** The multiplier of the reverse liquidity stress is a threshold on a base, not a forecast: its row shows the score of its
   calibrated fast-run base and its multipliers, and is not ranked.
 

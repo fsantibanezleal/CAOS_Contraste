@@ -136,7 +136,7 @@ export interface components {
         };
         /**
          * Methods compared
-         * @description Catalog row benchmark-methods 1.0.0: the methods of each benchmark question side by side (data/derived/benchmark/methods-compared.json), every value copied from a committed case document or manuscript result file with its path, JSON pointer and SHA-256, every method with its standing read from the SDD method ladder, every reading generated from the numbers by the declared rule of each metric.
+         * @description Catalog row benchmark-methods 2.0.0: the methods of each benchmark question side by side (data/derived/benchmark/methods-compared.json), every value copied from a committed case document or manuscript result file with its path, JSON pointer and SHA-256, every method with its standing read from the SDD method ladder, every reading generated from the numbers by the declared rule of each metric.
          */
         "benchmark-methods": {
             /** @constant */
@@ -186,6 +186,7 @@ export interface components {
             ladder_id: components["schemas"]["bmLadderId"];
             method: components["schemas"]["bmText"];
             reason: components["schemas"]["bmText"];
+            backlog: string | null;
         };
         bmMetric: {
             id: string;
@@ -199,6 +200,8 @@ export interface components {
         bmNegativeResult: {
             rows: string[];
             manuscript: string;
+            /** @description The concept DOI of the manuscript, read from its conceptdoi macro and equal to the concept_doi of one product.json manuscripts entry. */
+            concept_doi: string;
             text: components["schemas"]["bmText"];
         };
         bmNotBuilt: {
@@ -255,6 +258,11 @@ export interface components {
             seed: null | components["schemas"]["bmSeed"];
             /** @description The committed files this run's cells cite; no file serves two runs of one question. */
             files: string[];
+            /**
+             * @description What the data of this run rest on, the closed list of the case documents' provenance.truth_status: copied from the case documents the run cites (they must agree), or, for a run that cites manuscript result files only, declared by the specification with its reason.
+             * @enum {string}
+             */
+            truth_status: "real-outcomes" | "synthetic-known-truth" | "synthetic-calibrated" | "published-answer";
             columns: components["schemas"]["bmColumn"][];
         };
         bmSeed: {

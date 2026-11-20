@@ -1,11 +1,11 @@
-// The web side of the contract `benchmark-methods` 1.0.0 (docs/contracts/schemas/benchmark-methods.schema.json): the methods of each
+// The web side of the contract `benchmark-methods` 2.0.0 (docs/contracts/schemas/benchmark-methods.schema.json): the methods of each
 // benchmark question side by side, from data/derived/benchmark/methods-compared.json (BL-113). The interfaces type what the schema
 // types; the functions here are the page's model: where each question lives, how its rows group by standing, which cell is the best of
 // its column, the best method per metric of the overview. Nothing is computed from the cases and nothing is typed in: every number
 // and every best mark is read from the document (the standings are the document's own).
 import { ArtifactUnavailable, getJSON, useArtifact, type LoadedDeclared } from '../api/artifacts';
 import { loadReadiness, unavailableRow } from '../readiness/readiness';
-import type { Text } from './contract.types';
+import type { Text, TruthStatus } from './contract.types';
 
 export type Standing = 'established' | 'recent' | 'proposed' | 'reference';
 export type CellValue = number | string | boolean;
@@ -43,6 +43,8 @@ export interface McRun {
   protocol: Text;
   seed: { value: number; cited: McCite } | null;
   files: string[];
+  /** What the run's data rest on, copied by the builder from the case documents it cites; the page maps it with `provenanceOf`, it keeps no list of runs. */
+  truth_status: TruthStatus;
   columns: McColumn[];
 }
 export interface McMetric {
@@ -72,7 +74,7 @@ export interface McQuestion {
   absent: Array<{ method: Text; ladder_id: string | null; standing: Standing | null; reason: Text; backlog: string | null }>;
   standings: McStanding[];
   reading: Text;
-  negative_results: Array<{ rows: string[]; manuscript: string; text: Text }>;
+  negative_results: Array<{ rows: string[]; manuscript: string; concept_doi: string; text: Text }>;
 }
 export interface MethodsCompared {
   schema: string;
@@ -80,7 +82,7 @@ export interface MethodsCompared {
   schema_version: string;
   provenance: { code_version: string; documents: Array<{ path: string; sha256: string }> };
   questions: McQuestion[];
-  left_out: Array<{ ladder_id: string; method: Text; reason: Text }>;
+  left_out: Array<{ ladder_id: string; method: Text; reason: Text; backlog: string | null }>;
   not_built: Array<{ id: string; title: Text; reason: Text }>;
 }
 

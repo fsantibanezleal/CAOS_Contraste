@@ -3,7 +3,7 @@
 // every number, every best mark and every reading is the document's. The words for a method's standing are "Long-established",
 // "Recent published" and "Proposed in this work" (and "Reference" for the rows that set the scale); each method is named with its source
 // and year. A cell the product does not compute shows its reason; a long table is split by column, never scrolled sideways.
-import { BarChart, ChipGroup, DocSection, PlotCard, Verdict, formatNumber, pick, useShellLang, type BarDatum, type BiText, type Lang, type Provenance } from '@fasl-work/caos-app-shell';
+import { BarChart, ChipGroup, DocSection, PlotCard, Verdict, formatNumber, pick, useShellLang, type BarDatum, type BiText, type Lang } from '@fasl-work/caos-app-shell';
 import { useState, type CSSProperties } from 'react';
 import { useT } from '../../content/bi';
 import {
@@ -31,6 +31,8 @@ import {
   type OverviewRow,
 } from '../../lib/methodsCompared';
 import type { Text } from '../../lib/contract.types';
+import { provenanceOf } from '../../workbench/model';
+import { PUBLICATIONS } from '../Publications';
 import { Table } from '../U6Sections';
 
 /** A document text with its decimals in the form of each language, for a shell prop that takes both. */
@@ -80,9 +82,17 @@ function ruleText(q: McQuestion, m: McMetric, lang: Lang): string {
   return lang === 'es' ? `orden, de mejor a peor: ${order.join(', ')}` : `order, best to worst: ${order.join(', ')}`;
 }
 
-/** What the data of a run rest on: a generator with a known truth, or the real record. */
-const SYNTHETIC_RUNS = new Set(['generator', 'manuscript', 'desk', 'withdrawals', 'planted', 'twin', 'histories', 'coverage', 'shift', 'situation']);
-const provenanceOf = (q: McQuestion, m: McMetric): Provenance => (SYNTHETIC_RUNS.has(runOf(q, m).id) ? 'synthetic' : 'real');
+/** The manuscript of a negative result: its published title, linked to the concept DOI the document gives; a DOI the publications do not list is shown as itself. */
+function ManuscriptLink({ doi }: { doi: string }) {
+  const title = PUBLICATIONS.find((p) => p.concept_doi === doi)?.title ?? doi;
+  return (
+    <a href={`https://doi.org/${doi}`}>
+      <span lang="en" translate="no">
+        {title}
+      </span>
+    </a>
+  );
+}
 
 /** The source of a method with its year, as the document gives them; the source is a citation and keeps its own words. */
 function Source({ row }: { row: McRow }) {
@@ -229,7 +239,7 @@ function Chart({ q, metric, column }: { q: McQuestion; metric: McMetric; column:
       <PlotCard
         title={{ en: `${loc(metric.label).en}: ${loc(col).en}`, es: `${loc(metric.label).es}: ${loc(col).es}` }}
         lane="replay"
-        provenance={provenanceOf(q, metric)}
+        provenance={provenanceOf(runOf(q, metric).truth_status)}
         note={{ en: `${ruleText(q, metric, 'en')}. The bars read from the table; the groups are the standing of each method.`, es: `${ruleText(q, metric, 'es')}. Las barras se leen de la tabla; los grupos son el lugar de cada método.` }}
       >
         <BarChart
@@ -347,7 +357,7 @@ export function MethodsQuestionView({ doc, question: q, initialMetric, initialPa
         </p>
         {here.map((n, i) => (
           <p key={i} data-methods-negative="">
-            <strong>{t('A proposed method that does not win', 'Un método propuesto que no gana')}.</strong> {docText(n.text, lang)} <span className="ct-note" translate="no">{n.manuscript}</span>
+            <strong>{t('A proposed method that does not win', 'Un método propuesto que no gana')}.</strong> {docText(n.text, lang)} <span className="ct-note">{t('Manuscript', 'Manuscrito')}: <ManuscriptLink doi={n.concept_doi} /></span>
           </p>
         ))}
       </div>

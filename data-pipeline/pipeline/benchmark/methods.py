@@ -27,12 +27,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from ..core.lineage import TRUTH_STATUSES
 from . import METHODS_REL, SCHEMA_TAG, SUMS_REL
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SDD_REL = "docs/design/SDD.md"
 DERIVED_REL = "data/derived"
-SCHEMA_VERSION = "1.0.0"
+SCHEMA_VERSION = "2.0.0"
 GENERATORS = ["contraste:benchmark-methods"]
 TIER_STANDING = {"classical": "established", "sota": "recent", "beyond": "proposed"}
 STANDING_ORDER = {"established": 0, "recent": 1, "proposed": 2, "reference": 3}
@@ -366,6 +367,42 @@ def build_cells(q: dict[str, Any], corpus: Corpus) -> dict[str, list[dict[str, A
     return out
 
 
+def truth_status_of(q_id: str, run: dict[str, Any], files: list[str], corpus: Corpus) -> str:
+    """The truth status of the data a run rests on, copied from the case documents it cites (``provenance.truth_status``) and never typed.
+
+    A run that cites case documents takes their one status; documents that disagree, a document without a status or with one outside the closed
+    list, and a declared status on such a run stop the build. The manuscript result files state no status, so a run that cites only those declares
+    it in the specification (``"truth": (status, reason)``); a run that cites both kinds takes the case documents' status and its declared one must
+    equal it."""
+    where = f"{q_id} {run['id']}"
+    declared = run.get("truth")
+    if declared is not None and declared[0] not in TRUTH_STATUSES:
+        raise BenchmarkError(f"{where}: the declared truth status {declared[0]!r} is not in the closed list {list(TRUTH_STATUSES)}")
+    case_files = [f for f in files if f.startswith(f"{DERIVED_REL}/")]
+    other_files = [f for f in files if f not in case_files]
+    if not files:
+        raise BenchmarkError(f"{where}: the run cites no file, so it has no truth status to copy")
+    if not case_files:
+        if declared is None:
+            raise BenchmarkError(f"{where}: the run cites only manuscript result files, which state no truth status: the specification must declare one with its reason")
+        return declared[0]
+    by_status: dict[str, list[str]] = {}
+    for rel in case_files:
+        doc, _ = corpus.load(rel)
+        status = (doc.get("provenance") or {}).get("truth_status") if isinstance(doc, dict) else None
+        if status not in TRUTH_STATUSES:
+            raise BenchmarkError(f"{where}: the case document {rel} states the truth status {status!r}, not one of {list(TRUTH_STATUSES)}")
+        by_status.setdefault(status, []).append(rel)
+    if len(by_status) > 1:
+        raise BenchmarkError(f"{where}: the case documents it cites state different truth statuses: " + "; ".join(f"{s}: {', '.join(fs)}" for s, fs in sorted(by_status.items())))
+    status = next(iter(by_status))
+    if declared is not None and not other_files:
+        raise BenchmarkError(f"{where}: the run cites only case documents and must not declare a truth status: the copied value ({status}) is the only source")
+    if declared is not None and declared[0] != status:
+        raise BenchmarkError(f"{where}: the declared truth status {declared[0]} differs from the status of the case documents it cites ({status})")
+    return status
+
+
 def build_run(run: dict[str, Any], q: dict[str, Any], rows_cells: dict[str, list[dict[str, Any]]], corpus: Corpus) -> dict[str, Any]:
     metric_run = {m["id"]: m["run"] for m in q["metrics"]}
     files = sorted({c["cited"]["path"] for cs in rows_cells.values() for c in cs if c["cited"] and metric_run[c["metric"]] == run["id"]})
@@ -383,7 +420,8 @@ def build_run(run: dict[str, Any], q: dict[str, Any], rows_cells: dict[str, list
         if value is not None:
             seed = {"value": value, "cited": _cite(corpus, rel, pointer)}
     return {"id": run["id"], "label": run["label"], "protocol": run["protocol"], "seed": seed, "files": files,
-            "columns": [{"id": c["id"], "label": c["label"]} for c in run["columns"]]}
+            "truth_status": truth_status_of(q["id"], run, files, corpus),
+            "columns":[{"id": c["id"], "label": c["label"]} for c in run["columns"]]}
 
 
 def standings_of(metrics: list[dict[str, Any]], rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -465,6 +503,31 @@ def reading_of(metrics: list[dict[str, Any]], rows: list[dict[str, Any]], standi
     return {"en": " ".join(en), "es": " ".join(es)}
 
 
+CONCEPT_DOI_MACRO = re.compile(r"\\newcommand\{\\conceptdoi\}\{([^}]+)\}")
+
+
+def concept_doi(manuscript: str, root: Path = REPO_ROOT) -> str:
+    """The concept DOI a manuscript's ``\\conceptdoi`` macro defines, checked against exactly one ``product.json`` ``manuscripts`` entry."""
+    tex = Path(root) / manuscript
+    if not tex.is_file():
+        raise BenchmarkError(f"the manuscript {manuscript} is not committed")
+    found = CONCEPT_DOI_MACRO.search(tex.read_text(encoding="utf-8"))
+    if found is None:
+        raise BenchmarkError(f"{manuscript} defines no \\conceptdoi macro: its concept DOI is not guessed")
+    doi = found.group(1).strip()
+    product = json.loads((Path(root) / "product.json").read_text(encoding="utf-8"))
+    entries = [m for m in product.get("manuscripts", []) if m.get("concept_doi") == doi]
+    if len(entries) != 1:
+        raise BenchmarkError(f"{manuscript} defines the concept DOI {doi}, which is in {len(entries)} entries of product.json manuscripts (exactly one is required)")
+    return doi
+
+
+def build_negative_results(q: dict[str, Any], corpus: Corpus) -> list[dict[str, Any]]:
+    """Each negative result with the concept DOI of its manuscript (the reader sees the published title and DOI, not the file path)."""
+    return [{"rows": n["rows"], "manuscript": n["manuscript"], "concept_doi": concept_doi(n["manuscript"], corpus.root), "text": n["text"]}
+            for n in q.get("negative_results", [])]
+
+
 def build_question(q: dict[str, Any], corpus: Corpus, ladder: dict[str, dict[str, str]]) -> dict[str, Any]:
     cells = build_cells(q, corpus)
     rows = []
@@ -487,7 +550,7 @@ def build_question(q: dict[str, Any], corpus: Corpus, ladder: dict[str, dict[str
         "runs": [build_run(run, q, cells, corpus) for run in q["runs"]],
         "metrics": metrics, "rows": rows, "absent": absent, "standings": standings,
         "reading": reading_of(metrics, rows, standings),
-        "negative_results": q.get("negative_results", []),
+        "negative_results": build_negative_results(q, corpus),
     }
 
 
@@ -512,7 +575,7 @@ def build(root: Path = REPO_ROOT) -> dict[str, Any]:
             "hash_rule": "SHA-256 of the file with line endings normalised to LF",
         },
         "questions": questions,
-        "left_out": [{"ladder_id": i["ladder"], "method": i["method"], "reason": i["reason"]} for i in LEFT_OUT],
+        "left_out": [{"ladder_id": i["ladder"], "method": i["method"], "reason": i["reason"], "backlog": i["backlog"]} for i in LEFT_OUT],
         "not_built": NOT_BUILT,
     }
 
@@ -740,10 +803,12 @@ Q2 = {
          "seed": (Q2_GEN, "outputs.sequential.seed"), "columns": Q2_COLS},
         {"id": "manuscript", "label": T("Generator streams, manuscript run", "Series del generador, corrida del manuscrito"),
          "protocol": T("The same generator, 2,000 streams per scenario, the seed of the manuscript's experiment.", "El mismo generador, 2.000 series por escenario, la semilla del experimento del manuscrito."),
-         "seed": (Q2_MAN, "meta.seed"), "columns": Q2_COLS},
+         "seed": (Q2_MAN, "meta.seed"), "columns": Q2_COLS,
+         "truth": ("synthetic-known-truth", T("the manuscript experiment draws its streams from the engine generator of known truth", "el experimento del manuscrito extrae sus series del generador del motor de verdad conocida"))},
         {"id": "real-windows", "label": T("Real windows of the VaR ladder", "Ventanas reales de la escalera de VaR"),
          "protocol": T("Each rule reads every model's exceedance days of a C11 window; the median first-flag day over the models flagged.", "Cada regla lee los días de exceso de cada modelo de una ventana de C11; la mediana del primer día de alerta entre los modelos señalados."),
-         "seed": None, "columns": Q1_WINDOWS},
+         "seed": None, "columns": Q1_WINDOWS,
+         "truth": ("real-outcomes", T("the rules read the exceedance days of the committed real-market windows of C11", "las reglas leen los días de exceso de las ventanas de mercado real versionadas de C11"))},
         {"id": "vintages", "label": T("Real vintages of the SME book", "Cosechas reales de la cartera de pymes"),
          "protocol": T("The e-process on observed defaults against predicted PD, against the traffic light at the five-year mark, per vintage.", "El proceso e sobre los incumplimientos observados contra la PD predicha, contra el semáforo a los cinco años, por cosecha."),
          "seed": None, "columns": [col(str(y), f"Vintage {y}", f"Cosecha {y}", file=f, fy=str(y)) for f, y in Q2_C03]},
@@ -766,11 +831,11 @@ Q2 = {
     "rows": _q2_cells_hack(_q2_rows()),
     "absent": [
         {"method": T("E-backtest of Wang, Wang and Ziegel (2022)", "Prueba retrospectiva-e de Wang, Wang y Ziegel (2022)"), "ladder": None, "backlog": "BL-121",
-         "reason": T("The published e-backtest is scored only in the manuscript result files and the method ladder has no row for it yet (backlog BL-121), so it has no standing in this comparison and its cells are not shown.",
-                     "La prueba retrospectiva-e publicada se puntúa solo en los archivos de resultados del manuscrito y la escalera de métodos aún no tiene una fila para ella (fila BL-121 del backlog), así que no tiene un lugar en esta comparación y sus celdas no se muestran.")},
+         "reason": T("The published e-backtest is scored only in the manuscript result files and the product's list of methods does not include it yet, so it has no standing in this comparison and its cells are not shown.",
+                     "La prueba retrospectiva-e publicada se puntúa solo en los archivos de resultados del manuscrito y la lista de métodos del producto todavía no la incluye, así que no tiene un lugar en esta comparación y sus celdas no se muestran.")},
         {"method": T("Beta-mixture e-process, sequential probability ratio e-process, calibrated Kupiec and calibrated CUSUM", "Proceso e de mezcla beta, proceso e de razón de probabilidad secuencial, Kupiec calibrado y CUSUM calibrado"), "ladder": None, "backlog": None,
-         "reason": T("The manuscript run also scores these rules; none has a row in the method ladder, so none has a standing here.",
-                     "La corrida del manuscrito también puntúa estas reglas; ninguna tiene una fila en la escalera de métodos, así que ninguna tiene un lugar aquí.")},
+         "reason": T("The manuscript run also scores these rules; none is in the product's list of methods, so none has a standing here.",
+                     "La corrida del manuscrito también puntúa estas reglas; ninguna figura en la lista de métodos del producto, así que ninguna tiene un lugar aquí.")},
     ],
     "negative_results": [
         {"rows": ["e_rate", "e_cluster", "e_battery"], "manuscript": f"{MS_EPROC}/main.tex",
@@ -806,8 +871,8 @@ Q3 = {
     ],
     "absent": [
         {"method": T("A recent published alternative to the attribution test", "Una alternativa publicada recientemente a la prueba de atribución"), "ladder": None, "backlog": None,
-         "reason": T("The product runs none and the method ladder has no row for one. Whether one exists outside the repository was not searched, so no absence is claimed outside the product.",
-                     "El producto no ejecuta ninguna y la escalera de métodos no tiene una fila para ella. No se buscó si existe una fuera del repositorio, así que no se afirma una ausencia fuera del producto.")},
+         "reason": T("The product runs none and its list of methods has no entry for one. Whether one exists outside the repository was not searched, so no absence is claimed outside the product.",
+                     "El producto no ejecuta ninguna y su lista de métodos no tiene una entrada para ella. No se buscó si existe una fuera del repositorio, así que no se afirma una ausencia fuera del producto.")},
     ],
     "negative_results": [],
 }
@@ -857,8 +922,8 @@ Q4 = {
     ],
     "absent": [
         {"method": T("Duration estimators of the transition matrix", "Estimadores de duración de la matriz de transición"), "ladder": "M-9", "backlog": f"{K_BACKLOG} (K-4)",
-         "reason": T(f"The duration estimators are not run on the withdrawal generator, so there is no cell to compare; backlog {K_BACKLOG} (K-4) adds the treatment.",
-                     f"Los estimadores de duración no se ejecutan sobre el generador de retiros, así que no hay una celda que comparar; la fila {K_BACKLOG} del backlog (K-4) agrega el tratamiento.")},
+         "reason": T("The duration estimators are not run on the withdrawal generator, so there is no cell to compare; a later computation adds the treatment.",
+                     "Los estimadores de duración no se ejecutan sobre el generador de retiros, así que no hay una celda que comparar; un cálculo posterior agrega el tratamiento.")},
     ],
     "negative_results": [
         {"rows": ["anchored"], "manuscript": f"{MS_BS14}/main.tex",
@@ -1084,7 +1149,8 @@ Q9 = {
     "protocol": T("Planted histories of 12 quarters in paired arms, 4,000 per arm: the same breach chain and the same unrelated changes in both arms, the parameter lengthening at a breach with probability one half in the second arm. The two shift tests are calibrated at 5% on separate null histories; every rule is scored on the same histories. The committed bank documents show that the test operates on one bank, not that the bank behaved as the test flags, so they are not scored here.",
                   "Historias plantadas de 12 trimestres en brazos pareados, 4.000 por brazo: la misma cadena de brechas y los mismos cambios no relacionados en ambos brazos, con el parámetro alargándose en una brecha con probabilidad de un medio en el segundo brazo. Las dos pruebas de quiebre se calibran al 5% en historias nulas separadas; cada regla se puntúa sobre las mismas historias. Los documentos del banco versionados muestran que la prueba opera en un banco, no que el banco se comportó como la prueba señala, así que aquí no se puntúan."),
     "runs": [{"id": "planted", "label": T("Planted histories, paired arms", "Historias plantadas, brazos pareados"),
-              "protocol": T("12 quarters, 4,000 histories per arm.", "12 trimestres, 4.000 historias por brazo."), "seed": (Q9_F, "seed"), "columns": Q9_COLS}],
+              "protocol": T("12 quarters, 4,000 histories per arm.", "12 trimestres, 4.000 historias por brazo."), "seed": (Q9_F, "seed"), "columns": Q9_COLS,
+              "truth": ("synthetic-known-truth", T("the experiment plants the changes in simulated histories", "el experimento planta los cambios en historias simuladas"))}],
     "metrics": [
         _m("false_flag", T("Flag rate with unrelated changes only (false flags)", "Tasa de alertas con cambios no relacionados solamente (falsas alertas)"), "planted", "lower", T("share of histories", "proporción de historias"), Q9_ALL, Q9_F),
         _m("detect", T("Flag rate with a change at a breach (detection)", "Tasa de alertas con un cambio en una brecha (detección)"), "planted", "higher", T("share of histories", "proporción de historias"), Q9_ALL, Q9_F),
@@ -1157,18 +1223,18 @@ Q10["rows"][-1]["file"] = f"{Q10_DIR}/reverse-stress.json"
 Q11_COV = f"{MS_BS10}/experiments/results/coverage.json"
 Q11_SHIFT = f"{MS_BS10}/experiments/results/shift.json"
 Q11_SIT = f"{MS_BS10}/experiments/results/situation.json"
-_Q11_NOTE = T("the rule belongs to the machine-learning validation and fairness tests; the method ladder holds them in one row", "la regla pertenece a las pruebas de validación y de equidad de aprendizaje automático; la escalera de métodos las reúne en una fila")
+_Q11_NOTE = T("the rule belongs to the machine-learning validation and fairness tests; the product's list of methods holds them in one entry", "la regla pertenece a las pruebas de validación y de equidad de aprendizaje automático; la lista de métodos del producto las reúne en una entrada")
 Q11 = {
     "id": "Q11", "title": T("The corrections of three validation tests", "Las correcciones de tres pruebas de validación"), "case_ids": ["C20", "C21"],
     "protocol": T("Three experiments, each scoring every rule on the same replications of its cell: the coverage test under exchangeability, the shift light without and with a two-standard-deviation shift, and the situation-testing cut without and with a gap. A rule is better when it rejects less under the null and more under the planted change. The experiments live in the manuscript result files; the committed case documents hold one instance of each corrected statistic, not its rate.",
                   "Tres experimentos, cada uno puntúa cada regla sobre las mismas réplicas de su celda: la prueba de cobertura bajo intercambiabilidad, el semáforo de cambio sin y con un cambio de dos desviaciones estándar, y el corte de la prueba de situación sin y con una brecha. Una regla es mejor cuando rechaza menos bajo la nula y más bajo el cambio plantado. Los experimentos viven en los archivos de resultados del manuscrito; los documentos de caso versionados traen una instancia de cada estadístico corregido, no su tasa."),
     "runs": [
         {"id": "coverage", "label": T("Coverage test under exchangeability", "Prueba de cobertura bajo intercambiabilidad"),
-         "protocol": T("4,000 replications per cell.", "4.000 réplicas por celda."), "seed": (Q11_COV, "meta.seed"),
+         "protocol": T("4,000 replications per cell.", "4.000 réplicas por celda."), "seed": (Q11_COV, "meta.seed"), "truth": ("synthetic-known-truth", T("scores drawn uniformly under exchangeability", "puntajes extraídos de forma uniforme bajo intercambiabilidad")),
          "columns": [col("equal", "Calibration 1,000, test 1,000", "Calibración 1.000, prueba 1.000", sel="n=1000,m=1000"), col("x4", "Calibration 1,000, test 4,000", "Calibración 1.000, prueba 4.000", sel="n=1000,m=4000")]},
-        {"id": "shift", "label": T("Shift light", "Semáforo de cambio"), "protocol": T("About 400 draws per cell, 500 evaluation rows.", "Cerca de 400 sorteos por celda, 500 filas de evaluación."), "seed": (Q11_SHIFT, "meta.seed"),
+        {"id": "shift", "label": T("Shift light", "Semáforo de cambio"), "protocol": T("About 400 draws per cell, 500 evaluation rows.", "Cerca de 400 sorteos por celda, 500 filas de evaluación."), "seed": (Q11_SHIFT, "meta.seed"), "truth": ("synthetic-known-truth", T("samples drawn from the engine covariate-shift plant", "muestras extraídas de la planta de cambio de covariables del motor")),
          "columns": [col("no-shift", "No shift", "Sin cambio", sel="shift=0.0"), col("shift-2sd", "Shift of two standard deviations", "Cambio de dos desviaciones estándar", sel="shift=2.0")]},
-        {"id": "situation", "label": T("Situation-testing cut", "Corte de la prueba de situación"), "protocol": T("1,000 replications per cell, 400 applicants.", "1.000 réplicas por celda, 400 solicitantes."), "seed": (Q11_SIT, "meta.seed"),
+        {"id": "situation", "label": T("Situation-testing cut", "Corte de la prueba de situación"), "protocol": T("1,000 replications per cell, 400 applicants.", "1.000 réplicas por celda, 400 solicitantes."), "seed": (Q11_SIT, "meta.seed"), "truth": ("synthetic-known-truth", T("datasets drawn from the engine threshold-bias plant", "conjuntos de datos extraídos de la planta de sesgo de umbral del motor")),
          "columns": [col("no-gap", "No gap", "Sin brecha", sel="gap=0.0"), col("gap-0.2", "A gap of 0.2", "Una brecha de 0,2", sel="gap=0.2")]},
     ],
     "metrics": [
@@ -1252,16 +1318,16 @@ NOT_BUILT = [
 ]
 
 LEFT_OUT = [
-    {"ladder": "M-11", "method": T("IFRS 9 expected-credit-loss engine", "Motor de pérdida crediticia esperada de IFRS 9"),
-     "reason": T(f"No competing method runs on a protocol: the weighted-scenario loss is committed beside the mean-path loss, but there is no outcome to score and no incurred-loss comparator (backlog {K_BACKLOG}, K-9).",
-                 f"Ningún método competidor corre sobre un protocolo: la pérdida ponderada por escenarios está versionada junto a la pérdida de la trayectoria media, pero no hay un desenlace que puntuar ni un comparador de pérdida incurrida (fila {K_BACKLOG} del backlog, K-9).")},
-    {"ladder": "M-31", "method": T("Conditional-forecast and growth-at-risk quantile satellites", "Satélites de pronóstico condicional y de cuantil de crecimiento en riesgo"),
-     "reason": T(f"No numbers are committed: the stress document holds only the linear and probit satellites (backlog {K_BACKLOG}, K-10).",
-                 f"No hay números versionados: el documento de estrés trae solo los satélites lineales y probit (fila {K_BACKLOG} del backlog, K-10).")},
-    {"ladder": "M-36", "method": T("PD curve calibration carried to a new period", "Calibración de la curva de PD llevada a un período nuevo"),
-     "reason": T("The scaled approaches take the new period's PD as an input, so there is nothing to rank (question 13 is not built).",
+    {"ladder": "M-11", "method": T("IFRS 9 expected-credit-loss engine", "Motor de pérdida crediticia esperada de IFRS 9"), "backlog": f"{K_BACKLOG} (K-9)",
+     "reason": T("No competing method runs on a protocol: the weighted-scenario loss is committed beside the mean-path loss, but there is no outcome to score and no incurred-loss comparator is computed.",
+                 "Ningún método competidor corre sobre un protocolo: la pérdida ponderada por escenarios está versionada junto a la pérdida de la trayectoria media, pero no hay un desenlace que puntuar ni se calcula un comparador de pérdida incurrida.")},
+    {"ladder": "M-31", "method": T("Conditional-forecast and growth-at-risk quantile satellites", "Satélites de pronóstico condicional y de cuantil de crecimiento en riesgo"), "backlog": f"{K_BACKLOG} (K-10)",
+     "reason": T("No numbers are committed: the stress document holds only the linear and probit satellites.",
+                 "No hay números versionados: el documento de estrés trae solo los satélites lineales y probit.")},
+    {"ladder": "M-36", "method": T("PD curve calibration carried to a new period", "Calibración de la curva de PD llevada a un período nuevo"), "backlog": None,
+     "reason":T("The scaled approaches take the new period's PD as an input, so there is nothing to rank (question 13 is not built).",
                  "Los enfoques escalados toman la PD del período nuevo como entrada, así que no hay nada que clasificar (la pregunta 13 no se construye).")},
-    {"ladder": "M-37", "method": T("The published size and power studies of the validation tests, rerun", "Los estudios publicados de tamaño y potencia de las pruebas de validación, repetidos"),
+    {"ladder": "M-37", "method": T("The published size and power studies of the validation tests, rerun", "Los estudios publicados de tamaño y potencia de las pruebas de validación, repetidos"), "backlog": None,
      "reason": T("They reproduce published cells and do not compete with another method on a common stream.",
                  "Reproducen celdas publicadas y no compiten con otro método sobre una serie común.")},
 ]

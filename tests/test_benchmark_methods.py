@@ -1,6 +1,6 @@
-"""BL-113 T2: the methods-compared document (``data/derived/benchmark/methods-compared.json``), contract ``benchmark-methods`` 1.0.0.
+"""BL-113 T2: the methods-compared document (``data/derived/benchmark/methods-compared.json``), contract ``benchmark-methods`` 2.0.0.
 
-One test per requirement of ``docs/design/features/benchmark-methods/requirements.md`` (BM-001 to BM-012), each with the adversarial plant that
+One test per requirement of ``docs/design/features/benchmark-methods/requirements.md`` (BM-001 to BM-020), each with the adversarial plant that
 proves it can fail: a changed value, a moved hash, a standing flipped in the SDD, a tied or null cell, a tier word, an unknown key.
 """
 from __future__ import annotations
@@ -799,3 +799,242 @@ def test_adversarial_bm017_a_point_decimal_or_an_english_category_planted_in_a_s
         planted = copy.deepcopy(doc)
         planted["questions"][0]["protocol"]["es"] = fine
         assert spanish_text_violations(planted) == [], fine
+
+
+# --- BL-113 run truth status (BM-018), the reader texts (BM-019) and the manuscript DOI (BM-020), contract 2.0.0 ----------------------------
+TRUTH_LIST = ("real-outcomes", "synthetic-known-truth", "synthetic-calibrated", "published-answer")
+#: The six runs whose cells cite manuscript result files only: the status each one declares (read against its experiment script).
+DECLARED_RUNS = {("Q2", "manuscript"): "synthetic-known-truth", ("Q2", "real-windows"): "real-outcomes", ("Q9", "planted"): "synthetic-known-truth",
+                 ("Q11", "coverage"): "synthetic-known-truth", ("Q11", "shift"): "synthetic-known-truth", ("Q11", "situation"): "synthetic-known-truth"}
+PROCESS_VOCABULARY = re.compile(r"\bBL-\d+|\bK-\d+|backlog|method ladder|escalera de m[eé]todos", re.I)
+CONCEPT_MACRO = re.compile(r"\\newcommand\{\\conceptdoi\}\{([^}]+)\}")
+
+
+def truth_violations(document: dict, root: Path = ROOT) -> list[str]:
+    """Every run whose truth status is outside the closed list or differs from the status of a case document it cites (recomputed from the files)."""
+    bad = []
+    for q in document["questions"]:
+        for run in q["runs"]:
+            status = run.get("truth_status")
+            if status not in TRUTH_LIST:
+                bad.append(f"{q['id']} {run['id']}: truth_status {status!r} is not in the closed list")
+                continue
+            case_files = [f for f in run["files"] if f.startswith("data/derived/")]
+            for f in case_files:
+                stated = json.loads((root / f).read_text(encoding="utf-8"))["provenance"]["truth_status"]
+                if stated != status:
+                    bad.append(f"{q['id']} {run['id']}: {f} states {stated}, the run says {status}")
+            if not case_files and DECLARED_RUNS.get((q["id"], run["id"])) != status:
+                bad.append(f"{q['id']} {run['id']}: a manuscript run says {status}, the declared value is {DECLARED_RUNS.get((q['id'], run['id']))}")
+    return bad
+
+
+def test_bm018_every_run_states_the_truth_status_of_the_case_documents_it_cites(doc):
+    assert truth_violations(doc) == []
+    runs = {(q["id"], r["id"]): r for q in doc["questions"] for r in q["runs"]}
+    assert len(runs) == 18  # the brief said 19; the committed specification has 12 questions and 18 runs
+    assert runs[("Q10", "labelled-run")]["truth_status"] == "synthetic-calibrated"
+    assert runs[("Q12", "twin")]["truth_status"] == "real-outcomes"
+    assert runs[("Q1", "rolling")]["truth_status"] == "real-outcomes" and runs[("Q4", "withdrawals")]["truth_status"] == "synthetic-known-truth"
+    manuscript_only = {k for k, r in runs.items() if not any(f.startswith("data/derived/") for f in r["files"])}
+    assert manuscript_only == set(DECLARED_RUNS)
+    for key, status in DECLARED_RUNS.items():
+        assert runs[key]["truth_status"] == status, key
+    assert list(runs[("Q1", "rolling")]) == ["id", "label", "protocol", "seed", "files", "truth_status", "columns"]
+
+
+def test_adversarial_bm018_a_status_changed_in_the_document_is_named_with_its_run(doc):
+    planted = copy.deepcopy(doc)
+    q10 = next(q for q in planted["questions"] if q["id"] == "Q10")
+    q10["runs"][0]["truth_status"] = "real-outcomes"
+    found = truth_violations(planted)
+    assert len(found) >= 1 and found[0].startswith("Q10 labelled-run: data/derived/C16/") and "synthetic-calibrated" in found[0]
+    planted = copy.deepcopy(doc)
+    next(q for q in planted["questions"] if q["id"] == "Q11")["runs"][0]["truth_status"] = "real-outcomes"
+    assert truth_violations(planted) == ["Q11 coverage: a manuscript run says real-outcomes, the declared value is synthetic-known-truth"]
+    planted = copy.deepcopy(doc)
+    planted["questions"][0]["runs"][0]["truth_status"] = "mixed"
+    assert truth_violations(planted) == ["Q1 rolling: truth_status 'mixed' is not in the closed list"]
+
+
+def _case(tmp_path: Path, rel: str, status: str | None) -> None:
+    p = tmp_path / rel
+    p.parent.mkdir(parents=True, exist_ok=True)
+    prov = {} if status is None else {"truth_status": status}
+    p.write_text(json.dumps({"provenance": prov}), encoding="utf-8")
+
+
+def _spec_run(**extra) -> dict:
+    return {"id": "r1", "label": bm.T("a", "b"), "protocol": bm.T("a", "b"), "seed": None, "columns": [], **extra}
+
+
+def test_bm018_the_builder_copies_the_status_of_the_cited_case_documents(tmp_path):
+    _case(tmp_path, "data/derived/CX/a.json", "synthetic-calibrated")
+    _case(tmp_path, "data/derived/CX/b.json", "synthetic-calibrated")
+    corpus = bm.Corpus(tmp_path)
+    assert bm.truth_status_of("QX", _spec_run(), ["data/derived/CX/a.json", "data/derived/CX/b.json"], corpus) == "synthetic-calibrated"
+
+
+def test_adversarial_bm018_a_run_whose_case_documents_disagree_stops_the_build_naming_the_run_and_the_files(tmp_path):
+    _case(tmp_path, "data/derived/CX/a.json", "real-outcomes")
+    _case(tmp_path, "data/derived/CX/b.json", "synthetic-known-truth")
+    with pytest.raises(bm.BenchmarkError, match=r"QX r1.*data/derived/CX/a\.json.*data/derived/CX/b\.json"):
+        bm.truth_status_of("QX", _spec_run(), ["data/derived/CX/a.json", "data/derived/CX/b.json"], bm.Corpus(tmp_path))
+
+
+def test_adversarial_bm018_a_case_document_without_a_status_or_with_one_outside_the_list_stops_the_build(tmp_path):
+    _case(tmp_path, "data/derived/CX/none.json", None)
+    _case(tmp_path, "data/derived/CX/odd.json", "mixed")
+    with pytest.raises(bm.BenchmarkError, match=r"data/derived/CX/none\.json"):
+        bm.truth_status_of("QX", _spec_run(), ["data/derived/CX/none.json"], bm.Corpus(tmp_path))
+    with pytest.raises(bm.BenchmarkError, match=r"data/derived/CX/odd\.json"):
+        bm.truth_status_of("QX", _spec_run(), ["data/derived/CX/odd.json"], bm.Corpus(tmp_path))
+
+
+def test_adversarial_bm018_a_manuscript_run_without_a_declared_status_stops_the_build(tmp_path):
+    (tmp_path / "manuscripts/m/experiments").mkdir(parents=True)
+    (tmp_path / "manuscripts/m/experiments/r.json").write_text("{}", encoding="utf-8")
+    corpus = bm.Corpus(tmp_path)
+    with pytest.raises(bm.BenchmarkError, match=r"QX r1.*declare"):
+        bm.truth_status_of("QX", _spec_run(), ["manuscripts/m/experiments/r.json"], corpus)
+    ok = _spec_run(truth=("synthetic-known-truth", "a generator of known truth"))
+    assert bm.truth_status_of("QX", ok, ["manuscripts/m/experiments/r.json"], corpus) == "synthetic-known-truth"
+    with pytest.raises(bm.BenchmarkError, match="closed list"):
+        bm.truth_status_of("QX", _spec_run(truth=("mixed", "why")), ["manuscripts/m/experiments/r.json"], corpus)
+
+
+def test_adversarial_bm018_a_case_document_run_that_declares_a_status_stops_the_build(tmp_path):
+    _case(tmp_path, "data/derived/CX/a.json", "real-outcomes")
+    declared = _spec_run(truth=("real-outcomes", "the same value typed"))
+    with pytest.raises(bm.BenchmarkError, match=r"QX r1.*must not declare"):
+        bm.truth_status_of("QX", declared, ["data/derived/CX/a.json"], bm.Corpus(tmp_path))
+
+
+def test_bm018_a_run_citing_both_kinds_takes_the_case_status_and_stops_on_a_different_declared_one(tmp_path):
+    _case(tmp_path, "data/derived/CX/a.json", "real-outcomes")
+    (tmp_path / "manuscripts/m").mkdir(parents=True)
+    (tmp_path / "manuscripts/m/r.json").write_text("{}", encoding="utf-8")
+    files = ["data/derived/CX/a.json", "manuscripts/m/r.json"]
+    assert bm.truth_status_of("QX", _spec_run(truth=("real-outcomes", "the committed windows")), files, bm.Corpus(tmp_path)) == "real-outcomes"
+    with pytest.raises(bm.BenchmarkError, match=r"QX r1.*differs"):
+        bm.truth_status_of("QX", _spec_run(truth=("synthetic-known-truth", "x")), files, bm.Corpus(tmp_path))
+
+
+def test_bm018_only_the_six_manuscript_runs_declare_a_status_in_the_specification():
+    declared = {(q["id"], r["id"]) for q in bm.QUESTIONS for r in q["runs"] if r.get("truth")}
+    assert declared == set(DECLARED_RUNS)
+    for q in bm.QUESTIONS:
+        for r in q["runs"]:
+            if r.get("truth"):
+                assert r["truth"][0] == DECLARED_RUNS[(q["id"], r["id"])] and len(r["truth"][1]["en"]) > 20 and len(r["truth"][1]["es"]) > 20
+
+
+def test_bm018_the_schema_requires_the_status_and_refuses_a_value_outside_the_list(doc, validator):
+    planted = copy.deepcopy(doc)
+    del planted["questions"][0]["runs"][0]["truth_status"]
+    assert not validator.is_valid(planted)
+    for bad in ("mixed", "real", "", None):
+        planted = copy.deepcopy(doc)
+        planted["questions"][0]["runs"][0]["truth_status"] = bad
+        assert not validator.is_valid(planted), bad
+    for good in TRUTH_LIST:
+        planted = copy.deepcopy(doc)
+        planted["questions"][0]["runs"][0]["truth_status"] = good
+        assert validator.is_valid(planted), good
+
+
+def process_vocabulary_violations(document: dict) -> list[str]:
+    found = []
+    for text in _texts(document):
+        hits = PROCESS_VOCABULARY.findall(text)
+        if hits:
+            found.append(f"{text[:40]}: {', '.join(hits)}")
+    return found
+
+
+def test_bm019_no_reader_text_of_the_document_carries_a_backlog_id_a_computation_id_or_the_method_list_by_its_process_name(doc):
+    assert process_vocabulary_violations(doc) == []
+    assert len(list(_texts(doc))) > 500
+
+
+def test_bm019_the_pointer_a_text_lost_is_the_structured_field_of_the_entry(doc):
+    assert all("backlog" in item for item in doc["left_out"])
+    pointers = {item["ladder_id"]: item["backlog"] for item in doc["left_out"]}
+    assert pointers["M-11"] == "BL-119 (K-9)" and pointers["M-31"] == "BL-119 (K-10)" and pointers["M-36"] is None and pointers["M-37"] is None
+    q4 = next(q for q in doc["questions"] if q["id"] == "Q4")
+    assert q4["absent"][0]["backlog"] == "BL-119 (K-4)"
+    assert next(q for q in doc["questions"] if q["id"] == "Q2")["absent"][0]["backlog"] == "BL-121"
+
+
+def test_adversarial_bm019_each_process_word_planted_in_a_text_is_named(doc):
+    for bad, hit in (("see BL-121", "BL-121"), ("computation K-9 adds it", "K-9"), ("the backlog row", "backlog"), ("the method ladder has none", "method ladder"),
+                     ("la escalera de métodos no la tiene", "escalera de métodos")):
+        for lang in ("en", "es"):
+            planted = copy.deepcopy(doc)
+            planted["questions"][0]["protocol"][lang] = bad
+            assert process_vocabulary_violations(planted) == [f"{bad[:40]}: {hit}"], (bad, lang)
+    planted = copy.deepcopy(doc)
+    planted["left_out"][0]["reason"]["en"] = "pending (backlog BL-119, K-9)"
+    assert process_vocabulary_violations(planted) == ["pending (backlog BL-119, K-9): backlog, BL-119, K-9"]
+
+
+def test_bm019_the_schema_requires_the_backlog_pointer_of_a_left_out_entry(doc, validator):
+    planted = copy.deepcopy(doc)
+    del planted["left_out"][0]["backlog"]
+    assert not validator.is_valid(planted)
+    planted = copy.deepcopy(doc)
+    planted["left_out"][0]["backlog"] = 7
+    assert not validator.is_valid(planted)
+
+
+def concept_violations(document: dict, root: Path = ROOT) -> list[str]:
+    product = json.loads((root / "product.json").read_text(encoding="utf-8"))
+    published = [m["concept_doi"] for m in product["manuscripts"]]
+    bad = []
+    for q in document["questions"]:
+        for n in q["negative_results"]:
+            macro = CONCEPT_MACRO.search((root / n["manuscript"]).read_text(encoding="utf-8"))
+            if macro is None or n.get("concept_doi") != macro[1]:
+                bad.append(f"{q['id']} {n['manuscript']}: concept_doi {n.get('concept_doi')!r} differs from the macro {macro[1] if macro else None!r}")
+            elif published.count(n["concept_doi"]) != 1:
+                bad.append(f"{q['id']} {n['manuscript']}: {n['concept_doi']} is in {published.count(n['concept_doi'])} product.json entries")
+    return bad
+
+
+def test_bm020_every_negative_result_carries_the_concept_doi_of_its_manuscript_and_of_one_published_entry(doc):
+    assert concept_violations(doc) == []
+    negatives = [n for q in doc["questions"] for n in q["negative_results"]]
+    assert len(negatives) == 4 and all(list(n) == ["rows", "manuscript", "concept_doi", "text"] for n in negatives)
+    assert {n["concept_doi"] for n in negatives} == {"10.5281/zenodo.24053173", "10.5281/zenodo.24053159", "10.5281/zenodo.24053161", "10.5281/zenodo.24053187"}
+
+
+def test_adversarial_bm020_a_doi_changed_in_the_document_is_named(doc):
+    planted = copy.deepcopy(doc)
+    n = next(q for q in planted["questions"] if q["id"] == "Q4")["negative_results"][0]
+    n["concept_doi"] = "10.5281/zenodo.24053161"
+    found = concept_violations(planted)
+    assert len(found) == 1 and found[0].startswith("Q4 manuscripts/anchored-pd-under-informative-withdrawals/main.tex: concept_doi '10.5281/zenodo.24053161' differs")
+
+
+def test_adversarial_bm020_a_manuscript_whose_macro_matches_no_published_entry_stops_the_build(tmp_path):
+    (tmp_path / "manuscripts/m").mkdir(parents=True)
+    (tmp_path / "manuscripts/m/main.tex").write_text("\\newcommand{\\conceptdoi}{10.5281/zenodo.1}\n", encoding="utf-8")
+    (tmp_path / "product.json").write_text(json.dumps({"manuscripts": [{"concept_doi": "10.5281/zenodo.2"}]}), encoding="utf-8")
+    with pytest.raises(bm.BenchmarkError, match=r"10\.5281/zenodo\.1.*product\.json"):
+        bm.concept_doi("manuscripts/m/main.tex", tmp_path)
+    (tmp_path / "product.json").write_text(json.dumps({"manuscripts": [{"concept_doi": "10.5281/zenodo.1"}]}), encoding="utf-8")
+    assert bm.concept_doi("manuscripts/m/main.tex", tmp_path) == "10.5281/zenodo.1"
+    (tmp_path / "manuscripts/m/main.tex").write_text("no macro here\n", encoding="utf-8")
+    with pytest.raises(bm.BenchmarkError, match="conceptdoi"):
+        bm.concept_doi("manuscripts/m/main.tex", tmp_path)
+
+
+def test_bm020_the_schema_requires_a_zenodo_concept_doi_on_every_negative_result(doc, validator):
+    q = next(q for q in doc["questions"] if q["negative_results"])
+    planted = copy.deepcopy(doc)
+    del next(x for x in planted["questions"] if x["id"] == q["id"])["negative_results"][0]["concept_doi"]
+    assert not validator.is_valid(planted)
+    for bad in ("manuscripts/e-process-sequential-monitors/main.tex", "10.1000/xyz", ""):
+        planted = copy.deepcopy(doc)
+        next(x for x in planted["questions"] if x["id"] == q["id"])["negative_results"][0]["concept_doi"] = bad
+        assert not validator.is_valid(planted), bad

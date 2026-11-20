@@ -1,7 +1,8 @@
 // BL-113 T3: the methods-compared document on the Benchmark page. The overview tab and each question's section are rendered on the server
 // from the committed document (data/derived/benchmark/methods-compared.json), in both languages, and read back as a reader sees them:
 // the standing labels, the nulls with their reasons, the best marks, no tier word, no raw id. Requirements BM-102 to BM-110
-// (docs/design/features/benchmark-methods/requirements.md); BM-101 is in benchmark-tabs.test.tsx.
+// (docs/design/features/benchmark-methods/requirements.md); BM-101 is in benchmark-tabs.test.tsx; BM-115 to BM-117 (the truth status of a run,
+// the published title and DOI of a manuscript, no process word) close the file.
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { MethodsCompared, McQuestion } from '../../lib/methodsCompared';
@@ -22,10 +23,13 @@ import {
   metricsOf,
   overviewRows,
   questionsOf,
+  runOf,
   tableGroups,
   unplacedQuestions,
 } from '../../lib/methodsCompared';
+import { provenanceOf } from '../../workbench/model';
 import { html, setLang } from '../../workbench/c03/u6-testkit';
+import { PUBLICATIONS } from '../Publications';
 import { MethodsOverviewView, MethodsQuestionView } from './MethodsCompared';
 
 const doc = JSON.parse(readFileSync(new URL('../../../../data/derived/benchmark/methods-compared.json', import.meta.url), 'utf8')) as MethodsCompared;
@@ -279,15 +283,14 @@ describe('BM-105: the best value of a ranked metric is marked from the document 
 });
 
 describe('BM-106: a cell the product does not compute shows its reason in the page language', () => {
-  it('shows the reason of a cell not computed yet in both languages and names the backlog row', () => {
+  it('shows the reason of a cell not computed yet in both languages, with no backlog row in the text', () => {
     const { q, m } = withNull();
     const cell = cellsOf(q, m.id).find(({ c }) => c.value === null)!.c;
     const page = chunkColumns(m.columns).findIndex((p) => p.includes(cell.column));
     for (const lang of LANGS) {
       const text = plain(render(q, lang, m.id, page));
       expect(text).toContain(docText(cell.null_reason!, lang));
-      const row = docText(cell.null_reason!, lang).match(/BL-\d+/);
-      if (row) expect(text).toContain(row[0]);
+      expect(docText(cell.null_reason!, lang)).not.toMatch(/BL-\d+|backlog/i);
     }
   });
   it('shows the reason of every null cell of every question, on the column page where it sits', () => {
@@ -482,6 +485,124 @@ describe('BM-110: the section of a question extends what its case tab shows and 
     const controls = markup.slice(markup.indexOf('data-methods-controls'), markup.indexOf('data-methods-run'));
     expect(controls.length).toBeGreaterThan(0);
     for (const id of OMITTED_METRICS.Q1) expect(controls).not.toContain(docText(q1.metrics.find((m) => m.id === id)!.label, 'en'));
+  });
+  afterEach(() => setLang('en'));
+});
+
+// ------------------------------------------------------------------------------ BM-115 to BM-117 (contract 2.0.0)
+
+/** The provenance label of the chart card a measure draws (the shell writes it as data-provenance on the figure). */
+const chartProvenance = (markup: string): string | null => {
+  const at = markup.indexOf('data-methods-chart=""');
+  if (at < 0) return null;
+  return /data-provenance="([^"]*)"/.exec(markup.slice(at))?.[1] ?? null;
+};
+/** Title text as the server renders it into markup (the characters React escapes). */
+const esc2 = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+
+const TRUTH_LIST = ['real-outcomes', 'synthetic-known-truth', 'synthetic-calibrated', 'published-answer'];
+/** Process vocabulary and repository paths: none reaches a reader. */
+const PROCESS = /\bBL-\d+|\bK-\d+|backlog|method ladder|escalera de m[eé]todos/i;
+const PATHS = /manuscripts\/|\.tex\b|data\/derived/;
+const chartable = () => everyMetric.filter(({ q, m }) => barPoints(q, m, m.columns[0]).length > 0);
+
+describe('BM-115: each chart card is labelled from the truth status the document gives its run', () => {
+  it('labels the chart of every measure of every question with provenanceOf of the status of its run', () => {
+    const measures = chartable();
+    expect(measures.length).toBeGreaterThan(30);
+    for (const { q, m } of measures) {
+      const run = runOf(q, m);
+      expect(TRUTH_LIST, `${q.id} ${run.id}`).toContain(run.truth_status);
+      expect(chartProvenance(render(q, 'en', m.id)), `${q.id} ${m.id}`).toBe(provenanceOf(run.truth_status));
+    }
+  });
+  it('reads Q10 labelled run as synthetic and Q12 twin as real, the two runs the typed list had wrong', () => {
+    const q10 = question('Q10');
+    const q12 = question('Q12');
+    expect(q10.runs[0].truth_status).toBe('synthetic-calibrated');
+    expect(q12.runs[0].truth_status).toBe('real-outcomes');
+    expect(chartProvenance(render(q10, 'en', defaultMetric(q10).id))).toBe('synthetic');
+    expect(chartProvenance(render(q12, 'es', defaultMetric(q12).id))).toBe('real');
+  });
+  it('adversarial: a run planted with another status changes the label, and a run id the page has never seen is labelled by its status', () => {
+    const planted = clone(doc);
+    const q12 = planted.questions.find((q) => q.id === 'Q12')!;
+    q12.runs[0].truth_status = 'published-answer';
+    expect(chartProvenance(render(q12, 'en', defaultMetric(q12).id, 0, planted))).toBe('published');
+    q12.runs[0].truth_status = 'synthetic-known-truth';
+    expect(chartProvenance(render(q12, 'en', defaultMetric(q12).id, 0, planted))).toBe('synthetic');
+    // a typed list would decide by the id: 'desk' (Q3) was labelled synthetic and a new id real, whatever the document says
+    const q3 = planted.questions.find((q) => q.id === 'Q3')!;
+    const m3 = defaultMetric(q3);
+    q3.runs.find((r) => r.id === m3.run_id)!.truth_status = 'real-outcomes';
+    expect(chartProvenance(render(q3, 'en', m3.id, 0, planted))).toBe('real');
+    const fresh = clone(doc);
+    const q7 = fresh.questions.find((q) => q.id === 'Q7')!;
+    const m7 = defaultMetric(q7);
+    q7.runs.find((r) => r.id === m7.run_id)!.id = 'a-run-the-page-never-saw';
+    for (const m of q7.metrics) if (m.run_id === 'out-of-time') m.run_id = 'a-run-the-page-never-saw';
+    q7.runs.find((r) => r.id === 'a-run-the-page-never-saw')!.truth_status = 'synthetic-calibrated';
+    expect(chartProvenance(render(q7, 'en', m7.id, 0, fresh))).toBe('synthetic');
+  });
+  afterEach(() => setLang('en'));
+});
+
+describe('BM-116: a negative result names its manuscript by the published title linked to its DOI, never by a path', () => {
+  const withNegative = doc.questions.filter((q) => q.negative_results.length > 0);
+  it('shows, for every negative result, the published title in an English span that is not translated, linked to the concept DOI', () => {
+    expect(withNegative.map((q) => q.id)).toEqual(['Q2', 'Q4', 'Q9', 'Q11']);
+    for (const q of withNegative) {
+      for (const n of q.negative_results) {
+        const pub = PUBLICATIONS.find((p) => p.concept_doi === n.concept_doi);
+        expect(pub, n.concept_doi).toBeDefined();
+        for (const lang of LANGS) {
+          const markup = render(q, lang);
+          const anchor = new RegExp(`<a[^>]*href="https://doi\\.org/${esc(n.concept_doi)}"[^>]*>\\s*<span lang="en" translate="no">${esc(esc2(pub!.title))}</span>`);
+          expect(markup, `${q.id} ${lang}`).toMatch(anchor);
+        }
+      }
+    }
+  });
+  it('prints no repository path in any question or in the overview, in either language', () => {
+    for (const lang of LANGS) {
+      for (const q of doc.questions) expect(plain(render(q, lang)), `${q.id} ${lang}`).not.toMatch(PATHS);
+      expect(plain(overview(lang)), lang).not.toMatch(PATHS);
+    }
+  });
+  it('adversarial: a DOI the publications do not hold is the link text, never the path', () => {
+    const planted = clone(doc);
+    const q4 = planted.questions.find((q) => q.id === 'Q4')!;
+    q4.negative_results[0].concept_doi = '10.5281/zenodo.9999999';
+    for (const lang of LANGS) {
+      const markup = render(q4, lang, undefined, undefined, planted);
+      expect(markup).toMatch(/<a[^>]*href="https:\/\/doi\.org\/10\.5281\/zenodo\.9999999"[^>]*>\s*<span lang="en" translate="no">10\.5281\/zenodo\.9999999<\/span>/);
+      expect(plain(markup)).not.toMatch(PATHS);
+    }
+  });
+  afterEach(() => setLang('en'));
+});
+
+describe('BM-117: no process id or process word reaches a rendered text of the page', () => {
+  it('holds no backlog id, computation id or backlog word in any question or in the overview, in both languages', () => {
+    for (const lang of LANGS) {
+      for (const q of doc.questions) {
+        for (const m of metricsOf(q)) expect(plain(render(q, lang, m.id)), `${q.id} ${m.id} ${lang}`).not.toMatch(PROCESS);
+        expect(plain(render(q, lang)), `${q.id} ${lang}`).not.toMatch(PROCESS);
+      }
+      expect(plain(overview(lang)), lang).not.toMatch(PROCESS);
+    }
+  });
+  it('keeps the pointer the texts lost as a structured field of the document, which the page does not print', () => {
+    expect(doc.left_out.every((i) => 'backlog' in i)).toBe(true);
+    expect(question('Q4').absent[0].backlog).toBe('BL-119 (K-4)');
+    expect(plain(render(question('Q4'), 'en'))).not.toContain('BL-119');
+  });
+  it('adversarial: a backlog id planted in an absent reason is caught by the pattern the page is held to', () => {
+    for (const planted of ['see BL-121', 'adds the treatment (K-4)', 'the backlog row', 'the method ladder has none', 'la escalera de métodos no la tiene']) expect(planted, planted).toMatch(PROCESS);
+    const dirty = clone(doc);
+    const q4 = dirty.questions.find((q) => q.id === 'Q4')!;
+    q4.absent[0].reason.en = 'a later computation adds it (backlog BL-119, K-4)';
+    expect(plain(render(q4, 'en', undefined, undefined, dirty))).toMatch(PROCESS);
   });
   afterEach(() => setLang('en'));
 });

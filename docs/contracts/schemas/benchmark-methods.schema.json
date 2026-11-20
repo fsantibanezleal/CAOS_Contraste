@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/benchmark-methods.schema.json",
   "title": "Methods compared",
-  "description": "Catalog row benchmark-methods 1.0.0: the methods of each benchmark question side by side (data/derived/benchmark/methods-compared.json), every value copied from a committed case document or manuscript result file with its path, JSON pointer and SHA-256, every method with its standing read from the SDD method ladder, every reading generated from the numbers by the declared rule of each metric.",
+  "description": "Catalog row benchmark-methods 2.0.0: the methods of each benchmark question side by side (data/derived/benchmark/methods-compared.json), every value copied from a committed case document or manuscript result file with its path, JSON pointer and SHA-256, every method with its standing read from the SDD method ladder, every reading generated from the numbers by the declared rule of each metric.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -202,6 +202,7 @@
         "protocol",
         "seed",
         "files",
+        "truth_status",
         "columns"
       ],
       "properties": {
@@ -231,6 +232,16 @@
             "type": "string"
           },
           "description": "The committed files this run's cells cite; no file serves two runs of one question."
+        },
+        "truth_status": {
+          "type": "string",
+          "enum": [
+            "real-outcomes",
+            "synthetic-known-truth",
+            "synthetic-calibrated",
+            "published-answer"
+          ],
+          "description": "What the data of this run rest on, the closed list of the case documents' provenance.truth_status: copied from the case documents the run cites (they must agree), or, for a run that cites manuscript result files only, declared by the specification with its reason."
         },
         "columns": {
           "type": "array",
@@ -571,6 +582,7 @@
       "required": [
         "rows",
         "manuscript",
+        "concept_doi",
         "text"
       ],
       "properties": {
@@ -584,6 +596,11 @@
         "manuscript": {
           "type": "string",
           "minLength": 1
+        },
+        "concept_doi": {
+          "type": "string",
+          "pattern": "^10\\.5281/zenodo\\.\\d+$",
+          "description": "The concept DOI of the manuscript, read from its conceptdoi macro and equal to the concept_doi of one product.json manuscripts entry."
         },
         "text": {
           "$ref": "#/$defs/bmText"
@@ -674,7 +691,8 @@
       "required": [
         "ladder_id",
         "method",
-        "reason"
+        "reason",
+        "backlog"
       ],
       "properties": {
         "ladder_id": {
@@ -685,6 +703,12 @@
         },
         "reason": {
           "$ref": "#/$defs/bmText"
+        },
+        "backlog": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
