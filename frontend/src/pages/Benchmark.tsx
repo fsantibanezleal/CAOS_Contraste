@@ -4,9 +4,10 @@
 import { Callout, Cite, DocPage, DocSection, MAX_PEER_TABS, PlotCard, TabGroups, Verdict, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useLocation } from 'react-router';
 import { loadAllManifests, loadAllVariants, useArtifact } from '../api/artifacts';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
-import { METHODS_CASES, questionsOf } from '../lib/methodsCompared';
+import { METHODS_CASES, QUESTION_HOME, questionsOf } from '../lib/methodsCompared';
 import { COMMITTED, relight } from '../lib/policy';
 import { P, T, useT } from '../content/bi';
 import { sourceText } from '../content/sources';
@@ -337,12 +338,33 @@ export function benchmarkPlan(shown: string[], excluded: boolean, comparable: bo
   return groups;
 }
 
+/** The tab a link to the methods compared opens: `#methods` the overview of the reading group, `#methods-q<n>` the tab of the question's home case,
+ * scrolled to it; a hash that is not one of them opens nothing (null), and a question with no home case falls back to the overview. */
+export function selectionFromHash(hash: string): { sel: { group: string; tab?: string }; scrollTo: string | null } | null {
+  const m = /^#methods(?:-(q\d+))?$/i.exec(hash);
+  if (!m) return null;
+  const overview = { sel: { group: 'reading', tab: 'methods' }, scrollTo: null };
+  if (!m[1]) return overview;
+  const question = m[1].toUpperCase();
+  const home = QUESTION_HOME[question];
+  return home ? { sel: { group: benchGroupOf(home), tab: `case-${home.toLowerCase()}` }, scrollTo: question } : overview;
+}
+
 export function Benchmark() {
   const t = useT();
   const lang = useShellLang();
   // the overview of the methods compared opens a question in the tab of its case: the tabs are held here so a button can move them
-  const [sel, setSel] = useState<{ group: string; tab?: string }>({ group: 'reading', tab: 'reading' });
-  const [scrollTo, setScrollTo] = useState<string | null>(null);
+  const { hash } = useLocation();
+  const linked = selectionFromHash(hash);
+  const [sel, setSel] = useState<{ group: string; tab?: string }>(linked?.sel ?? { group: 'reading', tab: 'reading' });
+  const [scrollTo, setScrollTo] = useState<string | null>(linked?.scrollTo ?? null);
+  // a link to the methods compared (the Introduction's, the Experiments') moves the tabs when the hash changes on the page itself
+  useEffect(() => {
+    const l = selectionFromHash(hash);
+    if (!l) return;
+    setSel(l.sel);
+    setScrollTo(l.scrollTo);
+  }, [hash]);
   useEffect(() => {
     if (!scrollTo) return;
     document.getElementById(`methods-${scrollTo.toLowerCase()}`)?.scrollIntoView({ block: 'start' });

@@ -9,7 +9,7 @@ each a brief of the main session, test first.
 | T1 | Sizing, read only: each question against the SDD ladder and the committed documents, with the JSON path of every metric (CAOS_MANAGE `wip/contraste/bl113-t1-sizing-2026-11-15.md`). | none | done |
 | T2 | This folder; the step `data-pipeline/pipeline/benchmark/methods.py`; the contract `benchmark-methods` 1.0.0 and the api contract 41.0.0; `data/derived/benchmark/methods-compared.json`; the determinism, cited-value, coverage, one-run, reading-rule, standing-from-the-SDD, internal-names and contract tests; the index builder lists the document. | T1 and the tier ruling of BL-116 in the SDD | done |
 | T3 | The Benchmark page: an overview tab "Methods compared" in the reading group and each question's table and chart in its case's tab, in both languages, with no tier word; vitest; the shell gate over every state. | T2 | done |
-| T4 | The Introduction and Experiments pages point at the group; the technical report reads it (with the report's own unit). | T3 | open |
+| T4 | The Introduction and Experiments pages point at the group; the technical report reads it (with the report's own unit). | T3 | done (the pointers; the technical report reads it with the unit report-1-01-000-delta-2026-11-19) |
 
 ## Open items the document states
 
