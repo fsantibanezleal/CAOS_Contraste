@@ -249,7 +249,10 @@ class C04:
             _log(f"{v['code']}: {len(got['annual'])} annual, {len(got['semesters'])} semester and "
                  f"{len(got['windows'])} five-year cohorts")
         q, obligors = _generator_from_sp(agencies["sp"][0])
-        families = {f["id"]: c04_families.family_outputs(f["id"], q, obligors, seed, reps=REPS) for f in FAMILY_VARIANTS}
+        # BS-14's verdict reads the real cohorts' stability: each source's anchor study (None where there is no default page)
+        real = {v["id"]: agencies[v["id"]][0]["withdrawal_bounds"] for v in AGENCY_VARIANTS}
+        families = {f["id"]: c04_families.family_outputs(f["id"], q, obligors, seed, reps=REPS, clause_reps=c04_families.CLAUSE_REPS,
+                                                         real_bounds=real) for f in FAMILY_VARIANTS}
         one_year = expm(q)
         for out in families.values():
             # the live projection's matrix on a generator variant: the one-year matrix of the true generator
@@ -723,6 +726,18 @@ def bounds_finding(out: dict[str, Any]) -> dict[str, Any]:
     ind, unf, fol, allthree = (where(("industry",)), where(("unfollowed",)), where(("followed",)),
                                where(("industry", "unfollowed", "followed")))
     refuted = v["summary"]["refuted"]
+    cov_clause, stab = v["summary"]["coverage_better_than_every_treatment"], v["summary"]["anchored_k_stable_across_years"]
+    cov_reps = cov_clause["reps"]
+    # a signed difference in points, "+0.0" for a tie (never "-0.0"); the Spanish decimal comma
+    diffs_en = [f"{round(100 * d['difference'], 1) + 0.0:+.1f}" for d in cov_clause["designs"]]
+    diffs = (diffs_en, [x.replace(".", ",") for x in diffs_en])
+    band_n = sum(d["manski_covers_as_often_or_more"] for d in cov_clause["designs"])
+    ratios = [d["manski_width_ratio"] for d in cov_clause["designs"]]
+    width_lo, width_hi = min(ratios), max(ratios)
+    bad = [r for r in stab["rows"] if r["status"] == "unstable"]
+    src = {"sp": ("S&P's", "S&P"), "fitch": ("Fitch's", "Fitch"), "moodys": ("Moody's", "Moody's")}
+    unstable_en = ", ".join(f"{src[r['source']][0]} {r['grade']} ({_pct(r['share'], 0)[0]})" for r in bad) or "no grade judged"
+    unstable_es = ", ".join(f"{r['grade']} de {src[r['source']][1]} ({_pct(r['share'], 0)[1]})" for r in bad) or "ningún grado juzgado"
     en = (f"The anchored PD under informative withdrawals ({reps} repetitions, {grade} true one-year PD {_pct(truth)[0]}): "
           f"the anchored interval covers the true PD in {', '.join(c[0] for c in cov['first_year'])} of repetitions at k 1, 3 and 9 in the first-year cohort "
           f"and in {', '.join(c[0] for c in cov['pooled'])} pooling five cohorts, so the plan's 90% {'holds' if holds else 'does not hold'}. "
@@ -730,7 +745,13 @@ def bounds_finding(out: dict[str, Any]) -> dict[str, Any]:
           + "; ".join(f"{', '.join(x[0] for x in ex[d])} ({BOUNDS_DESIGN_WORDS[d][0]})" for d in designs)
           + f"; each is under 50% in: industry {ind[0]}; unfollowed {unf[0]}; followed (the oracle: it needs the year end of the withdrawn, which no transition page has) {fol[0]}. "
           f"The plan's clause that all three existing treatments cover under 50% holds in {allthree[0]}. "
-          f"The anchored interval covers more than every existing treatment at k 9 in {better} of 3 designs: the plan's refutation {'is met' if refuted else 'is not met'}")
+          f"The anchored interval covers more than the removed, kept and followed treatments at k 9 in {better} of 3 designs. "
+          f"The plan's rule refutes the hypothesis if the anchored interval is not better than every treatment, Manski's identified band among them, "
+          f"or if the anchored k is unstable across years. Coverage clause ({cov_reps:,} repetitions at k 9): the anchored interval gains {', '.join(diffs[0])} points "
+          f"over the best other treatment ({', '.join(BOUNDS_DESIGN_WORDS[d][0] for d in designs)}), Manski's band covering as often or more often in {band_n} of 3 designs "
+          f"at {width_lo:.1f} to {width_hi:.1f} times the width, so the clause {'holds' if cov_clause['holds'] else 'fails'}. "
+          f"Stability clause: the cohorts' bands hold the pooled k in under {stab['threshold']:.0%} of the years for {unstable_en}, "
+          f"so the clause {'holds' if stab['holds'] else 'fails'}. The plan's refutation {'is met' if refuted else 'is not met'}: the hypothesis is {'refuted' if refuted else 'not refuted'}")
     es = (f"La PD anclada con retiros informativos ({reps} repeticiones, PD anual verdadera de {grade} {_pct(truth)[1]}): "
           f"el intervalo anclado cubre la PD verdadera en {', '.join(c[1] for c in cov['first_year'])} de las repeticiones con k 1, 3 y 9 en la cohorte del primer año "
           f"y en {', '.join(c[1] for c in cov['pooled'])} agrupando cinco cohortes, así que el 90 % del plan {'se sostiene' if holds else 'no se sostiene'}. "
@@ -738,9 +759,15 @@ def bounds_finding(out: dict[str, Any]) -> dict[str, Any]:
           + "; ".join(f"{', '.join(x[1] for x in ex[d])} ({BOUNDS_DESIGN_WORDS[d][1]})" for d in designs)
           + f"; cada uno cubre menos del 50 % en: industria {ind[1]}; sin seguimiento {unf[1]}; con seguimiento (el oráculo: necesita el estado final de los retirados, que ninguna página de transiciones tiene) {fol[1]}. "
           f"La cláusula del plan de que los tres tratamientos existentes cubren menos del 50 % se verifica en {allthree[1]}. "
-          f"El intervalo anclado cubre más que todos los tratamientos existentes con k 9 en {better} de 3 diseños: la refutación del plan {'se verifica' if refuted else 'no se verifica'}")
+          f"El intervalo anclado cubre más que los tratamientos eliminado, mantenido y con seguimiento con k 9 en {better} de 3 diseños. "
+          f"La regla del plan refuta la hipótesis si el intervalo anclado no es mejor que todo tratamiento, la banda identificada de Manski entre ellos, "
+          f"o si el k anclado es inestable entre años. Cláusula de cobertura ({_miles(cov_reps)} repeticiones con k 9): el intervalo anclado gana {', '.join(diffs[1])} puntos "
+          f"sobre el mejor otro tratamiento ({', '.join(BOUNDS_DESIGN_WORDS[d][1] for d in designs)}), y la banda de Manski cubre igual o más en {band_n} de 3 diseños "
+          f"con {_num(width_lo, 1)[1]} a {_num(width_hi, 1)[1]} veces el ancho, así que la cláusula {'se verifica' if cov_clause['holds'] else 'falla'}. "
+          f"Cláusula de estabilidad: las bandas de las cohortes contienen el k agrupado en menos del {_pct(stab['threshold'], 0)[1]} de los años para {unstable_es}, "
+          f"así que la cláusula {'se verifica' if stab['holds'] else 'falla'}. La refutación del plan {'se verifica' if refuted else 'no se verifica'}: la hipótesis {'queda refutada' if refuted else 'no queda refutada'}")
     return {"id": "F-WITHDRAW-BOUNDS", "severity": "S3", "status": "open",
-            "evidence": ["design:bounds_verdict.rows", "design:rungs.bounds"], "title": _t(en, es)}
+            "evidence": ["design:bounds_verdict.rows", "design:bounds_verdict.summary", "design:rungs.bounds"], "title": _t(en, es)}
 
 
 ANCHORED_AT_K = (1.0, 3.0, 9.0)

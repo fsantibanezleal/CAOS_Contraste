@@ -51,6 +51,11 @@ $T,\ p,\ H_0$ & Statistic of a validation test, its p-value and its null hypothe
 $\alpha_{\mathrm{amber}},\ \alpha_{\mathrm{red}}$ & Levels of the policy that colour a p-value test & decimal & \cref{sec:validation-tests} \\
 $B$ & Number of independent repetitions of a simulation, each with its own random stream & count & \cref{sec:problem,sec:protocol,sec:validation-tests} \\
 $E_t$ & E-process, a non-negative process with unit start whose expectation under the null is at most one at every stopping time & dimensionless & \cref{sec:proposed} \\
+$h_t,\ e_t$ & Exceedance indicator of the value-at-risk forecast on day $t$ and the e-statistic $h_t/\alpha$ built from it, whose conditional mean is one when the forecast is correct & indicator, dimensionless & \cref{sec:market,sec:proposed} \\
+$M_t,\ \lambda_t,\ \gamma$ & Wealth of the betting e-process after day $t$ (with $M_0=1$), the fraction bet on day $t$, decided from the days before it, and its cap & dimensionless, decimal, decimal & \cref{sec:market,sec:proposed} \\
+$H_{t-1}$ & Number of exceedances of the value-at-risk forecast before day $t$ & count & \cref{sec:market,sec:proposed} \\
+$\mathrm{VaR}^{\ast}_t,\ \mathrm{ES}^{\ast}_t$ & Value at risk and expected shortfall of the loss on day $t$ given the past, against which the forecasts $\mathrm{VaR}_t$ and $\mathrm{ES}_t$ of the same day are tested & currency or decimal return & \cref{sec:market} \\
+$e^{\mathrm{ES}}_t$ & E-statistic of the expected shortfall forecast on day $t$, the excess of the loss over the forecast value at risk divided by $\alpha(\mathrm{ES}_t-\mathrm{VaR}_t)$ & dimensionless & \cref{sec:market} \\
 $\E,\ \Prob,\ \Var,\ \indic$ & Expectation, probability, variance and indicator function & as the argument & all \\
 $\hat\theta,\ \theta^\ast$ & Estimate of a parameter and its true value on a generator of known truth & as the parameter & all \\
 \bottomrule

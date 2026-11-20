@@ -6,5 +6,8 @@
  "M-2": [
   "02-credit-scoring/03-the-validation-battery-on-a-ladder-of-models.ipynb",
   "02-credit-scoring/06-challengers-against-the-scorecard.ipynb"
+ ],
+ "M-35": [
+  "02-credit-scoring/06-challengers-against-the-scorecard.ipynb"
  ]
 }

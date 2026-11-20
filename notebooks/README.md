@@ -50,8 +50,8 @@ writes nothing into the repository.
 
 ## Topics / Temas
 
-The map has 14 topics; each lands with its own unit, and an index lists a topic's folder as soon as it exists. Today topic 01 is
-here: [en/01-getting-started/](en/01-getting-started/) and [es/01-getting-started/](es/01-getting-started/).
+The map has 14 topics, all of them here; the index of each language lists every topic and every notebook:
+[en/README.md](en/README.md) and [es/README.md](es/README.md).
 
 ## What the product claims / Lo que afirma el producto
 

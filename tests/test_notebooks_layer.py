@@ -472,14 +472,27 @@ def test_a_notebook_that_reads_test_rows_prints_the_engine_version_that_baked_th
             assert not recomputes_without_the_baked_version(source), path.name
 
 
-def test_topic_one_has_its_five_notebooks_in_both_languages():
-    # the fifth, from a licensed source to a committed document, joined on 2026-11-07
-    plan = [1, 1, 1, 2, 2]
+# the fifth, from a licensed source to a committed document, joined on 2026-11-07; the sixth and seventh, the unit gate and the
+# methods compared on one protocol, with release 1.01.000
+TOPIC_01_PLAN = [1, 1, 1, 2, 2, 2, 2]
+
+
+def topic_one_plan_findings(root: Path) -> list[str]:
+    """What topic 01 lacks of its plan, per language: the levels in reading order and the numbers 01 to 07."""
+    out = []
     for lang in LANGS:
-        found = notebooks(ROOT, lang)
-        got = [p for p in found if p.parent.name == TOPIC_01]
-        assert [read_nb(p)["metadata"]["caos"]["level"] for p in got] == plan
-        assert [p.name[:2] for p in got] == ["01", "02", "03", "04", "05"]
+        got = [p for p in notebooks(root, lang) if p.parent.name == TOPIC_01]
+        levels = [read_nb(p)["metadata"]["caos"]["level"] for p in got]
+        if levels != TOPIC_01_PLAN:
+            out.append(f"{lang}: levels {levels}, the plan is {TOPIC_01_PLAN}")
+        numbers = [p.name[:2] for p in got]
+        if numbers != [f"{i:02d}" for i in range(1, len(TOPIC_01_PLAN) + 1)]:
+            out.append(f"{lang}: numbers {numbers}")
+    return out
+
+
+def test_topic_one_has_its_seven_notebooks_in_both_languages():
+    assert topic_one_plan_findings(ROOT) == []
 
 
 # ---- NB adversarial: a defect planted in a copy of the committed set --------------------------------------------------
@@ -695,8 +708,8 @@ def test_adversarial_a_notebook_that_recomputes_without_the_baked_version_is_see
 def test_adversarial_topic_one_with_a_dropped_notebook_loses_its_plan(repo):
     for lang in LANGS:
         (repo / "notebooks" / lang / TOPIC_01 / sorted(p.name for p in (repo / "notebooks" / lang / TOPIC_01).glob("*.ipynb"))[-1]).unlink()
-    got = [read_nb(p)["metadata"]["caos"]["level"] for p in notebooks(repo)]
-    assert got != [1, 1, 1, 2]
+    findings = topic_one_plan_findings(repo)
+    assert len(findings) == 2 * len(LANGS) and all("[1, 1, 1, 2, 2, 2]" in f or "numbers" in f for f in findings), findings
 
 
 # ---- the review round (U17-A fixes): the index wording, the level 2 equations and the policy scope -------------------------

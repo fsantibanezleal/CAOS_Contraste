@@ -6,6 +6,7 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '
 import { ChartOverTable } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
+import { signedRange } from '../barRange';
 import { SHOCK_TEXT, ORIGIN_TEXT, axisOf, documentOffset, moneyDoc, outputsOf, scaleUnit, text, worst, type C15Sel } from './selection';
 import { IrrbbTestsTable, docText } from '../c14/C14Common';
 import { FORMULA_RULES } from './localise';
@@ -50,7 +51,7 @@ export function NiiView({ sel }: { sel: C15Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={bars}
-              axis={{ label: { en: 'Delta NII, positive is a loss', es: 'Delta NII, positivo es una pérdida' }, unit: axis.unit, format: { decimals: 2 } }}
+              axis={{ label: { en: 'Delta NII, positive is a loss', es: 'Delta NII, positivo es una pérdida' }, unit: axis.unit, format: { decimals: 2 }, range: signedRange(bars.map((b) => b.value)) }}
             />
           }
         >
@@ -151,7 +152,7 @@ export function IndexationView({ sel }: { sel: C15Sel | null }) {
                 { id: 'charge', label: { en: 'Standard charge', es: 'Cargo estándar' }, value: c.charge / axis.div, tone: 'warn' as const },
                 { id: 'cpi', label: { en: 'CPI surprise effect', es: 'Efecto de la sorpresa de IPC' }, value: s ? s.effect / axis.div : null, tone: s && s.effect > 0 ? ('bad' as const) : ('good' as const) },
               ]}
-              axis={{ label: { en: 'Loss, positive is a loss', es: 'Pérdida, positivo es una pérdida' }, unit: axis.unit, format: { decimals: 2 } }}
+              axis={{ label: { en: 'Loss, positive is a loss', es: 'Pérdida, positivo es una pérdida' }, unit: axis.unit, format: { decimals: 2 }, range: signedRange([o.nii.max_pair / axis.div, c.charge / axis.div, s ? s.effect / axis.div : null]) }}
             />
           }
         >

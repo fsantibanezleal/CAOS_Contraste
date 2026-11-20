@@ -12,6 +12,7 @@ import { Callout, Cite, DocSection, Figure } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './reject-inference.meta';
 import { GroupedBars } from '../MethodFigures';
 
 const NB = 'https://github.com/fsantibanezleal/CAOS_Contraste/blob/main/notebooks';
@@ -122,10 +123,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'reject-inference',
-  group: 'models',
-  order: 400,
-  title: { en: 'Reject inference', es: 'Inferencia de rechazados' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

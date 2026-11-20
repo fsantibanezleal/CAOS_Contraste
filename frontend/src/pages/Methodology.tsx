@@ -6,15 +6,16 @@ import { ValidationFigure } from '../architecture/figures';
 import { Equation, L, P, Ref, T, useT } from '../content/bi';
 import { BoostingExtra, CalibrationExtra, DiscriminationExtra, GlassBoxExtra, ModelRiskExtra, ScorecardsExtra, SizeAndPowerExtra, StabilityExtra } from './MethodologyExtras';
 import { Migrations, TransitionTests } from './MethodologyTransitions';
+import { SectionBody } from './MethodologyBody';
 import { REGISTERED_SECTIONS, type MethodologyGroup } from './methodologyRegistry';
 
 /** The TabPFN weights' licence as published: a name, the same in both languages (R5 c32 n1: "prior" replaced by "a priori" had
  * renamed the company in the Spanish sentence). */
 const TABPFN_LICENCE = 'Prior Labs License v1.1';
 
-/** The tabs the registry adds to a group (pages/methodology/*.tsx), after the page's own and in their `order`. */
+/** The tabs the registry adds to a group (pages/methodology/*.meta.ts), after the page's own and in their `order`; each body loads when its tab opens. */
 function registered(group: MethodologyGroup, lang: 'en' | 'es') {
-  return REGISTERED_SECTIONS.filter((s) => s.group === group).map(({ id, title, Body }) => ({ id, label: pick(title, lang), content: <Body /> }));
+  return REGISTERED_SECTIONS.filter((s) => s.group === group).map((s) => ({ id: s.id, label: pick(s.title, lang), content: <SectionBody section={s} /> }));
 }
 
 function ModelRisk() {

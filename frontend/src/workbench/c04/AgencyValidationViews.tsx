@@ -36,6 +36,7 @@ import {
   cerepPdSource,
   cerepSource,
 } from './selection';
+import { TableBox } from '../TableBox';
 
 type Lang = 'en' | 'es';
 type Grid = (number | null)[][];
@@ -1668,7 +1669,7 @@ export function AnchoredKView({ sel }: { sel: C04Sel | null }) {
         )}
       </PlotCard>
       <PlotCard fill title={bi((l) => t(l, `${pick(name, l)}: the anchored k by grade`, `${pick(name, l)}: la k anclada por grado`))} lane={REPLAY} provenance={prov} dataKey={stateKey} note={tableNote}>
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
           <table className="caos-table ct-wrap-head" data-table="anchored-k">
             <thead>
               <tr>
@@ -1695,7 +1696,7 @@ export function AnchoredKView({ sel }: { sel: C04Sel | null }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );

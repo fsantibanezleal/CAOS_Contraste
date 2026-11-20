@@ -9,6 +9,7 @@ import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { FixtureNotice } from '../c06/C06Common';
 import { componentLabel, outputsOf, type C07Outputs, type C07Sel, type RegimeId } from './selection';
+import { TableBox } from '../TableBox';
 
 /** The short name of each regime, as the rail's chips name it: a grouped bar's member label (the full names are in the legend; R2b
  * c08 M1: the full names were cut mid-word under every group). */
@@ -200,7 +201,7 @@ export function SegmentsView({ sel }: { sel: C07Sel | null }) {
         dataKey={stateKey}
         note={{ en: 'A positive gap means the regime provisions more than B-1 for that segment. The IFRS 9 column is the model ECL without overlays; overlays and the B-1 minimum top-up are in the unallocated row.', es: 'Una brecha positiva significa que el régimen provisiona más que B-1 en ese segmento. La columna IFRS 9 es la PCE del modelo sin ajustes; los ajustes y el complemento del mínimo de B-1 están en la fila no asignada.' }}
       >
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
       <table className="caos-table ct-wrap-head" data-table="segments">
         <thead>
           <tr>
@@ -235,7 +236,7 @@ export function SegmentsView({ sel }: { sel: C07Sel | null }) {
           </tr>
         </tfoot>
       </table>
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );
@@ -307,7 +308,7 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
         </div>
       </PlotCard>
       <PlotCard fill title={{ en: 'The steps in numbers', es: 'Los pasos en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
           <table className="caos-table" data-table="gap-bridge" data-closes={String(closes)}>
             <thead>
               <tr>
@@ -337,7 +338,7 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
               ? pick({ en: 'The steps close the bridge exactly.', es: 'Los pasos cierran el puente exactamente.' }, lang)
               : pick({ en: 'The steps do not close the bridge: the document is inconsistent.', es: 'Los pasos no cierran el puente: el documento es inconsistente.' }, lang)}
           </p>
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );
@@ -365,7 +366,7 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
         dataKey={stateKey}
         note={{ en: 'The group provision is the larger of the standard method and the internal one, unless the CMF has not objected to the internal one. The 0.50% minimum applies to the individually assessed normal portfolio.', es: 'La provisión grupal es la mayor entre el método estándar y el interno, salvo que la CMF no haya objetado el interno. El mínimo de 0,50 % se aplica a la cartera normal evaluada individualmente.' }}
       >
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
           <table className="caos-table ct-wrap-head" data-table="group-max-rule">
             <thead>
               <tr>
@@ -414,7 +415,7 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
               </tr>
             </tbody>
           </table>
-        </div>
+        </TableBox>
       </PlotCard>
       <PlotCard
         fill
@@ -424,7 +425,7 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
         dataKey={stateKey}
         note={{ en: 'The additional provisions are counter-cyclical, a board policy with a minimum and a maximum: they are in what the bank books but outside the total the three regimes are compared on. They may never cover model deficiencies.', es: 'Las provisiones adicionales son contracíclicas, una política del directorio con mínimo y máximo: están en lo que el banco constituye pero fuera del total sobre el que se comparan los tres regímenes. Nunca pueden cubrir deficiencias de los modelos.' }}
       >
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
           <table className="caos-table" data-table="b1-booked">
             <tbody>
               <tr>
@@ -450,7 +451,7 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
             </tbody>
           </table>
           <p className="ct-note">{pick(d.additional_provisions.rationale, lang)}</p>
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );

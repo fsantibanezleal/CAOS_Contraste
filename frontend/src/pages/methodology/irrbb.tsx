@@ -10,6 +10,7 @@
 import { Callout, Cite, DocSection, Figure, SubTabs, formatNumber } from '@fasl-work/caos-app-shell';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './irrbb.meta';
 
 const W = 480;
 const H = 276;
@@ -312,10 +313,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'irrbb',
-  group: 'balance',
-  order: 120,
-  title: { en: 'Interest rate risk (IRRBB)', es: 'Riesgo de tasa (IRRBB)' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

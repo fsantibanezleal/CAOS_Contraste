@@ -9,6 +9,7 @@ import { Callout, Cite, DocSection, Figure } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './market-pla-complement.meta';
 import { GroupedBars } from '../MethodFigures';
 
 const NB = 'https://github.com/fsantibanezleal/CAOS_Contraste/blob/main/notebooks';
@@ -128,10 +129,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'pla-complement',
-  group: 'market',
-  order: 160,
-  title: { en: 'Complement to the PLA test', es: 'Complemento de la prueba PLA' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

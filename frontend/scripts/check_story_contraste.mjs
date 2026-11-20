@@ -61,11 +61,19 @@ if (!base) {
 }
 
 const errors = [];
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
 const watch = (page) => {
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
 };
+// The App is on the case and nothing still declares that it is loading. The per-case modules are lazy since 1.01.000: while one loads the
+// workbench shows a placeholder in the shell's loading state, which names no window, so a read of the page waits for the case itself.
+const caseSettled = (page, caseId) =>
+  page.waitForFunction((id) => {
+    const wb = document.querySelector('[data-case-workbench]');
+    if (!wb || wb.getAttribute('data-case') !== id) return false;
+    return ![...document.querySelectorAll('[data-state="loading"]')].some((e) => e.offsetParent !== null);
+  }, caseId, { timeout: 30000 });
 const headline = (page) => page.locator('[data-story-headline]').innerText();
 const goStep = async (page, step) => {
   await page.locator(`[data-story-link="${step}"]`).click();
@@ -183,16 +191,24 @@ try {
   wanted.searchParams.set('model', 'hs-250');
   await desktop.waitForURL((url) => url.pathname === wanted.pathname && [...wanted.searchParams].every(([k, v]) => url.searchParams.get(k) === v));
   await desktop.locator('[data-workbench], .caos-workbench, main').first().waitFor({ state: 'visible', timeout: 20000 });
+  await caseSettled(desktop, 'C11');
   assert.match(await desktop.locator('body').innerText(), /Equity 2007 to 2009/, 'the App opens on the window of the step');
   // and with no route to return to, the exit goes to the C11 case with the same state
   await desktop.goto(`${base}/story/decide?window=fx-2008&model=garch-t`, { waitUntil: 'domcontentloaded' });
   await desktop.locator(VIEWS.decide).waitFor({ state: 'visible', timeout: 15000 });
   await desktop.locator('.caos-story-exit').click();
   await desktop.waitForURL((url) => url.pathname === '/app' && url.searchParams.get('case') === 'C11' && url.searchParams.get('variant') === 'fx-2008' && url.searchParams.get('model') === 'garch-t');
+  await caseSettled(desktop, 'C11');
   assert.match(await desktop.locator('body').innerText(), /FX 2008/, 'the App opens on the window of the exit');
+
+  // the desktop page is done: left open, the C11 workbench it settled on keeps its charts alive beside the phone pass
+  await desktop.close();
 
   // the phone: the panel below the stage, three callouts, no horizontal overflow, at every step
   const phone = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  // Playwright's 30 s per navigation is sized for an idle server: the first navigation here can wait behind the case documents the App
+  // requested before its page closed (the same reason the capture test waits longer per action)
+  phone.setDefaultNavigationTimeout(120_000);
   watch(phone);
   for (const step of STEPS) {
     await phone.goto(`${base}/story/${step}?window=equity-2007-09&model=hs-250`, { waitUntil: 'domcontentloaded' });

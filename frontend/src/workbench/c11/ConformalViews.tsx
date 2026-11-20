@@ -6,6 +6,7 @@
 import { PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, MaybeNumber } from '../c06/format';
+import { TableBox, useTall } from '../TableBox';
 import { Pending } from '../Pending';
 import { useCard } from '../c03/U6Shared';
 import { ConventionLine } from './MarketCommon';
@@ -160,6 +161,7 @@ export function ConformalView({ sel }: { sel: C11Sel | null }) {
 export function ConformalVerdictView({ sel }: { sel: C11Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
+  const tall = useTall();
   const o = outputsOf(sel);
   if (!sel || !o) return <Pending />;
   const h = o.conformal?.hypothesis ?? null;
@@ -176,11 +178,14 @@ export function ConformalVerdictView({ sel }: { sel: C11Sel | null }) {
   return (
     <ViewsRow>
       <PlotCard
+        // a tall desktop: the card fills its stage and its two tables share the height the prose leaves (BL-107); a shorter one is as tall as
+        // its content, as before
+        fill={tall}
         title={{ en: 'The hypothesis fixed before the run and its verdict', es: 'La hipótesis fijada antes de la corrida y su veredicto' }}
         {...card}
         note={{ en: 'Written before the first run and reported whatever the result: the cells are measured, not tuned.', es: 'Escrita antes de la primera corrida e informada sea cual sea el resultado: las celdas se miden, no se ajustan.' }}
       >
-        <div data-block="conformal-hypothesis" data-holds={String(h.holds)} data-refuted={String(h.refuted)}>
+        <TableBox natural attrs={{ 'data-block': 'conformal-hypothesis', 'data-holds': String(h.holds), 'data-refuted': String(h.refuted) }}>
           <p className="ct-note">{pick(h.statement, lang)}</p>
           <p className="ct-note">{pick({ en: 'Refuted if: ', es: 'Se refuta si: ' }, lang) + pick(h.refuted_if, lang)}</p>
           <p className="ct-note">{pick(h.pass_rule, lang)}</p>
@@ -245,7 +250,7 @@ export function ConformalVerdictView({ sel }: { sel: C11Sel | null }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );

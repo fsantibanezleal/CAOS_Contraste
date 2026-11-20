@@ -8,6 +8,7 @@
 import { Callout, Cite, DocSection, Figure } from '@fasl-work/caos-app-shell';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './provisions.meta';
 
 const W = 480;
 const H = 262;
@@ -152,10 +153,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'provisions',
-  group: 'loss',
-  order: 100,
-  title: { en: 'Provisions', es: 'Provisiones' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

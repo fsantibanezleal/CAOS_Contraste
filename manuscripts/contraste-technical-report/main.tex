@@ -2,9 +2,9 @@
 
 % The four macros of the header standard; tools/zenodo/publish_revision.py patches them when it reserves the DOI.
 \newcommand{\doctype}{Technical report}
-\newcommand{\docversion}{v1.00.001}
-\newcommand{\docdate}{14 November 2026}
-\newcommand{\versiondoi}{10.5281/zenodo.24231441}
+\newcommand{\docversion}{v1.01.000}
+\newcommand{\docdate}{20 November 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.24386469}
 \newcommand{\conceptdoi}{10.5281/zenodo.24053151}
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
@@ -46,14 +46,15 @@
 \headerblock
 
 \begin{abstract}
-Supervisors find deficiencies in the evidence behind internal models of bank capital and provisions: thresholds are missing and validation tests have unmeasured error rates.
-Contraste is an open workbench that builds bank risk models, from credit scoring to operational risk, and runs on each the tests a validator would run, on public data and generators of known truth.
-The validation of \rsCasesResult{} cases raised \rsFindTotal{} findings, \rsFindSOne{} critical and \rsFindSTwo{} significant; every case ends at opinion level 3 or 4 of 4.
-Ranking is not calibration: the small-business scorecard keeps an AUC of \rsCThreeAuc{} (95\,\% interval \rsCThreeAucLo{} to \rsCThreeAucHi{}) while the observed five-year default probability is \rsCThreeObs{}\,\% against \rsCThreePred{}\,\% predicted.
-The regulation does not state the error rates of the tests: of the \rsOneTests{} tests, \rsCTwentyTwoWithin{} pass the size screen at 5 and 1\,\% in cells of \rsCTwentyTwoNullPerTest{} repetitions, \pxPpOneHoldCell{} hold their size there and \pxPpOneHold{} when pooled to \pxPpOneReps{}.
-Of the four methods it proposes (its other twelve contributions are measurements, protocols and reconciliations), a complement to the attribution test flags a stale-volatility model in \rsThirteenUnion{}\,\% (\rsThirteenUnionLo{} to \rsThirteenUnionHi{}\,\%) of \pxThirteenN{} replications at a held-out false-flag rate of \rsThirteenHeldUnion{}\,\%, where the regulatory test flags it in \rsThirteenPla{}\,\%, but its size does not transfer to other desks;
-conformal recalibration moves hit rates towards the target, yet back-tests accept wrapped runs too easily; the anchored default probability covers the true probability, but the existing treatments cover it too (the clause on them fails), its stability clause fails, and Manski's band covers as often; the sequential monitors lose power and miss their delay clause at three times the nominal rate.
-The results do not describe any real institution.
+Supervisors find the evidence behind internal models of bank capital and provisions deficient: thresholds are missing and validation tests have unmeasured error rates.
+Contraste is an open workbench that builds bank risk models and runs on each the tests a validator would run, on public data and generators of known truth.
+Validating \rsCasesResult{} cases raised \rsFindTotal{} findings, \rsFindSOne{} critical and \rsFindSTwo{} significant; every case ends at opinion level 3 or 4.
+Ranking is not calibration: the small-business scorecard keeps an AUC of \rsCThreeAuc{} (95\,\% interval \rsCThreeAucLo{} to \rsCThreeAucHi{}) while the five-year default rate is \rsCThreeObs{}\,\% against \rsCThreePred{}\,\% predicted.
+Of the \rsOneTests{} tests, whose error rates the regulation does not state, \rsCTwentyTwoWithin{} pass the size screen at 5 and 1\,\%, \pxPpOneHoldCell{} hold their size and \pxPpOneHold{} when pooled.
+Of the seven methods it proposes (its other nine contributions are measurements, protocols and reconciliations), a complement to the attribution test flags a stale-volatility model in \rsThirteenUnion{}\,\% (\rsThirteenUnionLo{} to \rsThirteenUnionHi{}\,\%) of replications at a held-out false-flag rate of \rsThirteenHeldUnion{}\,\%, where the regulatory test flags it in \rsThirteenPla{}\,\%, but its size does not transfer to other desks;
+conformal recalibration moves hit rates towards the target, yet back-tests accept wrapped runs too easily; the anchored default probability covers the truth, but so do the existing treatments and Manski's band, and its stability fails; the sequential monitors lose power and miss their delay clause at three times the nominal rate;
+the breach test of a behavioural assumption flags \pxPpEightFitNull{} of null banks on re-estimated parameters; a permutation reference cuts shift-test false alarms from \pxPpTenFixedFive{} to \pxPpTenPerm{} at power \pxPpTenPermPower{} against \pxPpTenFixedPower{}; the reverse liquidity stress reproduces the March 2023 run only at \pxPpElevenSvbMult{} times the calibrated run-off.
+The results describe no real institution.
 \end{abstract}
 
 \tableofcontents

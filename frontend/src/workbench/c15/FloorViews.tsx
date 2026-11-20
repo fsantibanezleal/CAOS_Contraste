@@ -7,6 +7,7 @@ import { UPlotChart, type UPlotChartProps } from '@fasl-work/caos-app-shell/char
 import { ChartOverTable } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
+import { signedRange } from '../barRange';
 import { docText } from '../c14/C14Common';
 import { LEG_SHORT, SHOCK_TEXT, moneyDoc, outputsOf, scaleUnit, text, type C15Sel } from './selection';
 
@@ -54,7 +55,7 @@ export function FloorsView({ sel }: { sel: C15Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={f.distances.map((x) => ({ id: `${x.leg}-${x.measure}-${x.shock}`, label: distLabel(x), value: x.distance_bp, tone: x.binds ? ('bad' as const) : ('accent' as const) }))}
-              axis={{ label: { en: 'Lowest post-shock rate minus the floor (the floor is zero)', es: 'Tasa más baja posterior al choque menos el piso (el piso es cero)' }, unit: { en: 'bp', es: 'pb' }, format: { decimals: 1 } }}
+              axis={{ label: { en: 'Lowest post-shock rate minus the floor (the floor is zero)', es: 'Tasa más baja posterior al choque menos el piso (el piso es cero)' }, unit: { en: 'bp', es: 'pb' }, format: { decimals: 1 }, range: signedRange(f.distances.map((x) => x.distance_bp)) }}
             />
           }
         >

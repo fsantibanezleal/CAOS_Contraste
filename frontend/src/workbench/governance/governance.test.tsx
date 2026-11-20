@@ -21,6 +21,7 @@ import { entryText } from '../names';
 import { DESIGN_GROUP_LABEL, governanceTabs } from '../../pages/experiments/governanceTabs';
 import { collectSections } from '../../pages/methodologyRegistry';
 import * as governanceSection from '../../pages/methodology/governance';
+import * as governanceMeta from '../../pages/methodology/governance.meta';
 import { setLang } from '../c03/u6-testkit';
 import { MapDrawing } from './DependencyMap';
 import { InventoryTab } from './InventoryView';
@@ -364,7 +365,7 @@ describe('the design group holds six tabs at most', () => {
 
 describe('the Methodology section', () => {
   it('registers as a method section of an existing group', () => {
-    const [s] = collectSections({ './methodology/governance.tsx': governanceSection }, ['models', 'tests', 'loss', 'capital', 'market', 'balance']);
+    const [s] = collectSections({ './methodology/governance.meta.ts': governanceMeta }, { './methodology/governance.tsx': async () => governanceSection }, ['models', 'tests', 'loss', 'capital', 'market', 'balance']);
     expect(s.id).toBe('governance');
     expect(s.group).toBe('models');                       // beside Model risk; the group holds six tabs (ADR-0071)
     expect(s.title).toBeTruthy();

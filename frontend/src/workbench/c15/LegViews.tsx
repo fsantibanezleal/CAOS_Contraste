@@ -9,6 +9,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
+import { signedRange } from '../barRange';
 import { IrrbbTestsTable, UnavailableCard } from '../c14/C14Common';
 import { DYN_TEXT, itemName } from '../c14/NiiViews';
 import {
@@ -72,7 +73,7 @@ export function EveByLegView({ sel }: { sel: C15Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={chartData}
-              axis={{ label: { en: 'Delta EVE, positive is a loss', es: 'Delta EVE, pérdida positiva' }, unit: axis.unit, format: { decimals: 2 } }}
+              axis={{ label: { en: 'Delta EVE, positive is a loss', es: 'Delta EVE, pérdida positiva' }, unit: axis.unit, format: { decimals: 2 }, range: signedRange(chartData.map((d) => d.value)) }}
             />
           }
         >

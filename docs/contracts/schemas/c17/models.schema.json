@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c17/models.schema.json",
   "title": "C17 models",
-  "description": "Catalog row c17-models 1.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification).",
+  "description": "Catalog row c17-models 2.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification, the S-3 hypothesis over all cells).",
   "allOf": [
     {
       "$ref": "../common/models-envelope.schema.json"
@@ -810,7 +810,8 @@
         "ladder",
         "aggregation",
         "sma",
-        "scenarios"
+        "scenarios",
+        "s3_overall"
       ],
       "properties": {
         "currency": {
@@ -901,9 +902,90 @@
         },
         "scenarios": {
           "$ref": "#/$defs/c17ScenarioSpec"
+        },
+        "s3_overall": {
+          "$ref": "#/$defs/c17S3Overall"
         }
       },
       "description": "C17 models: the generator, the LDCE calibration targets, the true parameters and quantile of every variant, the grid and its seeds, the ladder, the aggregation settings, the OPE25 specification and the scenario methods."
+    },
+    "c17S3Rung": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_id",
+        "cells",
+        "smaller_spread",
+        "smaller_bias",
+        "verdict"
+      ],
+      "properties": {
+        "model_id": {
+          "type": "string",
+          "enum": [
+            "sla-cvm",
+            "sla-obre"
+          ]
+        },
+        "cells": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "smaller_spread": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "smaller_bias": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "holds",
+            "refuted",
+            "inconclusive"
+          ]
+        }
+      },
+      "description": "One robust rung against the splice LDA over the pooled cells: the cells where both have a capital, the cells where the rung has the smaller spread and the smaller bias, and the verdict by the shares of the hypothesis."
+    },
+    "c17S3Overall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "variants",
+        "cells",
+        "rungs",
+        "verdict"
+      ],
+      "properties": {
+        "variants": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cells": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rungs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c17S3Rung"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "holds",
+            "refuted",
+            "inconclusive"
+          ]
+        }
+      },
+      "description": "The S-3 hypothesis over every cell of every variant, computed once at the bake: holds only when both rungs hold, refuted when either is."
     }
   }
 }

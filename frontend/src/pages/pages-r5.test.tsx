@@ -44,6 +44,8 @@ vi.mock('@fasl-work/caos-app-shell', async (importOriginal) => {
 });
 
 const { Methodology } = await import('./Methodology');
+// the sections load on demand in the app; the page is read whole here, so every body is loaded first
+await (await import('./MethodologyBody')).preloadMethodologySections();
 const { RegulationBody } = await import('./methodology/regulation');
 const { Implementation } = await import('./Implementation');
 const { CaseFacts } = await import('./Experiments');

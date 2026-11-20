@@ -12,6 +12,7 @@ import { Callout, Cite, DocSection, Figure, SubTabs, formatNumber, useShellLang 
 import type { CSSProperties } from 'react';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './market.meta';
 
 const r1 = (v: number) => Math.round(v * 10) / 10;
 const W = 480;
@@ -269,10 +270,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'market',
-  group: 'market',
-  order: 120,
-  title: { en: 'Market risk', es: 'Riesgo de mercado' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

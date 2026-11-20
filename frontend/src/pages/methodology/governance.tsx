@@ -10,6 +10,7 @@ import { Equation, P, T, useT } from '../../content/bi';
 import { tierColor } from '../../workbench/governance/DependencyMap';
 import { RULE_OUTPUT_LABEL, TIER_RULE_TEX, tierOf } from '../../workbench/governance/model';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './governance.meta';
 
 /** The tier rule as a grid: the tier each (M, C) pair gives, from the same function the inventory is checked against. */
 function TierRuleFigure() {
@@ -124,10 +125,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'governance',
-  group: 'models',
-  order: 300,
-  title: { en: 'Model governance', es: 'Gobernanza de modelos' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

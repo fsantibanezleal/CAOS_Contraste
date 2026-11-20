@@ -135,6 +135,158 @@ export interface components {
             amber_limit: number;
         };
         /**
+         * Methods compared
+         * @description Catalog row benchmark-methods 2.0.0: the methods of each benchmark question side by side (data/derived/benchmark/methods-compared.json), every value copied from a committed case document or manuscript result file with its path, JSON pointer and SHA-256, every method with its standing read from the SDD method ladder, every reading generated from the numbers by the declared rule of each metric.
+         */
+        "benchmark-methods": {
+            /** @constant */
+            case_id: "BENCHMARK-METHODS";
+            /** @constant */
+            schema: "contraste.benchmark.methods-compared/v1";
+            schema_version: string;
+            provenance: components["schemas"]["bmProvenance"];
+            questions: components["schemas"]["bmQuestion"][];
+            left_out: components["schemas"]["bmLeftOut"][];
+            not_built: components["schemas"]["bmNotBuilt"][];
+        };
+        bmAbsent: {
+            method: components["schemas"]["bmText"];
+            ladder_id: null | components["schemas"]["bmLadderId"];
+            /** @enum {string|null} */
+            standing: "established" | "recent" | "proposed" | null;
+            reason: components["schemas"]["bmText"];
+            backlog: string | null;
+        };
+        bmCell: {
+            metric: string;
+            column: string;
+            value: number | string | boolean;
+            null_reason: null;
+            cited: components["schemas"]["bmCite"];
+        } | {
+            metric: string;
+            column: string;
+            value: null;
+            null_reason: components["schemas"]["bmText"];
+            cited: null | components["schemas"]["bmCite"];
+        };
+        bmCite: {
+            /** @description Repository path of the committed file the value was copied from. */
+            path: string;
+            /** @description RFC 6901 JSON pointer of the value in that file. */
+            pointer: string;
+            sha256: components["schemas"]["bmSha256"];
+        };
+        bmColumn: {
+            id: string;
+            label: components["schemas"]["bmText"];
+        };
+        bmLadderId: string;
+        bmLeftOut: {
+            ladder_id: components["schemas"]["bmLadderId"];
+            method: components["schemas"]["bmText"];
+            reason: components["schemas"]["bmText"];
+            backlog: string | null;
+        };
+        bmMetric: {
+            id: string;
+            label: components["schemas"]["bmText"];
+            run_id: string;
+            /** @description The declared rule: lower, higher, nearer:<value>, nearer-metric:<metric>, order:<best>,... or none (context, never ranked). */
+            better: string;
+            unit: components["schemas"]["bmText"];
+            columns: string[];
+        };
+        bmNegativeResult: {
+            rows: string[];
+            manuscript: string;
+            /** @description The concept DOI of the manuscript, read from its conceptdoi macro and equal to the concept_doi of one product.json manuscripts entry. */
+            concept_doi: string;
+            text: components["schemas"]["bmText"];
+        };
+        bmNotBuilt: {
+            id: string;
+            title: components["schemas"]["bmText"];
+            reason: components["schemas"]["bmText"];
+        };
+        bmProvenance: {
+            code_version: string;
+            generators: string[];
+            ladder: {
+                path: string;
+                rows_sha256: components["schemas"]["bmSha256"];
+            };
+            documents: {
+                path: string;
+                sha256: components["schemas"]["bmSha256"];
+            }[];
+            hash_rule: string;
+        };
+        bmQuestion: {
+            id: string;
+            title: components["schemas"]["bmText"];
+            case_ids: string[];
+            protocol: components["schemas"]["bmText"];
+            runs: components["schemas"]["bmRun"][];
+            metrics: components["schemas"]["bmMetric"][];
+            rows: components["schemas"]["bmRow"][];
+            absent: components["schemas"]["bmAbsent"][];
+            standings: components["schemas"]["bmStanding"][];
+            reading: components["schemas"]["bmText"];
+            negative_results: components["schemas"]["bmNegativeResult"][];
+        };
+        bmRow: {
+            id: string;
+            method: components["schemas"]["bmText"];
+            /** @description The SDD method-ladder id: kept for the tests, never rendered. */
+            ladder_id: null | components["schemas"]["bmLadderId"];
+            /**
+             * @description Read from the tier of the ladder row; reference when the row has no ladder id.
+             * @enum {string}
+             */
+            standing: "established" | "recent" | "proposed" | "reference";
+            ranked: boolean;
+            note: null | components["schemas"]["bmText"];
+            source: null | components["schemas"]["bmSource"];
+            year: number | null;
+            cells: components["schemas"]["bmCell"][];
+        };
+        bmRun: {
+            id: string;
+            label: components["schemas"]["bmText"];
+            protocol: components["schemas"]["bmText"];
+            seed: null | components["schemas"]["bmSeed"];
+            /** @description The committed files this run's cells cite; no file serves two runs of one question. */
+            files: string[];
+            /**
+             * @description What the data of this run rest on, the closed list of the case documents' provenance.truth_status: copied from the case documents the run cites (they must agree), or, for a run that cites manuscript result files only, declared by the specification with its reason.
+             * @enum {string}
+             */
+            truth_status: "real-outcomes" | "synthetic-known-truth" | "synthetic-calibrated" | "published-answer";
+            columns: components["schemas"]["bmColumn"][];
+        };
+        bmSeed: {
+            value: number;
+            cited: components["schemas"]["bmCite"];
+        };
+        bmSha256: string;
+        bmSource: {
+            text: string;
+            url: string | null;
+        };
+        bmStanding: {
+            metric: string;
+            column: string;
+            best: string[];
+            value: number | string | boolean;
+            tie: boolean;
+            n_ranked: number;
+        };
+        bmText: {
+            en: string;
+            es: string;
+        };
+        /**
          * C01 models
          * @description Catalog row c01-models 1.0.0: a C01 models artifact (one per fit_id: german, taiwan, taiwan-small).
          */
@@ -361,8 +513,12 @@ export interface components {
                     [key: string]: number[];
                 } | null;
             };
-            /** @description The same with the six-month full payers as transactors (the cards only; null for the loans). */
+            /** @description The reliability table of the raw score before the calibration map, on the same bins and rows as reliability; null for a rung with no map. */
             reliability_raw: components["schemas"]["c01ReliabilityBin"][] | null;
+            /** @description The Brier score of the evaluated PD (after the calibration map where the rung has one): the mean squared error of the PD against the 0/1 outcome (Brier 1950); the value of the pd.brier row of the same rung. */
+            brier: number;
+            /** @description The Brier score of the raw score before the calibration map, on the same rows; null for a rung with no map (M-5: the Brier before and after the calibration). */
+            brier_raw: number | null;
         };
         c01ScoredSample: {
             ids: string[];
@@ -970,7 +1126,7 @@ export interface components {
         };
         /**
          * C04 family variant
-         * @description Catalog row c04-family 1.1.0: one simulation family of the transition estimators (outputs.kind generator).
+         * @description Catalog row c04-family 2.0.0: one simulation family of the transition estimators (outputs.kind generator).
          */
         "c04-variant-generator": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -1169,7 +1325,7 @@ export interface components {
             mean_width: (number | null)[];
             relative_bias: (number | null)[];
         };
-        /** @description BS-14's hypothesis (i) read off the rungs' coverage of one grade's true PD against the criteria fixed before the run (the anchored interval covers at least 90% at informative 1, 3 and 9; the existing treatments under 50% at 9; refuted if the anchored interval does not cover more than every existing treatment at 9). */
+        /** @description BS-14's hypothesis (i) read off the rungs' coverage of one grade's true PD against the criteria fixed before the run (the anchored interval covers at least 90% at informative 1, 3 and 9; the existing treatments under 50% at 9; refuted if the anchored interval does not cover more than every treatment at 9, Manski's identified band among them, or if the anchored k is unstable across years: `summary` carries both clauses). */
         c04BoundsVerdict: {
             grade: number;
             reps: number;
@@ -1191,8 +1347,11 @@ export interface components {
             }[];
             summary: {
                 refuted: boolean;
+                refuted_on: ("coverage_better_than_every_treatment" | "anchored_k_stable_across_years")[];
                 anchored_covers_90: boolean;
                 existing_under_50: boolean;
+                coverage_better_than_every_treatment: components["schemas"]["c04CoverageClause"];
+                anchored_k_stable_across_years: components["schemas"]["c04StabilityClause"];
             };
         };
         c04CapitalPoint: {
@@ -1216,6 +1375,36 @@ export interface components {
             events: number[] | null;
             defaulted_cohort: number[] | null;
             tab2_gap: number | null;
+        };
+        /** @description The coverage clause of BS-14's refutation rule, read at informative `informative` on `reps` repetitions of the committed generator (draws of their own): the anchored interval covers the true PD of grade `grade` more often than every other treatment, the identified (Manski) band among them, in every design. */
+        c04CoverageClause: {
+            holds: boolean;
+            informative: number;
+            grade: number;
+            level: number;
+            reps: number;
+            manski_treatment: string;
+            designs: {
+                design: string;
+                reps: number;
+                seed_key: string;
+                seed: number;
+                anchored: number;
+                anchored_mcse: number;
+                treatments: {
+                    /** @enum {string} */
+                    id: "industry" | "unfollowed" | "followed" | "identified";
+                    coverage: number;
+                    mean_width: number | null;
+                }[];
+                anchored_mean_width: number | null;
+                best_other: number;
+                best_other_treatments: ("industry" | "unfollowed" | "followed" | "identified")[];
+                difference: number;
+                manski_covers_as_often_or_more: boolean;
+                manski_width_ratio: number | null;
+                holds: boolean;
+            }[];
         };
         c04CycleRung: {
             value: number;
@@ -1547,6 +1736,24 @@ export interface components {
             seed: number;
             n_rep: number;
         };
+        /** @description The stability clause of BS-14's refutation rule on the real cohorts of each source with a default page: the anchored k is stable across years when, for every grade judged, at least `threshold` of the annual cohorts' k bands contain the pooled k. A grade with fewer than `min_cohorts` usable cohorts is `too_few`: not judged, never a pass; a clause with no grade judged does not hold. */
+        c04StabilityClause: {
+            holds: boolean;
+            threshold: number;
+            min_cohorts: number;
+            judged: number;
+            unstable: number;
+            unanchored_sources: string[];
+            rows: {
+                source: string;
+                grade: string;
+                usable_cohorts: number;
+                cohorts_containing_pooled_k: number;
+                share: number | null;
+                /** @enum {string} */
+                status: "stable" | "unstable" | "too_few";
+            }[];
+        };
         c04ThinRung: {
             value: number;
             level: number;
@@ -1847,7 +2054,7 @@ export interface components {
         };
         /**
          * C06 models
-         * @description Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.
+         * @description Catalog row c06-models 3.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD, the staging policy, the bootstrap intervals of the S-4 comparison and the hyper-parameter sensitivity of the PC-Hazard rung.
          */
         "c06-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -1942,6 +2149,8 @@ export interface components {
             lgd: components["schemas"]["c06Lgd"];
             ead: components["schemas"]["c06Ead"];
             staging_policy: components["schemas"]["c06StagingPolicy"];
+            s4_bootstrap: components["schemas"]["c06S4Bootstrap"];
+            pch_sensitivity: components["schemas"]["c06PchSensitivity"];
         };
         c06GcaMovement: {
             /** @enum {string} */
@@ -2059,6 +2268,92 @@ export interface components {
             staging_effect: "none" | "transfers-to-stage2";
             review_date: string;
         };
+        /** @description The S-4 evaluation of one setting at this reporting date, as `details.evaluation` of the PC-Hazard model record gives it for the default: the c-index, the integrated Brier score and the mean absolute decile gap against Aalen-Johansen of both rungs, the criteria and whether the hypothesis holds at the date. */
+        c06PchEvaluation: {
+            /** @description The PC-Hazard and Cox values of one statistic of the S-4 comparison. */
+            c_index: {
+                pch: number | null;
+                cox: number | null;
+            };
+            /** @description The PC-Hazard and Cox values of one statistic of the S-4 comparison. */
+            integrated_brier: {
+                pch: number | null;
+                cox: number | null;
+            };
+            /** @description The PC-Hazard and Cox values of one statistic of the S-4 comparison. */
+            mean_decile_gap: {
+                pch: number | null;
+                cox: number | null;
+            };
+            /** @description The criteria of the S-4 hypothesis (the c-index is reported beside, not part of the verdict): true, false or null (one side not observed). */
+            criteria: {
+                lower_integrated_brier: boolean | null;
+                smaller_decile_gap: boolean | null;
+                higher_c_index: boolean | null;
+            };
+            holds_at_date: boolean | null;
+        };
+        /** @description The verdicts of the nine settings over the dates and the count of those that agree with the default's, which is the verdict of the case. */
+        c06PchOverall: {
+            dates: number;
+            /** @constant */
+            case_setting: "default";
+            case_verdict: ("holds" | "refuted") | null;
+            settings_count: number;
+            agree: number;
+            settings: components["schemas"]["c06PchOverallSetting"][];
+        };
+        /** @description The verdict of one setting over the dates (`backtest.s4_verdict` of its `holds_at_date` per date) and whether it agrees with the verdict of the case. */
+        c06PchOverallSetting: {
+            setting_id: string;
+            dates: number;
+            evaluable: number;
+            holds_at: number;
+            verdict: ("holds" | "refuted") | null;
+            agrees: boolean;
+        };
+        /** @description The hyper-parameters of one setting: the interval width in months with its interval count (their product is the 180 months every grid covers), the hidden layer sizes, the learning rate and the weight decay. */
+        c06PchParameters: {
+            interval_months: number;
+            intervals: number;
+            hidden: number[];
+            learning_rate: number;
+            weight_decay: number;
+        };
+        /** @description The hyper-parameter sensitivity of the PC-Hazard rung at this reporting date: the rung refitted under nine settings, one hyper-parameter moved at a time around the defaults (never a grid, never a tuning), on the same training loans, hold-out split and seed, each judged by the S-4 evaluation on the same out-of-time accounts. `settings` holds the nine entries in order, or none when the rung was not fitted (then `reason` says why). `selected_setting` is always null: no setting is chosen and the verdict of the case stays the default's. */
+        c06PchSensitivity: {
+            method: components["schemas"]["common-text"];
+            /** @constant */
+            kind: "one-at-a-time";
+            /** @constant */
+            covers_months: 180;
+            /** @constant */
+            same_training: true;
+            selected_setting: null;
+            evaluated: boolean;
+            seed: number | null;
+            reason: components["schemas"]["common-text"] | null;
+            settings: components["schemas"]["c06PchSetting"][];
+            overall: components["schemas"]["c06PchOverall"];
+        };
+        /** @description One setting of the sweep at this date. `status` is `fitted` (early stopping triggered), `not_converged` (the fit ran to the epoch cap; its numbers are reported) or `failed` (the fit raised or its rates are not finite; no evaluation); `reason` is null exactly when the status is `fitted`. */
+        c06PchSetting: {
+            /** @enum {string} */
+            setting_id: "default" | "width-1.5" | "width-6" | "hidden-16" | "hidden-64" | "weight-decay-1e-5" | "weight-decay-1e-3" | "learning-rate-0.003" | "learning-rate-0.03";
+            /** @enum {string} */
+            parameter: "default" | "interval_width" | "hidden_layers" | "weight_decay" | "learning_rate";
+            is_default: boolean;
+            label: components["schemas"]["common-text"];
+            parameters: components["schemas"]["c06PchParameters"];
+            /** @enum {string} */
+            status: "fitted" | "not_converged" | "failed";
+            reason: components["schemas"]["common-text"] | null;
+            epochs: number | null;
+            best_epoch: number | null;
+            holdout_nll_per_default: number | null;
+            weights_sha256: string | null;
+            evaluation: components["schemas"]["c06PchEvaluation"] | null;
+        };
         c06Pit: {
             rho: number;
             method: string;
@@ -2111,6 +2406,46 @@ export interface components {
             integrated_brier: number | null;
             calibration_gap_12m: number | null;
             reason: components["schemas"]["common-text"] | null;
+        };
+        /** @description The loan-level evaluation bootstrap of the S-4 comparison of this reporting date: the out-of-time accounts resampled with replacement, the predictions of both rungs held fixed (no refit), percentile intervals on the difference of the integrated Brier score and of the mean absolute decile gap against Aalen-Johansen. Reported beside the verdict, never in place of it. */
+        c06S4Bootstrap: {
+            method: components["schemas"]["common-text"];
+            /** @constant */
+            resampled_unit: "account";
+            replicates: number;
+            level: number;
+            seed: number;
+            /** @constant */
+            predictions_refit: false;
+            evaluated: boolean;
+            reason: components["schemas"]["common-text"] | null;
+            accounts: number | null;
+            differences: components["schemas"]["c06S4Difference"][];
+            both_exclude_zero: boolean | null;
+            overall: components["schemas"]["c06S4Overall"];
+        };
+        /** @description One S-4 difference with its bootstrap interval, beside the point difference the hypothesis judges. */
+        c06S4Difference: {
+            /** @enum {string} */
+            measure: "integrated_brier" | "mean_decile_gap";
+            /** @description PC-Hazard minus Cox on the out-of-time accounts (negative favours PC-Hazard); null with its reason when a side is not observed. */
+            difference: number | null;
+            /** @description The 2.5 percentile of the replicate differences. */
+            lo: number | null;
+            /** @description The 97.5 percentile of the replicate differences. */
+            hi: number | null;
+            /** @description True when the interval lies wholly on one side of zero. */
+            excludes_zero: boolean | null;
+            n_valid: number;
+            reason: components["schemas"]["common-text"] | null;
+        };
+        /** @description The verdict of the pre-registered rule over the dates (`holds_at` of `evaluable`, more than half holds) and how many of the dates where it holds have both intervals excluding zero. */
+        c06S4Overall: {
+            dates: number;
+            evaluable: number;
+            holds_at: number;
+            holds_excluding_zero: number;
+            verdict: ("holds" | "refuted") | null;
         };
         c06ScenarioDefinition: {
             id: string;
@@ -3051,6 +3386,50 @@ export interface components {
             /** @description A share or an observed rate in [0, 1]. */
             share: number;
         };
+        /** @description The loan-level evaluation bootstrap of the S-5 benchmark of this test cohort: the defaults of the cohort resampled with replacement, the predictions held fixed (no refit), percentile intervals on the RMSE difference of the better of the random forest and the neural network against each of the six rungs before them and against the best of the six. Reported beside the verdict, never in place of it. */
+        c08MlBenchmark: {
+            method: components["schemas"]["c08Text"];
+            /** @constant */
+            resampled_unit: "default";
+            replicates: number;
+            level: number;
+            seed: number;
+            /** @constant */
+            predictions_refit: false;
+            evaluated: boolean;
+            reason: components["schemas"]["c08Text"] | null;
+            defaults: number;
+            /** @description The better of the random forest and the neural network by RMSE at the point estimate. */
+            better_rung: string | null;
+            against_best: components["schemas"]["c08MlDifference"];
+            against: components["schemas"]["c08MlDifference"][];
+            /** @description The interval against the best of the six excludes zero. */
+            interval_excludes_zero: boolean | null;
+            overall: components["schemas"]["c08MlOverall"];
+        };
+        /** @description One S-5 RMSE difference with its bootstrap interval, beside the point difference the hypothesis judges. */
+        c08MlDifference: {
+            /** @description The rung compared against; for the comparison against the best, the best of the six at the point estimate. */
+            rung_id: string | null;
+            /** @description RMSE of that rung minus RMSE of the better of the random forest and the neural network on the test cohort (positive: the machine-learning rung is lower); null with its reason when a rung is not fitted. */
+            difference: number | null;
+            /** @description The 2.5 percentile of the replicate differences. */
+            lo: number | null;
+            /** @description The 97.5 percentile of the replicate differences. */
+            hi: number | null;
+            /** @description True when the interval lies wholly on one side of zero. */
+            excludes_zero: boolean | null;
+            n_valid: number;
+            reason: components["schemas"]["c08Text"] | null;
+        };
+        /** @description The verdict of the pre-registered rule over the test cohorts (`wins` of `evaluable`) and how many of the cohorts where it holds have the interval against the best of the six excluding zero. */
+        c08MlOverall: {
+            cohorts: number;
+            evaluable: number;
+            wins: number;
+            wins_excluding_zero: number;
+            verdict: ("holds" | "mixed" | "refuted") | null;
+        };
         /** @description C08 default-cohort outputs (outputs.kind default-cohort): one test default cohort. LGD in [0, 1] with the cases outside it (fees, costs) allowed and flagged, never clipped; the LGD proxy definition and bias statement are required; money in `currency`. */
         c08Outputs: {
             /** @constant */
@@ -3071,6 +3450,7 @@ export interface components {
             endpoint_sensitivity: components["schemas"]["c08EndpointRow"][];
             downturn: components["schemas"]["c08Downturn"];
             floors_bite: components["schemas"]["c08FloorsBite"];
+            ml_benchmark: components["schemas"]["c08MlBenchmark"];
         };
         c08RealisedRow: {
             rung_id: string;
@@ -10500,7 +10880,7 @@ export interface components {
         };
         /**
          * C17 models
-         * @description Catalog row c17-models 1.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification).
+         * @description Catalog row c17-models 2.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification, the S-3 hypothesis over all cells).
          */
         "c17-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -10726,6 +11106,7 @@ export interface components {
             aggregation: components["schemas"]["c17Aggregation"];
             sma: components["schemas"]["c17SmaSpec"];
             scenarios: components["schemas"]["c17ScenarioSpec"];
+            s3_overall: components["schemas"]["c17S3Overall"];
         };
         /** @description The generator of annual operational loss histories for a synthetic bank; its true annual loss distribution is known. */
         c17Generator: {
@@ -10936,6 +11317,24 @@ export interface components {
             /** @constant */
             status?: "SECONDARY_SOURCE";
         });
+        /** @description The S-3 hypothesis over every cell of every variant, computed once at the bake: holds only when both rungs hold, refuted when either is. */
+        c17S3Overall: {
+            variants: number;
+            cells: number;
+            rungs: components["schemas"]["c17S3Rung"][];
+            /** @enum {string} */
+            verdict: "holds" | "refuted" | "inconclusive";
+        };
+        /** @description One robust rung against the splice LDA over the pooled cells: the cells where both have a capital, the cells where the rung has the smaller spread and the smaller bias, and the verdict by the shares of the hypothesis. */
+        c17S3Rung: {
+            /** @enum {string} */
+            model_id: "sla-cvm" | "sla-obre";
+            cells: number;
+            smaller_spread: number;
+            smaller_bias: number;
+            /** @enum {string} */
+            verdict: "holds" | "refuted" | "inconclusive";
+        };
         c17Scenario: {
             scenario_id: string;
             label: components["schemas"]["common-text"];

@@ -274,3 +274,38 @@ def test_the_governance_register_reads_the_generic_findings_through_the_engine_a
                 assert anchor is not None and anchor["test_id"] == f["evidence"][0].split("@")[0], (p.name, f["id"], why)
                 n += 1
     assert n > 0
+
+
+# ---- BL-109: the step names a model the same way whatever names file the tree holds ------------------------------------------------------
+
+C17_ROBUST_RUNGS = ("sla-mean-adjusted", "sla-cvm", "sla-obre", "sla-cvm-lognormal")
+
+
+def test_adversarial_a_bake_from_a_tree_whose_names_file_lacks_a_rung_writes_the_same_findings(monkeypatch):
+    """BL-109: C17's bake of 2026-11-01 (5a3e7343) ran before the names file held its four robust rungs (d406eddb, the next day),
+    so F-RED-01 said "and 3 more models" where its 34 rows span 10. A model the names file does not hold yet is named from its own
+    document, as the names generator will name it (short title when it is a name, else the title), so the count holds."""
+    doc = json.loads((DERIVED / "C17" / "xi-0-96.json").read_text(encoding="utf-8"))
+    own = [f for f in doc["findings"] if not f["id"].startswith(rf.ID_PREFIX)]
+    full = rf.red_findings("C17", doc["tests"], own, doc["model"])
+    names = rf.model_names()
+    assert all(r in names["C17"] for r in C17_ROBUST_RUNGS)
+    lacking = {case: dict(models) for case, models in names.items()}
+    for rung in C17_ROBUST_RUNGS:
+        del lacking["C17"][rung]
+    monkeypatch.setattr(rf, "model_names", lambda: lacking)
+    assert rf.red_findings("C17", doc["tests"], own, doc["model"]) == full
+    (stability,) = [f for f in full if len({e.split("@")[1] for e in f["evidence"]}) == 10]
+    assert stability["title"]["en"].endswith("and 7 more models) that no other finding cites")
+    assert "y 7 modelos más)" in stability["title"]["es"]
+
+
+def test_every_committed_generic_finding_is_what_the_step_writes_today():
+    """Every committed document's generic findings equal what the step writes from that document's own tests, findings and models:
+    a document baked against an older names file (BL-109) fails here until it is re-baked."""
+    n = 0
+    for p, d in _variants():
+        own = [f for f in d["findings"] if not f["id"].startswith(rf.ID_PREFIX)]
+        assert rf.red_findings(d["case_id"], d["tests"], own, d["model"]) == _generic(d), p.relative_to(ROOT).as_posix()
+        n += len(_generic(d))
+    assert n > 100

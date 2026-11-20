@@ -155,9 +155,9 @@ export function ProxyView({ sel }: { sel: C08Sel | null }) {
           }
         >
           <FixtureNotice variant={sel.data.variant} />
-          <dl className="ct-defs" data-table="lgd-proxy">
-            <dt>{pick({ en: 'Definition', es: 'Definición' }, lang)}</dt>
-            <dd>{pick(p.definition, lang)}</dd>
+          <dl className="ct-defs ct-defs-stack" data-table="lgd-proxy">
+            <dt className="ct-long">{pick({ en: 'Definition', es: 'Definición' }, lang)}</dt>
+            <dd className="ct-long">{pick(p.definition, lang)}</dd>
             <dt>{pick({ en: 'Formula', es: 'Fórmula' }, lang)}</dt>
             {/* the SBA file's published field codes, named by the definition above (the raw-id ruling of 2026-10-24) */}
             <dd>
@@ -167,18 +167,18 @@ export function ProxyView({ sel }: { sel: C08Sel | null }) {
             <dd data-recovery-flows={String(p.recovery_cash_flows_available)}>{p.recovery_cash_flows_available ? pick({ en: 'available', es: 'disponibles' }, lang) : pick({ en: 'not available in the file', es: 'no disponibles en el archivo' }, lang)}</dd>
             <dt>{pick({ en: 'Bias', es: 'Sesgo' }, lang)}</dt>
             <dd data-bias={p.bias_direction}>{pick({ en: 'The proxy is biased downward (low).', es: 'La aproximación tiene un sesgo a la baja.' }, lang)}</dd>
-            <dt>{pick({ en: 'Why', es: 'Por qué' }, lang)}</dt>
-            <dd>{pick(p.bias_statement, lang)}</dd>
+            <dt className="ct-long">{pick({ en: 'Why', es: 'Por qué' }, lang)}</dt>
+            <dd className="ct-long">{pick(p.bias_statement, lang)}</dd>
             <dt>{pick({ en: 'Charged off, in total', es: 'Castigado, en total' }, lang)}</dt>
             <dd data-total="gross-charge-off">{`${money(o.exposure.gross_charge_off_total, lang, o.exposure.currency)} ${o.exposure.currency}`}</dd>
             <dt>{pick({ en: 'Approved, in total', es: 'Aprobado, en total' }, lang)}</dt>
             <dd data-total="gross-approval">{`${money(o.exposure.gross_approval_total, lang, o.exposure.currency)} ${o.exposure.currency}`}</dd>
-            <dt>{pick({ en: 'Discounting', es: 'Descuento' }, lang)}</dt>
-            <dd data-convention={w.discount_rate_convention}>{pick(WORKOUT_CONVENTION[w.discount_rate_convention], lang)}</dd>
-            <dt>{pick({ en: 'Open workouts', es: 'Recuperaciones abiertas' }, lang)}</dt>
-            <dd data-treatment={w.incomplete_workouts.treatment}>{`${pick(INCOMPLETE_TEXT[w.incomplete_workouts.treatment], lang)}${w.incomplete_workouts.reason ? `: ${pick(w.incomplete_workouts.reason, lang)}` : ''}`}</dd>
-            <dt>Freddie Mac</dt>
-            <dd data-freddie-mac={String(d.freddie_mac_available)}>
+            <dt className="ct-long">{pick({ en: 'Discounting', es: 'Descuento' }, lang)}</dt>
+            <dd className="ct-long" data-convention={w.discount_rate_convention}>{pick(WORKOUT_CONVENTION[w.discount_rate_convention], lang)}</dd>
+            <dt className="ct-long">{pick({ en: 'Open workouts', es: 'Recuperaciones abiertas' }, lang)}</dt>
+            <dd className="ct-long" data-treatment={w.incomplete_workouts.treatment}>{`${pick(INCOMPLETE_TEXT[w.incomplete_workouts.treatment], lang)}${w.incomplete_workouts.reason ? `: ${pick(w.incomplete_workouts.reason, lang)}` : ''}`}</dd>
+            <dt className="ct-long">Freddie Mac</dt>
+            <dd className="ct-long" data-freddie-mac={String(d.freddie_mac_available)}>
               {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${freddieReason(d.freddie_mac_reason, lang)}`}
             </dd>
           </dl>

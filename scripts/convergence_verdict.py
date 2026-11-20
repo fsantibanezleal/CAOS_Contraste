@@ -16,7 +16,11 @@ A row's result is ``passed`` (every test the gate names ran and passed; a parame
 ``failed``, ``skipped`` (with the reason the run gave) or ``absent`` (the gate is in no result file). Only ``passed`` counts as
 passed. The verdict is ``NOT CONVERGED`` (exit 1) while any row is failed or absent, a skip stands, or a feature folder has no rows;
 a skip whose reason is a device precondition (``requires_raw``, the data root) is allowed only when the run states the device with
-``--device``. A missing result file exits 2, naming the file and the command that writes it, and writes no verdict.
+``--device``. A skip whose reason says the test runs only in the template repository (the template's own sources, a second
+instantiation) is ``not applicable`` in a product, listed with its reason and never blocking; the row is then judged on its other
+parts, and a row whose every part is template-only reads ``not applicable``. In the template itself (``.template-source`` present)
+the same skip stays a skip (BL-110). A missing result file exits 2, naming the file and the command that writes it, and writes no
+verdict.
 
 The same result files give the same bytes: rows are sorted by repository, feature and id, and the date comes from the result
 files, never from the clock. The requirement rows are parsed by ``scripts/check_sdd.py`` (imported, never copied).
@@ -55,8 +59,12 @@ ENGINE_NAME = "riskvalidation"
 DEFAULT_OUT = Path("docs/design/features/release-1-0/verdict.md")
 DEFAULT_TIMEOUT = 600
 DEVICE_SKIP = re.compile(r"requires_raw|data root|CONTRASTE_DATA|raw data|raw file", re.I)
-SHOWN = ("passed", "failed", "skipped", "absent")
-ORDER = ("failed", "absent", "skipped", "passed")  # the worst result of a gate's parts is the gate's result
+# The reasons the template's template-only tests give (tests/test_bootstrap_regressions.py TEMPLATE_ONLY,
+# tests/test_bootstrap_admission.py): they run only where `.template-source` exists (CAOS_PRODUCT_TEMPLATE#149).
+TEMPLATE_SKIP = re.compile(r"template's actual|products cannot instantiate|upstream template behavio", re.I)
+NOT_APPLICABLE = "not applicable"
+SHOWN = ("passed", "failed", "skipped", "absent", NOT_APPLICABLE)
+ORDER = ("failed", "absent", "skipped", "passed", NOT_APPLICABLE)  # the worst result of a gate's judged parts is the gate's result
 # Arguments a script gate needs: the gate cell names the script alone (check_sdd accepts a backticked path, not a command line).
 SCRIPT_ARGS: dict[str, list[str]] = {"scripts/check_skeleton.py": ["docs/contracts/catalog.md"]}
 RESULT_COMMANDS = {
@@ -89,6 +97,7 @@ class Part:
     result: str
     detail: str
     device_ok: bool = False
+    template_only: bool = False
 
 
 @dataclass
@@ -162,11 +171,15 @@ def combine(parts: list[Part]) -> tuple[str, str]:
     """The worst result of the parts, and the details of every part that is not passed."""
     if not parts:
         return "absent", "the gate names no file"
-    worst = min((p.result for p in parts), key=ORDER.index)
-    details = [p.detail for p in parts if p.result != "passed" and p.detail]
+    judged = [p for p in parts if p.result != NOT_APPLICABLE]
+    aside = [p.detail for p in parts if p.result == NOT_APPLICABLE and p.detail]
+    if not judged:
+        return NOT_APPLICABLE, "; ".join(dict.fromkeys(aside))
+    worst = min((p.result for p in judged), key=ORDER.index)
+    details = [p.detail for p in judged if p.result != "passed" and p.detail]
     if worst == "passed":
-        details = [p.detail for p in parts if p.detail][:1]
-    return worst, "; ".join(dict.fromkeys(details))
+        details = [p.detail for p in judged if p.detail][:1]
+    return worst, "; ".join(dict.fromkeys(details + aside))
 
 
 def verdict_of(cases: list[Case], what: str) -> Part:
@@ -178,7 +191,8 @@ def verdict_of(cases: list[Case], what: str) -> Part:
             if status == "failed":
                 return Part("failed", f"{len(hit)} of {len(cases)} cases failed")
             reasons = sorted({c.reason for c in hit if c.reason}) or ["no reason given"]
-            return Part("skipped", "; ".join(reasons), device_ok=all(DEVICE_SKIP.search(c.reason) for c in hit))
+            return Part("skipped", "; ".join(reasons), device_ok=all(DEVICE_SKIP.search(c.reason) for c in hit),
+                        template_only=all(TEMPLATE_SKIP.search(c.reason) for c in hit))
     return Part("passed", f"{len(cases)} case{'s' if len(cases) != 1 else ''}")
 
 
@@ -287,13 +301,18 @@ def read_features(repo: Path) -> tuple[list[tuple[str, list[dict[str, str]]]], l
 
 def judge(name: str, repo: Path, results: Results, timeout: int, device: str | None) -> tuple[list[Row], list[str]]:
     features, empty = read_features(repo)
+    in_template = (repo / ".template-source").is_file()
     rows: list[Row] = []
     for feature, reqs in features:
         for req in sorted(reqs, key=lambda r: r["id"]):
             parts = gate_parts(repo, results, req["gate"], timeout)
+            if not in_template:
+                parts = [Part(NOT_APPLICABLE, f"template only, not applicable in a product: {p.detail}")
+                         if p.result == "skipped" and p.template_only else p for p in parts]
             result, detail = combine(parts)
             allowed = result == "skipped" and device is not None and all(p.device_ok for p in parts if p.result == "skipped")
-            rows.append(Row(name, feature, req["id"], req["gate"], result, detail, blocking=result != "passed" and not allowed))
+            blocking = result not in ("passed", NOT_APPLICABLE) and not allowed
+            rows.append(Row(name, feature, req["id"], req["gate"], result, detail, blocking=blocking))
     return rows, [f"{name}: {folder}" for folder in empty]
 
 
@@ -327,9 +346,11 @@ def render(rows: list[Row], empty: list[str], dates: list[str], device: str | No
               f"Rows: {len(rows)}. Generated by `scripts/convergence_verdict.py`; never edit by hand.", "",
               "| result | rows |", "|---|---|"]
     lines += [f"| {k} | {counts[k]} |" for k in ORDER]
-    lines += ["", "| repository | passed | failed | skipped | absent |", "|---|---|---|---|---|"]
+    # seven cells: the requirements table below has six, and a reader of the verdict tells the two apart by the count
+    lines += ["", "| repository | " + " | ".join(SHOWN) + " | rows |", "|---|" + "---|" * (len(SHOWN) + 1)]
     for repo in sorted({r.repo for r in rows}):
-        lines.append(f"| {repo} | " + " | ".join(str(sum(1 for r in rows if r.repo == repo and r.result == k)) for k in SHOWN) + " |")
+        mine = [r for r in rows if r.repo == repo]
+        lines.append(f"| {repo} | " + " | ".join(str(sum(1 for r in mine if r.result == k)) for k in SHOWN) + f" | {len(mine)} |")
     lines += ["", "## Features with no requirement rows", ""]
     lines += [f"- {e}" for e in empty] or ["None."]
     owners: dict[tuple[str, str], list[str]] = {}

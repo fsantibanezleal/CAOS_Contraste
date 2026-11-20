@@ -63,6 +63,35 @@ The interest rate is recorded only from the FY2008 approvals: the earlier loans 
 Between R minus 12 months and R each loan is continuing, repaid, charged off or new; the rules are the module text of
 `rollforward.py`. The engine builds the rows and judges the identities on the contract's tolerance basis.
 
+## The S-4 intervals (CT-518 to CT-520)
+
+The S-4 hypothesis (`backtest.S4_HYPOTHESIS`, written before the run) is judged by two point differences at each reporting date and by a
+count of the dates where both favour PC-Hazard. Beside that verdict, which stays the rule as written, each date's models document carries
+`fit.s4_bootstrap`: the loan-level evaluation bootstrap of the two differences (`s4_bootstrap.py`, the resampling of `cases/bootstrap.py`).
+The out-of-time accounts (those with a full 36-month life) are resampled with replacement, as many as there are, 1,000 times with the seed
+of the bake; the predictions of Cox and PC-Hazard are held fixed, so the interval is the sampling noise of the comparison on this book and
+not the uncertainty of the fits. A replicate is a weighted sample of the accounts (the count of times each is drawn): the integrated Brier
+score is `ifrs9.lifetime_pd_backtest` of the engine on the predicted mean and the Kaplan-Meier estimate of the resample, and the decile gap is
+the deciles of the resample by predicted risk against the Aalen-Johansen estimate of each decile, with Kaplan-Meier and Aalen-Johansen taken
+with integer weights (checked against the unweighted estimators on the expanded sample, and the replicate that draws every account once
+against `s4_evaluation`, which the bake asserts before it writes an interval). The interval is the 2.5 and 97.5 percentiles of the replicate
+differences. A date with fewer than 30 defaults followed, a date where the rung was not fitted, and a measure with no observed horizon give a
+null interval with its reason. `fit.s4_bootstrap.overall` counts the dates where the hypothesis holds with both intervals excluding zero.
+
+## The PC-Hazard sensitivity (CT-521 to CT-523)
+
+The reader review of the technical report asked how much the S-4 result rests on the fixed settings of the PC-Hazard rung. Beside the
+verdict, each date's models document carries `fit.pch_sensitivity` (`pch_sensitivity.py`): the rung refitted under nine settings, one
+hyper-parameter moved at a time around the defaults (never a grid, never a tuning): the interval width of 1.5, 3 (the default) and 6
+months with the interval count set to 120, 60 and 30 so that every grid covers the same 180 months, the hidden layers (16, 16), (32, 32)
+and (64, 64), the weight decay 1e-5, 1e-4 and 1e-3, and the learning rate 0.003, 0.01 and 0.03. Each refit trains on the loans known at the
+date with the hold-out split and the seed of the main fit, and its predictions are judged by `s4_evaluation` on the same out-of-time
+accounts, so the numbers are the ones the hypothesis reads. The default entry is the main fit's own evaluation. A fit that raises is
+recorded as `failed` and one that runs to the epoch cap as `not_converged`, both with their reason (a non-converged fit still reports its
+numbers). Each setting gets the verdict `s4_verdict` gives over the dates; the verdict of the case stays the default's, and
+`fit.pch_sensitivity.overall` counts the settings whose verdict agrees with it. No setting is chosen: the sweep reports how much the
+verdict depends on the settings and nothing else.
+
 ## Decisions taken without the owner (to confirm)
 
 - No management overlay is invented for the public portfolio (the overlays array is empty).

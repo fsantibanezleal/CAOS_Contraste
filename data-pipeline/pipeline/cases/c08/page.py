@@ -128,20 +128,58 @@ def ml_verdict(derived: Path) -> dict:
             "test_total": sum(r["n"] for r in rows)}
 
 
+def _interval(d: dict, fmt: str = ".3f", scale: float = 100.0) -> str:
+    """One difference with its 95% interval in RMSE points, ``+0.512 [+0.101, +0.874]``; ``n/a`` when there is none to give, and the
+    difference alone, marked, when it has no interval: a number is never invented."""
+    if d["difference"] is None:
+        return "n/a"
+    head = format(scale * d["difference"], "+" + fmt)
+    if d["lo"] is None:
+        return f"{head} (no interval)"
+    return f"{head} [{format(scale * d['lo'], '+' + fmt)}, {format(scale * d['hi'], '+' + fmt)}]"
+
+
+def ml_intervals(derived: Path) -> list[dict]:
+    """The ``outputs.ml_benchmark`` block of every test cohort, in cohort order, from the committed variant documents."""
+    manifest = json.loads((derived / "manifests" / "C08.json").read_text(encoding="utf-8"))
+    out = []
+    for a in manifest["artifacts"]:
+        if a["role"] != "variant":
+            continue
+        o = json.loads((derived / a["path"]).read_text(encoding="utf-8"))["outputs"]
+        out.append({"cohort": o["cohort"]["id"], "boot": o["ml_benchmark"]})
+    return out
+
+
 def ml_block(derived: Path) -> str:
     head = ("| Test cohort | Best of L1 to L6 (RMSE) | L5 gradient boosting | L7 random forest | L8 neural network | Gain of the better of L7 and L8 "
-            "(RMSE points) | L7 or L8 lower | Bucket gap L5 (points) | Bucket gap L7 | Bucket gap L8 |\n"
-            "|---|---|---|---|---|---|---|---|---|---|")
+            "(RMSE points) | L7 or L8 lower | Bucket gap L5 (points) | Bucket gap L7 | Bucket gap L8 | "
+            "Gain against the best of L1 to L6, RMSE points (95% interval) | Interval excludes zero | "
+            + " | ".join(f"Gain against {rid.split('-')[0]}, points (95% interval)" for rid in ml.CLASSICAL_RUNGS) + " |\n"
+            "|---|---|---|---|---|---|---|---|---|---|---|---|" + "---|" * len(ml.CLASSICAL_RUNGS))
     body = []
+    boots = {b["cohort"]: b["boot"] for b in ml_intervals(derived)}
     for r in ml_rows(derived):
         c = r["res"]["classical"]
+        b = boots[r["cohort"]]
+        excl = {None: "n/a", True: "yes", False: "no"}[b["interval_excludes_zero"]]
         body.append(f"| {r['cohort']} | {c[0]} ({c[1]:.4f}) | {r['rmse']['L5-gradient-boosted']:.4f} | {r['rmse']['L7-random-forest']:.4f} | "
                     f"{r['rmse']['L8-neural-network']:.4f} | {100 * r['res']['gain']:.3f} | {'yes' if r['res']['ml_wins'] else 'no'} | "
-                    f"{r['gap']['L5-gradient-boosted']:.2f} | {r['gap']['L7-random-forest']:.2f} | {r['gap']['L8-neural-network']:.2f} |")
+                    f"{r['gap']['L5-gradient-boosted']:.2f} | {r['gap']['L7-random-forest']:.2f} | {r['gap']['L8-neural-network']:.2f} | "
+                    f"{_interval(b['against_best'])} | {excl} | " + " | ".join(_interval(x) for x in b["against"]) + " |")
     v = ml_verdict(derived)
+    first = next(iter(boots.values()))
+    overall = first["overall"]
     verdict = (f"**Measured:** the better of the random forest and the neural network has the lower RMSE in {v['wins']} of {v['cohorts']} test "
                f"cohorts, trained on {v['train_min']:,} to {v['train_max']:,} defaults per cohort and tested on {v['test_total']:,} defaults "
-               f"in all (seed 42, one thread). **Verdict: {v['verdict']}.**")
+               f"in all (seed 42, one thread). **Verdict: {v['verdict']}.**\n\n"
+               f"**Intervals.** The 95% interval beside each gain is the 2.5 and 97.5 percentiles of {first['replicates']:,} replicates of an "
+               f"evaluation bootstrap (seed {first['seed']}): the defaults of the test cohort are resampled with replacement and the predictions of "
+               "every rung are held fixed (nothing is refit), so it measures the sampling noise of the comparison on this cohort, not the "
+               "uncertainty of the fits. A positive gain favours the better of L7 and L8, which is chosen again inside each replicate. The "
+               "verdict above is the rule written before the run and the intervals do not change it: "
+               f"{overall['wins_excluding_zero']} of the {overall['wins']} cohorts where the hypothesis holds have the interval against the best "
+               "of L1 to L6 excluding zero.")
     return "\n".join([head, *body]) + "\n\n" + verdict + "\n"
 
 

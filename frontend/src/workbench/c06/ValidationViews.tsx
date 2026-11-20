@@ -12,6 +12,7 @@ import { STAGE_TEXT, ChartOverTable, MaybeNumber, alignTo, money, pct, segmentLa
 import { referenceText } from '../c03/U6Shared';
 import { COHORT_TEXT, cohortText, covariateText, fitOf, ifrs9TestText, movementText, outputsOf, type C06Sel } from './selection';
 import { markRefs } from '../../lib/refs';
+import { TableBox } from '../TableBox';
 
 // seven cohorts are seven curves: seven distinct colour tokens (the predicted line of each stays dashed)
 const COLORS: ShellColorToken[] = ['--color-accent', '--color-magenta', '--color-warn', '--color-good', '--color-bad', '--color-fg-subtle', '--color-fg'];
@@ -117,7 +118,7 @@ export function LadderView({ sel }: { sel: C06Sel | null }) {
         />
       </PlotCard>
       <PlotCard fill title={{ en: 'The rungs, the conversion, LGD and EAD', es: 'Los peldaños, la conversión, LGD y EAD' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
           <table className="caos-table ct-wrap-head" data-table="ladder">
             <thead>
               <tr>
@@ -161,7 +162,7 @@ export function LadderView({ sel }: { sel: C06Sel | null }) {
               <MaybeNumber value={fit.ead.ccf_revolving} reason={fit.ead.reason ? es(fit.ead.reason) : fit.ead.reason} format={(v) => pct(v, lang, 0)} />
             </dd>
           </dl>
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );

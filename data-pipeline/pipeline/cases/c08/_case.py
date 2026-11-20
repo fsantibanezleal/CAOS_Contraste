@@ -1,6 +1,7 @@
 """The C08 case object and its bake (CT-901 to CT-917)."""
 from __future__ import annotations
 
+import dataclasses
 import importlib.metadata as md
 import sys
 import time
@@ -75,6 +76,7 @@ class C08:
         from ...stages.export import write_artifact
         from . import build as bd
         from . import downturn as dn
+        from . import ml_bootstrap as mlb
         from . import models as md_
         from .panel import COHORTS, annual_rate, prepare
         from .variant import bake_variant
@@ -101,6 +103,7 @@ class C08:
         lane = {"lane": "precompute", "reasons": []}
         entries: list[dict[str, Any]] = []
         values: dict[str, float] = {"n-defaults-total": float(defaults.n)}
+        pending = []
         for cid, lo, hi in COHORTS:
             res = bake_variant(defaults, cid, seed, down, freddie_reason)
             vid = res.variant_id
@@ -113,22 +116,39 @@ class C08:
                 f"{hi} (y las cohortes posteriores). La LGD es una aproximación: castigo sobre el monto aprobado.")
             models_doc = build_models_artifact(case_id=CASE_ID, fit_id=vid, model=md_.model_records(res),
                                                fit=md_.fit_block(res, freddie_reason, down), lineage=lineage, lane=lane)
+            rungs = ", ".join(f"{r}={'ok' if res.ladder.rungs[r].evaluated else 'not evaluated'}" for r in res.ladder.rungs)
+            _log(f"variant {vid}: {res.n_train:,} training defaults, {res.n_open:,} open workouts excluded; {rungs}")
+            # the fitted ladder (forests, networks, boosters) is released here: only the documents wait for the count over the cohorts
+            pending.append((dataclasses.replace(res, ladder=None), models_doc, md_.model_summaries(res), title, short, regime, cid))
+            del res
+        # the S-5 hypothesis is judged over the cohorts: the count of the cohorts where it holds with the interval against the best of the
+        # six excluding zero is computed once and written in every variant document (the verdict itself is the pre-registered rule,
+        # ml_benchmark.verdict)
+        wins = [_ml_wins(p[0].outputs) for p in pending]
+        blocks = [p[0].outputs["ml_benchmark"] for p in pending]
+        overall = mlb.overall(wins, blocks)
+        findings = mlb.overall_findings(overall, wins, blocks)
+        if findings:
+            raise ValueError(f"the S-5 count over the cohorts disagrees with the cohorts: {findings}")
+        for blk in blocks:
+            blk["overall"] = dict(overall)
+        _log(f"S-5 over {overall['cohorts']} cohorts: holds in {overall['wins']} of {overall['evaluable']} evaluable, "
+             f"{overall['wins_excluding_zero']} of them with the interval against the best excluding zero; verdict {overall['verdict']}")
+        for res, models_doc, summaries, title, short, regime, cid in pending:
+            vid = res.variant_id
             rel_m = f"{CASE_ID}/models-{vid}.json"
             e_m = write_artifact(paths.root, rel_m, models_doc, exact=frozenset({"details"}), engines=ENGINES, run_ms=RUN_MS)
             entries.append({"role": "models", "variant_id": f"models-{vid}", "truth_status": "real-outcomes",
                             "title": _t(f"Fitted models, cohort {cid}", f"Modelos ajustados, cohorte {cid}"),
                             "short_title": _t(f"Models {cid}", f"Modelos {cid}"), "regime": regime, "path": rel_m,
                             "bytes": e_m["bytes"], "lane": e_m["lane"], "gate": e_m["gate"]})
-            art = build_artifact(case_id=CASE_ID, variant_id=vid, model=md_.model_summaries(res), outputs=res.outputs,
+            art = build_artifact(case_id=CASE_ID, variant_id=vid, model=summaries, outputs=res.outputs,
                                  tests=with_reference_text(res.tests), impact=res.impact, findings=res.findings, lineage=lineage, lane=lane)
             rel = f"{CASE_ID}/{vid}.json"
             e_v = write_artifact(paths.root, rel, art, exact=EXACT, engines=ENGINES, run_ms=RUN_MS)
             entries.append({"role": "variant", "variant_id": vid, "title": title, "short_title": short, "regime": regime,
                             "truth_status": "real-outcomes", "models_ref": rel_m, **e_v})
             values.update(res.values)
-            rungs = ", ".join(f"{r}={'ok' if res.ladder.rungs[r].evaluated else 'not evaluated'}" for r in res.ladder.rungs)
-            _log(f"variant {vid}: {res.n_train:,} training defaults, {res.n_open:,} open workouts excluded; {rungs}")
-            del res
         ranges = expectations.check(CASE_ID, bd.EXPECT, values)
         manifest = build_case_manifest(
             depends_on=self.depends_on(),
@@ -137,6 +157,15 @@ class C08:
             riskvalidation_version=rv, source_details=_source_details(SOURCES))
         write_json(paths.manifests / f"{CASE_ID}.json", manifest)
         return manifest
+
+
+def _ml_wins(outputs: dict[str, Any]) -> bool | None:
+    """Whether the better of the two machine-learning rungs beats the best of the six on this cohort (``ml_benchmark.cohort_result``), None
+    when a machine-learning rung was not fitted."""
+    from . import ml_benchmark as ml
+
+    ids = {r["rung_id"] for r in outputs["rung_comparison"]}
+    return bool(ml.cohort_result(outputs["rung_comparison"])["ml_wins"]) if all(r in ids for r in ml.ML_RUNGS) else None
 
 
 def _contract_summary(c1, defaults) -> dict[str, Any]:
