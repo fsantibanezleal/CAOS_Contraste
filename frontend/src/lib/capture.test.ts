@@ -81,12 +81,25 @@ async function expectedViews(caseId: string, variantIndex: number | null = null)
     // (the 1.00.001 verdict run, 2026-11-15). The read is unchanged; only the wait for each action is longer.
     page.setDefaultTimeout(120_000);
     page.setDefaultNavigationTimeout(120_000);
+    // The per-case modules are lazy since 1.01.000: while a case's module loads the workbench shows a placeholder instrument with
+    // generic groups (Model, Validation, Impact, Findings) in the shell's loading state, and the case's own groups replace them.
+    // The read waits for the case and for the end of every loading state, as the tool does, so it never reads the placeholder's tabs.
+    const settled = () =>
+      page.waitForFunction((id) => {
+        const wb = document.querySelector('[data-case-workbench]');
+        if (!wb || wb.getAttribute('data-case') !== id) return false;
+        const shown = (e: Element) => (e as HTMLElement).offsetParent !== null;
+        const tabs = document.querySelectorAll('[data-case-workbench] .tablist [role="tab"]').length;
+        return tabs > 0 && ![...document.querySelectorAll('[data-state="loading"]')].some(shown);
+      }, caseId);
     await page.goto(`${server.url}app?case=${caseId}`, { waitUntil: 'load' });
     await page.waitForSelector('[data-case-workbench] .tablist [role="tab"]');
+    await settled();
     if (variantIndex !== null) {
       await page.locator('[data-control="variant"] [role="radio"]').nth(variantIndex).click();
       await page.waitForTimeout(1500);
       await page.waitForSelector('[data-case-workbench] .tablist [role="tab"]');
+      await settled();
     }
     const groups = await page.$$eval('[data-case-workbench] .tablist [role="tab"]', (ts) => ts.map((t) => t.getAttribute('data-tab') ?? ''));
     const views: string[] = [];
