@@ -324,6 +324,56 @@ def t_ladders(d: dict) -> None:
     mac("CapRed", f"{red}", "of them with a red light")
 
 
+def s3_shares() -> tuple[float, float]:
+    """The two shares of the written hypothesis (``S3_HYPOTHESIS`` of the case parameters): it holds from the first and is refuted under the second."""
+    import re
+    text = (figkit.ROOT / "data-pipeline" / "pipeline" / "cases" / "c17" / "params.py").read_text(encoding="utf-8")
+    return (float(re.search(r'"holds_at_share":\s*([0-9.]+)', text).group(1)),
+            float(re.search(r'"refuted_below_share":\s*([0-9.]+)', text).group(1)))
+
+
+def s3_verdict(n: int, spread: int, bias: int, holds: float, refuted: float) -> str:
+    """The verdict rule of the case (``documents.s3_verdict``) on counts of cells."""
+    if n == 0:
+        return "inconclusive"
+    if min(spread, bias) / n < refuted:
+        return "refuted"
+    return "holds" if min(spread, bias) / n >= holds else "inconclusive"
+
+
+def t_s3(d: dict) -> None:
+    """The hypothesis on the two robust fits judged once over all sixteen cells (``fit.s3_overall``), and at each tail index alone."""
+    import math
+    s3 = d["models"]["fit"]["s3_overall"]
+    src = f"{SRC}/models-generator.json fit.s3_overall"
+    holds, refuted = s3_shares()
+    mac("SThreeCells", s3["cells"], f"{src}.cells")
+    mac("SThreeVariants", s3["variants"], f"{src}.variants")
+    mac("SThreeVerdict", s3["verdict"], f"{src}.verdict")
+    mac("SThreeHolds", f"{round(holds * 100)}", "pipeline/cases/c17/params.py S3_HYPOTHESIS.holds_at_share, percent")
+    mac("SThreeRefuted", f"{round(refuted * 100)}", "pipeline/cases/c17/params.py S3_HYPOTHESIS.refuted_below_share, percent")
+    for r in s3["rungs"]:
+        nm = {"sla-cvm": "Cvm", "sla-obre": "Obre"}[r["model_id"]]
+        mac(f"SThreeSpread{nm}", r["smaller_spread"], f"{src}.rungs[{r['model_id']}].smaller_spread")
+        mac(f"SThreeBias{nm}", r["smaller_bias"], f"{src}.rungs[{r['model_id']}].smaller_bias")
+        mac(f"SThreeVerdict{nm}", r["verdict"], f"{src}.rungs[{r['model_id']}].verdict")
+    # the same counts at each tail index alone, from the cells of its document, by the rule of the case
+    for vid, L, xi in VARIANTS:
+        for key, nm in (("sla_cvm", "Cvm"), ("sla_obre", "Obre")):
+            n = sp = bi = 0
+            for cid, _, _, _ in CELLS:
+                r, ref = summ(cell(d[vid], cid), key), summ(cell(d[vid], cid), "lda_splice")
+                if r is None or ref is None:
+                    continue
+                n += 1
+                sp += r["iqr_over_truth"] < ref["iqr_over_truth"]
+                bi += abs(math.log(r["ratio_to_truth"]["median"])) < abs(math.log(ref["ratio_to_truth"]["median"]))
+            mac(f"SThreeCells{L}", n, f"{SRC}/{vid}.json cells[*] with both the splice and the robust rung")
+            mac(f"SThreeSpread{nm}{L}", sp, f"{SRC}/{vid}.json cells[*].capital.{key}.iqr_over_truth against lda_splice")
+            mac(f"SThreeBias{nm}{L}", bi, f"{SRC}/{vid}.json cells[*].capital.{key}.ratio_to_truth.median against lda_splice")
+            mac(f"SThreeVerdict{nm}{L}", s3_verdict(n, sp, bi, holds, refuted), f"verdict rule of the case on the counts of {vid}")
+
+
 def t_grid(d: dict) -> None:
     rows = []
     for vid, _, xi in VARIANTS:
@@ -552,6 +602,7 @@ def main() -> int:
     t_benchmark()
     t_aggregation(d)
     t_ladders(d)
+    t_s3(d)
     t_grid(d)
     t_cell_effects(d)
     t_contam()

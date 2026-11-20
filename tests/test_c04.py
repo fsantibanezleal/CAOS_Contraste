@@ -221,3 +221,107 @@ def test_case_page():
     for cite in ("10.1111/1467-9965.00114", "Staff Report 190", "2401.08892", "ESMA65-8-10634", "EBA/GL/2017/16"):
         assert cite in page, cite
     assert "(C04.md)" in (ROOT / "docs" / "cases" / "README.md").read_text(encoding="utf-8")
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# BS-14's verdict carries both clauses of its pre-registered rule (BL-118): coverage against every treatment, Manski's
+# band among them, and the anchored k's stability across years. The numbers are the SDD's outcome text.
+
+from pipeline.cases import c04_bounds as bnd  # noqa: E402
+
+
+def _clause_summary() -> dict:
+    return _read("C04/withdrawals.json")["outputs"]["bounds_verdict"]["summary"]
+
+
+def test_the_committed_verdict_is_refuted_on_both_clauses_with_the_sdd_numbers():
+    s = _clause_summary()
+    assert s["refuted"] is True
+    assert s["refuted_on"] == ["coverage_better_than_every_treatment", "anchored_k_stable_across_years"]
+    cov = s["coverage_better_than_every_treatment"]
+    assert cov["holds"] is False and cov["informative"] == 9.0 and cov["manski_treatment"] == "identified"
+    assert cov["reps"] == 1000
+    by = {d["design"]: d for d in cov["designs"]}
+    assert list(by) == ["first_year", "pooled", "first_year_x10"]
+    # "+0.0, -0.8 and +0.0 points over the best other treatment at k = 9, the band covering as often or more often"
+    assert [round(100 * by[d]["difference"], 1) + 0.0 for d in by] == [0.0, -0.8, 0.0]
+    assert all(d["manski_covers_as_often_or_more"] and not d["holds"] for d in by.values())
+    # "at 3.8 to 9.3 times the width"
+    ratios = [d["manski_width_ratio"] for d in by.values()]
+    assert (round(min(ratios), 1), round(max(ratios), 1)) == (3.8, 9.3)
+
+
+def test_the_committed_stability_clause_names_the_unstable_grades_and_never_passes_a_grade_with_too_few_cohorts():
+    st = _clause_summary()["anchored_k_stable_across_years"]
+    assert st["holds"] is False and st["threshold"] == 0.8 and st["min_cohorts"] == bnd.STABILITY_MIN_COHORTS
+    unstable = {(r["source"], r["grade"]): r["share"] for r in st["rows"] if r["status"] == "unstable"}
+    # "under 80% of the annual cohorts hold the pooled k for S&P's B (0.68), CCC to C (0.64) and for Fitch's B"
+    assert set(unstable) == {("sp", "B"), ("sp", "CCC-C"), ("fitch", "B")}
+    assert unstable[("sp", "B")] == pytest.approx(0.68) and unstable[("sp", "CCC-C")] == pytest.approx(0.64)
+    assert all(v < 0.8 for v in unstable.values())
+    # Fitch's BBB has two usable cohorts: it is not judged, and says so
+    few = next(r for r in st["rows"] if (r["source"], r["grade"]) == ("fitch", "BBB"))
+    assert few["status"] == "too_few" and few["usable_cohorts"] < bnd.STABILITY_MIN_COHORTS
+    assert all(r["usable_cohorts"] >= bnd.STABILITY_MIN_COHORTS for r in st["rows"] if r["status"] != "too_few")
+    assert st["judged"] == sum(r["status"] != "too_few" for r in st["rows"])
+
+
+def _planted_study(anchored: float, manski: float, other: float = 0.5, widths: tuple[float, float] = (0.02, 0.08)) -> dict:
+    def rate(x: float) -> dict:
+        return {"rejections": round(x * 1000), "n": 1000, "undefined": 0, "rate": x, "se": 0.0, "wilson_low": x, "wilson_high": x}
+
+    def design(did: str) -> dict:
+        cov = {"industry": other, "unfollowed": other, "followed": other, "anchored": anchored, "identified": manski}
+        wid = {t: 0.01 for t in cov} | {"anchored": widths[0], "identified": widths[1]}
+        return {"id": did, "reps": 1000, "cohorts": 1, "cohort_scale": 1, "capture": 1.0, "seed_key": "k", "seed": 1,
+                "treatments": [{"id": t, "coverage": [rate(c)] * 7, "mean_width": [wid[t]] * 7, "relative_bias": [0.0] * 7}
+                               for t, c in cov.items()]}
+    return {"level": 0.95, "truth": [0.01] * 7, "designs": [design(d) for d in ("first_year", "pooled", "capture70", "first_year_x10")]}
+
+
+def _planted_real(share_b: float, usable: int = 10) -> dict:
+    def grade(name: str, share: float | None) -> dict:
+        if share is None:
+            return {"grade": name, "stability": None}
+        hold = round(share * usable)
+        return {"grade": name, "stability": {"usable_cohorts": usable, "cohorts_containing_pooled_k": hold,
+                                             "share_cohorts_containing_pooled_k": hold / usable,
+                                             "stable": hold / usable >= bnd.STABILITY_SHARE}}
+    return {"sp": {"grades": [grade("A", None), grade("B", share_b)]}, "moodys": None}
+
+
+def test_a_planted_case_where_both_clauses_hold_is_not_refuted():
+    v = bnd.bounds_verdict(_rungs_for_planted(), _planted_study(anchored=0.99, manski=0.90), _planted_real(0.9))
+    s = v["summary"]
+    assert s["refuted"] is False and s["refuted_on"] == []
+    assert s["coverage_better_than_every_treatment"]["holds"] is True
+    assert s["anchored_k_stable_across_years"]["holds"] is True
+
+
+def test_adversarial_ct416_a_band_covering_as_often_refutes_the_coverage_clause_alone():
+    v = bnd.bounds_verdict(_rungs_for_planted(), _planted_study(anchored=0.99, manski=0.99), _planted_real(0.9))
+    s = v["summary"]
+    assert s["refuted"] is True and s["refuted_on"] == ["coverage_better_than_every_treatment"]
+    d = s["coverage_better_than_every_treatment"]["designs"][0]
+    assert d["difference"] == pytest.approx(0.0) and d["manski_covers_as_often_or_more"] is True
+    assert d["manski_width_ratio"] == pytest.approx(4.0) and d["best_other_treatments"] == ["identified"]
+
+
+def test_an_unstable_k_refutes_the_stability_clause_alone():
+    v = bnd.bounds_verdict(_rungs_for_planted(), _planted_study(anchored=0.99, manski=0.90), _planted_real(0.6))
+    s = v["summary"]
+    assert s["refuted"] is True and s["refuted_on"] == ["anchored_k_stable_across_years"]
+    assert [r["status"] for r in s["anchored_k_stable_across_years"]["rows"]] == ["unstable"]
+
+
+def test_too_few_cohorts_never_pass_the_stability_clause():
+    v = bnd.bounds_verdict(_rungs_for_planted(), _planted_study(anchored=0.99, manski=0.90), _planted_real(1.0, usable=2))
+    st = v["summary"]["anchored_k_stable_across_years"]
+    assert st["holds"] is False and st["judged"] == 0 and st["rows"][0]["status"] == "too_few"
+    assert v["summary"]["refuted"] is True
+
+
+def _rungs_for_planted() -> list[dict]:
+    cov = {"anchored": 0.99, "industry": 0.20, "unfollowed": 0.10, "followed": 0.30}
+    from test_c04_bounds import _rungs  # noqa: PLC0415
+    return _rungs(cov, cov, cov)

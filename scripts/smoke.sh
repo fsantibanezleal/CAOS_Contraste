@@ -6,3 +6,5 @@ cd "$(dirname "$0")/.."
 PY=".venv-pipeline/bin/python"; [ -x "$PY" ] || PY=".venv-pipeline/Scripts/python.exe"
 [ -x "$PY" ] || PY="${PYTHON:-python}"
 "$PY" scripts/check_artifacts.py
+"$PY" scripts/check_units.py
+"$PY" scripts/check_unit_constants.py

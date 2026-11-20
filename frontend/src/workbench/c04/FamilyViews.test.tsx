@@ -13,6 +13,7 @@ import { describe, expect, it } from 'vitest';
 import type { CaseData } from '../../api/artifacts';
 import type {
   C04AgencyOutputs,
+  C04BoundsVerdict,
   C04CycleRung,
   C04Family,
   C04MarkovRung,
@@ -500,5 +501,43 @@ describe('C04 generator families: the numbers are the artifacts\'', () => {
     expect(expectedDefaults.y.log).toBe(true);
     const om = render(viewEl('thin', 'overlap', s));
     for (const r of rungs) for (const p of r.overlap_jeffreys) expect(om).toContain(`<td>${formatNumber(p, 'en', { digits: 4 })}</td>`);
+  });
+
+  it('withdrawals bounds: the verdict states each clause of the refutation rule, in English and Spanish', () => {
+    const { data, v } = family('withdrawals');
+    const verdict = (v.outputs as unknown as { bounds_verdict: C04BoundsVerdict }).bounds_verdict;
+    const s = verdict.summary;
+    // the committed verdict is the SDD's: refuted on both clauses (the bake computes them; the view prints them)
+    expect(s.refuted).toBe(true);
+    expect(s.refuted_on).toEqual(['coverage_better_than_every_treatment', 'anchored_k_stable_across_years']);
+    // the shell writes a percent with a no-break space; the markup is compared with plain spaces
+    const plain = (m: string) => m.replace(/[  ]/g, ' ');
+    const en = plain(render(viewEl('withdrawals', 'bounds', sel(data)), 'en'));
+    const es = plain(render(viewEl('withdrawals', 'bounds', sel(data)), 'es'));
+    expect(en).toContain('the hypothesis is refuted');
+    expect(en).not.toContain('not refuted');
+    expect(en).toContain('Coverage clause');
+    expect(en).toContain("Manski&#x27;s identified band");
+    expect(en).toContain('Stability clause');
+    expect(en).toContain('under 80 % for S&amp;P B (68 %), S&amp;P CCC-C (64 %), Fitch B (70 %)');
+    expect(en).toContain('+0.0, -0.8, +0.0 points');
+    expect(en).toContain('at 3.8 to 9.3 times the width');
+    expect(es).toContain('la hipótesis queda refutada');
+    expect(es).not.toContain('no queda refutada');
+    expect(es).toContain('Cláusula de cobertura');
+    expect(es).toContain('Cláusula de estabilidad');
+    expect(es).toContain('+0,0, -0,8, +0,0 puntos');
+    expect(es).toContain('con 3,8 a 9,3 veces el ancho');
+    expect(es).toContain('menos del 80 % para B de S&amp;P (68 %), CCC-C de S&amp;P (64 %), B de Fitch (70 %)');
+    // one row per design for the coverage clause and one per source and grade for the stability clause
+    for (const markup of [en, es]) {
+      expect((markup.match(/data-clause="coverage"/g) ?? []).length).toBe(s.coverage_better_than_every_treatment.designs.length);
+      expect((markup.match(/data-clause="stability"/g) ?? []).length).toBe(s.anchored_k_stable_across_years.rows.length);
+      expect((markup.match(/data-status="unstable"/g) ?? []).length).toBe(3);
+      expect(markup).not.toContain('\u2014');
+    }
+    // a grade with too few cohorts is shown as not judged, never as a pass
+    expect(en).toContain('Not judged (under 5 cohorts)');
+    expect(es).toContain('No se juzga (menos de 5 cohortes)');
   });
 });

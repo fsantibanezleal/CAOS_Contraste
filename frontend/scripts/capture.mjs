@@ -210,7 +210,7 @@ export async function runCapture(opts) {
   rmSync(join(out, 'shots'), { recursive: true, force: true });
   mkdirSync(join(out, 'shots'), { recursive: true });
 
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ args: ['--no-proxy-server'] });
   const newContext = async (cap) => {
     const ctx = await browser.newContext({ viewport: { width: cap.width, height: cap.height }, deviceScaleFactor: 1 });
     await ctx.addInitScript(

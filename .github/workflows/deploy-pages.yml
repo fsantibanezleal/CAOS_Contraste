@@ -39,6 +39,7 @@ jobs:
       - name: The committed artifacts are consistent, and Pages is this product's one deploy place
         run: |
           python scripts/check_artifacts.py
+          python scripts/check_units.py
           python scripts/check_deploy_place.py
           test "$(tr -d '[:space:]' < deploy/TARGET)" = pages
       - name: Base path (a custom domain serves from /, a project page from /<repository>/)

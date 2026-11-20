@@ -9,6 +9,7 @@ import { Pending } from '../Pending';
 import { ChartOverTable, STAGE_COLOR, STAGE_TEXT, alignTo, money, pct, unionX, MaybeNumber, segmentLabel } from './format';
 import { outputsOf, type C06Outputs, type C06Sel } from './selection';
 import { PCT_AXIS } from './ValidationViews';
+import { TableBox } from '../TableBox';
 
 const WEIGHTED: BiText = { en: 'Probability-weighted', es: 'Ponderada por probabilidad' };
 const SCENARIO_COLORS: ShellColorToken[] = ['--color-accent', '--color-magenta', '--color-warn', '--color-good'];
@@ -341,7 +342,7 @@ export function NonLinearityView({ sel }: { sel: C06Sel | null }) {
         />
       </PlotCard>
       <PlotCard fill title={{ en: 'The panel in numbers', es: 'El panel en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
           <table className="caos-table" data-table="non-linearity">
             <tbody>
               {rows.map((r) => (
@@ -372,7 +373,7 @@ export function NonLinearityView({ sel }: { sel: C06Sel | null }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );

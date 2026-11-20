@@ -201,6 +201,11 @@ def cutoff_curve(pd_eval: np.ndarray, y_eval: np.ndarray, ead: np.ndarray, point
     return out
 
 
+def brier(pd: np.ndarray, y: np.ndarray) -> float:
+    """The Brier score: the mean squared error of the PD forecasts against the 0/1 outcomes (Brier 1950)."""
+    return float(np.mean((np.asarray(pd, dtype=float) - np.asarray(y, dtype=float)) ** 2))
+
+
 def outputs(pd_eval: np.ndarray, y_eval: np.ndarray, *, ead: np.ndarray, pd_raw: np.ndarray | None = None,
             sums: dict[str, dict[str, np.ndarray]] | None = None) -> dict:
     out = {"grades": grade_table(pd_eval, y_eval), "reliability": reliability(pd_eval, y_eval),
@@ -208,4 +213,7 @@ def outputs(pd_eval: np.ndarray, y_eval: np.ndarray, *, ead: np.ndarray, pd_raw:
            "cutoff": cutoff_curve(pd_eval, y_eval, ead, sums=sums)}
     # the reliability of the raw score, before the calibration map; None for a rung without one
     out["reliability_raw"] = reliability(pd_raw, y_eval) if pd_raw is not None else None
+    # the Brier score of the evaluated PD and of the raw score before the map (M-5: before and after the calibration)
+    out["brier"] = brier(pd_eval, y_eval)
+    out["brier_raw"] = brier(pd_raw, y_eval) if pd_raw is not None else None
     return out

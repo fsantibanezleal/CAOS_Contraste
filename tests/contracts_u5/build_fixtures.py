@@ -110,6 +110,53 @@ def decile_rows(cur1: list[float]) -> list[dict]:
     return rows
 
 
+def c06_pch_sensitivity() -> dict:
+    """c06-models 3.0.0 (1.01.000 M3): the nine settings of the PC-Hazard sweep at the one date of the fixture (round numbers, never results)."""
+    table = [
+        # id, parameter, label en, label es, interval months, intervals, hidden, learning rate, weight decay, status, holds
+        ("default", "default", "Defaults", "Valores por defecto", 3.0, 60, [32, 32], 0.01, 1e-4, "fitted", True),
+        ("width-1.5", "interval_width", "Interval width 1.5 months (120 intervals)", "Ancho de intervalo de 1,5 meses (120 intervalos)", 1.5, 120, [32, 32], 0.01, 1e-4, "fitted", True),
+        ("width-6", "interval_width", "Interval width 6 months (30 intervals)", "Ancho de intervalo de 6 meses (30 intervalos)", 6.0, 30, [32, 32], 0.01, 1e-4, "fitted", False),
+        ("hidden-16", "hidden_layers", "Hidden layers 16 and 16", "Capas ocultas de 16 y 16", 3.0, 60, [16, 16], 0.01, 1e-4, "fitted", True),
+        ("hidden-64", "hidden_layers", "Hidden layers 64 and 64", "Capas ocultas de 64 y 64", 3.0, 60, [64, 64], 0.01, 1e-4, "not_converged", True),
+        ("weight-decay-1e-5", "weight_decay", "Weight decay 1e-5", "Decaimiento de pesos 1e-5", 3.0, 60, [32, 32], 0.01, 1e-5, "fitted", True),
+        ("weight-decay-1e-3", "weight_decay", "Weight decay 1e-3", "Decaimiento de pesos 1e-3", 3.0, 60, [32, 32], 0.01, 1e-3, "fitted", True),
+        ("learning-rate-0.003", "learning_rate", "Learning rate 0.003", "Tasa de aprendizaje 0,003", 3.0, 60, [32, 32], 0.003, 1e-4, "fitted", True),
+        ("learning-rate-0.03", "learning_rate", "Learning rate 0.03", "Tasa de aprendizaje 0,03", 3.0, 60, [32, 32], 0.03, 1e-4, "failed", None),
+    ]
+    settings, holds = [], []
+    for k, (sid, parameter, en, es, width, n, hidden, lr, wd, status, hold) in enumerate(table):
+        failed = status == "failed"
+        reason = (None if status == "fitted" else txt("The fit ran to the cap of 1,500 epochs.", "El ajuste llego al tope de 1.500 epocas.")
+                  if status == "not_converged" else txt("The fit raised an error in the fixture.", "El ajuste fallo en el ejemplo."))
+        brier = 0.0123 - 0.0001 * k
+        evaluation = None if failed else {
+            "c_index": {"pch": 0.7 + 0.001 * k, "cox": 0.69}, "integrated_brier": {"pch": r(brier), "cox": 0.0125},
+            "mean_decile_gap": {"pch": r(0.004 + 0.0002 * k), "cox": 0.0045},
+            "criteria": {"lower_integrated_brier": True, "smaller_decile_gap": bool(hold), "higher_c_index": True},
+            "holds_at_date": hold}
+        settings.append({
+            "setting_id": sid, "parameter": parameter, "is_default": sid == "default", "label": txt(en, es),
+            "parameters": {"interval_months": width, "intervals": n, "hidden": hidden, "learning_rate": lr, "weight_decay": wd},
+            "status": status, "reason": reason, "epochs": None if failed else (1500 if status == "not_converged" else 300 + k),
+            "best_epoch": None if failed else (1500 if status == "not_converged" else 240 + k),
+            "holdout_nll_per_default": None if failed else r(2.1 + 0.001 * k), "weights_sha256": None if failed else f"{k + 1:064x}",
+            "evaluation": evaluation})
+        holds.append(hold)
+    rows = []
+    for (sid, *_rest), hold in zip(table, holds, strict=True):
+        verdict = None if hold is None else ("holds" if hold else "refuted")
+        rows.append({"setting_id": sid, "dates": 1, "evaluable": 0 if hold is None else 1, "holds_at": 1 if hold else 0, "verdict": verdict,
+                     "agrees": verdict == "holds"})
+    return {
+        "method": txt("Sensitivity sweep of the fixture: nine settings, one hyper-parameter at a time, same training and seed.",
+                      "Barrido de sensibilidad del ejemplo: nueve configuraciones, un hiperparametro a la vez, mismo entrenamiento y semilla."),
+        "kind": "one-at-a-time", "covers_months": 180, "same_training": True, "selected_setting": None, "evaluated": True, "seed": 4506,
+        "reason": None, "settings": settings,
+        "overall": {"dates": 1, "case_setting": "default", "case_verdict": "holds", "settings_count": 9,
+                    "agree": sum(1 for x in rows if x["agrees"]), "settings": rows}}
+
+
 def build_c06() -> tuple[dict, dict]:
     seg_curves: dict[tuple[str, str], list[float]] = {}
     for seg, ttc in PD_TTC.items():
@@ -359,6 +406,21 @@ def build_c06() -> tuple[dict, dict]:
                                                        {"pd_origination_upper": 0.05, "multiplier": 2.5},
                                                        {"pd_origination_upper": 0.5, "multiplier": 1.5}],
                                "source": "fixture: Contraste policy parameters, not IFRS 9 requirements"},
+            # c06-models 2.0.0 (1.01.000 M2): the loan-level evaluation bootstrap of the S-4 comparison of the date
+            "s4_bootstrap": {
+                "method": txt("Evaluation bootstrap of the fixture: accounts resampled with replacement, predictions held fixed.",
+                              "Remuestreo de evaluacion del ejemplo: cuentas remuestreadas con reemplazo, predicciones fijas."),
+                "resampled_unit": "account", "replicates": 1000, "level": 0.95, "seed": 42, "predictions_refit": False,
+                "evaluated": True, "reason": None, "accounts": 1000,
+                "differences": [
+                    {"measure": "integrated_brier", "difference": -0.00008, "lo": -0.00012, "hi": -0.00004, "excludes_zero": True,
+                     "n_valid": 1000, "reason": None},
+                    {"measure": "mean_decile_gap", "difference": -0.0004, "lo": -0.0011, "hi": 0.0003, "excludes_zero": False,
+                     "n_valid": 1000, "reason": None}],
+                "both_exclude_zero": False,
+                "overall": {"dates": 1, "evaluable": 1, "holds_at": 1, "holds_excluding_zero": 0, "verdict": "holds"}},
+            # c06-models 3.0.0 (1.01.000 M3): the hyper-parameter sensitivity of the PC-Hazard rung at the date
+            "pch_sensitivity": c06_pch_sensitivity(),
         },
         **envelope_common("real-outcomes"),
     }

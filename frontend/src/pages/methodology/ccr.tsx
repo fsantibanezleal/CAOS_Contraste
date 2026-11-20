@@ -13,6 +13,7 @@ import { Callout, Cite, DocSection, Figure, SubTabs, useShellLang } from '@fasl-
 import type { ReactNode } from 'react';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './ccr.meta';
 
 /** A display equation whose decimals follow the language: a point in English, a comma in Spanish (`1{,}4`), as the page's text does. */
 function Eq({ tex, caption }: { tex: string; caption: ReactNode }) {
@@ -341,10 +342,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'ccr',
-  group: 'market',
-  order: 130,
-  title: { en: 'Counterparty credit risk (CCR and CVA)', es: 'Riesgo de crédito de contraparte (CCR y CVA)' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

@@ -19,6 +19,7 @@ import { Pending } from '../Pending';
 import { COUNT_TESTS, curves, excessOf, isC22, rateOf, rowKeyOf, rule, seriesStyle, useLiveCurves, useLivePortfolio, type C22Sel, type C22Variant } from './selection';
 import { CODE_BREAKS_STYLE, codeBreaks } from './codeBreaks';
 import { markRefs } from '../../lib/refs';
+import { TableBox } from '../TableBox';
 
 const LIVE = 'live' as const;
 const pct = (lang: 'en' | 'es', v: number | null | undefined, decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
@@ -615,7 +616,7 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
           es: `Las pruebas sobre un conjunto ${drawn.es}: lo que un validador leería en un solo reporte. Las tasas de las otras vistas dicen con qué frecuencia ese reporte acierta.`,
         }}
       >
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
           <table className="caos-table" data-table="specimen">
             <thead>
               <tr>
@@ -639,7 +640,7 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );

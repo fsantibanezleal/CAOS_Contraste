@@ -147,6 +147,13 @@ describe('U16-F12a C01 minors (R4 c01 n2, n3, n4, n12, n13, n16; c02 m8, m9, m10
     expect(es).toMatch(/partición de calibración/);
     expect(textOf(render(<PenalisedView sel={c01Sel('holdout')} />, 'es'))).not.toMatch(/tramo de entrenamiento/);
   });
+  it('BL-114, M-3: the PLTR note says the committed rule sets are unstable (mean Jaccard 0.411, below one half), in both languages', () => {
+    for (const [lang, word] of [['en', /rule set is unstable/], ['es', /conjunto de reglas es inestable/]] as const) {
+      const t = textOf(render(<PenalisedView sel={c01Sel('holdout')} />, lang));
+      expect(t).toMatch(word);
+      expect(t).toMatch(/0[.,]41/);
+    }
+  });
   it('n3: a percent is written with a no-break space before the sign, in both languages, as the shell writes it', () => {
     for (const lang of LANGS) {
       const t = textOf(render(<C01WriteUp />, lang));

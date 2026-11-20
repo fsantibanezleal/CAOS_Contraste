@@ -1,0 +1,727 @@
+{
+  "C01": {
+    "pairs": [
+      {
+        "id": "c01-reliability-bins",
+        "file": "[!m]*.json",
+        "prediction": "outputs.rungs.<m>.reliability[].pd",
+        "target": "outputs.rungs.<m>.reliability[].dr",
+        "kind": "binary",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
+      },
+      {
+        "id": "c01-grade-bins",
+        "file": "[!m]*.json",
+        "prediction": "outputs.rungs.<m>.grades[].pd",
+        "target": "outputs.rungs.<m>.grades[].dr",
+        "kind": "binary",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
+      },
+      {
+        "id": "c01-scorecard-sample",
+        "file": "[gh]*.json",
+        "prediction": "outputs.sample.scorecard_pd",
+        "target": "outputs.sample.targets",
+        "kind": "binary",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition.",
+        "reason": "Only german-twin.json and holdout.json ship outputs.sample; the other variants and the models artifact do not."
+      }
+    ]
+  },
+  "C02": {
+    "pairs": [
+      {
+        "id": "c02-reliability-bins",
+        "file": "[!m]*.json",
+        "prediction": "outputs.rungs[].reliability[].pd",
+        "target": "outputs.rungs[].reliability[].dr",
+        "kind": "binary",
+        "unit": "probability",
+        "group_by": "outputs.rungs[]",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
+      }
+    ]
+  },
+  "C03": {
+    "pairs": [
+      {
+        "id": "c03-calibration-rows",
+        "file": "fy*.json",
+        "prediction": "outputs.calibration.rows[].predicted_pd",
+        "target": "outputs.calibration.rows[].observed_pd",
+        "kind": "binary",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
+      },
+      {
+        "id": "c03-vintage-5y",
+        "file": "fy*.json",
+        "prediction": "outputs.vintage_summary.rows[].predicted_5y_pd",
+        "target": "outputs.vintage_summary.rows[].observed_5y_pd",
+        "kind": "binary",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
+      },
+      {
+        "id": "c03-vintage-curves",
+        "file": "fy*.json",
+        "prediction": "outputs.vintage_curves[].predicted_cumulative_pd",
+        "target": "outputs.vintage_curves[].observed_cumulative_pd",
+        "kind": "binary",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
+      }
+    ]
+  },
+  "C04": {
+    "pairs": [
+      {
+        "id": "c04-markov-estimators",
+        "file": "markov.json",
+        "prediction": "outputs.rungs[].estimators.<m>.mean",
+        "target": "outputs.rungs[].estimators.<m>.truth",
+        "kind": "series",
+        "unit": "probability",
+        "group_by": "outputs.rungs[]",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition.",
+        "reason": "Series, not scalar: the generator truth is one PD per grade (a vector of seven), so the range is the truth vector widened by its span."
+      },
+      {
+        "id": "c04-momentum-pd",
+        "file": "momentum.json",
+        "prediction": "outputs.rungs[].pd_*.mean",
+        "target": "outputs.rungs[].pd_*.truth",
+        "kind": "series",
+        "unit": "probability",
+        "group_by": "outputs.rungs[]",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
+      },
+      {
+        "id": "c04-momentum-error",
+        "file": "momentum.json",
+        "prediction": "outputs.rungs[].error_*.mean",
+        "target": "outputs.rungs[].error_*.truth",
+        "kind": "series",
+        "unit": "probability error (a difference of two PDs)",
+        "group_by": "outputs.rungs[]",
+        "zero_scale": 1.0,
+        "domain": [
+          -1,
+          1
+        ],
+        "domain_reason": "A difference of two probabilities lies in [-1, 1] by definition."
+      },
+      {
+        "id": "c04-momentum-coefficient",
+        "file": "momentum.json",
+        "prediction": "outputs.rungs[].coefficient.mean",
+        "target": "outputs.rungs[].coefficient.truth",
+        "kind": "scalar",
+        "unit": "momentum coefficient (dimensionless)",
+        "group_by": "outputs.rungs[]",
+        "zero_scale": 1.0
+      },
+      {
+        "id": "c04-cycle-pd",
+        "file": "cycle.json",
+        "prediction": "outputs.rungs[].pd_*.mean",
+        "target": "outputs.rungs[].pd_*.truth",
+        "kind": "series",
+        "unit": "probability",
+        "group_by": "outputs.rungs[]",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
+      },
+      {
+        "id": "c04-withdrawals-pd",
+        "file": "withdrawals.json",
+        "prediction": "outputs.rungs[].pd_*.mean",
+        "target": "outputs.rungs[].pd_*.truth",
+        "kind": "series",
+        "unit": "probability",
+        "group_by": "outputs.rungs[]",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
+      },
+      {
+        "id": "c04-sp-pd-matrices",
+        "file": "sp.json",
+        "prediction": "outputs.pd.*[][]",
+        "target": null,
+        "kind": "bound",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "reason": "The agency history has no known truth, so the estimated PD matrices are not compared with a target; only the probability domain is checked."
+      },
+      {
+        "id": "c04-sp-generators",
+        "file": "sp.json",
+        "prediction": "outputs.generators.<m>.pd_*",
+        "target": null,
+        "kind": "bound",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "reason": "The agency history has no known truth, so each estimator's 1-year and 5-year PD vectors are checked only against the probability domain."
+      },
+      {
+        "id": "c04-fitch-pd-matrices",
+        "file": "fitch.json",
+        "prediction": "outputs.pd.*[][]",
+        "target": null,
+        "kind": "bound",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "reason": "The agency history has no known truth, so the estimated PD matrices are not compared with a target; only the probability domain is checked."
+      },
+      {
+        "id": "c04-fitch-generators",
+        "file": "fitch.json",
+        "prediction": "outputs.generators.<m>.pd_*",
+        "target": null,
+        "kind": "bound",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "reason": "The agency history has no known truth, so each estimator's 1-year and 5-year PD vectors are checked only against the probability domain."
+      },
+      {
+        "id": "c04-moodys-pd-matrices",
+        "file": "moodys.json",
+        "prediction": "outputs.pd.*[][]",
+        "target": null,
+        "kind": "bound",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "reason": "The agency history has no known truth, so the estimated PD matrices are not compared with a target; only the probability domain is checked."
+      },
+      {
+        "id": "c04-moodys-generators",
+        "file": "moodys.json",
+        "prediction": "outputs.generators.<m>.pd_*",
+        "target": null,
+        "kind": "bound",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "reason": "The agency history has no known truth, so each estimator's 1-year and 5-year PD vectors are checked only against the probability domain."
+      },
+      {
+        "id": "c04-published-ttc-pd",
+        "file": "published.json",
+        "prediction": "outputs.engelmann.ttc_pd.recomputed",
+        "target": "outputs.engelmann.ttc_pd.printed",
+        "kind": "scalar",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
+      },
+      {
+        "id": "c04-published-portfolio-pd0",
+        "file": "published.json",
+        "prediction": "outputs.engelmann.portfolios[].pd0.recomputed",
+        "target": "outputs.engelmann.portfolios[].pd0.printed",
+        "kind": "scalar",
+        "unit": "probability",
+        "group_by": "outputs.engelmann.portfolios[]",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition."
+      }
+    ]
+  },
+  "C05": {
+    "pairs": [
+      {
+        "id": "c05-approaches",
+        "file": "sp-201?.json",
+        "prediction": "outputs.approaches.<m>.pd",
+        "target": "outputs.default_rate1",
+        "kind": "series",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A probability lies in [0, 1] by definition.",
+        "reason": "Series, not scalar: the observed default rate is one value per grade (seventeen), so the range is that vector widened by its span."
+      },
+      {
+        "id": "c05-bound-independent",
+        "file": "ldp-*.json",
+        "prediction": "outputs.bounds.independent[][]",
+        "target": null,
+        "kind": "bound",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "reason": "A confidence upper bound after few defaults is conservative by design, so it is not an estimate of the true PD and only its probability domain is checked."
+      },
+      {
+        "id": "c05-bound-correlated",
+        "file": "ldp-*.json",
+        "prediction": "outputs.bounds.correlated[][]",
+        "target": null,
+        "kind": "bound",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "reason": "A correlated confidence upper bound after few defaults is conservative by design, so it is not an estimate of the true PD and only its probability domain is checked."
+      },
+      {
+        "id": "c05-bound-scaled-upper",
+        "file": "ldp-*.json",
+        "prediction": "outputs.bounds.scaled_upper_bound[].pd",
+        "target": null,
+        "kind": "bound",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "reason": "A scaled upper bound is conservative by design, so it is not an estimate of the true PD and only its probability domain is checked."
+      },
+      {
+        "id": "c05-bound-scaled-upper-correlated",
+        "file": "ldp-*.json",
+        "prediction": "outputs.bounds.scaled_upper_bound_correlated[].pd",
+        "target": null,
+        "kind": "bound",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "reason": "A scaled correlated upper bound is conservative by design, so it is not an estimate of the true PD and only its probability domain is checked."
+      },
+      {
+        "id": "c05-bound-scaled-central",
+        "file": "ldp-*[!0].json",
+        "prediction": "outputs.bounds.scaled_central_tendency[].pd",
+        "target": null,
+        "kind": "bound",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "reason": "A scaled central tendency is calibrated to a target bound rather than to the true PD, so only its probability domain is checked; ldp-sim-0.json ships none."
+      }
+    ]
+  },
+  "C06": {
+    "pairs": [
+      {
+        "id": "c06-lifetime-backtest",
+        "file": "rd-*.json",
+        "prediction": "outputs.lifetime_backtest.rows[].predicted_cumulative_pd",
+        "target": "outputs.lifetime_backtest.rows[].observed_cumulative_pd",
+        "kind": "binary",
+        "unit": "cumulative probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A cumulative probability of default lies in [0, 1] by definition."
+      },
+      {
+        "id": "c06-decile-calibration",
+        "file": "rd-*.json",
+        "prediction": "outputs.decile_calibration.rows[].predicted_cumulative_pd",
+        "target": "outputs.decile_calibration.rows[].observed_cumulative_pd",
+        "kind": "binary",
+        "unit": "cumulative probability",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A cumulative probability of default lies in [0, 1] by definition."
+      }
+    ]
+  },
+  "C07": {
+    "pairs": [
+      {
+        "id": "c07-generator-calibration",
+        "file": "models-banco-andino.json",
+        "prediction": "fit.calibration_targets[].achieved",
+        "target": "fit.calibration_targets[].target",
+        "kind": "scalar",
+        "unit": "share or rate of the synthetic bank (decimal)",
+        "group_by": "fit.calibration_targets[]",
+        "zero_scale": 1.0
+      }
+    ]
+  },
+  "C08": {
+    "pairs": [
+      {
+        "id": "c08-calibration-by-bucket",
+        "file": "dc-*.json",
+        "prediction": "outputs.calibration_by_bucket[].predicted.value",
+        "target": "outputs.calibration_by_bucket[].realised.value",
+        "kind": "series",
+        "unit": "LGD fraction of exposure"
+      },
+      {
+        "id": "c08-realised-vs-predicted",
+        "file": "dc-*.json",
+        "prediction": "outputs.realised_vs_predicted[].predicted.value",
+        "target": "outputs.realised_vs_predicted[].realised.value",
+        "kind": "series",
+        "unit": "LGD fraction of exposure",
+        "zero_scale": 1.0
+      }
+    ]
+  },
+  "C09": {
+    "pairs": [
+      {
+        "id": "c09-ead-backtest",
+        "file": "level-*.json",
+        "prediction": "outputs.ead_backtest.rows[].predicted_ead",
+        "target": "outputs.ead_backtest.rows[].realised_ead",
+        "kind": "series",
+        "unit": "USD",
+        "domain": [
+          0,
+          null
+        ],
+        "domain_reason": "An exposure at default is a non-negative amount by definition."
+      },
+      {
+        "id": "c09-ccf-by-design",
+        "file": "level-*.json",
+        "prediction": "outputs.ccf_by_design.rows[].estimate.value",
+        "target": "outputs.ccf_by_design.rows[].truth.value",
+        "kind": "scalar",
+        "unit": "CCF (fraction of the undrawn limit)",
+        "group_by": "outputs.ccf_by_design.rows[]",
+        "zero_scale": 1.0
+      }
+    ]
+  },
+  "C10": {
+    "pairs": [
+      {
+        "id": "c10-backtest-quantiles",
+        "file": "[!gm]*.json",
+        "prediction": "outputs.backtest.rows[].fitted_quantile",
+        "target": "outputs.annual_rates[].loss_rate",
+        "kind": "series",
+        "unit": "annual loss rate (decimal of balance)",
+        "reason": "Skips grid-22.json and grid-40.json (a correlation grid with no annual rates) and models-c10.json."
+      },
+      {
+        "id": "c10-grid-correlation",
+        "file": "grid-*.json",
+        "prediction": "outputs.cells[].estimators[].mean_estimate",
+        "target": "outputs.cells[].known_rho",
+        "kind": "scalar",
+        "unit": "asset correlation (dimensionless)",
+        "group_by": "outputs.cells[]",
+        "zero_scale": 1.0
+      },
+      {
+        "id": "c10-grid-rejection-rate",
+        "file": "grid-*.json",
+        "prediction": "outputs.cells[].estimators[].rejection_rate",
+        "target": null,
+        "kind": "bound",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "reason": "A simulated rejection rate estimates a probability whose reference differs by cell (the nominal size under the null, a power under an alternative), so only the probability domain is checked."
+      }
+    ]
+  },
+  "C11": {
+    "pairs": [
+      {
+        "id": "c11-var",
+        "file": "[fr]*.json",
+        "prediction": "outputs.models[].by_level[].var",
+        "target": "outputs.grid.realised_loss.loss",
+        "kind": "series",
+        "unit": "decimal of portfolio value (loss, positive)",
+        "reason": "Only fx-2008.json and rates-2022.json publish the realised loss; the four withheld-derived-only windows are the entries under 'withheld'."
+      },
+      {
+        "id": "c11-es",
+        "file": "[fr]*.json",
+        "prediction": "outputs.models[].by_level[].es",
+        "target": "outputs.grid.realised_loss.loss",
+        "kind": "series",
+        "unit": "decimal of portfolio value (loss, positive)",
+        "reason": "Only fx-2008.json and rates-2022.json publish the realised loss; the four withheld-derived-only windows are the entries under 'withheld'."
+      }
+    ],
+    "withheld": [
+      {
+        "id": "c11-withheld-var",
+        "file": "[cem][aqi]*.json",
+        "prediction": "outputs.models[].by_level[].var",
+        "target": "outputs.grid.realised_loss.loss",
+        "kind": "series",
+        "unit": "decimal of portfolio value (loss, positive)",
+        "reason": "calm-2004-06, equity-2007-09, equity-2020 and mixed-2023: the realised loss is withheld-derived-only, so the bake checks this pair in memory and the artifact records only the verdict."
+      },
+      {
+        "id": "c11-withheld-es",
+        "file": "[cem][aqi]*.json",
+        "prediction": "outputs.models[].by_level[].es",
+        "target": "outputs.grid.realised_loss.loss",
+        "kind": "series",
+        "unit": "decimal of portfolio value (loss, positive)",
+        "reason": "calm-2004-06, equity-2007-09, equity-2020 and mixed-2023: the realised loss is withheld-derived-only, so the bake checks this pair in memory and the artifact records only the verdict."
+      }
+    ]
+  },
+  "C12": {
+    "pairs": [
+      {
+        "id": "c12-expected-exposure",
+        "file": "[!m]*[!k].json",
+        "prediction": "outputs.exposure.ee.values",
+        "target": "outputs.ore_reconciliation.ore_ee.values",
+        "kind": "series",
+        "unit": "USD",
+        "domain": [
+          0,
+          null
+        ],
+        "domain_reason": "An expected exposure is the expectation of a positive part, so it is non-negative by definition.",
+        "reason": "Skips wrong-way-risk.json (no ORE run, so no reference series; see c12-wrong-way-exposure) and models-hw1f-treasury-2000-2025.json."
+      },
+      {
+        "id": "c12-wrong-way-exposure",
+        "file": "wrong-way-risk.json",
+        "prediction": "outputs.exposure.ee.values",
+        "target": null,
+        "kind": "bound",
+        "unit": "USD",
+        "domain": [
+          0,
+          null
+        ],
+        "reason": "The wrong-way variant has no ORE reference run, so its expected exposure is checked only for the sign every exposure has."
+      }
+    ]
+  },
+  "C13": {
+    "bake_only": {
+      "hook": "cases/c13/measure.py",
+      "reason": "The desk VaR forecast per replication exists only inside the bake (measure.py runs the engine once per replication); the artifact ships the hypothetical and risk-theoretical P&L series and the zone counts, never a forecast beside its target."
+    }
+  },
+  "C14": {
+    "pairs": [
+      {
+        "id": "c14-out-of-sample-nii",
+        "file": "vd-2021-q4.json",
+        "prediction": "outputs.out_of_sample.projected_delta_nii",
+        "target": "outputs.out_of_sample.realised_delta_nii",
+        "kind": "scalar",
+        "unit": "thousands of USD",
+        "reason": "Skips vd-2022-q2.json and vd-2022-q4.json: out_of_sample.applicable is false there (no realised year follows) and both values are null."
+      }
+    ]
+  },
+  "C15": {
+    "pairs": [
+      {
+        "id": "c15-clp-curve",
+        "file": "[!m]*.json",
+        "prediction": "outputs.curves.clp.zero_rates_at_midpoints",
+        "target": "outputs.curves.clp.points[].observed_yield",
+        "kind": "series",
+        "unit": "yield (decimal)"
+      },
+      {
+        "id": "c15-ur-curve",
+        "file": "[!m]*.json",
+        "prediction": "outputs.curves.ur.zero_rates_at_midpoints",
+        "target": "outputs.curves.ur.points[].observed_yield",
+        "kind": "series",
+        "unit": "yield (decimal)"
+      },
+      {
+        "id": "c15-generator-calibration",
+        "file": "models-banco-andino-2026-09.json",
+        "prediction": "fit.calibration_targets[].achieved",
+        "target": "fit.calibration_targets[].target",
+        "kind": "scalar",
+        "unit": "share or rate of the synthetic bank (decimal)",
+        "group_by": "fit.calibration_targets[]",
+        "zero_scale": 1.0
+      }
+    ]
+  },
+  "C16": {
+    "pairs": [
+      {
+        "id": "c16-denominators",
+        "file": "[!mr]*.json",
+        "prediction": "outputs.scoring.denominators[].modelled_share",
+        "target": "outputs.scoring.denominators[].realised_share",
+        "kind": "scalar",
+        "unit": "share of the deposit base (fraction)",
+        "group_by": "outputs.scoring.denominators[]",
+        "zero_scale": 1.0,
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A share of the deposit base lies in [0, 1] by definition.",
+        "reason": "Skips reverse-stress.json (no scoring block) and models-svb-liquidity.json."
+      },
+      {
+        "id": "c16-table-a1",
+        "file": "[!mr]*.json",
+        "prediction": "outputs.scoring.table_a1_scoring[].modelled_share",
+        "target": "outputs.scoring.table_a1_scoring[].observed_share",
+        "kind": "series",
+        "unit": "share of the deposit base (fraction)",
+        "domain": [
+          0,
+          1
+        ],
+        "domain_reason": "A share of the deposit base lies in [0, 1] by definition.",
+        "reason": "Skips reverse-stress.json (no scoring block) and models-svb-liquidity.json."
+      }
+    ]
+  },
+  "C17": {
+    "pairs": [
+      {
+        "id": "c17-capital-quantile",
+        "file": "xi-*.json",
+        "prediction": "outputs.cells[].capital.<m>.capital_eur.*",
+        "target": "outputs.truth.annual_loss_quantile.value_eur",
+        "kind": "scalar",
+        "unit": "EUR"
+      }
+    ]
+  },
+  "C18": {
+    "pairs": [
+      {
+        "id": "c18-backcast",
+        "file": "[befn]*.json",
+        "prediction": "outputs.backcast.per_loan_type[].quarters[].predicted",
+        "target": "outputs.backcast.per_loan_type[].quarters[].realised",
+        "kind": "series",
+        "unit": "quarterly loss rate (decimal)",
+        "group_by": "outputs.backcast.per_loan_type[]",
+        "reason": "Skips reverse-stress.json, t-copula-baseline.json and models-banco-andino.json: no backcast block."
+      }
+    ]
+  },
+  "C20": {
+    "bake_only": {
+      "hook": "cases/c20/fits.py",
+      "reason": "The PD arrays and the labels of the ladder exist only inside the bake (fits.py); the artifacts ship metrics (AUC, Brier, PSI) and never a prediction beside its target."
+    }
+  },
+  "C21": {
+    "not_applicable": "The four estimators of the approval-rate disparity coefficient are not predictions scored against a target: every statistic comes from riskvalidation and each document carries selection-rate gaps and tests."
+  },
+  "C22": {
+    "pairs": [
+      {
+        "id": "c22-estimators",
+        "file": "null.json",
+        "prediction": "outputs.estimators.<m>.mean",
+        "target": "outputs.estimators.<m>.truth",
+        "kind": "scalar",
+        "unit": "estimand of each estimator (dimensionless)",
+        "zero_scale": 1.0,
+        "reason": "Only null.json ships outputs.estimators with a known truth."
+      },
+      {
+        "id": "c22-simulated-rates",
+        "file": "[!m]*.json",
+        "prediction": "outputs.simulations[].rates.*.rate",
+        "target": null,
+        "kind": "bound",
+        "unit": "probability",
+        "domain": [
+          0,
+          1
+        ],
+        "reason": "A simulated rejection rate is a Monte Carlo estimate of a probability whose reference differs by scenario (the nominal size, an exact curve point present in only some scenarios, a power), so only the probability domain is checked."
+      }
+    ]
+  }
+}

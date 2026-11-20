@@ -75,12 +75,33 @@ def model_names() -> dict[str, dict[str, dict[str, str]]]:
     return json.loads(MODELS_FILE.read_text(encoding="utf-8"))["models"]
 
 
+#: a text written as a code, as the names generator reads one (``frontend/scripts/gen-names.product.mjs`` ``isCode``): the model's
+#: id itself, a CamelCase word, or lower-case words joined by ``-``, ``_`` or ``.``
+_CODE = (re.compile(r"[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)+"), re.compile(r"[a-z0-9]+(?:[-_.][a-z0-9]+)+"))
+
+
+def _bilingual(t: Any) -> dict[str, str] | None:
+    return {"en": t["en"], "es": t["es"]} if isinstance(t, Mapping) and isinstance(t.get("en"), str) and isinstance(t.get("es"), str) else None
+
+
+def document_name(model: Mapping[str, Any]) -> dict[str, str] | None:
+    """The name the names generator gives a model from its document: the short title when it is a name, else the title, else the
+    short title (``collectModelNames``)."""
+    short = _bilingual(model.get("short_title"))
+    if short and not (short["en"] == model["id"] or any(c.fullmatch(short["en"]) for c in _CODE)):
+        return short
+    return _bilingual(model.get("title")) or short
+
+
 def model_name(case_id: str, model: Mapping[str, Any]) -> dict[str, str] | None:
-    """A model by the web's name, else by the document's short title, when that is a name and not the id; None when neither."""
-    for name in (model_names().get(case_id, {}).get(model["id"]), model.get("short_title")):
+    """A model by the web's name (the names module holds the views' names, C03's rung kinds among them), else by the name the names
+    generator will give it from this document, when that is a name and not the id; None when neither. The second keeps a bake from
+    depending on whether the names file was rewritten before it: C17's bake of 2026-11-01 ran before the file held its robust rungs,
+    whose short titles are their ids, and counted 3 more models where its rows span 10 (BL-109)."""
+    for name in (model_names().get(case_id, {}).get(model["id"]), document_name(model)):
         if name and name.get("en") and name.get("es") and model["id"] not in (name["en"], name["es"]):
             return name
-    return None  # an id written as its own name (C22's configurations, C11's rungs in the model block) is not a name
+    return None  # an id written as its own name with no title (C22's configurations) is not a name
 
 
 def red_severity(case_id: str, test_id: str) -> str:

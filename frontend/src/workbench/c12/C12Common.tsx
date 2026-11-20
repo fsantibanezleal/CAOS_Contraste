@@ -18,6 +18,7 @@ import { UnavailableCard } from '../c14/C14Common';
 import { RATING_TEXT, SECTOR_TEXT, VARIANT_ORDER, VARIANT_TEXT, BASIS_TEXT, CASE_TEXT, HORIZON_LONG, SUBJECT_TEXT, amount, axisOf, fitOf, horizonOf, liveBaCva, liveSaCcr, outputsOf, sensitivityOf, segmentText, text, gridOf, type C12Outputs, type C12Sel, type Peers } from './selection';
 import { segmentName, testText } from '../names';
 import { markRefs } from '../../lib/refs';
+import { TableBox } from '../TableBox';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -35,9 +36,7 @@ export const DEFS_STYLE = { gridTemplateColumns: 'minmax(0, 40%) minmax(0, 1fr)'
 export function NumbersCard({ card, title, children }: { card: ReturnType<typeof useCard>; title?: BiText; children: ReactNode }) {
   return (
     <PlotCard fill title={title ?? { en: 'In numbers', es: 'En números' }} {...card}>
-      <div className="ct-scroll" data-caos-flow="" data-block="numbers">
-        {children}
-      </div>
+      <TableBox block="numbers">{children}</TableBox>
     </PlotCard>
   );
 }

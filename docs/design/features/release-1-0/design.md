@@ -29,15 +29,17 @@ cannot carry, so the script keeps a small table (`SCRIPT_ARGS`) and a test holds
 | `failed` | a named test failed or errored, or the script exited nonzero or timed out |
 | `skipped` | a named test was skipped; the reason the run gave is listed. A skip never counts as passed |
 | `absent` | the gate is in no result file, or the script does not exist. A name that is only the prefix of a test that ran is absent |
+| `not applicable` | every part the gate names skipped with a reason that says the test runs only in the template repository (the template's own sources, a second instantiation); the reason is listed. Only in a product: in the template (`.template-source` present) the same skip is `skipped` (CV-014, BL-110) |
 
-A gate that names several parts takes the worst of them (failed, then absent, then skipped, then passed). The engine's rows are looked up
+A gate that names several parts takes the worst of them (failed, then absent, then skipped, then passed); a template-only part in a
+product is set aside with its reason and the gate is judged on its other parts, so it never hides a failed one. The engine's rows are looked up
 in the engine's file and the product's in the product's, never the other way round.
 
 ## The verdict
 
-`CONVERGED` needs: every row passed; no feature folder without requirement rows; and no skip, except a skip whose reason is a device
-precondition (`requires_raw`, the data root, `CONTRASTE_DATA`) when the release run states the device with `--device`. Anything else is
-`NOT CONVERGED`. A folder whose `requirements.md` says `Status: superseded` is not a feature of the release and is left out; a `planned`
+`CONVERGED` needs: every row passed or not applicable; no feature folder without requirement rows; and no skip, except a skip whose
+reason is a device precondition (`requires_raw`, the data root, `CONTRASTE_DATA`) when the release run states the device with `--device`.
+Anything else is `NOT CONVERGED`. A folder whose `requirements.md` says `Status: superseded` is not a feature of the release and is left out; a `planned`
 folder is read like a live one, so its gates read absent until they exist.
 
 Exit codes: 0 converged, 1 not converged, 2 a result file or a repository is missing. With exit 2 the script prints the file and the

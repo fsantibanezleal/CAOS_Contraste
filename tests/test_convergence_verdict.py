@@ -299,6 +299,44 @@ def test_a_skip_for_a_device_precondition_is_allowed_only_when_the_run_states_th
     assert other.run("--device", "default device") == 1
 
 
+TEMPLATE_REASON = "This integration control requires the template's actual five-case sources"
+INSTANTIATE_REASON = "Instantiation is upstream template behavior; products cannot instantiate again."
+
+
+def test_a_template_only_skip_is_not_applicable_in_a_product_and_the_row_is_judged_on_its_other_parts(tmp_path):
+    cases = [case("tests/test_a.py", "test_tpl", "skipped", TEMPLATE_REASON), case("tests/test_a.py", "test_ok"),
+             case("tests/test_b.py", "test_inst", "skipped", INSTANTIATE_REASON)]
+    world = World(tmp_path, {"f": [("CT-001", "`tests/test_a.py::test_tpl` and `tests/test_a.py::test_ok`"),
+                                   ("CT-002", "`tests/test_b.py::test_inst`")]}, {}, cases)
+    assert world.run() == 0
+    text = world.text()
+    assert result_of(text, "CT-001") == "passed"
+    assert "template only, not applicable in a product" in rows_of(text)[("contraste", "CT-001")][1]
+    assert result_of(text, "CT-002") == "not applicable"
+    assert TEMPLATE_REASON not in rows_of(text)[("contraste", "CT-002")][1]
+    assert "products cannot instantiate again" in rows_of(text)[("contraste", "CT-002")][1]
+    assert "Verdict: **CONVERGED**" in text
+    counts = dict(re.findall(r"^\| (passed|failed|skipped|absent|not applicable) \| (\d+) \|", text, re.M))
+    assert counts == {"passed": "1", "failed": "0", "skipped": "0", "absent": "0", "not applicable": "1"}
+    assert verdict_findings(text) == []
+
+
+def test_adversarial_a_template_only_skip_stays_a_skip_in_the_template_and_never_hides_a_failed_part(tmp_path):
+    world = World(tmp_path, {"f": [("CT-001", "`tests/test_a.py::test_tpl`")]}, {},
+                  [case("tests/test_a.py", "test_tpl", "skipped", TEMPLATE_REASON)])
+    (world.product / ".template-source").write_text("", encoding="utf-8")
+    assert world.run() == 1  # in the template the test must run
+    assert result_of(world.text(), "CT-001") == "skipped"
+    beside = World(sub(tmp_path, "f"), {"f": [("CT-001", "`tests/test_a.py::test_tpl` and `tests/test_a.py::test_bad`")]}, {},
+                   [case("tests/test_a.py", "test_tpl", "skipped", TEMPLATE_REASON), case("tests/test_a.py", "test_bad", "failed")])
+    assert beside.run() == 1
+    assert result_of(beside.text(), "CT-001") == "failed"
+    other = World(sub(tmp_path, "o"), {"f": [("CT-001", "`tests/test_a.py::test_tpl`")]}, {},
+                  [case("tests/test_a.py", "test_tpl", "skipped", "needs the template mood")])
+    assert other.run() == 1  # a reason that is not one of the template's own stays a skip
+    assert result_of(other.text(), "CT-001") == "skipped"
+
+
 # ---- determinism, missing data, exit codes -----------------------------------------------------------------------------------------
 
 
@@ -480,8 +518,9 @@ def test_adversarial_a_provider_left_on_a_boundary_fails_the_skeleton_gate_of_th
 def verdict_findings(text: str) -> list[str]:
     """A generated verdict is self-consistent: the counts are the rows, and the verdict line follows from them."""
     found = [row[3] for row in table_rows(text)]
-    counts = dict(re.findall(r"^\| (passed|failed|skipped|absent) \| (\d+) \|", text, re.M))
-    bad = [f"{k}: counted {counts.get(k)}, listed {found.count(k)}" for k in ("passed", "failed", "skipped", "absent") if int(counts.get(k, -1)) != found.count(k)]
+    counts = dict(re.findall(r"^\| (passed|failed|skipped|absent|not applicable) \| (\d+) \|", text, re.M))
+    shown = ("passed", "failed", "skipped", "absent") + (("not applicable",) if "not applicable" in counts else ())
+    bad = [f"{k}: counted {counts.get(k)}, listed {found.count(k)}" for k in shown if int(counts.get(k, -1)) != found.count(k)]
     converged = "Verdict: **CONVERGED**" in text
     if converged and any(r in {"failed", "absent"} for r in found):
         bad.append("converged with a failed or absent row")
@@ -510,8 +549,12 @@ def test_the_release_folder_states_the_requirements_the_format_and_the_sample_ve
     for needed in ("--product-junit", "--engine-junit", "--vitest", "--device", "NOT CONVERGED", "exit 2"):
         assert needed in design, needed
     verdict = (RELEASE / "verdict.md").read_text(encoding="utf-8")
-    assert verdict.splitlines()[0].startswith("# Convergence verdict") and "SAMPLE" in verdict.splitlines()[0]
-    assert "Verdict: **NOT CONVERGED**" in verdict
+    first = verdict.splitlines()[0]
+    assert first.startswith("# Convergence verdict")
+    if "SAMPLE" in first:  # the sample, until the release run replaces it (CV-012)
+        assert "Verdict: **NOT CONVERGED**" in verdict
+    else:  # the release run's verdict states its device and its date from the result files
+        assert re.search(r"^Device: (?!not stated)\S", verdict, re.M) and re.search(r"^Run date: \d{4}-\d{2}-\d{2}", verdict, re.M)
     assert len(table_rows(verdict)) > 100 and "## Requirement IDs used by more than one feature" in verdict
 
 

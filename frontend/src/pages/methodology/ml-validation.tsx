@@ -11,6 +11,7 @@
 import { Callout, Cite, DocSection, Figure, SubTabs } from '@fasl-work/caos-app-shell';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './ml-validation.meta';
 
 const W = 480;
 const H = 276;
@@ -213,10 +214,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'ml-validation',
-  group: 'tests',
-  order: 100,
-  title: { en: 'ML validation and fairness', es: 'Validación de ML y equidad' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

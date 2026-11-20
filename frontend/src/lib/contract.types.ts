@@ -302,6 +302,8 @@ export const RUNG_OUTPUTS = {
     } satisfies Record<keyof RungOutputs['cutoff'], Kind>,
   },
   reliability_raw: { nullable: RELIABILITY },
+  brier: num,
+  brier_raw: nNum,
 } satisfies Record<keyof RungOutputs, Kind>;
 
 export const C01_IRB = {
@@ -1371,6 +1373,55 @@ const C04_BOUNDS_DESIGN = {
 const C04_WITHDRAWAL_BOUNDS = {
   object: { level: num, truth: nNums, designs: { array: C04_BOUNDS_DESIGN } } satisfies Record<keyof C04WithdrawalBounds, Kind>,
 } as const;
+/** BS-14's refutation rule has two clauses, both carried by `bounds_verdict.summary`: coverage against every treatment (the
+ * identified, Manski, band among them) at k 9 on 1,000 repetitions, and the stability of the anchored k across years. */
+export type C04CoverageClause = components['schemas']['c04CoverageClause'];
+export type C04StabilityClause = components['schemas']['c04StabilityClause'];
+const C04_COVERAGE_CLAUSE = {
+  object: {
+    holds: 'boolean',
+    informative: num,
+    grade: 'integer',
+    level: num,
+    reps: 'integer',
+    manski_treatment: 'string',
+    designs: {
+      array: {
+        object: {
+          design: 'string',
+          reps: 'integer',
+          seed_key: 'string',
+          seed: 'integer',
+          anchored: num,
+          anchored_mcse: num,
+          treatments: { array: { object: { id: 'string', coverage: num, mean_width: { nullable: num } } } },
+          anchored_mean_width: { nullable: num },
+          best_other: num,
+          best_other_treatments: { array: 'string' },
+          difference: num,
+          manski_covers_as_often_or_more: 'boolean',
+          manski_width_ratio: { nullable: num },
+          holds: 'boolean',
+        },
+      },
+    },
+  } satisfies Record<keyof C04CoverageClause, Kind>,
+} as const;
+const C04_STABILITY_CLAUSE = {
+  object: {
+    holds: 'boolean',
+    threshold: num,
+    min_cohorts: 'integer',
+    judged: 'integer',
+    unstable: 'integer',
+    unanchored_sources: { array: 'string' },
+    rows: {
+      array: {
+        object: { source: 'string', grade: 'string', usable_cohorts: 'integer', cohorts_containing_pooled_k: 'integer', share: { nullable: num }, status: 'string' },
+      },
+    },
+  } satisfies Record<keyof C04StabilityClause, Kind>,
+} as const;
 const C04_BOUNDS_VERDICT = {
   object: {
     grade: 'integer',
@@ -1380,7 +1431,16 @@ const C04_BOUNDS_VERDICT = {
     rows: {
       array: { object: { id: 'string', design: 'string', informative: num, treatment: 'string', value: num, mcse: num, threshold: num, comparison: 'string', holds: 'boolean' } },
     },
-    summary: { object: { refuted: 'boolean', anchored_covers_90: 'boolean', existing_under_50: 'boolean' } },
+    summary: {
+      object: {
+        refuted: 'boolean',
+        refuted_on: { array: 'string' },
+        anchored_covers_90: 'boolean',
+        existing_under_50: 'boolean',
+        coverage_better_than_every_treatment: C04_COVERAGE_CLAUSE,
+        anchored_k_stable_across_years: C04_STABILITY_CLAUSE,
+      },
+    },
   } satisfies Record<keyof C04BoundsVerdict, Kind>,
 } as const;
 

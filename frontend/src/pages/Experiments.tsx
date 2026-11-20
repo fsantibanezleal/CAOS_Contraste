@@ -10,6 +10,7 @@ import { CASES, CATEGORY_TITLES } from '../content/coverage';
 import { P, T, useT } from '../content/bi';
 import { sourceText } from '../content/sources';
 import { ProtocolFigure } from './DocFigures';
+import { CasePointers } from './benchmark/MethodsPointer';
 import { CHAMPION, test, value } from '../workbench/model';
 import { C04Experiments } from './C04Sections';
 import { C05ExperimentsSection } from './C05Sections';
@@ -123,7 +124,7 @@ export function sectionKindOf(caseId: string): SectionKind {
   return caseId === 'C01' ? 'scorecard' : 'generic';
 }
 
-function CaseTopic({ m }: { m: CaseManifest }) {
+export function CaseTopic({ m }: { m: CaseManifest }) {
   const kind = sectionKindOf(m.case_id);
   return (
     <DocSection
@@ -133,6 +134,7 @@ function CaseTopic({ m }: { m: CaseManifest }) {
     >
       <P en={m.question.en} es={m.question.es} />
       <CaseFacts m={m} />
+      <CasePointers caseId={m.case_id} />
       {kind !== 'scorecard' ? (
         <P
           en="Each variant of this case is the same question asked of different data, and the table below reads one headline row per variant from its artifact, in the measures this case declares; a number the artifact leaves out is said to be not available, with its reason, in the App."

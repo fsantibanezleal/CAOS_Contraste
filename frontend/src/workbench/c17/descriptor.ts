@@ -206,4 +206,10 @@ export const C17_FIT: Kind = { object: {
     prior: { object: { kind: 'string', restricted: 'boolean', interval_level: num, mapping: 'string' } },
     reference: 'string',
   } },
+  s3_overall: { object: {
+    variants: 'integer',
+    cells: 'integer',
+    rungs: { array: { object: { model_id: 'string', cells: 'integer', smaller_spread: 'integer', smaller_bias: 'integer', verdict: 'string' } } },
+    verdict: 'string',
+  } },
 } } satisfies { object: Record<keyof components['schemas']['c17Fit'], Kind> };

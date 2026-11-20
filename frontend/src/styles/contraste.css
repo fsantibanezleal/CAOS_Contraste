@@ -50,6 +50,11 @@
 
 /* a long table scrolls inside its filling card, its header kept in view by the shell's sticky header */
 .ct-scroll { height: 100%; overflow: auto; min-height: 0; }
+/* a tall desktop (TableBox, BL-107): the tables of a card that hold more than one block (two tables, a table and a list) share the card's
+   height, each at its rows' own height at the least, so the numbers take their stage as a lone table does through the shell's rule (a
+   table that is the card body's own child); a box with more than the card shows scrolls */
+.ct-tall-tables { display: flex; flex-direction: column; gap: 0.5rem; }
+.ct-tall-tables > .ct-fill-table { flex: 1 0 auto; }
 
 /* what a phone has no room for. A table column is hidden only when its value is repeated under the text of the row, in
    .ct-narrow-only, which only a phone shows (those columns carry .ct-repeated); every other column stays, and the table scrolls
@@ -256,6 +261,14 @@ table.ct-wrap-head th { white-space: normal; }
 .ct-defs { display: grid; grid-template-columns: minmax(0, max-content) minmax(min(14ch, 100%), 1fr); gap: 0.25rem 1rem; margin: 0; }
 .ct-defs dt { color: var(--color-fg-subtle); min-width: 0; overflow-wrap: break-word; }
 .ct-defs dd { margin: 0; min-width: 0; overflow-wrap: break-word; }
+/* A definition list with a few values that are sentences (C08's proxy view, BL-120): on a phone such a term sits over its text, which
+   then has the whole width, while the short pairs keep their two columns; beside the term the text had 170 px and the view ran 2,600
+   px tall in Spanish, so the gate's centring of a view taller than the screen showed the middle of the text and none of the drawing
+   at its top */
+@media (max-width: 640px) {
+  .ct-defs-stack .ct-long { grid-column: 1 / -1; }
+  .ct-defs-stack dd.ct-long { margin-bottom: 0.5rem; }
+}
 
 /* The schematics of the documentation pages (pages/DocFigures.tsx): one column wide, never wider than its figure. The selector
    outranks the shell's `.prose svg { max-width: 100% }`, which drew a figure across the whole page at 1280 (the R2b page review

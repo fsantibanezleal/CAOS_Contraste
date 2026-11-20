@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c04/variant-generator.schema.json",
   "title": "C04 family variant",
-  "description": "Catalog row c04-family 1.1.0: one simulation family of the transition estimators (outputs.kind generator).",
+  "description": "Catalog row c04-family 2.0.0: one simulation family of the transition estimators (outputs.kind generator).",
   "allOf": [
     {"$ref": "../common/variant-envelope.schema.json"},
     {
@@ -623,8 +623,88 @@
         "relative_bias": {"type": "array", "items": {"type": ["number","null"]}}
       }
     },
+    "c04CoverageClause": {
+      "description": "The coverage clause of BS-14's refutation rule, read at informative `informative` on `reps` repetitions of the committed generator (draws of their own): the anchored interval covers the true PD of grade `grade` more often than every other treatment, the identified (Manski) band among them, in every design.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["holds","informative","grade","level","reps","manski_treatment","designs"],
+      "properties": {
+        "holds": {"type": "boolean"},
+        "informative": {"type": "number"},
+        "grade": {"type": "integer", "minimum": 0},
+        "level": {"type": "number"},
+        "reps": {"type": "integer", "minimum": 0},
+        "manski_treatment": {"type": "string"},
+        "designs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["design","reps","seed_key","seed","anchored","anchored_mcse","treatments","anchored_mean_width","best_other","best_other_treatments","difference","manski_covers_as_often_or_more","manski_width_ratio","holds"],
+            "properties": {
+              "design": {"type": "string"},
+              "reps": {"type": "integer", "minimum": 0},
+              "seed_key": {"type": "string"},
+              "seed": {"type": "integer"},
+              "anchored": {"type": "number"},
+              "anchored_mcse": {"type": "number"},
+              "treatments": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["id","coverage","mean_width"],
+                  "properties": {
+                    "id": {"type": "string", "enum": ["industry","unfollowed","followed","identified"]},
+                    "coverage": {"type": "number"},
+                    "mean_width": {"type": ["number","null"]}
+                  }
+                }
+              },
+              "anchored_mean_width": {"type": ["number","null"]},
+              "best_other": {"type": "number"},
+              "best_other_treatments": {"type": "array", "items": {"type": "string", "enum": ["industry","unfollowed","followed","identified"]}},
+              "difference": {"type": "number"},
+              "manski_covers_as_often_or_more": {"type": "boolean"},
+              "manski_width_ratio": {"type": ["number","null"]},
+              "holds": {"type": "boolean"}
+            }
+          }
+        }
+      }
+    },
+    "c04StabilityClause": {
+      "description": "The stability clause of BS-14's refutation rule on the real cohorts of each source with a default page: the anchored k is stable across years when, for every grade judged, at least `threshold` of the annual cohorts' k bands contain the pooled k. A grade with fewer than `min_cohorts` usable cohorts is `too_few`: not judged, never a pass; a clause with no grade judged does not hold.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["holds","threshold","min_cohorts","judged","unstable","unanchored_sources","rows"],
+      "properties": {
+        "holds": {"type": "boolean"},
+        "threshold": {"type": "number"},
+        "min_cohorts": {"type": "integer", "minimum": 1},
+        "judged": {"type": "integer", "minimum": 0},
+        "unstable": {"type": "integer", "minimum": 0},
+        "unanchored_sources": {"type": "array", "items": {"type": "string"}},
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source","grade","usable_cohorts","cohorts_containing_pooled_k","share","status"],
+            "properties": {
+              "source": {"type": "string"},
+              "grade": {"type": "string"},
+              "usable_cohorts": {"type": "integer", "minimum": 0},
+              "cohorts_containing_pooled_k": {"type": "integer", "minimum": 0},
+              "share": {"type": ["number","null"]},
+              "status": {"type": "string", "enum": ["stable","unstable","too_few"]}
+            }
+          }
+        }
+      }
+    },
     "c04BoundsVerdict": {
-      "description": "BS-14's hypothesis (i) read off the rungs' coverage of one grade's true PD against the criteria fixed before the run (the anchored interval covers at least 90% at informative 1, 3 and 9; the existing treatments under 50% at 9; refuted if the anchored interval does not cover more than every existing treatment at 9).",
+      "description": "BS-14's hypothesis (i) read off the rungs' coverage of one grade's true PD against the criteria fixed before the run (the anchored interval covers at least 90% at informative 1, 3 and 9; the existing treatments under 50% at 9; refuted if the anchored interval does not cover more than every treatment at 9, Manski's identified band among them, or if the anchored k is unstable across years: `summary` carries both clauses).",
       "type": "object",
       "additionalProperties": false,
       "required": ["grade","reps","level","designs","rows","summary"],
@@ -655,11 +735,14 @@
         "summary": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["refuted","anchored_covers_90","existing_under_50"],
+          "required": ["refuted","refuted_on","anchored_covers_90","existing_under_50","coverage_better_than_every_treatment","anchored_k_stable_across_years"],
           "properties": {
             "refuted": {"type": "boolean"},
+            "refuted_on": {"type": "array", "items": {"type": "string", "enum": ["coverage_better_than_every_treatment","anchored_k_stable_across_years"]}},
             "anchored_covers_90": {"type": "boolean"},
-            "existing_under_50": {"type": "boolean"}
+            "existing_under_50": {"type": "boolean"},
+            "coverage_better_than_every_treatment": {"$ref": "#/$defs/c04CoverageClause"},
+            "anchored_k_stable_across_years": {"$ref": "#/$defs/c04StabilityClause"}
           }
         }
       }

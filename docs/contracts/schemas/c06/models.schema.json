@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c06/models.schema.json",
   "title": "C06 models",
-  "description": "Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.",
+  "description": "Catalog row c06-models 3.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD, the staging policy, the bootstrap intervals of the S-4 comparison and the hyper-parameter sensitivity of the PC-Hazard rung.",
   "allOf": [
     {
       "$ref": "../common/models-envelope.schema.json"
@@ -35,7 +35,9 @@
         "ladder",
         "lgd",
         "ead",
-        "staging_policy"
+        "staging_policy",
+        "s4_bootstrap",
+        "pch_sensitivity"
       ],
       "properties": {
         "currency": {
@@ -72,6 +74,12 @@
         },
         "staging_policy": {
           "$ref": "#/$defs/c06StagingPolicy"
+        },
+        "s4_bootstrap": {
+          "$ref": "#/$defs/c06S4Bootstrap"
+        },
+        "pch_sensitivity": {
+          "$ref": "#/$defs/c06PchSensitivity"
         }
       },
       "description": "C06 fit: segments, the Fed-style scenario definitions, the TTC to PIT conversion, the lifetime PD ladder, LGD, EAD and the staging policy that the bake used."
@@ -515,6 +523,706 @@
         }
       },
       "description": "The staging policy of the fit. The variant `outputs.settings.sicr` (with `settings.probation_months`) is authoritative: this block equals it field by field, and `low_credit_risk_pd` is null exactly when `low_credit_risk_exemption` is false."
+    },
+    "c06S4Difference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "measure",
+        "difference",
+        "lo",
+        "hi",
+        "excludes_zero",
+        "n_valid",
+        "reason"
+      ],
+      "properties": {
+        "measure": {
+          "type": "string",
+          "enum": [
+            "integrated_brier",
+            "mean_decile_gap"
+          ]
+        },
+        "difference": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "PC-Hazard minus Cox on the out-of-time accounts (negative favours PC-Hazard); null with its reason when a side is not observed."
+        },
+        "lo": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The 2.5 percentile of the replicate differences."
+        },
+        "hi": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The 97.5 percentile of the replicate differences."
+        },
+        "excludes_zero": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "True when the interval lies wholly on one side of zero."
+        },
+        "n_valid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "One S-4 difference with its bootstrap interval, beside the point difference the hypothesis judges."
+    },
+    "c06S4Overall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dates",
+        "evaluable",
+        "holds_at",
+        "holds_excluding_zero",
+        "verdict"
+      ],
+      "properties": {
+        "dates": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evaluable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "holds_at": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "holds_excluding_zero": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verdict": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "holds",
+                "refuted"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The verdict of the pre-registered rule over the dates (`holds_at` of `evaluable`, more than half holds) and how many of the dates where it holds have both intervals excluding zero."
+    },
+    "c06S4Bootstrap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "resampled_unit",
+        "replicates",
+        "level",
+        "seed",
+        "predictions_refit",
+        "evaluated",
+        "reason",
+        "accounts",
+        "differences",
+        "both_exclude_zero",
+        "overall"
+      ],
+      "properties": {
+        "method": {
+          "$ref": "../common/text.schema.json"
+        },
+        "resampled_unit": {
+          "const": "account"
+        },
+        "replicates": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "level": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "predictions_refit": {
+          "const": false
+        },
+        "evaluated": {
+          "type": "boolean"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accounts": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "differences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c06S4Difference"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "both_exclude_zero": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "overall": {
+          "$ref": "#/$defs/c06S4Overall"
+        }
+      },
+      "description": "The loan-level evaluation bootstrap of the S-4 comparison of this reporting date: the out-of-time accounts resampled with replacement, the predictions of both rungs held fixed (no refit), percentile intervals on the difference of the integrated Brier score and of the mean absolute decile gap against Aalen-Johansen. Reported beside the verdict, never in place of it."
+    },
+    "c06PchParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interval_months",
+        "intervals",
+        "hidden",
+        "learning_rate",
+        "weight_decay"
+      ],
+      "properties": {
+        "interval_months": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "intervals": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "hidden": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 1
+        },
+        "learning_rate": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "weight_decay": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "The hyper-parameters of one setting: the interval width in months with its interval count (their product is the 180 months every grid covers), the hidden layer sizes, the learning rate and the weight decay."
+    },
+    "c06PchEvaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "c_index",
+        "integrated_brier",
+        "mean_decile_gap",
+        "criteria",
+        "holds_at_date"
+      ],
+      "properties": {
+        "c_index": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pch",
+            "cox"
+          ],
+          "properties": {
+            "pch": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cox": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "description": "The PC-Hazard and Cox values of one statistic of the S-4 comparison."
+        },
+        "integrated_brier": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pch",
+            "cox"
+          ],
+          "properties": {
+            "pch": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cox": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "description": "The PC-Hazard and Cox values of one statistic of the S-4 comparison."
+        },
+        "mean_decile_gap": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pch",
+            "cox"
+          ],
+          "properties": {
+            "pch": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cox": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "description": "The PC-Hazard and Cox values of one statistic of the S-4 comparison."
+        },
+        "criteria": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower_integrated_brier",
+            "smaller_decile_gap",
+            "higher_c_index"
+          ],
+          "properties": {
+            "lower_integrated_brier": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "smaller_decile_gap": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "higher_c_index": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "description": "The criteria of the S-4 hypothesis (the c-index is reported beside, not part of the verdict): true, false or null (one side not observed)."
+        },
+        "holds_at_date": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The S-4 evaluation of one setting at this reporting date, as `details.evaluation` of the PC-Hazard model record gives it for the default: the c-index, the integrated Brier score and the mean absolute decile gap against Aalen-Johansen of both rungs, the criteria and whether the hypothesis holds at the date."
+    },
+    "c06PchSetting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "setting_id",
+        "parameter",
+        "is_default",
+        "label",
+        "parameters",
+        "status",
+        "reason",
+        "epochs",
+        "best_epoch",
+        "holdout_nll_per_default",
+        "weights_sha256",
+        "evaluation"
+      ],
+      "properties": {
+        "setting_id": {
+          "type": "string",
+          "enum": [
+            "default",
+            "width-1.5",
+            "width-6",
+            "hidden-16",
+            "hidden-64",
+            "weight-decay-1e-5",
+            "weight-decay-1e-3",
+            "learning-rate-0.003",
+            "learning-rate-0.03"
+          ]
+        },
+        "parameter": {
+          "type": "string",
+          "enum": [
+            "default",
+            "interval_width",
+            "hidden_layers",
+            "weight_decay",
+            "learning_rate"
+          ]
+        },
+        "is_default": {
+          "type": "boolean"
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "parameters": {
+          "$ref": "#/$defs/c06PchParameters"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "fitted",
+            "not_converged",
+            "failed"
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "epochs": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "best_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "holdout_nll_per_default": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "weights_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evaluation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c06PchEvaluation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "One setting of the sweep at this date. `status` is `fitted` (early stopping triggered), `not_converged` (the fit ran to the epoch cap; its numbers are reported) or `failed` (the fit raised or its rates are not finite; no evaluation); `reason` is null exactly when the status is `fitted`."
+    },
+    "c06PchOverallSetting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "setting_id",
+        "dates",
+        "evaluable",
+        "holds_at",
+        "verdict",
+        "agrees"
+      ],
+      "properties": {
+        "setting_id": {
+          "type": "string"
+        },
+        "dates": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evaluable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "holds_at": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verdict": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "holds",
+                "refuted"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "agrees": {
+          "type": "boolean"
+        }
+      },
+      "description": "The verdict of one setting over the dates (`backtest.s4_verdict` of its `holds_at_date` per date) and whether it agrees with the verdict of the case."
+    },
+    "c06PchOverall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dates",
+        "case_setting",
+        "case_verdict",
+        "settings_count",
+        "agree",
+        "settings"
+      ],
+      "properties": {
+        "dates": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "case_setting": {
+          "const": "default"
+        },
+        "case_verdict": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "holds",
+                "refuted"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "settings_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "agree": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "settings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c06PchOverallSetting"
+          },
+          "minItems": 9,
+          "maxItems": 9
+        }
+      },
+      "description": "The verdicts of the nine settings over the dates and the count of those that agree with the default's, which is the verdict of the case."
+    },
+    "c06PchSensitivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "kind",
+        "covers_months",
+        "same_training",
+        "selected_setting",
+        "evaluated",
+        "seed",
+        "reason",
+        "settings",
+        "overall"
+      ],
+      "properties": {
+        "method": {
+          "$ref": "../common/text.schema.json"
+        },
+        "kind": {
+          "const": "one-at-a-time"
+        },
+        "covers_months": {
+          "const": 180
+        },
+        "same_training": {
+          "const": true
+        },
+        "selected_setting": {
+          "type": "null"
+        },
+        "evaluated": {
+          "type": "boolean"
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "settings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c06PchSetting"
+          },
+          "maxItems": 9
+        },
+        "overall": {
+          "$ref": "#/$defs/c06PchOverall"
+        }
+      },
+      "description": "The hyper-parameter sensitivity of the PC-Hazard rung at this reporting date: the rung refitted under nine settings, one hyper-parameter moved at a time around the defaults (never a grid, never a tuning), on the same training loans, hold-out split and seed, each judged by the S-4 evaluation on the same out-of-time accounts. `settings` holds the nine entries in order, or none when the rung was not fitted (then `reason` says why). `selected_setting` is always null: no setting is chosen and the verdict of the case stays the default's."
     }
   }
 }

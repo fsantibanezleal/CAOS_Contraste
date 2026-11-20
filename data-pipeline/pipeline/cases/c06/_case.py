@@ -77,6 +77,8 @@ class C06:
         from ... import __version__
         from . import build as bd
         from ...io import sba as readers
+        from . import pch_sensitivity as pchs
+        from . import s4_bootstrap as s4b
         from .panel import prepare
         from .variant import bake_variant
 
@@ -102,11 +104,39 @@ class C06:
         values: dict[str, float] = {}
         contract: dict[str, Any] = {}
         panel_every = 10
+        baked = []
         for ds in REPORTING_DATES:
             rd = np.datetime64(ds, "D")
             res = bake_variant(loans, fed, rd, seed, panel_every=panel_every, cleaning=counts,
                                min_quarter_at_risk=MIN_QUARTER_AT_RISK)
+            res.run = None  # the date's accounts are no longer needed: only its documents wait for the count over the dates
+            baked.append(res)
+        # the S-4 hypothesis is judged over the dates: the count of the dates where it holds with both intervals excluding zero is
+        # computed once and written in every models document (the verdict itself is the pre-registered rule, backtest.s4_verdict)
+        holds = [_holds(r) for r in baked]
+        blocks = [r.models["fit"]["s4_bootstrap"] for r in baked]
+        overall = s4b.overall(holds, blocks)
+        findings = s4b.overall_findings(overall, holds, blocks)
+        if findings:
+            raise ValueError(f"the S-4 count over the dates disagrees with the dates: {findings}")
+        for blk in blocks:
+            blk["overall"] = dict(overall)
+        # the sensitivity of the PC-Hazard rung to its hyper-parameters (CT-521 to CT-523): the verdict of each setting over the dates, and
+        # the count of settings that agree with the default's, which stays the verdict of the case
+        sweeps = [r.models["fit"]["pch_sensitivity"] for r in baked]
+        sweep_holds = pchs.holds_by_setting(sweeps)
+        sweep_overall = pchs.overall(sweep_holds)
+        if sweep_overall["case_verdict"] != overall["verdict"]:
+            raise ValueError(f"the default setting's verdict {sweep_overall['case_verdict']} is not the case verdict {overall['verdict']}")
+        for blk in sweeps:
+            blk["overall"] = pchs.overall(sweep_holds)
+        _log(f"PC-Hazard sensitivity: {sweep_overall['agree']} of {sweep_overall['settings_count']} settings agree with the verdict "
+             f"{sweep_overall['case_verdict']}")
+        _log(f"S-4 over {overall['dates']} dates: holds at {overall['holds_at']} of {overall['evaluable']} evaluable, "
+             f"{overall['holds_excluding_zero']} of them with both intervals excluding zero; verdict {overall['verdict']}")
+        for res in baked:
             vid = res.variant_id
+            rd = res.reporting_date
             en_m, es_m, year, iso = bd.month_label(rd)
             title = _t(f"Reporting date {en_m} {year}", f"Fecha de reporte {es_m} de {year}")
             short = _t(f"{en_m[:3]} {year}", f"{es_m[:3].capitalize()} {year}")
@@ -131,7 +161,6 @@ class C06:
             if vid == DEFAULT_VARIANT:
                 contract = {"sba-foia": res.contract["loan_panel"], "fed-stress-tests": res.contract["macro_path"]}
             _log(f"variant {vid}: models {e_m['bytes']:,} bytes, document {e_v['bytes']:,} bytes, {len(d['tests'])} test rows")
-            del res
         ranges = expectations.check(CASE_ID, bd.EXPECT, values)
         manifest = build_case_manifest(
             depends_on=self.depends_on(),
@@ -140,6 +169,13 @@ class C06:
             riskvalidation_version=rv, source_details=_source_details(SOURCES))
         write_json(paths.manifests / f"{CASE_ID}.json", manifest)
         return manifest
+
+
+def _holds(res: Any) -> bool | None:
+    """``holds_at_date`` of the S-4 evaluation of one baked date, None when the PC-Hazard rung was not fitted or one side is not observed."""
+    rec = next(m for m in res.models["model"] if m["id"] == "L3-pch")
+    ev = rec["details"].get("evaluation")
+    return None if ev is None else ev["holds_at_date"]
 
 
 def _source_details(ids) -> dict[str, dict[str, str]]:

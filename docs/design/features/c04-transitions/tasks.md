@@ -12,6 +12,7 @@
 | 7 | The live ports (projection, intervals, capital) with parity tests | CT-410, CT-411 | done |
 | 8 | The C04 instrument and its views; the content page; the methodology and coverage entries | CT-412, CT-414 | done |
 | 9 | The case page in docs; the measured gate; screenshots read; version 0.05.000, changelog, PR | CT-413, CT-414 | done |
+| 10 | BL-118: the BS-14 verdict carries both clauses of its refutation rule (coverage against every treatment, Manski's band among them, and the anchored k's stability across years), in the document, the case page, the finding and the view | CT-416 | done |
 
 Task 9 closed on 2026-10-10 with 0.06.000 (shell 0.10.0): the case page `docs/cases/C04.md`; `caos-shell-gate` OK on
 910 measured states; every App view captured and read (light English and dark Spanish at 1280 x 800, light English at

@@ -1,11 +1,13 @@
 // The held-out comparisons: every rung against the champion on each case's holdout, with the interval of its AUC and
 // the paired DeLong test, its calibration, and the decision it would make. Every number is read from the committed
 // artifacts at load time; none is typed in. The claim each table supports is only what its test shows.
-import { Callout, Cite, DocPage, DocSection, PlotCard, TabGroups, Verdict, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
+import { Callout, Cite, DocPage, DocSection, MAX_PEER_TABS, PlotCard, TabGroups, Verdict, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
-import { useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useLocation } from 'react-router';
 import { loadAllManifests, loadAllVariants, useArtifact } from '../api/artifacts';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
+import { METHODS_CASES, QUESTION_HOME, questionsOf } from '../lib/methodsCompared';
 import { COMMITTED, relight } from '../lib/policy';
 import { P, T, useT } from '../content/bi';
 import { sourceText } from '../content/sources';
@@ -17,6 +19,7 @@ import { C22BenchmarkSection } from './C22Sections';
 import { Table, U6BenchmarkSection, U6_BENCHMARK_CASES, num } from './U6Sections';
 import { W2BenchmarkSection, W2_BENCHMARK_CASES } from './Wave2Sections';
 import { B3BenchmarkSection, B3_BENCHMARK_CASES } from './Batch3Sections';
+import { MethodsOverview, MethodsQuestionSection } from './benchmark/MethodsCompared';
 
 export function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
   const lang = useShellLang();
@@ -233,12 +236,8 @@ const IRRBB_REASON: { en: string; es: string } = {
   en: 'An IRRBB measure is a regulatory calculation under prescribed shocks, so there is no champion to rank against challengers; the case is compared in the App with and without the behavioural assumptions.',
   es: 'Una medida de IRRBB es un cálculo regulatorio bajo choques prescritos, así que no hay un campeón que ordenar frente a retadores; el caso se compara en la App con y sin los supuestos conductuales.',
 };
-/** Cases with no champion-against-challenger comparison, each with the reason the page states: no section here, their data still appears under Provenance. */
+/** Cases with no champion-against-challenger comparison, each with the reason the page states: no case section here, their data still appears under Provenance. C14 and C16 still have a tab for the question they answer in the methods compared; C06 has none of the champion kind and takes a tab for its question alone. */
 export const NO_BENCHMARK: Record<string, { en: string; es: string }> = {
-  C06: {
-    en: 'The provisions cases compare regimes (CMF B-1, IFRS 9, BdE Annex 9), not a champion with challengers; the regime comparison is in the App.',
-    es: 'Los casos de provisiones comparan regímenes (CMF B-1, IFRS 9, Anejo 9 del BdE), no un campeón con retadores; la comparación de regímenes está en la App.',
-  },
   C07: {
     en: 'The provisions cases compare regimes (CMF B-1, IFRS 9, BdE Annex 9), not a champion with challengers; the regime comparison is in the App.',
     es: 'Los casos de provisiones comparan regímenes (CMF B-1, IFRS 9, Anejo 9 del BdE), no un campeón con retadores; la comparación de regímenes está en la App.',
@@ -264,6 +263,8 @@ export const NO_BENCHMARK: Record<string, { en: string; es: string }> = {
  * and the provenance of the data in its next two. At most six groups and six tabs in a group (ADR-0071); a tab or a group
  * with no section is not drawn.
  */
+/** The cases whose tab holds the methods-compared section of their question and no comparison of a champion with challengers. */
+export const METHODS_ONLY = new Set(['C06']);
 export type BenchGroupId = 'reading' | 'pd' | 'losses' | 'capital' | 'market' | 'validation';
 export interface BenchTab {
   id: string;
@@ -297,32 +298,88 @@ export const FAMILY_GROUP: Record<string, BenchGroupId> = {
 export function benchGroupOf(caseId: string): BenchGroupId {
   return FAMILY_GROUP[familyOf(caseId).id] ?? 'capital';
 }
+/** What a plan breaks of ADR-0071 and of the page's own rule: more than six groups, more than six tabs in a group, a section in no tab or in two, a
+ * tab with no section. Empty: the plan holds. */
+export function planViolations(plan: BenchGroup[]): string[] {
+  const out: string[] = [];
+  if (plan.length > MAX_PEER_TABS) out.push(`${plan.length} groups`);
+  const seen = new Map<string, number>();
+  for (const g of plan) {
+    if (g.tabs.length > MAX_PEER_TABS) out.push(`group ${g.id} has ${g.tabs.length} tabs`);
+    for (const t of g.tabs) {
+      if (!t.sections.length) out.push(`tab ${g.id}/${t.id} has no section`);
+      for (const s of t.sections) seen.set(s, (seen.get(s) ?? 0) + 1);
+    }
+  }
+  for (const [s, n] of seen) if (n > 1) out.push(`section ${s} is in ${n} tabs`);
+  return out;
+}
 const READING_TABS: BenchTab[] = [
   { id: 'reading', label: { en: 'Reading and limits', es: 'Lectura y límites' }, sections: [] },
   { id: 'robustness', label: { en: 'Robustness', es: 'Robustez' }, sections: ['robustness'] },
   { id: 'provenance', label: { en: 'Provenance', es: 'Procedencia' }, sections: ['provenance'] },
+  { id: 'methods', label: { en: 'Methods compared', es: 'Métodos comparados' }, sections: ['methods'] },
 ];
 /** The groups of the page for the cases shown, whether cases are excluded and whether a robustness chart exists, in the order of the page. */
-export function benchmarkPlan(shown: string[], excluded: boolean, comparable: boolean): BenchGroup[] {
+export function benchmarkPlan(shown: string[], excluded: boolean, comparable: boolean, methodsCases: readonly string[] = METHODS_CASES): BenchGroup[] {
   const reading = READING_TABS.map((t) => ({ ...t, sections: [...t.sections] }));
   reading[0].sections = excluded ? ['how', 'excluded', 'limits'] : ['how', 'limits'];
   const groups: BenchGroup[] = [{ id: 'reading', label: BENCH_GROUP_LABEL.reading, tabs: reading.filter((t) => t.id !== 'robustness' || comparable) }];
   for (const id of ['pd', 'losses', 'capital', 'market', 'validation'] as BenchGroupId[]) {
-    const tabs = shown.filter((c) => benchGroupOf(c) === id).map((c) => ({ id: `case-${c.toLowerCase()}`, label: { en: c, es: c }, sections: [`case:${c}`] }));
+    // each case with a comparison of its own or a question of the methods compared has a tab: its comparison first, then its questions
+    const cases = [...new Set([...shown, ...methodsCases])].filter((c) => benchGroupOf(c) === id).sort();
+    const tabs = cases.map((c) => ({
+      id: `case-${c.toLowerCase()}`,
+      label: { en: c, es: c },
+      sections: [...(shown.includes(c) && !METHODS_ONLY.has(c) ? [`case:${c}`] : []), ...(methodsCases.includes(c) ? questionsOf(c).map((q) => `methods:${q}`) : [])],
+    }));
     if (tabs.length) groups.push({ id, label: BENCH_GROUP_LABEL[id], tabs });
   }
   return groups;
 }
 
+/** The tab a link to the methods compared opens: `#methods` the overview of the reading group, `#methods-q<n>` the tab of the question's home case,
+ * scrolled to it; a hash that is not one of them opens nothing (null), and a question with no home case falls back to the overview. */
+export function selectionFromHash(hash: string): { sel: { group: string; tab?: string }; scrollTo: string | null } | null {
+  const m = /^#methods(?:-(q\d+))?$/i.exec(hash);
+  if (!m) return null;
+  const overview = { sel: { group: 'reading', tab: 'methods' }, scrollTo: null };
+  if (!m[1]) return overview;
+  const question = m[1].toUpperCase();
+  const home = QUESTION_HOME[question];
+  return home ? { sel: { group: benchGroupOf(home), tab: `case-${home.toLowerCase()}` }, scrollTo: question } : overview;
+}
+
 export function Benchmark() {
   const t = useT();
   const lang = useShellLang();
+  // the overview of the methods compared opens a question in the tab of its case: the tabs are held here so a button can move them
+  const { hash } = useLocation();
+  const linked = selectionFromHash(hash);
+  const [sel, setSel] = useState<{ group: string; tab?: string }>(linked?.sel ?? { group: 'reading', tab: 'reading' });
+  const [scrollTo, setScrollTo] = useState<string | null>(linked?.scrollTo ?? null);
+  // a link to the methods compared (the Introduction's, the Experiments') moves the tabs when the hash changes on the page itself
+  useEffect(() => {
+    const l = selectionFromHash(hash);
+    if (!l) return;
+    setSel(l.sel);
+    setScrollTo(l.scrollTo);
+  }, [hash]);
+  useEffect(() => {
+    if (!scrollTo) return;
+    document.getElementById(`methods-${scrollTo.toLowerCase()}`)?.scrollIntoView({ block: 'start' });
+    setScrollTo(null);
+  }, [scrollTo, sel]);
+  const openQuestion = (question: string, caseId: string) => {
+    setSel({ group: benchGroupOf(caseId), tab: `case-${caseId.toLowerCase()}` });
+    setScrollTo(question);
+  };
   const all = useArtifact((s) => loadAllManifests(s), []);
   const ready = all.state === 'ready';
   const manifests = ready ? all.data.manifests : [];
   const shown = manifests.filter((m) => !(m.case_id in NO_BENCHMARK));
   const excluded = manifests.filter((m) => m.case_id in NO_BENCHMARK);
-  const comparable = shown.filter((m) => !HAS_OWN_BENCHMARK.has(m.case_id) && !U6_BENCHMARK_CASES.has(m.case_id) && !W2_BENCHMARK_CASES.has(m.case_id) && !B3_BENCHMARK_CASES.has(m.case_id));
+  const comparable = shown.filter((m) => !METHODS_ONLY.has(m.case_id) && !HAS_OWN_BENCHMARK.has(m.case_id) && !U6_BENCHMARK_CASES.has(m.case_id) && !W2_BENCHMARK_CASES.has(m.case_id) && !B3_BENCHMARK_CASES.has(m.case_id));
   const plan = benchmarkPlan(shown.map((m) => m.case_id), excluded.length > 0, comparable.length > 0);
   const section = (key: string): ReactNode => {
     if (key === 'how')
@@ -348,6 +405,8 @@ export function Benchmark() {
         </DocSection>
       );
     }
+    if (key === 'methods') return <MethodsOverview key={key} onOpen={openQuestion} />;
+    if (key.startsWith('methods:')) return <MethodsQuestionSection key={key} id={key.slice(8)} />;
     if (key === 'excluded')
       return (
         <DocSection key={key} area="comparison" title={{ en: 'Cases with no champion-against-challenger comparison', es: 'Casos sin comparación de campeón contra retadores' }} noRefsReason={{ en: 'States why a case is not compared here.', es: 'Declara por qué un caso no se compara aquí.' }}>
@@ -398,6 +457,8 @@ export function Benchmark() {
       ]}
     >
       <TabGroups
+        value={sel}
+        onChange={setSel}
         ariaLabel={t('Parts of the benchmark', 'Partes del benchmark')}
         groups={plan.map((g) => ({
           id: g.id,

@@ -21,6 +21,7 @@ import {
 } from './selection';
 import { testText } from '../names';
 import { markRefs } from '../../lib/refs';
+import { TableBox } from '../TableBox';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -33,12 +34,14 @@ export const digits = (v: number | null | undefined, lang: Lang) => formatNumber
  * A drawing of a fixed height above a long block of tables and notes that scrolls under it: for the views whose tables are
  * the larger part of what they say (the LCR, the HTM loss, the run-off scoring, the time block, the CBC), where the
  * drawing taking the height the tables leave would leave the tables a sliver. The gate measures the drawing's box.
+ * `grow`: on a tall desktop a filling card's body is twice what 1280 x 800 leaves, so the drawing takes the height the
+ * tables leave, as ChartOverTable's does (BL-107: a drawing held at 9 rem painted under 30 % of the stage at 2560 x 1440).
  */
-export function ChartAbove({ chart, children, chartHeight = '15rem' }: { chart: ReactNode; children?: ReactNode; chartHeight?: string }) {
+export function ChartAbove({ chart, children, chartHeight = '15rem', grow = false }: { chart: ReactNode; children?: ReactNode; chartHeight?: string; grow?: boolean }) {
   return (
     <div className="ct-stack" data-caos-flow="">
-      <div className="ct-stack-fixed" style={{ minHeight: chartHeight, '--ct-chart-min': chartHeight } as CSSProperties}>{chart}</div>
-      {children ? <div className="ct-stack-rest">{children}</div> : null}
+      <div className={grow ? 'ct-stack-chart' : 'ct-stack-fixed'} style={{ minHeight: chartHeight, '--ct-chart-min': chartHeight } as CSSProperties}>{chart}</div>
+      {children ? <div className={grow ? 'ct-stack-table' : 'ct-stack-rest'}>{children}</div> : null}
     </div>
   );
 }
@@ -302,9 +305,9 @@ export function C16ReverseCard({ reverse, current, onPick }: { reverse: VariantA
         es: 'El multiplicador de las tasas diarias de salida con el que cada escenario base cae por primera vez al periodo de supervivencia objetivo; una base cuya escalera es más corta que el objetivo se rechaza. Elija la prueba de estrés inversa para cargarla.',
       }}
     >
-      <div className="ct-scroll" data-caos-flow="">
+      <TableBox lone>
         <C16ReverseTable reverse={reverse} current={current} onPick={onPick} />
-      </div>
+      </TableBox>
     </PlotCard>
   );
 }

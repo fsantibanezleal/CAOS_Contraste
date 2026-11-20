@@ -20,17 +20,17 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "29ce63a839578b00ea6b4428aae3fdd900af20507a3866df3b70431af3ea92b1",
+    "sha256": "6795e2068a5d94d3c3e0dc7c356a8f923d95663f940127b32f25b028fb2d160a",
     "ref": null
    },
    {
     "path": "data/derived/C01/models-german.json",
-    "sha256": "8788f4e1dd1973a048256d23e9939d1f40b2a56f63d51e10b82b12c0c08c805b",
+    "sha256": "bcdf1a6734732bc5a158a348c720762a7edc2d047c2018fcc47c1d575f584baa",
     "ref": null
    },
    {
     "path": "data/derived/C01/german-twin.json",
-    "sha256": "eac642124d2570f99c09b919285918a26665dd3ca3f8635496dd552f1bf9c19f",
+    "sha256": "1132cf1a8a4b559f906e7270218759f56c56b79a91dc6c8ea588229e4b2a5bb8",
     "ref": null
    },
    {
@@ -286,10 +286,10 @@
    },
    "owner_role": "Head of PD models (synthetic role)",
    "tier": 2,
-   "raised": "2026-11-08",
+   "raised": "2026-11-14",
    "deadline_days": 120,
-   "due": "2027-03-08",
-   "ageing_days": 53,
+   "due": "2027-03-14",
+   "ageing_days": 47,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -332,10 +332,10 @@
    },
    "owner_role": "Head of PD models (synthetic role)",
    "tier": 2,
-   "raised": "2026-11-08",
+   "raised": "2026-11-14",
    "deadline_days": 120,
-   "due": "2027-03-08",
-   "ageing_days": 53,
+   "due": "2027-03-14",
+   "ageing_days": 47,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -373,10 +373,10 @@
    },
    "owner_role": "Head of PD models (synthetic role)",
    "tier": 2,
-   "raised": "2026-11-08",
+   "raised": "2026-11-14",
    "deadline_days": 120,
-   "due": "2027-03-08",
-   "ageing_days": 53,
+   "due": "2027-03-14",
+   "ageing_days": 47,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {

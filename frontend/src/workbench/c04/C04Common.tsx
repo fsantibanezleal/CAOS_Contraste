@@ -78,6 +78,7 @@ import {
 } from './selection';
 import { esDecimals } from './esDecimals';
 import { OUTPUT_BLOCKS } from '../names';
+import { TableBox } from '../TableBox';
 
 const LIVE = 'live' as const;
 /** Both languages of a string built here, readable field by field (a BiText may be a plain string). */
@@ -945,7 +946,7 @@ function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: Varian
         es: `Las mediciones principales de cada familia como las declara su artefacto, contra una verdad conocida: trayectorias de calificación generadas desde ${GENERATOR_TEXT.es} (${attributionIn(attribution, 'es')}). El diseño está en cada nombre. Elija una fila para cargar la familia.`,
       }}
     >
-      <div className="ct-scroll" data-caos-flow="">
+      <TableBox>
         <table className="caos-table ct-wrap-head" data-table="variants-families">
           <thead>
             <tr>
@@ -966,7 +967,7 @@ function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: Varian
             ))}
           </tbody>
         </table>
-      </div>
+      </TableBox>
     </PlotCard>
   );
   const chartCard = chart ? (

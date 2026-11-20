@@ -10,6 +10,7 @@ import { Callout, Cite, DocSection, Figure } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { methodologyMeta } from './sequential-monitors.meta';
 import { GroupedBars } from '../MethodFigures';
 
 const NB = 'https://github.com/fsantibanezleal/CAOS_Contraste/blob/main/notebooks';
@@ -129,10 +130,4 @@ function Body() {
   );
 }
 
-export const methodologySection: MethodologySection = {
-  id: 'sequential-monitors',
-  group: 'market',
-  order: 210,
-  title: { en: 'Sequential monitors', es: 'Monitores secuenciales' },
-  Body,
-};
+export const methodologySection: MethodologySection = { ...methodologyMeta, Body };

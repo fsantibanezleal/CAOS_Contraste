@@ -10,6 +10,7 @@ import { Link } from 'react-router';
 import { OverviewFigure } from '../architecture/figures';
 import { Equation, L, P, T, useT } from '../content/bi';
 import executive from '../../../content/executive.json';
+import { MethodsPointer } from './benchmark/MethodsPointer';
 import { Publications } from './Publications';
 
 /** One list item written in both languages. */
@@ -39,6 +40,7 @@ function Technical() {
         <Figure caption={t('Contraste end to end: public sources and generators, the offline pipeline with the engine riskvalidation, the committed artifacts, and the web that replays them and recomputes what is light enough.', 'Contraste de extremo a extremo: fuentes públicas y generadores, la cadena de cálculo fuera de línea con el motor riskvalidation, los artefactos versionados, y la web que los reproduce y recalcula lo que es lo bastante liviano.')}>
           <OverviewFigure />
         </Figure>
+        <MethodsPointer />
       </DocSection>
       ),
     },

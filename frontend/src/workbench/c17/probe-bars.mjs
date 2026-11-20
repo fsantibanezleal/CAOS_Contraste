@@ -17,7 +17,7 @@ const [width, height] = arg('size', '1280x800').split('x').map(Number);
 // the gate's wide-font pass replaces --font-sans with a wider face (Linux fonts are wider than the Windows ones)
 const WIDE = "'DejaVu Sans', Verdana, sans-serif";
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({ args: ['--no-proxy-server'] });
 const page = await browser.newPage({ viewport: { width, height } });
 const problems = [];
 const rows = [];

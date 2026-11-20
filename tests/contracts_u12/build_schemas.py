@@ -577,6 +577,23 @@ def c17_defs() -> dict:
         "scenarios": R("c17ScenarioSpec"),
     }, "C17 models: the generator, the LDCE calibration targets, the true parameters and quantile of every variant, the grid and "
        "its seeds, the ladder, the aggregation settings, the OPE25 specification and the scenario methods.")
+    # c17-models 2.0.0: the S-3 hypothesis judged once over every cell of every variant, a newly required member of the fit
+    d["c17S3Rung"] = Ob({
+        "model_id": E("sla-cvm", "sla-obre"),
+        "cells": Int(0),
+        "smaller_spread": Int(0),
+        "smaller_bias": Int(0),
+        "verdict": E("holds", "refuted", "inconclusive"),
+    }, "One robust rung against the splice LDA over the pooled cells: the cells where both have a capital, the cells where the rung has the "
+       "smaller spread and the smaller bias, and the verdict by the shares of the hypothesis.")
+    d["c17S3Overall"] = Ob({
+        "variants": Int(1),
+        "cells": Int(0),
+        "rungs": A(R("c17S3Rung"), 2, 2),
+        "verdict": E("holds", "refuted", "inconclusive"),
+    }, "The S-3 hypothesis over every cell of every variant, computed once at the bake: holds only when both rungs hold, refuted when either is.")
+    d["c17Fit"]["properties"]["s3_overall"] = R("c17S3Overall")
+    d["c17Fit"]["required"].append("s3_overall")
     return d
 
 
@@ -586,8 +603,8 @@ def main() -> None:
                    "Catalog row c17-outputs 1.0.0: one tail index of the operational risk case (outputs.kind tail-index), LDA against SMA "
                    "on a generator of operational loss histories with a known true annual loss distribution.", "c17Outputs", d)
     models_schema("C17 models",
-                  "Catalog row c17-models 1.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every "
-                  "variant, grid, ladder, aggregation, OPE25 specification).", "c17Fit", d)
+                  "Catalog row c17-models 2.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every "
+                  "variant, grid, ladder, aggregation, OPE25 specification, the S-3 hypothesis over all cells).", "c17Fit", d)
 
 
 if __name__ == "__main__":

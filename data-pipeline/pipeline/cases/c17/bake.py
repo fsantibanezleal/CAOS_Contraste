@@ -157,11 +157,12 @@ def build(seed: int, scale: float = 1.0, *, log: bool = False, workers: int | No
     bench = extras.benchmark_row()
     say(f"benchmark row: light {bench['light']}")
     rejected = 0
+    points: dict[str, Any] = {}
     for vi, v in enumerate(vs):
         t = truth.compute(v, pl["mc_truth"])
         truths[v.tail_index] = t
         say(f"{v.variant_id}: true 99.9 percent quantile {t.quantile_eur:,.0f} EUR (step {t.grid_step_eur:,.0f}, MC {t.truth_block['annual_loss_quantile']['mc_check']['value_eur']:,.0f})")
-        pts = scenario_points(v)
+        pts = points[v.variant_id] = scenario_points(v)
         priors = {}
         for years in P.YEARS:
             priors[years], pseed = scenario_prior(v, pts, years)
@@ -175,11 +176,17 @@ def build(seed: int, scale: float = 1.0, *, log: bool = False, workers: int | No
             rejected += int(c.arrays["rejected"].sum())
             cells.append(c)
         cells_by_variant[v.variant_id] = cells
+    # the S-3 hypothesis is judged once over every cell of every variant, so every variant's cells exist before any variant document is written
+    overall = docs.s3_overall([docs.s3_capitals(truths[v.tail_index], cells_by_variant[v.variant_id]) for v in vs])
+    say(f"S-3 over {overall['cells']} cells of {overall['variants']} variants: {overall['verdict']} "
+        + ", ".join(f"{r['model_id']} {r['smaller_spread']}/{r['smaller_bias']} of {r['cells']} ({r['verdict']})" for r in overall["rungs"]))
+    for v in vs:
+        t, pts, cells = truths[v.tail_index], points[v.variant_id], cells_by_variant[v.variant_id]
         by_id = {c.id: c for c in cells}
         rc, sc = by_id[P.RESPONSE_CELL], by_id[P.SCENARIO_CELL]
         response = extras.sma_response(v, rc.seed_first, rc.years, rc.threshold, bank)
         scenario = extras.scenario_influence(v, sc.seed_first, sc.years, sc.threshold, pts)
-        outputs, tests, impact, findings = docs.variant_document(v, t, bank, cells, response, scenario, bench, rv)
+        outputs, tests, impact, findings = docs.variant_document(v, t, bank, cells, response, scenario, bench, rv, overall)
         doc = build_artifact(case_id=CASE_ID, variant_id=v.variant_id, model=docs.model_summaries(rv), outputs=outputs, tests=tests, impact=impact,
                              findings=findings, lineage=_lineage(seed, rv), lane={"lane": "precompute", "reasons": []})
         _semantic(doc)
@@ -187,7 +194,7 @@ def build(seed: int, scale: float = 1.0, *, log: bool = False, workers: int | No
         say(f"{v.variant_id}: document built")
     models_doc = None
     if len(vs) == len(P.TAIL_INDICES):
-        models = docs.models_document(vs, truths, seed_base(seed), pl["n_replications"], pl["mc_truth"], pl["mc_rep"], rv)
+        models = docs.models_document(vs, truths, seed_base(seed), pl["n_replications"], pl["mc_truth"], pl["mc_rep"], rv, overall)
         models_doc = build_models_artifact(case_id=CASE_ID, fit_id=models["fit_id"], model=models["model"], fit=models["fit"],
                                            lineage=_lineage(seed, rv), lane={"lane": "precompute", "reasons": []})
         _semantic(models_doc)

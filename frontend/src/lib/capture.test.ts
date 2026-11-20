@@ -38,9 +38,16 @@ interface Row {
 const work = mkdtempSync(join(process.env.CAPTURE_TEST_TMP ?? tmpdir(), 'capture-test-'));
 afterAll(() => rmSync(work, { recursive: true, force: true }));
 
+// The tool alone takes seconds (C01 and C02: 8 s; the whole file: 274 s, 2026-11-15). Inside the whole vitest run on every core a
+// variants-all run of C18 and C20 went past the old 240 s limit, was stopped by it, and the test read only an empty output (M3's
+// release run, 2026-11-15). The limit stays under the 600 s of the slowest test, and a run this test stopped says so.
+const RUN_LIMIT_MS = 540_000;
+
 function run(args: string[], cwd = frontend) {
-  const r = spawnSync(process.execPath, [tool, ...args], { cwd, encoding: 'utf8', timeout: 240_000, env: process.env });
-  return { code: r.status, out: `${r.stdout}${r.stderr}` };
+  const r = spawnSync(process.execPath, [tool, ...args], { cwd, encoding: 'utf8', timeout: RUN_LIMIT_MS, env: process.env });
+  const stopped = r.signal !== null || (r.error as NodeJS.ErrnoException | undefined)?.code === 'ETIMEDOUT';
+  const note = stopped ? `\n[the test stopped the capture tool after ${RUN_LIMIT_MS / 1000} s (signal ${r.signal ?? 'none'})]` : '';
+  return { code: r.status, out: `${r.stdout ?? ''}${r.stderr ?? ''}${note}` };
 }
 
 /** Everything under a folder with sizes and mtimes: the repository must look the same after the tool ran. */
@@ -66,7 +73,7 @@ async function expectedViews(caseId: string, variantIndex: number | null = null)
   const serveModule = '@fasl-work/caos-app-shell/serve'; // plain JavaScript in the shell, no types
   const { servePages } = (await import(/* @vite-ignore */ serveModule)) as { servePages: (dir: string, base: string) => Promise<{ url: string; close: () => Promise<void> }> };
   const server = await servePages(dist, '/');
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ args: ['--no-proxy-server'] });
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
     // Playwright's 30 s default per action is sized for an idle machine. Inside the whole vitest run (639 files on every core) a
@@ -74,12 +81,25 @@ async function expectedViews(caseId: string, variantIndex: number | null = null)
     // (the 1.00.001 verdict run, 2026-11-15). The read is unchanged; only the wait for each action is longer.
     page.setDefaultTimeout(120_000);
     page.setDefaultNavigationTimeout(120_000);
+    // The per-case modules are lazy since 1.01.000: while a case's module loads the workbench shows a placeholder instrument with
+    // generic groups (Model, Validation, Impact, Findings) in the shell's loading state, and the case's own groups replace them.
+    // The read waits for the case and for the end of every loading state, as the tool does, so it never reads the placeholder's tabs.
+    const settled = () =>
+      page.waitForFunction((id) => {
+        const wb = document.querySelector('[data-case-workbench]');
+        if (!wb || wb.getAttribute('data-case') !== id) return false;
+        const shown = (e: Element) => (e as HTMLElement).offsetParent !== null;
+        const tabs = document.querySelectorAll('[data-case-workbench] .tablist [role="tab"]').length;
+        return tabs > 0 && ![...document.querySelectorAll('[data-state="loading"]')].some(shown);
+      }, caseId);
     await page.goto(`${server.url}app?case=${caseId}`, { waitUntil: 'load' });
     await page.waitForSelector('[data-case-workbench] .tablist [role="tab"]');
+    await settled();
     if (variantIndex !== null) {
       await page.locator('[data-control="variant"] [role="radio"]').nth(variantIndex).click();
       await page.waitForTimeout(1500);
       await page.waitForSelector('[data-case-workbench] .tablist [role="tab"]');
+      await settled();
     }
     const groups = await page.$$eval('[data-case-workbench] .tablist [role="tab"]', (ts) => ts.map((t) => t.getAttribute('data-tab') ?? ''));
     const views: string[] = [];

@@ -25,9 +25,9 @@
     "sha256": "9d858573b6c0e44c8d76f17a3be5605bea6a1c44819a3f2d9c69d48b5f78f71c"
   },
   "c01-variant": {
-    "version": "3.0.0",
+    "version": "4.0.0",
     "schema": "docs/contracts/schemas/c01/variant.schema.json",
-    "sha256": "4f8ac03b3d1dd179e4762c1ecf1946f335a25b0dcbc68cc626139e0f333c8567"
+    "sha256": "498e279bc2468e793e294077388b2bc7ab2dd861b08151e0a6d403eb449b14c7"
   },
   "c01-models": {
     "version": "1.0.0",
@@ -40,9 +40,9 @@
     "sha256": "05681a6c1fdaa09a4936cbe64d8a62ec253233258a92d34143aaf055943628c5"
   },
   "c04-family": {
-    "version": "1.1.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c04/variant-generator.schema.json",
-    "sha256": "dc428e7ec132059404782284e570a3d18de69b75f3b46d8f47448580e4228cec"
+    "sha256": "0cf9bf9082c28143c1a89e75715e3e8a6aa774f9e46bfee40a139ca6dc9523d8"
   },
   "c04-published": {
     "version": "1.0.0",
@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "35.0.0",
+    "version": "42.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "fa3b08a1dccc654e43a0a1a9f61ed2244458500f172b848a377d3a36a2e76b07"
+    "sha256": "091c2f2c7e029bc7afcf251450558980f4c6f868ec44b55a08c6e3e389cc05f6"
   },
   "readiness": {
     "version": "1.0.1",
@@ -130,9 +130,9 @@
     "sha256": "273594a852bcfc18192921070e14cdbd4f0d9022bef50251afcc6485fcd14f2f"
   },
   "c06-models": {
-    "version": "1.1.0",
+    "version": "3.0.0",
     "schema": "docs/contracts/schemas/c06/models.schema.json",
-    "sha256": "617315a7ec2a30ea974674cc293a8a2873a5518fabcaad282f19952b17bb2625"
+    "sha256": "dc11a58163f78f10c9d1090b632b3016ac727d3cd1a6f8fc6818c20adb389b65"
   },
   "c07-outputs": {
     "version": "3.0.0",
@@ -160,9 +160,9 @@
     "sha256": "ee07f14472df56680ee59e90cec8c4f999ffeb080cac6569ad8d792d88eebd68"
   },
   "c08-outputs": {
-    "version": "3.0.0",
+    "version": "4.0.0",
     "schema": "docs/contracts/schemas/c08/variant-default-cohort.schema.json",
-    "sha256": "b5bf7f4d081acd15a68bab973098a7e9d5edca5445c4d22bf852550766b05480"
+    "sha256": "261cfcd70214742235dca3c4c46f7ab2b70cd1b951599d3e4dae4f0836bac29d"
   },
   "c08-models": {
     "version": "2.1.0",
@@ -215,9 +215,9 @@
     "sha256": "1db01d7afcee47bba79281f2d2d3c634d88967e5d18264d7c68e3bce7a0091d7"
   },
   "c17-models": {
-    "version": "1.1.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c17/models.schema.json",
-    "sha256": "61dfb7e83b22d061340cd740f791da08595c43676a26bb5d813687b112730d48"
+    "sha256": "a2e6a9b1c4cf1ce5e8eac1f6d425c58708ef6d44fa10b663dcf9e3690121fb46"
   },
   "engine-oprisk-api": {
     "version": "1.0.0",
@@ -423,6 +423,11 @@
     "version": "1.0.0",
     "schema": "docs/contracts/schemas/governance/governance-appetite.schema.json",
     "sha256": "680130edb702d5e248314c9fc553780c02594231bdd49384346cff7a40001e80"
+  },
+  "benchmark-methods": {
+    "version": "2.0.0",
+    "schema": "docs/contracts/schemas/benchmark-methods.schema.json",
+    "sha256": "6136b0b4c10efd34edca8b866fccb8bc99c4d41c64f110878dfb6e411b4e31d2"
   },
   "engine-governance-api": {
     "version": "1.1.3",

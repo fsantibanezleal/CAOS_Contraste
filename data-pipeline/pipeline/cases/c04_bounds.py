@@ -63,6 +63,25 @@ EXISTING_AT = 9.0
 STABILITY_SHARE = 0.80                 # stable when this share of the cohorts' k bands contain the pooled k
 VERDICT_DESIGNS = ("first_year", "pooled", "first_year_x10")
 
+# BS-14's refutation rule has two clauses (docs/design/SDD.md): the anchored interval's coverage is not better than every
+# treatment's, Manski's identified band among them, or the anchored k is unstable across years. The first is read at
+# informative CLAUSE_AT on CLAUSE_REPS repetitions of the committed generator (the anchored-withdrawals manuscript's
+# design and seed keys: the same draws, recomputed here and never read from its result files); the second on the real
+# cohorts of each agency with a default page. A grade with fewer than STABILITY_MIN_COHORTS usable cohorts is not judged.
+CLAUSE_AT = EXISTING_AT
+CLAUSE_REPS = 1000
+MANSKI = "identified"                  # the band from k 0 to infinity: the engine's identified interval
+OTHER_TREATMENTS = ("industry", "unfollowed", "followed", MANSKI)
+COVERAGE_CLAUSE = "coverage_better_than_every_treatment"
+STABILITY_CLAUSE = "anchored_k_stable_across_years"
+STABILITY_MIN_COHORTS = 5              # the five annual cohorts of the known-truth study: fewer cannot show a share of them
+
+
+def clause_seed_keys() -> tuple[str, str]:
+    """The seed keys of the coverage clause's two draws (the standard cohort and the ten-fold one): the manuscript's."""
+    base = f"ms-bs14:informative={CLAUSE_AT:g}"
+    return base, f"{base}:x{SCALE}"
+
 
 def seed_keys(informative: float) -> tuple[str, str]:
     """The seed keys of the study's two draws of a rung (the standard cohort and the ten-fold one); never the rung's."""
@@ -164,10 +183,12 @@ def _study(latent_gen: Any, gen: Any, truth: np.ndarray, seed: int, reps: int,
 
 
 def bounds_rung(make_paths: Callable[..., Any], q: np.ndarray, obligors: list[int], *, seed: int, scale_seed: int,
-                reps: int, informative: float, withdrawal_rate: float, window: float) -> dict[str, Any]:
+                reps: int, informative: float, withdrawal_rate: float, window: float,
+                keys: tuple[str, str] | None = None) -> dict[str, Any]:
     """The coverage study of one informativeness: ``make_paths(q, obligors, years=5, **defect)`` builds the
     ``RatingPaths`` (the ten-fold design needs one year only); ``seed`` and ``scale_seed`` seed the standard and the ten-fold cohort's draws (one stream per
-    repetition, spawned as ``harness.simulate`` does). Returns ``{"level", "truth", "designs"}`` with the four designs
+    repetition, spawned as ``harness.simulate`` does); ``keys`` the seed keys the two seeds come from, recorded in the designs
+    (default ``seed_keys(informative)``). Returns ``{"level", "truth", "designs"}`` with the four designs
     of the module text, each the coverage of the true one-year PD by grade, the mean width and the relative bias of the
     point estimate, for the five treatments."""
     if reps < 2:
@@ -175,7 +196,7 @@ def bounds_rung(make_paths: Callable[..., Any], q: np.ndarray, obligors: list[in
     if not (math.isfinite(informative) and informative >= 0):
         raise ValueError("informative must be a finite number, 0 or more (the extra withdrawal odds before default)")
     defect = {"withdrawal_rate": withdrawal_rate, "informative": informative, "window": window}
-    base, scaled = seed_keys(informative)
+    base, scaled = keys or seed_keys(informative)
     latent = make_paths(q, obligors)
     truth = np.asarray(latent.truth()["pd_by_grade"]["1"], dtype=float)
     one = _study(latent, make_paths(q, obligors, **defect), truth, seed, reps, [
@@ -230,6 +251,74 @@ def verdict(rungs: list[dict[str, Any]]) -> dict[str, Any]:
                         "anchored_covers_90": all(r["holds"] for r in rows if r["id"] == "anchored-coverage"),
                         "existing_under_50": all(r["holds"] for r in rows if r["id"] == "existing-coverage"
                                                  and r["treatment"] != "followed")}}
+
+
+def coverage_clause(study: dict[str, Any]) -> dict[str, Any]:
+    """The coverage clause of the refutation rule: at informative ``CLAUSE_AT`` the anchored interval covers the true PD
+    of grade B more often than every other treatment, the identified (Manski) band among them, in every design the
+    verdict reads. ``study`` is ``bounds_rung`` at ``CLAUSE_AT`` and ``CLAUSE_REPS``. Per design: each treatment's
+    coverage and mean width, the best other treatment's coverage and its name(s), the anchored interval's difference to
+    it, whether the band covers as often or more often, and the band's width as a multiple of the anchored interval's."""
+    designs = []
+    for did in VERDICT_DESIGNS:
+        d = next(x for x in study["designs"] if x["id"] == did)
+        by = {t["id"]: t for t in d["treatments"]}
+        rate = {t: by[t]["coverage"][B]["rate"] for t in (*OTHER_TREATMENTS, "anchored")}
+        width = {t: by[t]["mean_width"][B] for t in (*OTHER_TREATMENTS, "anchored")}
+        best = max(rate[t] for t in OTHER_TREATMENTS)
+        wa, wm = width["anchored"], width[MANSKI]
+        designs.append({
+            "design": did, "reps": d["reps"], "seed_key": d["seed_key"], "seed": d["seed"],
+            "anchored": rate["anchored"], "anchored_mcse": by["anchored"]["coverage"][B]["se"],
+            "treatments": [{"id": t, "coverage": rate[t], "mean_width": _f(width[t])} for t in OTHER_TREATMENTS],
+            "anchored_mean_width": _f(wa), "best_other": best,
+            "best_other_treatments": [t for t in OTHER_TREATMENTS if rate[t] == best],
+            "difference": rate["anchored"] - best, "manski_covers_as_often_or_more": rate[MANSKI] >= rate["anchored"],
+            "manski_width_ratio": _f(wm / wa) if wa and wm is not None else None,
+            "holds": rate["anchored"] > best})
+    return {"holds": all(d["holds"] for d in designs), "informative": CLAUSE_AT, "grade": B, "level": LEVEL,
+            "reps": designs[0]["reps"], "manski_treatment": MANSKI, "designs": designs}
+
+
+def stability_clause(real: dict[str, dict[str, Any] | None]) -> dict[str, Any]:
+    """The stability clause of the refutation rule: the anchored ``k`` is stable across years when, for every grade of
+    every source judged, at least ``STABILITY_SHARE`` of the annual cohorts' ``k`` bands contain the pooled ``k``.
+    ``real`` maps a source id to its ``real_bounds`` output (None where the agency has no default category: no anchor).
+    A grade with fewer than ``STABILITY_MIN_COHORTS`` usable cohorts is ``too_few``: not judged, and never a pass; a
+    clause with no grade judged does not hold."""
+    rows = []
+    for source, wb in real.items():
+        if wb is None:
+            continue
+        for g in wb["grades"]:
+            st = g["stability"]
+            if st is None:
+                continue
+            usable = st["usable_cohorts"]
+            status = "too_few" if usable < STABILITY_MIN_COHORTS else ("stable" if st["stable"] else "unstable")
+            rows.append({"source": source, "grade": g["grade"], "usable_cohorts": usable,
+                         "cohorts_containing_pooled_k": st["cohorts_containing_pooled_k"],
+                         "share": st["share_cohorts_containing_pooled_k"] if usable else None, "status": status})
+    judged = [r for r in rows if r["status"] != "too_few"]
+    return {"holds": bool(judged) and all(r["status"] == "stable" for r in judged), "threshold": STABILITY_SHARE,
+            "min_cohorts": STABILITY_MIN_COHORTS, "judged": len(judged),
+            "unstable": sum(r["status"] == "unstable" for r in rows),
+            "unanchored_sources": [s for s, wb in real.items() if wb is None], "rows": rows}
+
+
+def bounds_verdict(rungs: list[dict[str, Any]], study: dict[str, Any],
+                   real: dict[str, dict[str, Any] | None]) -> dict[str, Any]:
+    """BS-14's verdict: ``verdict``'s rows and criteria on the rungs (the anchored interval against the three treatments
+    a transition page can state, at the bake's repetitions) with the refutation rule's two clauses in ``summary``. The
+    hypothesis is refuted when either clause fails: ``refuted_on`` names the clauses that did."""
+    v = verdict(rungs)
+    cov, stab = coverage_clause(study), stability_clause(real)
+    clauses = {COVERAGE_CLAUSE: cov, STABILITY_CLAUSE: stab}
+    v["summary"] = {"refuted": not (cov["holds"] and stab["holds"]),
+                    "refuted_on": [name for name, c in clauses.items() if not c["holds"]],
+                    "anchored_covers_90": v["summary"]["anchored_covers_90"],
+                    "existing_under_50": v["summary"]["existing_under_50"], **clauses}
+    return v
 
 
 # ---------------------------------------------------------------------------------------------------------------------

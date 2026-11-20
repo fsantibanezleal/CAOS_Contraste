@@ -66,6 +66,20 @@ downturn cohorts minus the long-run mean over the six cohorts, judged against ea
 the models of a cutoff and it is not. The registry lists the Federal Reserve history tables for other cases and not for C08, so the
 case reads no macro path; a macro indicator (unemployment) replaces the book's own rate the day the registry lists C08 for it.
 
+## The S-5 intervals (CT-918 to CT-920)
+
+The S-5 hypothesis (`ml_benchmark.HYPOTHESIS`, written before the run) is judged by a count of test cohorts where the better of the random
+forest and the neural network has a lower RMSE than every one of the six rungs before them. Beside that verdict, which stays the rule as
+written, each variant document carries `outputs.ml_benchmark`: the loan-level evaluation bootstrap of the RMSE differences
+(`ml_bootstrap.py`, the resampling of `cases/bootstrap.py`). The defaults of the test cohort are resampled with replacement, as many as there
+are, 1,000 times with the seed of the bake; the predictions of every rung are held fixed, so the interval is the sampling noise of the
+comparison on this cohort and not the uncertainty of the fits. A replicate computes each rung's RMSE on the resample and chooses again the
+better of the two new rungs; the gain is positive where the new rung is lower, against each of the six rungs fitted and against the best of
+them. The interval is the 2.5 and 97.5 percentiles of the replicate differences. A rung of the six that was not fitted has no comparison, with
+its reason; a new rung that was not fitted leaves every interval null with the reason. `outputs.ml_benchmark.overall` counts the cohorts where
+the hypothesis holds with the interval against the best of the six excluding zero. The engine provides no RMSE of an LGD model, so the
+replicate RMSE is the formula of `variant.bake_variant` on the resample.
+
 ## Limits
 
 The proxy is not a workout LGD. The cohorts are by charge-off year, which lags the default by months to a year or more. The collateral

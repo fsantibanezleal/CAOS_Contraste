@@ -294,7 +294,7 @@ async function walkTargets(page, manifests) {
 }
 
 async function main() {
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ args: ['--no-proxy-server'] });
   const rows = [];
   let failed = 0;
   const manifests = new Map();

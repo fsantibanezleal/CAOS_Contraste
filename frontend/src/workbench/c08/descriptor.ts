@@ -27,6 +27,17 @@ const PROXY: Kind = { object: {
 
 const DATA_STATUS: Kind = 'json';
 
+/** One RMSE difference of the S-5 benchmark with its bootstrap interval (null with its reason when a rung is not fitted). */
+const ML_DIFFERENCE: Kind = { object: {
+  rung_id: { nullable: 'string' },
+  difference: { nullable: 'number' },
+  lo: { nullable: 'number' },
+  hi: { nullable: 'number' },
+  excludes_zero: { nullable: 'boolean' },
+  n_valid: 'integer',
+  reason: { nullable: 'text' },
+} };
+
 const TRAINING: Kind = { object: {
   cutoff_date: 'string',
   n_defaults: 'integer',
@@ -134,6 +145,22 @@ export const C08_OUTPUTS: Kind = { object: {
     regime: 'string',
     rows: { array: 'json' },
     note: 'text',
+  } },
+  ml_benchmark: { object: {
+    method: 'text',
+    resampled_unit: 'string',
+    replicates: 'integer',
+    level: 'number',
+    seed: 'integer',
+    predictions_refit: 'boolean',
+    evaluated: 'boolean',
+    reason: { nullable: 'text' },
+    defaults: 'integer',
+    better_rung: { nullable: 'string' },
+    against_best: ML_DIFFERENCE,
+    against: { array: ML_DIFFERENCE },
+    interval_excludes_zero: { nullable: 'boolean' },
+    overall: { object: { cohorts: 'integer', evaluable: 'integer', wins: 'integer', wins_excluding_zero: 'integer', verdict: { nullable: 'string' } } },
   } },
 } } satisfies { object: Record<keyof components['schemas']['c08Outputs'], Kind> };
 

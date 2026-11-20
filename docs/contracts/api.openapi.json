@@ -519,6 +519,739 @@
         },
         "description": "The stated threshold of a light: a convention with its basis (item 30), never a regulatory value."
       },
+      "benchmark-methods": {
+        "title": "Methods compared",
+        "description": "Catalog row benchmark-methods 2.0.0: the methods of each benchmark question side by side (data/derived/benchmark/methods-compared.json), every value copied from a committed case document or manuscript result file with its path, JSON pointer and SHA-256, every method with its standing read from the SDD method ladder, every reading generated from the numbers by the declared rule of each metric.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "case_id",
+          "schema_version",
+          "provenance",
+          "questions",
+          "left_out",
+          "not_built"
+        ],
+        "properties": {
+          "case_id": {
+            "const": "BENCHMARK-METHODS"
+          },
+          "schema": {
+            "const": "contraste.benchmark.methods-compared/v1"
+          },
+          "schema_version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/bmProvenance"
+          },
+          "questions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/bmQuestion"
+            }
+          },
+          "left_out": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/bmLeftOut"
+            }
+          },
+          "not_built": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/bmNotBuilt"
+            }
+          }
+        },
+        "x-location": "data/derived/benchmark/methods-compared.json"
+      },
+      "bmAbsent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "ladder_id",
+          "standing",
+          "reason",
+          "backlog"
+        ],
+        "properties": {
+          "method": {
+            "$ref": "#/components/schemas/bmText"
+          },
+          "ladder_id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/bmLadderId"
+              }
+            ]
+          },
+          "standing": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "established",
+              "recent",
+              "proposed",
+              null
+            ]
+          },
+          "reason": {
+            "$ref": "#/components/schemas/bmText"
+          },
+          "backlog": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "bmCell": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "metric",
+              "column",
+              "value",
+              "null_reason",
+              "cited"
+            ],
+            "properties": {
+              "metric": {
+                "type": "string"
+              },
+              "column": {
+                "type": "string"
+              },
+              "value": {
+                "type": [
+                  "number",
+                  "string",
+                  "boolean"
+                ]
+              },
+              "null_reason": {
+                "type": "null"
+              },
+              "cited": {
+                "$ref": "#/components/schemas/bmCite"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "metric",
+              "column",
+              "value",
+              "null_reason",
+              "cited"
+            ],
+            "properties": {
+              "metric": {
+                "type": "string"
+              },
+              "column": {
+                "type": "string"
+              },
+              "value": {
+                "type": "null"
+              },
+              "null_reason": {
+                "$ref": "#/components/schemas/bmText"
+              },
+              "cited": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/bmCite"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "bmCite": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "pointer",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Repository path of the committed file the value was copied from."
+          },
+          "pointer": {
+            "type": "string",
+            "description": "RFC 6901 JSON pointer of the value in that file."
+          },
+          "sha256": {
+            "$ref": "#/components/schemas/bmSha256"
+          }
+        }
+      },
+      "bmColumn": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "$ref": "#/components/schemas/bmText"
+          }
+        }
+      },
+      "bmLadderId": {
+        "type": "string",
+        "pattern": "^(M|BS)-\\d+$"
+      },
+      "bmLeftOut": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ladder_id",
+          "method",
+          "reason",
+          "backlog"
+        ],
+        "properties": {
+          "ladder_id": {
+            "$ref": "#/components/schemas/bmLadderId"
+          },
+          "method": {
+            "$ref": "#/components/schemas/bmText"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/bmText"
+          },
+          "backlog": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "bmMetric": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "run_id",
+          "better",
+          "unit",
+          "columns"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "$ref": "#/components/schemas/bmText"
+          },
+          "run_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "better": {
+            "type": "string",
+            "pattern": "^(lower|higher|none|nearer:-?[0-9]+(\\.[0-9]+)?|nearer-metric:[a-z0-9_]+|order:[a-z_]+(,[a-z_]+)+)$",
+            "description": "The declared rule: lower, higher, nearer:<value>, nearer-metric:<metric>, order:<best>,... or none (context, never ranked)."
+          },
+          "unit": {
+            "$ref": "#/components/schemas/bmText"
+          },
+          "columns": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "bmNegativeResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rows",
+          "manuscript",
+          "concept_doi",
+          "text"
+        ],
+        "properties": {
+          "rows": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "manuscript": {
+            "type": "string",
+            "minLength": 1
+          },
+          "concept_doi": {
+            "type": "string",
+            "pattern": "^10\\.5281/zenodo\\.\\d+$",
+            "description": "The concept DOI of the manuscript, read from its conceptdoi macro and equal to the concept_doi of one product.json manuscripts entry."
+          },
+          "text": {
+            "$ref": "#/components/schemas/bmText"
+          }
+        }
+      },
+      "bmNotBuilt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "reason"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^Q\\d+$"
+          },
+          "title": {
+            "$ref": "#/components/schemas/bmText"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/bmText"
+          }
+        }
+      },
+      "bmProvenance": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code_version",
+          "generators",
+          "ladder",
+          "documents",
+          "hash_rule"
+        ],
+        "properties": {
+          "code_version": {
+            "type": "string"
+          },
+          "generators": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "ladder": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "rows_sha256"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "rows_sha256": {
+                "$ref": "#/components/schemas/bmSha256"
+              }
+            }
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "sha256"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "sha256": {
+                  "$ref": "#/components/schemas/bmSha256"
+                }
+              }
+            }
+          },
+          "hash_rule": {
+            "type": "string"
+          }
+        }
+      },
+      "bmQuestion": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "case_ids",
+          "protocol",
+          "runs",
+          "metrics",
+          "rows",
+          "absent",
+          "standings",
+          "reading",
+          "negative_results"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^Q\\d+$"
+          },
+          "title": {
+            "$ref": "#/components/schemas/bmText"
+          },
+          "case_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "protocol": {
+            "$ref": "#/components/schemas/bmText"
+          },
+          "runs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/bmRun"
+            }
+          },
+          "metrics": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/bmMetric"
+            }
+          },
+          "rows": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/bmRow"
+            }
+          },
+          "absent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/bmAbsent"
+            }
+          },
+          "standings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/bmStanding"
+            }
+          },
+          "reading": {
+            "$ref": "#/components/schemas/bmText"
+          },
+          "negative_results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/bmNegativeResult"
+            }
+          }
+        }
+      },
+      "bmRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "method",
+          "ladder_id",
+          "standing",
+          "ranked",
+          "note",
+          "source",
+          "year",
+          "cells"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "method": {
+            "$ref": "#/components/schemas/bmText"
+          },
+          "ladder_id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/bmLadderId"
+              }
+            ],
+            "description": "The SDD method-ladder id: kept for the tests, never rendered."
+          },
+          "standing": {
+            "type": "string",
+            "enum": [
+              "established",
+              "recent",
+              "proposed",
+              "reference"
+            ],
+            "description": "Read from the tier of the ladder row; reference when the row has no ladder id."
+          },
+          "ranked": {
+            "type": "boolean"
+          },
+          "note": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/bmText"
+              }
+            ]
+          },
+          "source": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/bmSource"
+              }
+            ]
+          },
+          "year": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "cells": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/bmCell"
+            }
+          }
+        },
+        "if": {
+          "properties": {
+            "ladder_id": {
+              "type": "null"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "standing": {
+              "const": "reference"
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "standing": {
+              "enum": [
+                "established",
+                "recent",
+                "proposed"
+              ]
+            }
+          }
+        }
+      },
+      "bmRun": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "protocol",
+          "seed",
+          "files",
+          "truth_status",
+          "columns"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "$ref": "#/components/schemas/bmText"
+          },
+          "protocol": {
+            "$ref": "#/components/schemas/bmText"
+          },
+          "seed": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/bmSeed"
+              }
+            ]
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The committed files this run's cells cite; no file serves two runs of one question."
+          },
+          "truth_status": {
+            "type": "string",
+            "enum": [
+              "real-outcomes",
+              "synthetic-known-truth",
+              "synthetic-calibrated",
+              "published-answer"
+            ],
+            "description": "What the data of this run rest on, the closed list of the case documents' provenance.truth_status: copied from the case documents the run cites (they must agree), or, for a run that cites manuscript result files only, declared by the specification with its reason."
+          },
+          "columns": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/bmColumn"
+            }
+          }
+        }
+      },
+      "bmSeed": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "value",
+          "cited"
+        ],
+        "properties": {
+          "value": {
+            "type": "integer"
+          },
+          "cited": {
+            "$ref": "#/components/schemas/bmCite"
+          }
+        }
+      },
+      "bmSha256": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "bmSource": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "text",
+          "url"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "bmStanding": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "metric",
+          "column",
+          "best",
+          "value",
+          "tie",
+          "n_ranked"
+        ],
+        "properties": {
+          "metric": {
+            "type": "string"
+          },
+          "column": {
+            "type": "string"
+          },
+          "best": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "value": {
+            "type": [
+              "number",
+              "string",
+              "boolean"
+            ]
+          },
+          "tie": {
+            "type": "boolean"
+          },
+          "n_ranked": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "bmText": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "en",
+          "es"
+        ],
+        "properties": {
+          "en": {
+            "type": "string",
+            "minLength": 1
+          },
+          "es": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
       "c01-models": {
         "title": "C01 models",
         "description": "Catalog row c01-models 1.0.0: a C01 models artifact (one per fit_id: german, taiwan, taiwan-small).",
@@ -1348,7 +2081,9 @@
           "cap",
           "distribution",
           "cutoff",
-          "reliability_raw"
+          "reliability_raw",
+          "brier",
+          "brier_raw"
         ],
         "properties": {
           "grades": {
@@ -1522,7 +2257,26 @@
                 "type": "null"
               }
             ],
-            "description": "The same with the six-month full payers as transactors (the cards only; null for the loans)."
+            "description": "The reliability table of the raw score before the calibration map, on the same bins and rows as reliability; null for a rung with no map."
+          },
+          "brier": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "The Brier score of the evaluated PD (after the calibration map where the rung has one): the mean squared error of the PD against the 0/1 outcome (Brier 1950); the value of the pd.brier row of the same rung."
+          },
+          "brier_raw": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The Brier score of the raw score before the calibration map, on the same rows; null for a rung with no map (M-5: the Brier before and after the calibration)."
           }
         }
       },
@@ -4372,7 +5126,7 @@
       },
       "c04-variant-generator": {
         "title": "C04 family variant",
-        "description": "Catalog row c04-family 1.1.0: one simulation family of the transition estimators (outputs.kind generator).",
+        "description": "Catalog row c04-family 2.0.0: one simulation family of the transition estimators (outputs.kind generator).",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -5608,7 +6362,7 @@
         }
       },
       "c04BoundsVerdict": {
-        "description": "BS-14's hypothesis (i) read off the rungs' coverage of one grade's true PD against the criteria fixed before the run (the anchored interval covers at least 90% at informative 1, 3 and 9; the existing treatments under 50% at 9; refuted if the anchored interval does not cover more than every existing treatment at 9).",
+        "description": "BS-14's hypothesis (i) read off the rungs' coverage of one grade's true PD against the criteria fixed before the run (the anchored interval covers at least 90% at informative 1, 3 and 9; the existing treatments under 50% at 9; refuted if the anchored interval does not cover more than every treatment at 9, Manski's identified band among them, or if the anchored k is unstable across years: `summary` carries both clauses).",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -5705,18 +6459,37 @@
             "additionalProperties": false,
             "required": [
               "refuted",
+              "refuted_on",
               "anchored_covers_90",
-              "existing_under_50"
+              "existing_under_50",
+              "coverage_better_than_every_treatment",
+              "anchored_k_stable_across_years"
             ],
             "properties": {
               "refuted": {
                 "type": "boolean"
+              },
+              "refuted_on": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "coverage_better_than_every_treatment",
+                    "anchored_k_stable_across_years"
+                  ]
+                }
               },
               "anchored_covers_90": {
                 "type": "boolean"
               },
               "existing_under_50": {
                 "type": "boolean"
+              },
+              "coverage_better_than_every_treatment": {
+                "$ref": "#/components/schemas/c04CoverageClause"
+              },
+              "anchored_k_stable_across_years": {
+                "$ref": "#/components/schemas/c04StabilityClause"
               }
             }
           }
@@ -5851,6 +6624,154 @@
               "number",
               "null"
             ]
+          }
+        }
+      },
+      "c04CoverageClause": {
+        "description": "The coverage clause of BS-14's refutation rule, read at informative `informative` on `reps` repetitions of the committed generator (draws of their own): the anchored interval covers the true PD of grade `grade` more often than every other treatment, the identified (Manski) band among them, in every design.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "holds",
+          "informative",
+          "grade",
+          "level",
+          "reps",
+          "manski_treatment",
+          "designs"
+        ],
+        "properties": {
+          "holds": {
+            "type": "boolean"
+          },
+          "informative": {
+            "type": "number"
+          },
+          "grade": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "level": {
+            "type": "number"
+          },
+          "reps": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "manski_treatment": {
+            "type": "string"
+          },
+          "designs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "design",
+                "reps",
+                "seed_key",
+                "seed",
+                "anchored",
+                "anchored_mcse",
+                "treatments",
+                "anchored_mean_width",
+                "best_other",
+                "best_other_treatments",
+                "difference",
+                "manski_covers_as_often_or_more",
+                "manski_width_ratio",
+                "holds"
+              ],
+              "properties": {
+                "design": {
+                  "type": "string"
+                },
+                "reps": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "seed_key": {
+                  "type": "string"
+                },
+                "seed": {
+                  "type": "integer"
+                },
+                "anchored": {
+                  "type": "number"
+                },
+                "anchored_mcse": {
+                  "type": "number"
+                },
+                "treatments": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "coverage",
+                      "mean_width"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "enum": [
+                          "industry",
+                          "unfollowed",
+                          "followed",
+                          "identified"
+                        ]
+                      },
+                      "coverage": {
+                        "type": "number"
+                      },
+                      "mean_width": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "anchored_mean_width": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "best_other": {
+                  "type": "number"
+                },
+                "best_other_treatments": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "industry",
+                      "unfollowed",
+                      "followed",
+                      "identified"
+                    ]
+                  }
+                },
+                "difference": {
+                  "type": "number"
+                },
+                "manski_covers_as_often_or_more": {
+                  "type": "boolean"
+                },
+                "manski_width_ratio": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "holds": {
+                  "type": "boolean"
+                }
+              }
+            }
           }
         }
       },
@@ -7661,6 +8582,91 @@
           }
         }
       },
+      "c04StabilityClause": {
+        "description": "The stability clause of BS-14's refutation rule on the real cohorts of each source with a default page: the anchored k is stable across years when, for every grade judged, at least `threshold` of the annual cohorts' k bands contain the pooled k. A grade with fewer than `min_cohorts` usable cohorts is `too_few`: not judged, never a pass; a clause with no grade judged does not hold.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "holds",
+          "threshold",
+          "min_cohorts",
+          "judged",
+          "unstable",
+          "unanchored_sources",
+          "rows"
+        ],
+        "properties": {
+          "holds": {
+            "type": "boolean"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "min_cohorts": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "judged": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "unstable": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "unanchored_sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source",
+                "grade",
+                "usable_cohorts",
+                "cohorts_containing_pooled_k",
+                "share",
+                "status"
+              ],
+              "properties": {
+                "source": {
+                  "type": "string"
+                },
+                "grade": {
+                  "type": "string"
+                },
+                "usable_cohorts": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "cohorts_containing_pooled_k": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "share": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "stable",
+                    "unstable",
+                    "too_few"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
       "c04ThinRung": {
         "type": "object",
         "additionalProperties": false,
@@ -8982,7 +9988,7 @@
       },
       "c06-models": {
         "title": "C06 models",
-        "description": "Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.",
+        "description": "Catalog row c06-models 3.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD, the staging policy, the bootstrap intervals of the S-4 comparison and the hyper-parameter sensitivity of the PC-Hazard rung.",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-models-envelope"
@@ -9403,7 +10409,9 @@
           "ladder",
           "lgd",
           "ead",
-          "staging_policy"
+          "staging_policy",
+          "s4_bootstrap",
+          "pch_sensitivity"
         ],
         "properties": {
           "currency": {
@@ -9440,6 +10448,12 @@
           },
           "staging_policy": {
             "$ref": "#/components/schemas/c06StagingPolicy"
+          },
+          "s4_bootstrap": {
+            "$ref": "#/components/schemas/c06S4Bootstrap"
+          },
+          "pch_sensitivity": {
+            "$ref": "#/components/schemas/c06PchSensitivity"
           }
         },
         "description": "C06 fit: segments, the Fed-style scenario definitions, the TTC to PIT conversion, the lifetime PD ladder, LGD, EAD and the staging policy that the bake used."
@@ -9990,6 +11004,494 @@
           }
         }
       },
+      "c06PchEvaluation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "c_index",
+          "integrated_brier",
+          "mean_decile_gap",
+          "criteria",
+          "holds_at_date"
+        ],
+        "properties": {
+          "c_index": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pch",
+              "cox"
+            ],
+            "properties": {
+              "pch": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "cox": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "description": "The PC-Hazard and Cox values of one statistic of the S-4 comparison."
+          },
+          "integrated_brier": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pch",
+              "cox"
+            ],
+            "properties": {
+              "pch": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "cox": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "description": "The PC-Hazard and Cox values of one statistic of the S-4 comparison."
+          },
+          "mean_decile_gap": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pch",
+              "cox"
+            ],
+            "properties": {
+              "pch": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "cox": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "description": "The PC-Hazard and Cox values of one statistic of the S-4 comparison."
+          },
+          "criteria": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "lower_integrated_brier",
+              "smaller_decile_gap",
+              "higher_c_index"
+            ],
+            "properties": {
+              "lower_integrated_brier": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "smaller_decile_gap": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "higher_c_index": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "description": "The criteria of the S-4 hypothesis (the c-index is reported beside, not part of the verdict): true, false or null (one side not observed)."
+          },
+          "holds_at_date": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "The S-4 evaluation of one setting at this reporting date, as `details.evaluation` of the PC-Hazard model record gives it for the default: the c-index, the integrated Brier score and the mean absolute decile gap against Aalen-Johansen of both rungs, the criteria and whether the hypothesis holds at the date."
+      },
+      "c06PchOverall": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "dates",
+          "case_setting",
+          "case_verdict",
+          "settings_count",
+          "agree",
+          "settings"
+        ],
+        "properties": {
+          "dates": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "case_setting": {
+            "const": "default"
+          },
+          "case_verdict": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "holds",
+                  "refuted"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "settings_count": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "agree": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "settings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c06PchOverallSetting"
+            },
+            "minItems": 9,
+            "maxItems": 9
+          }
+        },
+        "description": "The verdicts of the nine settings over the dates and the count of those that agree with the default's, which is the verdict of the case."
+      },
+      "c06PchOverallSetting": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "setting_id",
+          "dates",
+          "evaluable",
+          "holds_at",
+          "verdict",
+          "agrees"
+        ],
+        "properties": {
+          "setting_id": {
+            "type": "string"
+          },
+          "dates": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "evaluable": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "holds_at": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "holds",
+                  "refuted"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "agrees": {
+            "type": "boolean"
+          }
+        },
+        "description": "The verdict of one setting over the dates (`backtest.s4_verdict` of its `holds_at_date` per date) and whether it agrees with the verdict of the case."
+      },
+      "c06PchParameters": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "interval_months",
+          "intervals",
+          "hidden",
+          "learning_rate",
+          "weight_decay"
+        ],
+        "properties": {
+          "interval_months": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "intervals": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "hidden": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "minItems": 1
+          },
+          "learning_rate": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "weight_decay": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "description": "The hyper-parameters of one setting: the interval width in months with its interval count (their product is the 180 months every grid covers), the hidden layer sizes, the learning rate and the weight decay."
+      },
+      "c06PchSensitivity": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "kind",
+          "covers_months",
+          "same_training",
+          "selected_setting",
+          "evaluated",
+          "seed",
+          "reason",
+          "settings",
+          "overall"
+        ],
+        "properties": {
+          "method": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "kind": {
+            "const": "one-at-a-time"
+          },
+          "covers_months": {
+            "const": 180
+          },
+          "same_training": {
+            "const": true
+          },
+          "selected_setting": {
+            "type": "null"
+          },
+          "evaluated": {
+            "type": "boolean"
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/common-text"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "settings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c06PchSetting"
+            },
+            "maxItems": 9
+          },
+          "overall": {
+            "$ref": "#/components/schemas/c06PchOverall"
+          }
+        },
+        "description": "The hyper-parameter sensitivity of the PC-Hazard rung at this reporting date: the rung refitted under nine settings, one hyper-parameter moved at a time around the defaults (never a grid, never a tuning), on the same training loans, hold-out split and seed, each judged by the S-4 evaluation on the same out-of-time accounts. `settings` holds the nine entries in order, or none when the rung was not fitted (then `reason` says why). `selected_setting` is always null: no setting is chosen and the verdict of the case stays the default's."
+      },
+      "c06PchSetting": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "setting_id",
+          "parameter",
+          "is_default",
+          "label",
+          "parameters",
+          "status",
+          "reason",
+          "epochs",
+          "best_epoch",
+          "holdout_nll_per_default",
+          "weights_sha256",
+          "evaluation"
+        ],
+        "properties": {
+          "setting_id": {
+            "type": "string",
+            "enum": [
+              "default",
+              "width-1.5",
+              "width-6",
+              "hidden-16",
+              "hidden-64",
+              "weight-decay-1e-5",
+              "weight-decay-1e-3",
+              "learning-rate-0.003",
+              "learning-rate-0.03"
+            ]
+          },
+          "parameter": {
+            "type": "string",
+            "enum": [
+              "default",
+              "interval_width",
+              "hidden_layers",
+              "weight_decay",
+              "learning_rate"
+            ]
+          },
+          "is_default": {
+            "type": "boolean"
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/c06PchParameters"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "fitted",
+              "not_converged",
+              "failed"
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/common-text"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "epochs": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "best_epoch": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "holdout_nll_per_default": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "weights_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evaluation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c06PchEvaluation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "One setting of the sweep at this date. `status` is `fitted` (early stopping triggered), `not_converged` (the fit ran to the epoch cap; its numbers are reported) or `failed` (the fit raised or its rates are not finite; no evaluation); `reason` is null exactly when the status is `fitted`."
+      },
       "c06Pit": {
         "type": "object",
         "additionalProperties": false,
@@ -10261,6 +11763,218 @@
             ]
           }
         }
+      },
+      "c06S4Bootstrap": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "resampled_unit",
+          "replicates",
+          "level",
+          "seed",
+          "predictions_refit",
+          "evaluated",
+          "reason",
+          "accounts",
+          "differences",
+          "both_exclude_zero",
+          "overall"
+        ],
+        "properties": {
+          "method": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "resampled_unit": {
+            "const": "account"
+          },
+          "replicates": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "level": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "predictions_refit": {
+            "const": false
+          },
+          "evaluated": {
+            "type": "boolean"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/common-text"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "accounts": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "differences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c06S4Difference"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "both_exclude_zero": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "overall": {
+            "$ref": "#/components/schemas/c06S4Overall"
+          }
+        },
+        "description": "The loan-level evaluation bootstrap of the S-4 comparison of this reporting date: the out-of-time accounts resampled with replacement, the predictions of both rungs held fixed (no refit), percentile intervals on the difference of the integrated Brier score and of the mean absolute decile gap against Aalen-Johansen. Reported beside the verdict, never in place of it."
+      },
+      "c06S4Difference": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "measure",
+          "difference",
+          "lo",
+          "hi",
+          "excludes_zero",
+          "n_valid",
+          "reason"
+        ],
+        "properties": {
+          "measure": {
+            "type": "string",
+            "enum": [
+              "integrated_brier",
+              "mean_decile_gap"
+            ]
+          },
+          "difference": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "PC-Hazard minus Cox on the out-of-time accounts (negative favours PC-Hazard); null with its reason when a side is not observed."
+          },
+          "lo": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The 2.5 percentile of the replicate differences."
+          },
+          "hi": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The 97.5 percentile of the replicate differences."
+          },
+          "excludes_zero": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "True when the interval lies wholly on one side of zero."
+          },
+          "n_valid": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/common-text"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "One S-4 difference with its bootstrap interval, beside the point difference the hypothesis judges."
+      },
+      "c06S4Overall": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "dates",
+          "evaluable",
+          "holds_at",
+          "holds_excluding_zero",
+          "verdict"
+        ],
+        "properties": {
+          "dates": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "evaluable": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "holds_at": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "holds_excluding_zero": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "holds",
+                  "refuted"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "The verdict of the pre-registered rule over the dates (`holds_at` of `evaluable`, more than half holds) and how many of the dates where it holds have both intervals excluding zero."
       },
       "c06ScenarioDefinition": {
         "type": "object",
@@ -13861,6 +15575,232 @@
           }
         }
       },
+      "c08MlBenchmark": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "resampled_unit",
+          "replicates",
+          "level",
+          "seed",
+          "predictions_refit",
+          "evaluated",
+          "reason",
+          "defaults",
+          "better_rung",
+          "against_best",
+          "against",
+          "interval_excludes_zero",
+          "overall"
+        ],
+        "properties": {
+          "method": {
+            "$ref": "#/components/schemas/c08Text"
+          },
+          "resampled_unit": {
+            "const": "default"
+          },
+          "replicates": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "level": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "predictions_refit": {
+            "const": false
+          },
+          "evaluated": {
+            "type": "boolean"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c08Text"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "defaults": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "better_rung": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The better of the random forest and the neural network by RMSE at the point estimate."
+          },
+          "against_best": {
+            "$ref": "#/components/schemas/c08MlDifference"
+          },
+          "against": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c08MlDifference"
+            },
+            "minItems": 1
+          },
+          "interval_excludes_zero": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The interval against the best of the six excludes zero."
+          },
+          "overall": {
+            "$ref": "#/components/schemas/c08MlOverall"
+          }
+        },
+        "description": "The loan-level evaluation bootstrap of the S-5 benchmark of this test cohort: the defaults of the cohort resampled with replacement, the predictions held fixed (no refit), percentile intervals on the RMSE difference of the better of the random forest and the neural network against each of the six rungs before them and against the best of the six. Reported beside the verdict, never in place of it."
+      },
+      "c08MlDifference": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rung_id",
+          "difference",
+          "lo",
+          "hi",
+          "excludes_zero",
+          "n_valid",
+          "reason"
+        ],
+        "properties": {
+          "rung_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The rung compared against; for the comparison against the best, the best of the six at the point estimate."
+          },
+          "difference": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "RMSE of that rung minus RMSE of the better of the random forest and the neural network on the test cohort (positive: the machine-learning rung is lower); null with its reason when a rung is not fitted."
+          },
+          "lo": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The 2.5 percentile of the replicate differences."
+          },
+          "hi": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The 97.5 percentile of the replicate differences."
+          },
+          "excludes_zero": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "True when the interval lies wholly on one side of zero."
+          },
+          "n_valid": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c08Text"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "One S-5 RMSE difference with its bootstrap interval, beside the point difference the hypothesis judges."
+      },
+      "c08MlOverall": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cohorts",
+          "evaluable",
+          "wins",
+          "wins_excluding_zero",
+          "verdict"
+        ],
+        "properties": {
+          "cohorts": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "evaluable": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "wins": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "wins_excluding_zero": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "holds",
+                  "mixed",
+                  "refuted"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "The verdict of the pre-registered rule over the test cohorts (`wins` of `evaluable`) and how many of the cohorts where it holds have the interval against the best of the six excluding zero."
+      },
       "c08Outputs": {
         "type": "object",
         "additionalProperties": false,
@@ -13879,7 +15819,8 @@
           "calibration_by_bucket",
           "endpoint_sensitivity",
           "downturn",
-          "floors_bite"
+          "floors_bite",
+          "ml_benchmark"
         ],
         "properties": {
           "kind": {
@@ -13945,6 +15886,9 @@
           },
           "floors_bite": {
             "$ref": "#/components/schemas/c08FloorsBite"
+          },
+          "ml_benchmark": {
+            "$ref": "#/components/schemas/c08MlBenchmark"
           }
         },
         "description": "C08 default-cohort outputs (outputs.kind default-cohort): one test default cohort. LGD in [0, 1] with the cases outside it (fees, costs) allowed and flagged, never clipped; the LGD proxy definition and bias statement are required; money in `currency`."
@@ -44250,7 +46194,7 @@
       },
       "c17-models": {
         "title": "C17 models",
-        "description": "Catalog row c17-models 1.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification).",
+        "description": "Catalog row c17-models 2.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification, the S-3 hypothesis over all cells).",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-models-envelope"
@@ -45127,7 +47071,8 @@
           "ladder",
           "aggregation",
           "sma",
-          "scenarios"
+          "scenarios",
+          "s3_overall"
         ],
         "properties": {
           "currency": {
@@ -45218,6 +47163,9 @@
           },
           "scenarios": {
             "$ref": "#/components/schemas/c17ScenarioSpec"
+          },
+          "s3_overall": {
+            "$ref": "#/components/schemas/c17S3Overall"
           }
         },
         "description": "C17 models: the generator, the LDCE calibration targets, the true parameters and quantile of every variant, the grid and its seeds, the ladder, the aggregation settings, the OPE25 specification and the scenario methods."
@@ -45954,6 +47902,84 @@
             }
           }
         ]
+      },
+      "c17S3Overall": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "variants",
+          "cells",
+          "rungs",
+          "verdict"
+        ],
+        "properties": {
+          "variants": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "cells": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "rungs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c17S3Rung"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "holds",
+              "refuted",
+              "inconclusive"
+            ]
+          }
+        },
+        "description": "The S-3 hypothesis over every cell of every variant, computed once at the bake: holds only when both rungs hold, refuted when either is."
+      },
+      "c17S3Rung": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "model_id",
+          "cells",
+          "smaller_spread",
+          "smaller_bias",
+          "verdict"
+        ],
+        "properties": {
+          "model_id": {
+            "type": "string",
+            "enum": [
+              "sla-cvm",
+              "sla-obre"
+            ]
+          },
+          "cells": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "smaller_spread": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "smaller_bias": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "holds",
+              "refuted",
+              "inconclusive"
+            ]
+          }
+        },
+        "description": "One robust rung against the splice LDA over the pooled cells: the cells where both have a capital, the cells where the rung has the smaller spread and the smaller bias, and the verdict by the shares of the hypothesis."
       },
       "c17Scenario": {
         "type": "object",

@@ -10,6 +10,7 @@ import { Pending } from '../Pending';
 import { columnScale } from './amounts';
 import { ChartOverTable, STAGE_COLOR, STAGE_TEXT, MaybeNumber, axisScale, money, pct } from './format';
 import { nearestPoint, outputsOf, rescaled, type C06Sel } from './selection';
+import { TableBox } from '../TableBox';
 
 const LIVE = 'live' as const;
 const colorOf = (token: string) => `var(${token})`;
@@ -545,7 +546,7 @@ export function StageSummaryView({ sel }: { sel: C06Sel | null }) {
         />
       </PlotCard>
       <PlotCard fill title={{ en: 'The stages in numbers', es: 'Las etapas en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll" data-caos-flow="">
+        <TableBox>
           <table className="caos-table ct-wrap-head" data-table="stage-summary">
             <thead>
               <tr>
@@ -573,7 +574,7 @@ export function StageSummaryView({ sel }: { sel: C06Sel | null }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </TableBox>
       </PlotCard>
     </ViewsRow>
   );

@@ -746,6 +746,8 @@ export function PenalisedView({ sel }: { sel: Selection | null }) {
   const prov = provenanceOf(sel.data.variant.provenance.truth_status);
   const coefs = Object.entries(l1.coefficients ?? {}).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
   const rules = [...(pl.selected_rules ?? [])].sort((a, b) => Math.abs(b.coefficient) - Math.abs(a.coefficient));
+  // M-3 asks for a rule set stable across the bootstraps: a mean Jaccard below one half reads as unstable, and the note says so
+  const unstable = (pl.stability?.jaccard_mean ?? 1) < 0.5;
   return (
     <ViewsRow>
       <PlotCard
@@ -798,8 +800,8 @@ export function PenalisedView({ sel }: { sel: Selection | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: `${rules.length} of ${pl.n_candidate_rules ?? 0} candidate rules selected; Jaccard stability of the selection over ${pl.stability?.bootstraps ?? 0} bootstraps: mean ${formatNumber(pl.stability?.jaccard_mean, 'en', { decimals: 2 })}, minimum ${formatNumber(pl.stability?.jaccard_min, 'en', { decimals: 2 })}.${pl.woe_encoded?.length ? ' An input marked (WoE) is cut on its WoE, not on its code.' : ''}`,
-          es: `${rules.length} de ${pl.n_candidate_rules ?? 0} reglas candidatas seleccionadas; estabilidad de Jaccard de la selección en ${pl.stability?.bootstraps ?? 0} remuestreos: media ${formatNumber(pl.stability?.jaccard_mean, 'es', { decimals: 2 })}, mínimo ${formatNumber(pl.stability?.jaccard_min, 'es', { decimals: 2 })}.${pl.woe_encoded?.length ? ' Una variable marcada (WoE) se corta en su WoE, no en su código.' : ''}`,
+          en: `${rules.length} of ${pl.n_candidate_rules ?? 0} candidate rules selected; Jaccard stability of the selection over ${pl.stability?.bootstraps ?? 0} bootstraps: mean ${formatNumber(pl.stability?.jaccard_mean, 'en', { decimals: 2 })}, minimum ${formatNumber(pl.stability?.jaccard_min, 'en', { decimals: 2 })}.${unstable ? ' The rule set is unstable (a mean below 0.5): a partial result against the aim of a rule set stable across the bootstraps.' : ''}${pl.woe_encoded?.length ? ' An input marked (WoE) is cut on its WoE, not on its code.' : ''}`,
+          es: `${rules.length} de ${pl.n_candidate_rules ?? 0} reglas candidatas seleccionadas; estabilidad de Jaccard de la selección en ${pl.stability?.bootstraps ?? 0} remuestreos: media ${formatNumber(pl.stability?.jaccard_mean, 'es', { decimals: 2 })}, mínimo ${formatNumber(pl.stability?.jaccard_min, 'es', { decimals: 2 })}.${unstable ? ' El conjunto de reglas es inestable (una media bajo 0,5): un resultado parcial frente al objetivo de un conjunto estable en los remuestreos.' : ''}${pl.woe_encoded?.length ? ' Una variable marcada (WoE) se corta en su WoE, no en su código.' : ''}`,
         }}
       >
         <div className="ct-scroll" data-caos-flow="">

@@ -362,6 +362,73 @@ def table_ml() -> None:
         label="tab:lgd-ead-ml", align="lllrlrr")
 
 
+def _text(value) -> str:
+    """A reason of a document as an English fragment (a bilingual text carries ``en``)."""
+    if isinstance(value, dict):
+        return str(value.get("en") or "")
+    return str(value or "")
+
+
+def _excludes(x: dict | None) -> bool | None:
+    """Whether the interval of a difference excludes zero, read from its bounds (never from the stored flag)."""
+    if not x or x.get("lo") is None or x.get("hi") is None:
+        return None
+    return bool(x["lo"] > 0 or x["hi"] < 0)
+
+
+def mlboot_row(cid: str, doc: dict) -> dict:
+    """The loan-level evaluation bootstrap of the machine-learning comparison in one cohort (``outputs.ml_benchmark``): the difference of the
+    RMSE of the best of the six earlier rungs and of the better of the forest and the network, with its interval, and the intervals of the
+    other earlier rungs. A cohort with no block, or a block not evaluated, is returned with ``evaluated`` false and its reason."""
+    b = (doc.get("outputs") or {}).get("ml_benchmark")
+    if not b:
+        return {"cohort": cid, "evaluated": False, "reason": "the document holds no bootstrap block", "defaults": None}
+    best = b.get("against_best")
+    if not b.get("evaluated") or not best or best.get("difference") is None:
+        return {"cohort": cid, "evaluated": False, "reason": _text(b.get("reason")) or "the block carries no difference",
+                "defaults": b.get("defaults")}
+    others = [a for a in b.get("against") or [] if a["rung_id"] != best["rung_id"]]
+    return {"cohort": cid, "evaluated": True, "reason": "", "defaults": b["defaults"], "replicates": b["replicates"],
+            "better": b["better_rung"], "best": best, "excludes": bool(_excludes(best)), "others": others,
+            "others_excl": sum(1 for a in others if _excludes(a))}
+
+
+def mlboot_cells(row: dict) -> list[str]:
+    """The table cells of one cohort."""
+    cohort = cohort_label(row["cohort"])
+    if not row["evaluated"]:
+        return [cohort, "--" if row["defaults"] is None else f"${row['defaults']:,}$".replace(",", "{,}"), "not evaluated", "--", "--", "--", "--"]
+    best = row["best"]
+    return [cohort, f"${row['defaults']:,}$".replace(",", "{,}"), RUNG_NAME[row["better"]], f"${fixed(best['difference'], 6)}$",
+            f"$[{fixed(best['lo'], 6)}, {fixed(best['hi'], 6)}]$", "yes" if row["excludes"] else "no",
+            f"{row['others_excl']} of {len(row['others'])}"]
+
+
+def table_mlboot() -> None:
+    rows = [mlboot_row(cid, C08[cid]) for cid in COHORTS]
+    ev = [r for r in rows if r["evaluated"]]
+    put("ml-boot-cohorts", str(len(COHORTS)))
+    put("ml-boot-evaluated", str(len(ev)))
+    put("ml-boot-replicates", f"{ev[0]['replicates']:,}".replace(",", "{,}") if ev else "0")
+    put("ml-boot-excl", str(sum(r["excludes"] for r in ev)))
+    put("ml-boot-wins-excl", str(sum(1 for r in ev if r["excludes"] and r["best"]["difference"] > 0)))
+    put("ml-boot-worse-excl", str(sum(1 for r in ev if r["excludes"] and r["best"]["difference"] < 0)))
+    put("ml-boot-other-total", str(sum(len(r["others"]) for r in ev)))
+    put("ml-boot-other-excl", str(sum(r["others_excl"] for r in ev)))
+    put("ml-boot-other-better", str(sum(1 for r in ev for x in r["others"] if _excludes(x) and x["difference"] > 0)))
+    put("ml-boot-gain-max", fixed(max(abs(r["best"]["difference"]) for r in ev), 4) if ev else "0")
+    figkit.table(
+        HERE / "lgd-ead-mlboot.tex",
+        ["Cohort", "Defaults", "Better ML rung", "RMSE diff.", "95\\% interval", "Excludes 0", "Other rungs excluding 0"],
+        [mlboot_cells(r) for r in rows],
+        caption="Loan-level bootstrap of the machine-learning hypothesis in each test cohort of case C08: the test defaults are resampled with "
+                "replacement 1,000 times with the predictions held fixed, and the table gives the RMSE of the best of the six earlier rungs minus "
+                "that of the better of the forest and the network (positive when the machine-learning rung is better) with the 2.5 and 97.5 "
+                "percentiles of its replicates, whether the interval excludes zero, and for how many of the five other earlier rungs the same "
+                "difference has an interval that excludes zero.",
+        label="tab:lgd-ead-mlboot", align="lrlrrrr")
+
+
 def table_endpoint() -> None:
     eps = ladder_c["EPSILONS"]
     header = ["Cohort"] + [f"RMSE, $\\epsilon={e:g}$" for e in eps] + [f"Mean, $\\epsilon={e:g}$" for e in eps]
@@ -569,12 +636,13 @@ def main() -> None:
     table_rmse()
     table_ladder_ref()
     table_ml()
+    table_mlboot()
     table_endpoint()
     table_ccf_params()
     table_ccf_designs()
     table_ccf_levels()
     table_ead()
-    for name in ("ladder", "ml", "endpoint", "levels", "backtest", "designs"):
+    for name in ("ladder", "ml", "mlboot", "endpoint", "levels", "backtest", "designs"):
         fit_width(name)
     lines = ["% Generated by tables/make_lgd-ead.py: the numbers the section 'lgd-ead' quotes. Read in the text as \\LE{key}.", ""]
     for k in sorted(NUM):

@@ -760,7 +760,15 @@ def build() -> dict:
             "ThreeCost": "nSeedsThreeCost", "ThreeCostSe": "nSeedsThreeCostSe", "UpThreeMed": "nSeedsUpThreeMed",
             "UpThreeCost": "nSeedsUpThreeCost", "UpThreeCostSe": "nSeedsUpThreeCostSe", "RhoAvg": "nRhoZeroThreeAvg",
             "VasTrue": "nPdcZeroThreeVasTrueEvery", "MatchedSize": "nPdcMatchedSize", "ChiMatched": "nPdcOneZeroFiveChiMatched",
-            "PdAvg": "nPdOneZeroFiveAvg", "ChiSim": "nPdcOneZeroFiveChiSim"}),
+            "PdAvg": "nPdOneZeroFiveAvg", "ChiSim": "nPdcOneZeroFiveChiSim",
+            # the published e-backtest (BS-15's comparator, section on M-39): size, delay, power, the real windows
+            "Reps": "nReps", "WwzNull": "nNullSizeWwz", "WwzEnd": "nHorizonEndWwz", "HorizonDays": "nHorizonDays",
+            "WwzThreeMed": "nMedThreeWwz", "WwzFourMed": "nMedFourWwz", "WwzThreeBy": "nByThreeWwz", "WwzFourBy": "nByFourWwz",
+            "WwzThreeEver": "nEverThreeWwz", "WwzFourEver": "nEverFourWwz", "WwzGapThree": "nGapThreeWwz", "WwzGapFour": "nGapFourWwz",
+            "EThreeMed": "nMedThreeE", "EFourMed": "nMedFourE", "EThreeBy": "nByThreeE", "EFourBy": "nByFourE",
+            "WwzEquity": "nCElevenEquityNinetyWwzFlag", "WwzEquityMed": "nCElevenEquityNinetyWwzMed",
+            "WwzFx": "nCElevenFxNinetyWwzFlag", "WwzFxMed": "nCElevenFxNinetyWwzMed",
+            "WwzCalm": "nCElevenCalmNinetyWwzFlag", "WwzCalmMed": "nCElevenCalmNinetyWwzMed"}),
         "Sixteen": ("adaptive-conformal-recalibration-of-var", {
             "DevUnw": "tenHitDevUnw", "DevAci": "tenHitDevAci", "WorstFz": "tenWorstFz", "PassAci": "tenPassAci", "Runs": "tenRuns",
             "PassUnw": "tenPassUnw", "DispAci": "dispBOneOneAciPass", "DispUnw": "dispBOneOneUnwPass", "WrapCal": "dispCWrapCal",
@@ -897,10 +905,10 @@ def write_tables(A: dict) -> None:
         ["Reverse liquidity stress", "C16", "fast-run base", N["elevenFast"]],
         ["Operational-risk instability", "C17", "interquartile range over the truth, splice rung, range over the cells",
          f"{N['twelveIqrMin']} to {N['twelveIqrMax']}"],
-    ], caption="Headline quantities of twelve of the sixteen contributions, read from the stored documents of the case named in the second "
+    ], caption="Headline quantities of twelve of the sixteen contributions, among them three of the seven proposed methods (the behavioural test, the corrections and the reverse liquidity stress), read from the stored documents of the case named in the second "
                "column or, for the leakage protocol, the provisions identities, the engines, the behavioural test and the corrections, from the "
                "committed results of the manuscript on the method; each is a count or a point value without an interval, the Monte Carlo errors are printed beside each value in the "
-               "text of the method, and the four methods of Sections~\\ref{sec:bs13} to~\\ref{sec:bs16} report theirs in the tables on the complement to the attribution "
+               "text of the method, and the other four contributions, the methods of Sections~\\ref{sec:bs13} to~\\ref{sec:bs16}, report theirs in the tables on the complement to the attribution "
                "test, the anchored probability of default, the sequential monitors and the conformal recalibration.",
         label="tab:proposed-summary", align="lllr")
 

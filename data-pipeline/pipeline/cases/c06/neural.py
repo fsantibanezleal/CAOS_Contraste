@@ -197,14 +197,19 @@ class PchModel:
     n_val_loans: int = 0
     seed: int = 0
     hidden: tuple[int, ...] = HIDDEN
+    width: float = WIDTH                # months of loan age of each interval of ``rates``
 
     def cumulative(self, stratum: np.ndarray, age_months: np.ndarray, horizon_months: np.ndarray) -> np.ndarray:
         """P(default by age + h | alive at age) for accounts (A,) by horizons (H,), as ``CoxModel.cumulative``."""
-        return conditional_cumulative_pd(self.rates, stratum, age_months, np.asarray(horizon_months, dtype=float))
+        return conditional_cumulative_pd(self.rates, stratum, age_months, np.asarray(horizon_months, dtype=float), self.width)
 
 
-def fit_pch(loans: Loans, obs: Observation, *, reporting_date: np.datetime64, seed: int = SEED) -> PchModel:
-    """Fit L3 on the loans selected at ``obs.reporting_date``, time in months of loan age plus a half month (as Cox)."""
+def fit_pch(loans: Loans, obs: Observation, *, reporting_date: np.datetime64, seed: int = SEED, hidden: tuple[int, ...] = HIDDEN,
+            learning_rate: float = LEARNING_RATE, weight_decay: float = WEIGHT_DECAY, width: float = WIDTH,
+            n_intervals: int = N_INTERVALS, max_epochs: int = MAX_EPOCHS) -> PchModel:
+    """Fit L3 on the loans selected at ``obs.reporting_date``, time in months of loan age plus a half month (as Cox). The keyword
+    settings default to the module constants (the main fit); the hyper-parameter sensitivity of ``pch_sensitivity`` moves one at a
+    time, on the same training loans, hold-out split and seed."""
     sel = np.flatnonzero(obs.selected)
     n, d = int(sel.size), int(obs.event.sum())
     status = check_enough(n, d, "L3-pch")
@@ -219,13 +224,14 @@ def fit_pch(loans: Loans, obs: Observation, *, reporting_date: np.datetime64, se
     day = int(np.datetime64(reporting_date, "D").astype(np.int64))
     seed_run = int(seed) + day
     val = np.random.default_rng([int(seed), day]).random(n) < VAL_SHARE
-    ev_t, ex_t = interval_statistics(stratum[~val], time[~val], event[~val])
-    ev_v, ex_v = interval_statistics(stratum[val], time[val], event[val])
-    fit = fit_network(design[:, keep], ev_t, ex_t, val_events=ev_v, val_exposure=ex_v, seed=seed_run)
+    ev_t, ex_t = interval_statistics(stratum[~val], time[~val], event[~val], n_intervals=n_intervals, width=width)
+    ev_v, ex_v = interval_statistics(stratum[val], time[val], event[val], n_intervals=n_intervals, width=width)
+    fit = fit_network(design[:, keep], ev_t, ex_t, val_events=ev_v, val_exposure=ex_v, seed=seed_run, hidden=hidden,
+                      learning_rate=learning_rate, weight_decay=weight_decay, max_epochs=max_epochs)
     return PchModel(status=status, names=tuple(names[k] for k in keep), keep=tuple(keep), rates=fit.rates,
                     weights_sha256=fit.weights_sha256, n_parameters=fit.n_parameters, best_epoch=fit.best_epoch, epochs=fit.epochs,
                     train_nll=fit.train_nll, val_nll=fit.val_nll, n_train_loans=int((~val).sum()), n_val_loans=int(val.sum()),
-                    seed=seed_run, hidden=fit.hidden)
+                    seed=seed_run, hidden=fit.hidden, width=float(width))
 
 
 # ---------------------------------------------------------------------------------------------------------------------

@@ -20,6 +20,7 @@ from riskvalidation.validation import lgd_ead as rv_val
 from ...core.text import light, number
 from . import build as bd
 from . import ml_benchmark as ml
+from . import ml_bootstrap as mlb
 from .cutoff import cutoff_for, open_workout_mask, training_mask
 from .downturn import DownturnPlan
 from .ladder import EPSILONS, RUNGS, Ladder, RungFit, fit_ladder
@@ -197,6 +198,9 @@ def bake_variant(defaults: Defaults, cohort_id: str, seed: int, down: DownturnPl
         "downturn": {"period": dict(down.period), "approach": dict(down.approach), "rows": [dict(r) for r in down.rows],
                      "coverage": dict(down.coverage)},
         "floors_bite": floors_bite,
+        "ml_benchmark": mlb.interval_block(
+            y_test, {rid: p_all[test_mask] for rid, p_all in preds.items()},
+            {rid: str(ladder.rungs[rid].reason) for rid, _ in RUNGS if not ladder.rungs[rid].evaluated}, seed=seed),
     }
     cal_ref = next(t for t in tests if t["test_id"] == "lgd_ead.lgd_calibration_by_segment" and t["model_id"] == ref.rung_id
                    and t["segment"] == seg)

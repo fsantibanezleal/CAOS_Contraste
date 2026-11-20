@@ -122,3 +122,74 @@ def test_the_models_document_lists_the_rungs_with_the_engine_and_the_secondary_s
     ids = [m["id"] for m in models["model"]]
     assert all(i in ids for i in NEW_IDS)
     assert json.dumps(models).count("SECONDARY_SOURCE") >= 4
+
+
+# 1.01.000 M1: F-5 states its verdict at its own tail index and the overall verdict over all 16 cells (4 tail indices x 4 cells)
+from pipeline.cases.c17 import documents as D  # noqa: E402
+
+CVM_OBRE = (("sla_cvm", "sla-cvm"), ("sla_obre", "sla-obre"))
+
+
+def _caps(doc):
+    return [{"lda_splice": c["capital"]["lda_splice"], **{k: c["capital"][k]["summary"] for k, _ in D.S3_RUNGS}} for c in doc["outputs"]["cells"]]
+
+
+def _overall_by_hand():
+    caps = [c for d in DOCS for c in _caps(load(f"C17/{d}.json"))]
+    out = {}
+    for key, mid in CVM_OBRE:
+        n, sp, bi = D.s3_counts(caps, key)
+        out[mid] = (n, sp, bi, D.s3_verdict(n, sp, bi))
+    return out
+
+
+def test_the_models_document_records_the_overall_counts_as_the_sums_over_the_four_variants_and_their_verdict():
+    rec = load("C17/models-generator.json")["fit"]["s3_overall"]
+    by_hand = _overall_by_hand()
+    assert [r["model_id"] for r in rec["rungs"]] == ["sla-cvm", "sla-obre"]
+    for r in rec["rungs"]:
+        n, sp, bi, verdict = by_hand[r["model_id"]]
+        assert (r["cells"], r["smaller_spread"], r["smaller_bias"], r["verdict"]) == (n, sp, bi, verdict)
+    assert rec["cells"] == 16 and rec["variants"] == 4
+    per_variant = [D.s3_counts(_caps(load(f"C17/{d}.json")), "sla_cvm") for d in DOCS]
+    cvm = rec["rungs"][0]
+    assert (cvm["cells"], cvm["smaller_spread"], cvm["smaller_bias"]) == tuple(sum(x) for x in zip(*per_variant))
+
+
+def test_the_overall_verdict_is_the_worst_of_the_two_rungs_and_agrees_with_the_paper():
+    rec = load("C17/models-generator.json")["fit"]["s3_overall"]
+    order = {"holds": 0, "inconclusive": 1, "refuted": 2}
+    assert rec["verdict"] == max((r["verdict"] for r in rec["rungs"]), key=order.__getitem__)
+    assert rec["verdict"] == "inconclusive"
+    paper = (ROOT / "manuscripts" / "instability-of-operational-risk-capital" / "sections" / "12-conclusions.tex").read_text(encoding="utf-8")
+    assert "inconclusive" in paper
+
+
+def test_every_variant_f5_title_states_its_tail_index_its_own_verdict_at_that_index_and_the_overall_verdict_in_both_languages():
+    rec = load("C17/models-generator.json")["fit"]["s3_overall"]
+    for d in DOCS:
+        doc = load(f"C17/{d}.json")
+        (f5,) = [f for f in doc["findings"] if f["id"] == "F-5"]
+        xi = doc["outputs"]["tail_index"]
+        en, es = f5["title"]["en"], f5["title"]["es"]
+        assert f"tail index {xi:g}" in en and en.count("at this tail index") >= 2
+        assert f"índice de cola {str(xi).replace('.', ',')}" in es and es.count("con este índice de cola") >= 2
+        assert f"over all {rec['cells']} cells" in en.lower() or f"over all {rec['cells']} cells" in en
+        assert f"hypothesis is {rec['verdict']}" in en
+        es_word = {"holds": "se sostiene", "refuted": "se refuta", "inconclusive": "no es concluyente"}[rec["verdict"]]
+        assert f"hipótesis {es_word}" in es or f"hipótesis: {es_word}" in es
+        for r in rec["rungs"]:
+            assert f"{r['smaller_spread']} of {r['cells']}" in en and f"{r['smaller_bias']}" in en
+        # a per-index verdict is never stated without its index
+        assert not re.search(r"\(hypothesis (holds|refuted|inconclusive)\)", en)
+
+
+def test_the_overall_helper_sums_cells_across_variants_and_leaves_out_a_cell_without_a_capital():
+    good = {"iqr_over_truth": 0.1, "ratio_to_truth": {"median": 1.0}}
+    worse = {"iqr_over_truth": 0.5, "ratio_to_truth": {"median": 2.0}}
+    cap = {"lda_splice": worse, "sla_cvm": good, "sla_obre": good}
+    none = {"lda_splice": worse, "sla_cvm": None, "sla_obre": good}
+    out = D.s3_overall([[cap, cap], [cap, none]])
+    cvm, obre = out["rungs"]
+    assert (cvm["cells"], cvm["smaller_spread"], cvm["smaller_bias"], cvm["verdict"]) == (3, 3, 3, "holds")
+    assert (obre["cells"], obre["verdict"]) == (4, "holds") and out["verdict"] == "holds" and out["variants"] == 2 and out["cells"] == 4

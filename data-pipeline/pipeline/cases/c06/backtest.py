@@ -132,19 +132,23 @@ def _thin(n: int, defaults: int) -> str | None:
     return None
 
 
-def lifetime_results(loans: Loans, run: DateRun, follow: FollowUp) -> LifetimeResults:
+def lifetime_results(loans: Loans, run: DateRun, follow: FollowUp, *, rungs: tuple[str, ...] = RUNGS,
+                     pooled_only: bool = False) -> LifetimeResults:
+    """The lifetime backtest of ``rungs`` on the pooled book and on each origination cohort. ``rungs`` and ``pooled_only`` narrow the
+    work for a caller that reads only the rung comparison of two rungs (the hyper-parameter sweep of ``pch_sensitivity``); what they
+    keep is what the full call gives."""
     ladder = run.ladder
     elig = run.horizon_q >= BACKTEST_Q
     labels = cohort_labels(loans, run)
     groups: dict[str, np.ndarray] = {"all": elig}
-    for lab in sorted(set(labels.tolist()) - {"older"}) + (["older"] if "older" in labels else []):
+    for lab in (() if pooled_only else sorted(set(labels.tolist()) - {"older"}) + (["older"] if "older" in labels else [])):
         groups[lab] = elig & (labels == lab)
     tests: list[dict[str, Any]] = []
     rows: list[dict[str, Any]] = []
     cmp_rows: list[dict[str, Any]] = []
     status = {"L0-km": ladder.km.status, "L1-dth": ladder.dth.status, "L2-cox": ladder.cox.status, "L3-pch": ladder.pch.status}
     all_results: dict[str, Any] = {}
-    for rung in RUNGS:
+    for rung in rungs:
         if not status[rung].evaluated:
             continue
         for lab, mask in groups.items():
@@ -175,7 +179,7 @@ def lifetime_results(loans: Loans, run: DateRun, follow: FollowUp) -> LifetimeRe
                                          f"{follow.horizon:.1f} months)"))
     # rung comparison: discrimination of the 12-month PD, integrated Brier and the 12-month gap, all from the engine
     complete = follow.event & (follow.time <= 12.0) | (follow.time >= 12.0)
-    for rung in RUNGS:
+    for rung in rungs:
         if not status[rung].evaluated:
             cmp_rows.append({"rung_id": rung, "c_index": None, "integrated_brier": None, "calibration_gap_12m": None,
                              "reason": {"en": str(status[rung].reason), "es": f"peldaño no evaluado (motivo del motor: {status[rung].reason})"}})
@@ -205,7 +209,7 @@ def lifetime_results(loans: Loans, run: DateRun, follow: FollowUp) -> LifetimeRe
         cmp_rows.append({"rung_id": rung, "c_index": c_index, "integrated_brier": brier, "calibration_gap_12m": gap12, "reason": reason})
     # deciles of the production rung's predicted risk
     deciles: list[dict[str, Any]] = []
-    if status["L1-dth"].evaluated and elig.any():
+    if "L1-dth" in rungs and status["L1-dth"].evaluated and elig.any():
         for k in DECILE_HORIZONS:
             pk = _predicted("L1-dth", run, ladder, elig, (k,))[:, 0]
             order = np.argsort(pk, kind="stable")

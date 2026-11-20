@@ -23,7 +23,23 @@ def test_the_committed_withdrawals_document_has_the_clauses_in_step_with_the_eng
     f = next(x for x in doc["findings"] if x["id"] == "F-WITHDRAW-BOUNDS")["title"]
     assert CUMPLE.search(f["es"]) is None
     assert "holds in" in f["en"] and "se verifica en" in f["es"]
-    tail = f["es"].split("la refutación del plan")[1].strip()
-    met = f["en"].rstrip().endswith("is met")
-    assert met or f["en"].rstrip().endswith("is not met")
-    assert tail == ("se verifica" if met else "no se verifica")
+    # the two clauses of the pre-registered rule, in order: "so the clause holds|fails" and "así que la cláusula se verifica|falla"
+    en_clauses = re.findall(r"so the clause (holds|fails)", f["en"])
+    es_clauses = re.findall(r"así que la cláusula (se verifica|falla)", f["es"])
+    assert len(en_clauses) == len(es_clauses) == 2
+    assert [c == "holds" for c in en_clauses] == [c == "se verifica" for c in es_clauses]
+    # the refutation and the verdict on the hypothesis, said the same way in both languages
+    en = re.search(r"The plan's refutation (is met|is not met): the hypothesis is (refuted|not refuted)$", f["en"].rstrip())
+    es = re.search(r"La refutación del plan (se verifica|no se verifica): la hipótesis (queda refutada|no queda refutada)$", f["es"].rstrip())
+    assert en and es, (f["en"][-120:], f["es"][-120:])
+    assert (en.group(1) == "is met") == (es.group(1) == "se verifica") == (en.group(2) == "refuted") == (es.group(2) == "queda refutada")
+
+
+def test_adversarial_a_spanish_clause_out_of_step_with_the_english_is_caught():
+    """The same reading on a planted pair: the English says the clause holds and the Spanish says it fails."""
+    en = "x, so the clause holds. y, so the clause fails. The plan's refutation is met: the hypothesis is refuted"
+    es = "x, así que la cláusula falla. y, así que la cláusula falla. La refutación del plan se verifica: la hipótesis queda refutada"
+    en_clauses = re.findall(r"so the clause (holds|fails)", en)
+    es_clauses = re.findall(r"así que la cláusula (se verifica|falla)", es)
+    assert [c == "holds" for c in en_clauses] != [c == "se verifica" for c in es_clauses]
+    assert CUMPLE.search("así que la cláusula se cumple") is not None
