@@ -307,6 +307,16 @@ def _source_details(ids: list[str]) -> dict[str, dict[str, str]]:
                 "class": reg[i].klass, "attribution": reg[i].attribution} for i in ids}
 
 
+def expected_ranges(values: dict[str, float], max_rows: int | None) -> dict[str, list[float]]:
+    """The declared range of every observable the bake produced. The release bake (``max_rows`` None) checks each value against it; a
+    subsample run (the tests) is not the release bake, so its values are not judged against the release ranges and the manifest still
+    records the ranges the case declares (no interval of its own is compared with the observables)."""
+    declared = {k: EXPECT[k] for k in values if k in EXPECT}
+    if max_rows is None:
+        return expectations.check(CASE_ID, declared, values)
+    return {k: [float(lo), float(hi)] for k, (lo, hi) in sorted(declared.items())}
+
+
 def bake_case(seed: int, paths: Any, data_root: Path | str | None, *, only: tuple[str, ...] | None = None, max_rows: int | None = None) -> dict[str, Any]:
     built = build(seed, data_root, only=only, max_rows=max_rows)
     root = Path(paths.root)
@@ -331,9 +341,7 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, *, only: tupl
     write_json(root / RAW_REL, built.raw_sources)
     sums.append(_sum(root, RAW_REL))
     (root / SUMS_REL).write_text("\n".join(sums) + "\n", encoding="utf-8", newline="\n")
-    # a subsample run (the tests) is not the release bake: its ranges are the unit interval
-    wide = {k: (EXPECT[k] if max_rows is None else (-1e9, 1e9)) for k in built.values if k in EXPECT}
-    ranges = expectations.check(CASE_ID, wide, built.values)
+    ranges = expected_ranges(built.values, max_rows)
     used = [s for s in SOURCES if _present(Path(data_root), s, built.order)]
     from . import CASE
 

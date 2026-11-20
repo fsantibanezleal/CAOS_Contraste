@@ -699,3 +699,120 @@ def test_adversarial_ct2410_a_percent_defect_passes_when_the_domain_is_removed_a
         assert [v["class"] for v in with_domain if v["blocking"]] == [ug.CLASS_DOMAIN], rel
         assert [v for v in without if v["blocking"]] == [], rel  # the defect ships when the domain check is removed
         assert [v for v in ug.check_pair(case, rel, read(case, rel), p) if v["blocking"]] == [], rel  # the clean copy passes
+
+
+# ---- M15 T4 (CT-2404, CT-2409): the shipped check applies the bake's rule to the committed artifacts --------------------------
+
+import shutil  # noqa: E402
+import subprocess  # noqa: E402
+import sys  # noqa: E402
+import time  # noqa: E402
+
+CHECK = ROOT / "scripts" / "check_units.py"
+# runs the script as __main__ under -I and reports whether the pipeline package was imported by it
+_WRAP = ("import runpy, sys\n"
+         "sys.argv = sys.argv[1:]\n"
+         "try:\n"
+         "    runpy.run_path(sys.argv[0], run_name='__main__')\n"
+         "except SystemExit as e:\n"
+         "    code = e.code or 0\n"
+         "else:\n"
+         "    code = 0\n"
+         "print('PIPELINE_IMPORTED=' + str(any(m == 'pipeline' or m.startswith('pipeline.') for m in sys.modules)))\n"
+         "sys.exit(code)\n")
+
+
+def run_check(repo_root, tmp_path, *extra):
+    """The script under ``python -I`` from a temp folder: no PYTHONPATH, no cwd, no script directory on the path."""
+    cwd = tmp_path / "cwd"
+    cwd.mkdir(exist_ok=True)
+    return subprocess.run([sys.executable, "-I", "-c", _WRAP, str(CHECK), str(repo_root), *extra], cwd=cwd,
+                          capture_output=True, text=True, encoding="utf-8", timeout=120)
+
+
+def planted_tree(tmp_path, case, rel, mutate):
+    """A copy of what the script reads (the specification, the rule, ``data/derived/``) with one document changed."""
+    root = tmp_path / "tree"
+    (root / "data-pipeline" / "config").mkdir(parents=True)
+    (root / "data-pipeline" / "pipeline" / "stages").mkdir(parents=True)
+    shutil.copy(SPEC_PATH, root / "data-pipeline" / "config" / "unit_pairs.json")
+    shutil.copy(MODULE, root / "data-pipeline" / "pipeline" / "stages" / "unit_gate.py")
+    shutil.copytree(DERIVED, root / "data" / "derived")
+    path = root / "data" / "derived" / case / rel
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    path.write_text(json.dumps(mutate(doc)), encoding="utf-8")
+    return root
+
+
+def test_shipped_check_loads_the_bake_rule_without_the_package(tmp_path):
+    # CT-2404: no pipeline importable, the same function judges, and a planted copy fails with the class the bake raises
+    spec = load_spec()
+    case, p = "C03", next(q for c, _, q in pairs_of(spec) if q["id"] == "c03-calibration-rows")
+    rel = matched_files(case, p)[0]
+    root = planted_tree(tmp_path, case, rel, lambda doc: plant(doc, p, 100.0))
+    bake = ug.check_document(case, rel, json.loads((root / "data" / "derived" / case / rel).read_text(encoding="utf-8")), spec)
+    assert [v["class"] for v in bake.violations] == [ug.CLASS_DOMAIN]
+    done = run_check(root, tmp_path)
+    assert done.returncode == 1, done.stdout + done.stderr
+    assert "PIPELINE_IMPORTED=False" in done.stdout
+    assert ug.CLASS_DOMAIN in done.stdout and case in done.stdout and rel in done.stdout and p["id"] in done.stdout
+    assert bake.violations[0]["detail"] in done.stdout  # the very message the bake raises
+
+
+def test_the_shipped_check_reads_every_case_and_a_capital_in_the_wrong_unit_fails(tmp_path):
+    # CT-2404, the plant of validation.md: one C17 capital quantile multiplied by 1,000 fails when every case is read
+    spec = load_spec()
+    p = next(q for c, _, q in pairs_of(spec, ("pairs",)) if c == "C17")
+    rel = matched_files("C17", p)[0]
+    root = planted_tree(tmp_path, "C17", rel, lambda doc: plant(doc, p, 1000.0))
+    done = run_check(root, tmp_path)
+    assert done.returncode == 1 and "C17" in done.stdout and rel in done.stdout, done.stdout
+    for case in spec:  # every case of the specification is reported, none skipped silently
+        assert f"{case} " in done.stdout, case
+
+
+def test_committed_tree_passes_the_shipped_check(tmp_path):
+    # CT-2409
+    start = time.perf_counter()
+    done = run_check(ROOT, tmp_path)
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert time.perf_counter() - start < 10  # the script alone reads the tree in under two seconds (measured in the report)
+    assert "PIPELINE_IMPORTED=False" in done.stdout
+    assert "BLOCKING" not in done.stdout
+    assert "bake_only" in done.stdout and "not_applicable" in done.stdout
+
+
+def test_a_glob_that_matches_no_committed_file_fails(tmp_path):
+    root = planted_tree(tmp_path, "C01", next(iter(committed("C01"))), lambda d: d)
+    spec_path = root / "data-pipeline" / "config" / "unit_pairs.json"
+    spec = json.loads(spec_path.read_text(encoding="utf-8"))
+    spec["C01"]["pairs"][0]["file"] = "no-such-file-*.json"
+    spec_path.write_text(json.dumps(spec), encoding="utf-8")
+    done = run_check(root, tmp_path)
+    assert done.returncode == 1 and "matches no committed file" in done.stdout, done.stdout
+
+
+def test_a_case_folder_without_an_entry_fails(tmp_path):
+    root = planted_tree(tmp_path, "C01", next(iter(committed("C01"))), lambda d: d)
+    (root / "data" / "derived" / "C99").mkdir()
+    (root / "data" / "derived" / "C99" / "a.json").write_text("{}", encoding="utf-8")
+    done = run_check(root, tmp_path)
+    assert done.returncode == 1 and "C99" in done.stdout and "no entry" in done.stdout, done.stdout
+
+
+def test_a_withheld_verdict_recording_a_blocking_violation_fails(tmp_path):
+    # the committed manifests carry no verdict yet (T3 is in release 1.02.000), so the test plants its own fixture document
+    root = planted_tree(tmp_path, "C01", next(iter(committed("C01"))), lambda d: d)
+    clean = run_check(root, tmp_path)
+    assert clean.returncode == 0 and "no verdict recorded" in clean.stdout, clean.stdout
+    path = root / "data" / "derived" / "manifests" / "C11.json"
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    verdict = {"pairs_checked": 8, "violations": [], "advisories": 0}
+    manifest["contract"]["units"] = {"withheld": {"calm-2004-06.json": {"c11-withheld-var": verdict}}}
+    path.write_text(json.dumps(manifest), encoding="utf-8")
+    ok = run_check(root, tmp_path)
+    assert ok.returncode == 0 and "verdict recorded" in ok.stdout and "no verdict recorded" not in ok.stdout, ok.stdout
+    verdict["violations"] = [{"class": ug.CLASS_OUTSIDE, "pair": "c11-withheld-var", "method": "historical"}]
+    path.write_text(json.dumps(manifest), encoding="utf-8")
+    bad = run_check(root, tmp_path)
+    assert bad.returncode == 1 and "BLOCKING" in bad.stdout and "c11-withheld-var" in bad.stdout and "calm-2004-06.json" in bad.stdout, bad.stdout

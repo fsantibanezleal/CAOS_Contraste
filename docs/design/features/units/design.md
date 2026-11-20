@@ -184,11 +184,138 @@ advisories (unchanged).
 - Baseline. `scripts/unit_constants_baseline.json`, one entry per literal keyed `module::qualname::value::ordinal` (Fragua's
   `module::value` collides when one value carries two units in one module, as `0.05` does in `cases/c01_retail_pd.py`), with
   `class` from a closed list (`probability`, `ratio`, `relative-tolerance`, `training-hyperparameter`, `single-observable-limit`,
-  `unit-conversion`, `source-cited-input`), `unit` (words, required) and `reason` (required, never `TODO`). `--update` adds new
+  `unit-conversion`, `source-cited-input`, `stated-assumption`, `run-budget`), `unit` (words, required) and `reason` (required, never `TODO`). `--update` adds new
   literals as `TODO` and removes entries whose literal is gone; a `TODO` fails the check. The rule's defect class (a literal
   comparable to a measured quantity in a path more than one observable can reach) has no class: such a literal is rewritten against
   a quantity (the rule's table "Write against a quantity, not against a number"), never baselined.
-- Where it runs: `ci.yml` beside `scripts/check_internal_names.py` (about 2 s) and `scripts/smoke.*`.
+- Where it runs: `ci.yml` beside `scripts/check_internal_names.py` (about 1.3 s, measured on the whole tree) and `scripts/smoke.*`,
+  added by T6 when its baseline holds no `TODO` (before that the check fails by design).
+
+### The classes after the review of T6 (the fix, 2026-11-16)
+
+The closed list has nine classes. An entry's `unit` is the unit of that literal, never the group's, and its `reason` names what the
+literal is in its own code line.
+
+- `probability`, `ratio`, `relative-tolerance`, `training-hyperparameter`, `single-observable-limit`: as the rule defines them.
+  An absolute tolerance on one observable (CCF points, AUC points) is a `single-observable-limit`, not a `relative-tolerance`.
+- `unit-conversion`: only a literal that converts one unit to another (a percent, a thousand, days per year, a basis point, a
+  label-to-number map of a tenor name). A time, a maturity or a repricing time is never one by being in years.
+- `source-cited-input`: only a literal whose source the module or its parameter file cites; the reason names the source.
+- `stated-assumption`: a modelling assumption of a case that carries a unit (an amount, a rate per year, a maturity, a repricing
+  time); the unit and a reason saying what it assumes and why, no source required. It is never compared with a measured quantity:
+  a literal that is, is the rule's defect class and is rewritten against a quantity.
+- `run-budget`: a wall-clock or iteration limit of a run (a run timeout, a fetcher timeout, a back-off, a pause), its unit
+  seconds, milliseconds or iterations.
+
+### The decisions of task T5 (`scripts/check_unit_constants.py`)
+
+- **The lists were reviewed, not copied from the sizing's heuristic.** All 277 modules were read by docstring and, where they hold a
+  non-exempt float literal, by the literals themselves. The rule of the review: a module is `outside` only when no unit-bearing
+  float literal can live in it (a package marker, a command line, the rendering of a case page from committed documents, a
+  fetcher whose floats are timeouts in seconds, a reader of text formats, the registry, the schemas, the rng, the lineage); every
+  `outside` entry carries its one-sentence reason in the file. A module that fits or applies a method, builds a document of numbers,
+  holds expected ranges or thresholds (`bake`, `_case`, `documents`, `build`), reads a source into a family with a conversion (a
+  percent into a decimal, cents into a rate) or holds a named constant with its source is walked: `method` or `parameter`. The two
+  walked lists are treated alike by the check; the split is for the reader of the baseline.
+- **Result: 172 method modules (1,523 literals), 27 parameter modules (544), 78 outside (58 literals, not walked: display scales,
+  level keys and timeouts), 277 in all.** Against the sizing's 99 modules with 1,161 literals (and 19 with 456): 75 modules join
+  the method list (356 literals: 137 in the `bake` modules' expected ranges and grids, 99 in the `documents` modules' thresholds and
+  confidence levels, 35 in the `build` modules, 33 in the `_case` objects, 52 in panels, readers and others); `100.0` and `1000.0`,
+  which the sizing exempted, are 42 of the 1,523 (37 and 5); `cases/c11/run` goes outside (a command line) and `cases/c12/book` to the parameter list (its
+  docstring: "the named parameters of C12"), which also takes the models documents of C12, C16 and C18, `core/gate`, the contract-1
+  field bounds (`io/contract`), the examples (`io/examples`) and the published tables (`io/papers`). The workload of T6 is therefore
+  2,067 literals, not the sizing's 1,617.
+- **The key** is `module::qualname::value::ordinal` with the module as the path under `data-pipeline/pipeline/` without suffix, the
+  qualname the enclosing class and function path (a default argument and a decorator belong to the function, a lambda to its
+  enclosing function), the value as Python's `repr` of the float (`1e-05`, `-0.25`, `100.0`), and the ordinal the position among the
+  equal values of the same scope in source order. A negative literal is one entry, with its sign. A literal inserted above an equal
+  one in the same function shifts the ordinals below it: `--update` then rewrites those keys as new `TODO` entries, and the review
+  of the diff shows it.
+- **A stale entry fails.** A baseline entry with no literal in the walked modules fails the check (and `--update` drops it), so the
+  baseline never keeps a justification for code that is gone.
+- **The outputs.** A finding names `path:line`, the value and the key; `--counts` prints the literals per list and per case group;
+  `--update` prints how many entries it added, dropped and left `TODO`. The baseline is written sorted, one entry per line.
+
+### The decisions of task T6 (`scripts/unit_constants_baseline.json`)
+
+- **The classification is by group, from the code's own names.** The 2,067 literals were listed per module with their enclosing
+  assignment, dictionary key, keyword argument or call, and each group of literals sharing one meaning received one class, one unit
+  and one sentence naming the constant (the entry's reason starts with `<label> = <value>:`). 559 entries are assigned by a pattern
+  and say so (`pattern: <rule>` at the start of the reason): the name of a probability level (`LEVEL`, `ALPHA`, a quantile), a value
+  inside an expected-range dict, a percent, basis point or period conversion, a learning rate, decay or sampling fraction of a model
+  constructor. The other 1,508 were first read from the listing of their group with the line they sit on; the review of T6 found that wrong for about one entry in six, and the fix (2026-11-16) reread every one of them in its own code line, with the function where the line did not settle the meaning (see below).
+- **Counts by class after the fourth review (accepted 2026-11-19, its minor corrections applied):** ratio 556, single-observable-limit 448, probability 361, stated-assumption 267,
+  source-cited-input 230, unit-conversion 124, training-hyperparameter 53, run-budget 28, relative-tolerance 16 (the sum is 2,083; the baseline is the
+  record, `--counts` gives the per group figures). After the first fix the sum was 2,086: the three entries of the C20 stand-in range and the C15 page
+  threshold are gone with their literals.
+- **An expected-range dict is a `single-observable-limit`.** Each range is read by the check of its own key only (`expectations.check`
+  looks the key up), so the one observable that reaches it is the key; the reason says so and the entry's unit is the key's unit.
+  A run timeout (`RUN_MS`), a fetcher timeout and a back-off are `run-budget` (the wall-clock time of the run enters no case observable;
+  the review of T6 found `single-observable-limit` a stretch for them).
+- **A named constant of a parameter module is `source-cited-input`** only when the module or its parameter file cites its source (the
+  entry's reason names it). A dimensionless assumption of the case is `ratio` or `probability`; one that carries a unit (an amount, a rate
+  per year, a maturity, a repricing time) is `stated-assumption`, with its own unit and a reason saying what it assumes and why.
+- **No literal of the defect class was found** (a constant comparable to a measured quantity in a path that more than one observable can
+  reach). The literals examined for it, each reached by one observable (named in its entry), are in the T6 report: the C09 CCF features
+  (log limit 8.0, score 700 and 100), the C09 generator clips, the C12 cube-mean tolerance 0.02, the C14 open-bucket stand-in 1e9
+  years, the C17 severity-scale bounds 100 to 1e7 EUR, the C06 unemployment dead band 0.1, the C10 correlation grid bounds, the C15
+  and C18 UR floor. The C20 `(-1e9, 1e9)` stand-in range, which every dimensionless C20 key could reach, WAS the defect class by the
+  letter of the rule and is rewritten in the second fix below.
+
+### The fix of task T6 after its review (2026-11-16)
+
+The opus review of T6 (CHANGES REQUIRED) found 20 of 120 sampled listing-classed entries wrong (16.7 percent), four majors and nine
+minors, and no literal of the defect class in substance. What the fix did:
+
+- **Two classes** (`stated-assumption`, `run-budget`; the main session's decision on the review's question Q1) and the exit code of
+  `scripts/smoke.ps1` under Windows PowerShell 5.1 (`exit $LASTEXITCODE` after each native call; a test runs the real script with stub
+  checks under `powershell.exe`).
+- **Every listing-classed entry reread in its code line** (1,508 entries, module by module): 570 of the 2,067 entries changed in
+  class, unit or reason, 398 of them in class. A literal that shares a line with another meaning (a repricing time and its share, an
+  effective rate and a correlation, a PD and a test level) is classified one by one, never with the line's unit. `unit-conversion` is kept
+  for a literal that converts one unit to another (percent, basis points, days per year, a tenor label to years).
+- **Three `outside` reasons were false** (`cases/c15/page`, `cases/c08/page`, `cases/c11/page` compute a value of their own); they join the
+  `method` list with 19 literals classified, so the lists are 175 method, 27 parameter and 75 outside (202 walked, 2,086 literals).
+- **A reason that quotes code quotes its own line.** `tests/test_unit_constants.py` checks that the `(code: ...)` of every reason is on the
+  line of its literal. The correctness of the words stays with the reviewer.
+- **Open after the first fix, closed by the second fix below:** the C20 stand-in range, the C02 and C21 prefix fallbacks (m6) and the C15 page threshold (m8).
+
+### The second fix of task T6 (2026-11-16)
+
+The re-review of the fix (CHANGES REQUIRED: a fresh sample of 150 read in its functions, 4.0 percent wrong overall but 5 of 60 in the 939
+entries the first fix had confirmed from the code line alone) left three code findings, three run timeouts, 197 hedged units and a stratum
+to reread. What the second fix did:
+
+- **Three code findings rewritten against their source, each with a test** (`tests/test_t6_code_findings.py`). The C20 bake no longer
+  compares a fixed interval with the observables: `expected_ranges` checks the declared ranges in the release bake and, in a subsample run
+  (the tests), records the declared range of each observable without judging a subsample against it. No manifest form changes, so the
+  contract version stays. The C02 and C21 `expect_ranges` match each key prefix explicitly and raise `ExpectationError` for a key of none
+  of them. The C15 page reads the EVE threshold from `models.THRESHOLDS` (`eve_threshold()`), no copy of 0.15.
+- **Three run timeouts to `run-budget`** (`RUN_MS` of C01, C04 and C05) and a test that every `RUN_MS` literal is one.
+- **No unit hedges.** The 197 units containing the word "or" are split one literal one unit (an expected-range key names the unit of its
+  own observable; a line with two roles has one entry per role), and a test fails any unit with the plain word `or`.
+- **The 939 line-confirmed entries read in their enclosing functions**, module by module (the whole function up to 45 lines, else the
+  window around the literal with its signature), each corrected where its unit, class or reason was not its own, and the re-review's error
+  kinds swept over the whole baseline: a unit of the computed result instead of the literal, one reason covering literals of different roles, a
+  conversion factor checked against its arithmetic, a citation the module does not make (those literals are `stated-assumption`).
+
+### The third fix of task T6 (2026-11-19)
+
+The third review found every code finding closed and 3 errors in 60 (5.0 percent) in the stratum of entries once confirmed by their
+code line alone, against the rule of under 5 percent in each stratum. What the fix did:
+
+- **Eight entries**: the four `SWAP` reasons say what the code at `c22_validator.py:1104-1107` does (a fraction of the gap between the
+  true PDs of grades 3 and 4); C15 `cpi` 2.5 is a `stated-assumption` (percentage points); the two C12 `IID_CRITICAL` values are
+  `ratio`; C13 `ecdf_step` is `probability`. Three sweeps over the whole baseline found 4 more entries: C22
+  `other_studies_above_size` (a count of studies, its unit said rejection rate), the C17 exceedance axis (unit "decades of EUR",
+  now decades), and the pattern prefixes that named several roles (the penalised regression `C_GRID` was filed as a learning rate).
+- **C02 planted run**: a planted run records the declared ranges and compares none (the form of C20 and C10); the strict path is
+  unchanged. The guards refuse any literal interval in the bake paths and assert what `expectations.check` is called with.
+- **Units**: 38 units that listed several meanings (17 C01, 19 C06, 2 C08) are one unit each; 44 units with a comma inside a
+  parenthesis were reworded, and a guard refuses "as its key", a semicolon and a comma inside a parenthesis.
+- **Reasons**: where a reason hedged between roles with "or", the code line decided (C04 and C22 by key, C05 by the cited source,
+  C15 margins by item kind, C22 correlations by true or assumed); a guard allows "or" only in a quoted phrase.
+- The baseline keeps 2,083 entries for 2,083 literals.
 
 ## What it does not do
 
