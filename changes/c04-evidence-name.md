@@ -1,0 +1,1 @@
+- C04 Findings: the block `bounds_verdict.summary`, which the bounds finding cites since this release (the verdict of the pre-registered rule with its two clauses), has its name in English and Spanish; the Findings card printed the raw key (`frontend/src/workbench/names/design.ts`; the names gate caught it in the release run).
