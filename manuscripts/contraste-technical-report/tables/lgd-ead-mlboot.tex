@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Loan-level bootstrap of the machine-learning hypothesis in each test cohort of case C08: the test defaults are resampled with replacement 1,000 times with the predictions held fixed, and the table gives the RMSE of the best of the six earlier rungs minus that of the better of the forest and the network (positive when the machine-learning rung is better) with the 2.5 and 97.5 percentiles of its replicates, whether the interval excludes zero, and for how many of the five other earlier rungs the same difference has an interval that excludes zero.}
+\label{tab:lgd-ead-mlboot}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrlrrrr}
+\toprule
+Cohort & Defaults & Better ML rung & RMSE diff. & 95\% interval & Excludes 0 & Other rungs excluding 0 \\
+\midrule
+2003--06 & $21{,}919$ & Neural network & $0.000073$ & $[-0.000730, 0.000863]$ & no & 5 of 5 \\
+2007--08 & $25{,}299$ & Neural network & $-0.000120$ & $[-0.000614, 0.000368]$ & no & 5 of 5 \\
+2009--10 & $50{,}281$ & Random forest & $-0.000414$ & $[-0.000587, -0.000216]$ & yes & 5 of 5 \\
+2011--13 & $33{,}673$ & Random forest & $-0.000821$ & $[-0.001041, -0.000531]$ & yes & 5 of 5 \\
+2014--19 & $36{,}481$ & Random forest & $0.000431$ & $[0.000153, 0.000726]$ & yes & 5 of 5 \\
+2020--23 & $13{,}930$ & Random forest & $-0.000216$ & $[-0.000618, 0.000208]$ & no & 5 of 5 \\
+\bottomrule
+\end{tabular}}
+\end{table}

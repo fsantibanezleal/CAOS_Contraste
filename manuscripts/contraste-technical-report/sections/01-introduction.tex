@@ -41,7 +41,7 @@ fairness validation, and the validation of the validator itself. \rsCasesResult{
 it states each method with its theory and its parameters, each data contract, the pipeline, the protocol shared by all cases, the results of every case and their
 limits.
 
-\paragraph{Contributions.} The report makes the following contributions.
+\paragraph{Contributions.} The report makes sixteen contributions of its own: nine measurements, protocols, reconciliations and engines (the second to the fifth item) and seven methods that Contraste proposes (the sixth item); the first item states the scope and the last one the findings.
 \begin{enumerate}
 \item It implements, runs and compares the methods of \rsMethodRows{} entries of the method ladder on public or synthetic data of known truth, in sections~\ref{sec:credit-scoring}
 to~\ref{sec:validation-tests}, each with its equations, its algorithm, its parameters and the criterion by which it is accepted.
@@ -49,11 +49,10 @@ to~\ref{sec:validation-tests}, each with its equations, its algorithm, its param
 (\cref{sec:bs1}), and reruns the published studies that measured them before (\cref{sec:m37}).
 \item It reconciles the engine with reference engines and with the printed answers of the papers, and reports the gaps instead of hiding them (\cref{sec:bs2}).
 \item It fixes a leakage-safe evaluation protocol for each case and states what each cannot show (\cref{sec:bs3}).
-\item It adds engines and test constructions that the open toolkits searched do not provide, among them the Chilean indexation unit in the interest-rate risk of the banking
-book (\cref{sec:bs7}), a test of a behavioural assumption changed at a limit breach (\cref{sec:bs8}), the dependence band shown with every aggregate capital figure
-(\cref{sec:bs9}) and a reverse liquidity stress with a refusal rule (\cref{sec:bs11}).
-\item It proposes four methods and reports each whatever its result: a scale-and-level complement to the profit-and-loss attribution test (\cref{sec:bs13}), an
-anchored tipping-point default probability under informative rating withdrawals (\cref{sec:bs14}), e-process sequential monitors for calibration and back-tests
+\item It adds engines and constructions that the open toolkits searched do not provide, among them the Chilean indexation unit in the interest-rate risk of the banking
+book (\cref{sec:bs7}), the dependence band shown with every aggregate capital figure (\cref{sec:bs9}) and the measured instability of the operational-risk capital (\cref{sec:bs12}).
+\item It proposes seven methods and reports each whatever its result: a test of a behavioural assumption changed at a limit breach (\cref{sec:bs8}), the measured corrections of three validation tests (\cref{sec:bs10}), a reverse liquidity stress with a refusal rule (\cref{sec:bs11}),
+a scale-and-level complement to the profit-and-loss attribution test (\cref{sec:bs13}), an anchored tipping-point default probability under informative rating withdrawals (\cref{sec:bs14}), e-process sequential monitors for calibration and back-tests
 (\cref{sec:bs15}) and adaptive conformal recalibration of the value at risk (\cref{sec:bs16}).
 \item It collects the findings that the validation raised on the \rsCasesResult{} cases, \rsFindTotal{} in all, with their severity and the opinion level of each case
 (\cref{sec:results}).

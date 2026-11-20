@@ -352,10 +352,13 @@ def test_bm009_every_null_cell_carries_a_reason_in_both_languages_and_a_value_ca
                     assert c["cited"]
 
 
-def test_bm009_the_missing_computations_name_their_backlog_row(doc):
+def test_bm009_a_null_p_value_of_q1_states_the_reason_its_case_document_gives_and_no_backlog_row(doc):
+    """Review F4: the Kupiec and conditional-coverage p-values are in every case document's tests; a null is a test the document does not evaluate."""
     q1 = next(q for q in doc["questions"] if q["id"] == "Q1")
-    reasons = {c["null_reason"]["en"] for r in q1["rows"] for c in r["cells"] if c["metric"] == "kupiec_1" and c["value"] is None}
-    assert len(reasons) == 1 and "BL-119" in next(iter(reasons)) and "K-1" in next(iter(reasons))
+    reasons = {c["null_reason"]["en"] for r in q1["rows"] if not r["id"].endswith("-aci") for c in r["cells"]
+               if c["metric"] in ("kupiec_1", "cc_1") and c["value"] is None}
+    assert reasons == {"the case document gives no p-value for this model in this window and states: not evaluated: no exceedance"}
+    assert not any("BL-" in x or "wrapped" in x for x in reasons)
 
 
 def test_bm009_rows_are_sorted_by_standing_then_ladder_id_and_questions_by_id(doc):
@@ -565,3 +568,195 @@ def test_adversarial_bm012_an_index_without_the_document_or_a_sums_file_without_
     altered = bytearray(DOC_PATH.read_bytes())
     altered[0] ^= 1
     assert hashlib.sha256(bytes(altered)).hexdigest() not in sums
+
+
+# --- BL-113 T2 correction after the reader review (BM-013 to BM-016) ---------------------------------------------------------------------
+
+
+def _is_pvalue_metric(m: dict) -> bool:
+    return m["unit"]["en"] == "p-value" or "p-value" in m["label"]["en"].lower() or re.search(r"valor p", m["label"]["es"].lower()) is not None
+
+
+def ranked_pvalue_metrics(document: dict) -> list[str]:
+    """Every metric whose value is a p-value and whose declared rule ranks it (a p-value is evidence against a null, never a score)."""
+    return [f"{q['id']} {m['id']}" for q in document["questions"] for m in q["metrics"] if _is_pvalue_metric(m) and m["better"] != "none"]
+
+
+def _c11_tests(window: str) -> dict:
+    d = json.loads((ROOT / "data" / "derived" / "C11" / f"{window}.json").read_text(encoding="utf-8"))
+    return {(t["test_id"], t["model_id"], t["segment"]): t for t in d["tests"]}
+
+
+_Q1_TEST_OF = {"kupiec_1": "market.kupiec_pof", "cc_1": "market.christoffersen_conditional_coverage"}
+
+
+def test_bm013_every_q1_kupiec_and_conditional_coverage_cell_is_the_p_value_of_its_case_documents_tests(doc):
+    q1 = next(q for q in doc["questions"] if q["id"] == "Q1")
+    checked = nulls = 0
+    for r in q1["rows"]:
+        if r["id"] == "expected" or r["id"].endswith("-aci"):
+            continue  # the wrapped rows are other forecasts: their p-values are the conformal block's own
+        for c in r["cells"]:
+            if c["metric"] not in _Q1_TEST_OF:
+                continue
+            t = _c11_tests(c["column"])[(_Q1_TEST_OF[c["metric"]], r["id"], "alpha=0.01")]
+            assert c["value"] == t["p_value"], (r["id"], c["metric"], c["column"])
+            assert c["cited"] is not None and c["cited"]["path"] == f"data/derived/C11/{c['column']}.json"
+            assert c["cited"]["pointer"].endswith("/p_value")
+            checked += 1
+            if t["p_value"] is None:
+                nulls += 1
+                assert t["notes"] in c["null_reason"]["en"], "a null states the reason the case document itself gives"
+                assert "no committed value" not in c["null_reason"]["en"] and "wrapped" not in c["null_reason"]["en"]
+    assert checked == 18 * 6 * 2
+    assert 0 < nulls < 30, "only the tests the case documents do not evaluate stay null"
+
+
+def test_bm013_the_wrapped_rows_keep_the_conformal_blocks_own_p_values(doc):
+    q1 = next(q for q in doc["questions"] if q["id"] == "Q1")
+    aci = [r for r in q1["rows"] if r["id"].endswith("-aci")]
+    assert len(aci) == 3
+    for r in aci:
+        for c in r["cells"]:
+            if c["metric"] in _Q1_TEST_OF and c["value"] is not None:
+                assert "/outputs/conformal/rows/" in c["cited"]["pointer"] and "/wrapped/" in c["cited"]["pointer"]
+
+
+def test_bm013_for_the_models_the_conformal_block_also_carries_the_two_sources_give_one_number():
+    for window in ("calm-2004-06", "equity-2007-09", "equity-2020", "rates-2022", "fx-2008", "mixed-2023"):
+        d = json.loads((ROOT / "data" / "derived" / "C11" / f"{window}.json").read_text(encoding="utf-8"))
+        tests = _c11_tests(window)
+        for row in d["outputs"]["conformal"]["rows"]:
+            if row["alpha"] != 0.01:
+                continue
+            for fld, tid in (("kupiec_p", "market.kupiec_pof"), ("conditional_coverage_p", "market.christoffersen_conditional_coverage")):
+                assert row["unwrapped"][fld] == tests[(tid, row["model_id"], "alpha=0.01")]["p_value"], (window, row["model_id"], fld)
+
+
+def test_bm014_no_ranked_metric_is_a_p_value(doc):
+    assert ranked_pvalue_metrics(doc) == []
+    found = {f"{q['id']} {m['id']}" for q in doc["questions"] for m in q["metrics"] if _is_pvalue_metric(m)}
+    assert {"Q1 kupiec_1", "Q1 cc_1", "Q5 tw_sph", "Q5 de_sph"} <= found
+    for q in doc["questions"]:
+        for s in q["standings"]:
+            assert not _is_pvalue_metric(next(m for m in q["metrics"] if m["id"] == s["metric"])), (q["id"], s["metric"])
+
+
+def test_adversarial_bm014_a_p_value_metric_ranked_higher_is_caught(doc):
+    planted = copy.deepcopy(doc)
+    next(m for q in planted["questions"] if q["id"] == "Q1" for m in q["metrics"] if m["id"] == "kupiec_1")["better"] = "higher"
+    assert ranked_pvalue_metrics(planted) == ["Q1 kupiec_1"]
+
+
+def test_bm015_the_no_change_column_of_the_median_first_flag_day_is_context_and_the_planted_columns_stay_lower(doc):
+    q2 = next(q for q in doc["questions"] if q["id"] == "Q2")
+    metrics = {m["id"]: m for m in q2["metrics"]}
+    for pre in ("gen", "man"):
+        assert "null" not in metrics[f"{pre}_median"]["columns"] and metrics[f"{pre}_median"]["better"] == "lower"
+        assert len(metrics[f"{pre}_median"]["columns"]) == 6
+        ctx = metrics[f"{pre}_median_null"]
+        assert ctx["columns"] == ["null"] and ctx["better"] == "none" and ctx["run_id"] == metrics[f"{pre}_median"]["run_id"]
+    for m in q2["metrics"]:
+        if "median" in m["id"] and "null" in m["columns"]:
+            assert m["better"] == "none", m["id"]
+    ranked_null = [s for s in q2["standings"] if s["column"] == "null" and "median" in s["metric"]]
+    assert ranked_null == []
+
+
+def test_bm015_the_context_column_holds_the_same_values_the_ranked_one_held(doc):
+    q2 = next(q for q in doc["questions"] if q["id"] == "Q2")
+    n = 0
+    for r in q2["rows"]:
+        for c in r["cells"]:
+            if c["metric"] in ("gen_median_null", "man_median_null"):
+                n += 1
+                assert c["column"] == "null" and (c["cited"] is not None or c["null_reason"] is not None)
+    assert n == 14
+
+
+def test_bm016_the_reduction_metric_names_the_mean_signed_bias_in_both_languages(doc):
+    q12 = next(q for q in doc["questions"] if q["id"] == "Q12")
+    red = next(m for m in q12["metrics"] if m["id"] == "reduction")
+    bias = next(m for m in q12["metrics"] if m["id"] == "bias")
+    assert "mean signed bias" in red["label"]["en"].lower() and "absolute" not in red["label"]["en"].lower()
+    assert "sesgo medio con signo" in red["label"]["es"].lower()
+    assert "absolute" in bias["label"]["en"].lower() and "mean" in bias["label"]["en"].lower()
+
+
+def test_bm007_every_sentence_of_a_reading_ends_before_the_next_one_begins(doc):
+    """Review F19: a row's note is a clause; the reading that joins it to the next sentence must close it with a full stop."""
+    for q in doc["questions"]:
+        for lang, closing in (("en", "A null cell is never ranked"), ("es", "Una celda nula nunca se clasifica")):
+            text = q["reading"][lang]
+            assert text.count(closing) == 1 and re.search(r"[.?!] " + re.escape(closing), text), (q["id"], lang)
+
+
+def test_bm003_the_q8_control_keeps_the_standing_of_its_ladder_row_and_its_note_does_not_deny_it(doc):
+    """Review F13: the control carries the ladder id M-32; its standing is the ladder's (recent published), never a reference, and it is not ranked."""
+    q8 = next(q for q in doc["questions"] if q["id"] == "Q8")
+    control = next(r for r in q8["rows"] if r["id"] == "sla_cvm_lognormal")
+    assert control["ladder_id"] == "M-32" and control["ranked"] is False
+    assert control["standing"] == bm.TIER_STANDING[_ladder_rows()["M-32"][0]] == "recent"
+    assert "not a method of the ladder" not in control["note"]["en"] and "no un método de la escalera" not in control["note"]["es"]
+    assert not any(s for s in q8["standings"] if "sla_cvm_lognormal" in s["best"])
+
+
+def q1_pvalue_violations(document: dict) -> list[str]:
+    """Q1 Kupiec and conditional-coverage cells (unwrapped rows) whose value is not the case document's ``tests`` p-value."""
+    q1 = next(q for q in document["questions"] if q["id"] == "Q1")
+    bad = []
+    for r in q1["rows"]:
+        if r["id"] == "expected" or r["id"].endswith("-aci"):
+            continue
+        for c in r["cells"]:
+            if c["metric"] in _Q1_TEST_OF and c["value"] != _c11_tests(c["column"])[(_Q1_TEST_OF[c["metric"]], r["id"], "alpha=0.01")]["p_value"]:
+                bad.append(f"{r['id']} {c['metric']} {c['column']}")
+    return bad
+
+
+def ranked_null_median_metrics(document: dict) -> list[str]:
+    q2 = next(q for q in document["questions"] if q["id"] == "Q2")
+    return [m["id"] for m in q2["metrics"] if "median" in m["id"] and "null" in m["columns"] and m["better"] != "none"]
+
+
+def reduction_label_violations(document: dict) -> list[str]:
+    q12 = next(q for q in document["questions"] if q["id"] == "Q12")
+    red = next(m for m in q12["metrics"] if m["id"] == "reduction")
+    return [lang for lang, key in (("en", "mean signed bias"), ("es", "sesgo medio con signo")) if key not in red["label"][lang].lower()]
+
+
+def test_adversarial_bm013_a_p_value_replaced_by_a_null_or_by_the_wrapped_blocks_number_is_caught(doc):
+    assert q1_pvalue_violations(doc) == []
+    planted = copy.deepcopy(doc)
+    q1 = next(q for q in planted["questions"] if q["id"] == "Q1")
+    row = next(r for r in q1["rows"] if r["id"] == "awhs")
+    cell = next(c for c in row["cells"] if c["metric"] == "kupiec_1" and c["column"] == "calm-2004-06")
+    cell["value"] = None
+    assert q1_pvalue_violations(planted) == ["awhs kupiec_1 calm-2004-06"]
+    planted = copy.deepcopy(doc)
+    q1 = next(q for q in planted["questions"] if q["id"] == "Q1")
+    row = next(r for r in q1["rows"] if r["id"] == "hs-250")
+    cell = next(c for c in row["cells"] if c["metric"] == "cc_1" and c["column"] == "calm-2004-06")
+    cell["value"] = 0.902264102  # the wrapped number of the same model, a different forecast
+    assert q1_pvalue_violations(planted) == ["hs-250 cc_1 calm-2004-06"]
+
+
+def test_adversarial_bm015_ranking_the_no_change_median_again_is_caught(doc):
+    assert ranked_null_median_metrics(doc) == []
+    planted = copy.deepcopy(doc)
+    q2 = next(q for q in planted["questions"] if q["id"] == "Q2")
+    next(m for m in q2["metrics"] if m["id"] == "gen_median_null")["better"] = "lower"
+    assert ranked_null_median_metrics(planted) == ["gen_median_null"]
+    planted = copy.deepcopy(doc)
+    q2 = next(q for q in planted["questions"] if q["id"] == "Q2")
+    next(m for m in q2["metrics"] if m["id"] == "man_median")["columns"].append("null")
+    assert ranked_null_median_metrics(planted) == ["man_median"]
+
+
+def test_adversarial_bm016_the_old_reduction_label_is_caught(doc):
+    assert reduction_label_violations(doc) == []
+    planted = copy.deepcopy(doc)
+    q12 = next(q for q in planted["questions"] if q["id"] == "Q12")
+    red = next(m for m in q12["metrics"] if m["id"] == "reduction")
+    red["label"] = {"en": "Reduction of the accepted-only bias", "es": "Reducción del sesgo del modelo solo con aceptados"}
+    assert reduction_label_violations(planted) == ["en", "es"]
