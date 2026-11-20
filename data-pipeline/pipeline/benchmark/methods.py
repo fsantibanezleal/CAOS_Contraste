@@ -265,6 +265,10 @@ def best_of(better: str, values: dict[str, Any], reference: float | None = None)
     return winners, live[winners[0]]
 
 
+# The Spanish word of an ordered category in the text of a rule (the cells keep the ids; the page names them).
+CATEGORY_ES = {"green": "verde", "amber": "ámbar", "red": "rojo"}
+
+
 def rule_text(better: str, ref_label: dict[str, str] | None = None) -> dict[str, str]:
     if better == "lower":
         return T("lower is better", "menor es mejor")
@@ -272,13 +276,14 @@ def rule_text(better: str, ref_label: dict[str, str] | None = None) -> dict[str,
         return T("higher is better", "mayor es mejor")
     if better.startswith("nearer:"):
         x = better.split(":", 1)[1]
-        return T(f"nearer {x} is better", f"más cerca de {x} es mejor")
+        return T(f"nearer {x} is better", f"más cerca de {x.replace('.', ',')} es mejor")
     if better.startswith("nearer-metric:"):
         lab = ref_label or T("the reference", "la referencia")
         return T(f"nearer {lab['en']} is better", f"más cerca de {lab['es']} es mejor")
     if better.startswith("order:"):
         order = better[len("order:"):].split(",")
-        return T(f"{order[0]} is best, then {', '.join(order[1:])}", f"{order[0]} es lo mejor, luego {', '.join(order[1:])}")
+        es = [CATEGORY_ES.get(c, c) for c in order]
+        return T(f"{order[0]} is best, then {', '.join(order[1:])}", f"{es[0]} es lo mejor, luego {', '.join(es[1:])}")
     return T("context, not ranked", "contexto, sin clasificar")
 
 
@@ -676,8 +681,8 @@ Q1 = {
 # --- Q2: monitoring calibration and back-tests over time (C22, C11, C03) -----------------------------------------------------------------------
 
 Q2_COLS = [col("null", "No change (size)", "Sin cambio (tamaño)"), col("rate-x2", "Hit rate x2", "Tasa de excesos x2"), col("rate-x3", "Hit rate x3", "Tasa de excesos x3"),
-           col("rate-x4", "Hit rate x4", "Tasa de excesos x4"), col("cluster-0.1", "Clustering 0.1", "Agrupamiento 0.1"),
-           col("cluster-0.2", "Clustering 0.2", "Agrupamiento 0.2"), col("cluster-0.4", "Clustering 0.4", "Agrupamiento 0.4")]
+           col("rate-x4", "Hit rate x4", "Tasa de excesos x4"), col("cluster-0.1", "Clustering 0.1", "Agrupamiento 0,1"),
+           col("cluster-0.2", "Clustering 0.2", "Agrupamiento 0,2"), col("cluster-0.4", "Clustering 0.4", "Agrupamiento 0,4")]
 Q2_POWER = [c["id"] for c in Q2_COLS[1:]]
 Q2_C03 = [("fy2006-07", 2006), ("fy2006-07", 2007), ("fy2008-10", 2008), ("fy2008-10", 2009), ("fy2008-10", 2010), ("fy2011-14", 2011), ("fy2011-14", 2012),
           ("fy2011-14", 2013), ("fy2011-14", 2014), ("fy2015-17", 2015), ("fy2015-17", 2016), ("fy2015-17", 2017), ("fy2018-20", 2018), ("fy2018-20", 2019), ("fy2018-20", 2020)]

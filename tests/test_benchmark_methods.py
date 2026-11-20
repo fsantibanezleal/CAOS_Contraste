@@ -760,3 +760,42 @@ def test_adversarial_bm016_the_old_reduction_label_is_caught(doc):
     red = next(m for m in q12["metrics"] if m["id"] == "reduction")
     red["label"] = {"en": "Reduction of the accepted-only bias", "es": "Reducción del sesgo del modelo solo con aceptados"}
     assert reduction_label_violations(planted) == ["en", "es"]
+
+
+SPANISH_POINT_DECIMAL = re.compile(r"(?<![\w.,])\d+\.(?:\d{1,2}|\d{4,})(?![\d.])")
+ENGLISH_CATEGORY = re.compile(r"\b(green|amber|red)\b")
+
+
+def spanish_text_violations(document: dict) -> list[str]:
+    """The Spanish texts that write a decimal with a point (a point followed by three digits is a thousand) or name a category in English."""
+    found = []
+    for text in _bilingual(document):
+        hits = SPANISH_POINT_DECIMAL.findall(text["es"]) + ENGLISH_CATEGORY.findall(text["es"])
+        if hits:
+            found.append(f"{text['es'][:40]}: {', '.join(hits)}")
+    return found
+
+
+def test_bm017_every_spanish_text_writes_a_decimal_with_a_comma_and_a_category_in_spanish(doc):
+    assert spanish_text_violations(doc) == []
+    q10 = next(q for q in doc["questions"] if q["id"] == "Q10")
+    assert "0,85" in q10["reading"]["es"] and "0.85" in q10["reading"]["en"]
+    assert "verde es lo mejor, luego ámbar, rojo" in q10["reading"]["es"] and "green is best, then amber, red" in q10["reading"]["en"]
+
+
+def test_bm017_the_rule_text_keeps_the_point_in_english_and_the_category_ids_in_the_rule():
+    assert bm.rule_text("nearer:0.85") == {"en": "nearer 0.85 is better", "es": "más cerca de 0,85 es mejor"}
+    assert bm.rule_text("nearer:1") == {"en": "nearer 1 is better", "es": "más cerca de 1 es mejor"}
+    assert bm.rule_text("order:green,amber,red") == {"en": "green is best, then amber, red", "es": "verde es lo mejor, luego ámbar, rojo"}
+    assert bm.rule_text("order:a,b")["es"] == "a es lo mejor, luego b"  # a category with no Spanish word keeps its id
+
+
+def test_adversarial_bm017_a_point_decimal_or_an_english_category_planted_in_a_spanish_text_is_caught(doc):
+    for bad, hit in (("más cerca de 0.85 es mejor", "0.85"), ("Agrupamiento 0.1", "0.1"), ("green es lo mejor", "green"), ("umbral 0.0125", "0.0125")):
+        planted = copy.deepcopy(doc)
+        planted["questions"][0]["protocol"]["es"] = bad
+        assert spanish_text_violations(planted) == [f"{bad[:40]}: {hit}"], bad
+    for fine in ("1.000 días y 2.000 series", "GARCH(1,1) al 99,9%", "versión 1.5.0"):
+        planted = copy.deepcopy(doc)
+        planted["questions"][0]["protocol"]["es"] = fine
+        assert spanish_text_violations(planted) == [], fine
