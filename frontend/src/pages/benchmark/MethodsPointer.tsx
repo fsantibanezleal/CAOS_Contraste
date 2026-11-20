@@ -48,7 +48,7 @@ function omitted(c: { leftOut: number; notBuilt: number }, lang: 'en' | 'es'): s
     es.push(`${c.notBuilt} ${c.notBuilt === 1 ? 'pregunta no se compara' : 'preguntas no se comparan'}`);
   }
   if (!en.length) return '';
-  return lang === 'en' ? `${en.join(' and ')}, with their reasons on the Benchmark page. ` : `${es.join(' y ')}, con sus razones en la página Benchmark. `;
+  return lang === 'en' ? `${en.join(' and ')}, with their reasons on the Benchmark page. ` : `${es.join(' y ')}, con sus razones en la página de los métodos comparados. `;
 }
 
 /** The sentence of the Introduction (the view of a loaded document, or of none). */

@@ -534,7 +534,7 @@ describe('C04 generator families: the numbers are the artifacts\'', () => {
       expect((markup.match(/data-clause="coverage"/g) ?? []).length).toBe(s.coverage_better_than_every_treatment.designs.length);
       expect((markup.match(/data-clause="stability"/g) ?? []).length).toBe(s.anchored_k_stable_across_years.rows.length);
       expect((markup.match(/data-status="unstable"/g) ?? []).length).toBe(3);
-      expect(markup).not.toContain('—');
+      expect(markup).not.toContain('\u2014');
     }
     // a grade with too few cohorts is shown as not judged, never as a pass
     expect(en).toContain('Not judged (under 5 cohorts)');

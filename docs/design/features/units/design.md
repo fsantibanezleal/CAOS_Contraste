@@ -2,7 +2,7 @@
 
 Status: planned. Written in CAOS_MANAGE on 2026-11-15 and brought into the product with task T1 of the 1.01.000 line, with
 `requirements.md`, `validation.md` and `tasks.md` of this folder. Sources: the binding rule `conventions/units-gate.md` (CAOS_MANAGE), its reference implementation
-in CAOS_RES_Fragua (`data-pipeline/fragua/stages/unit_gate.py`, `scripts/check_unit_constants.py`, the rule names both), the
+in CAOS_RES_Fragua (the stage `fragua/stages/unit_gate.py` of its pipeline and its script `check_unit_constants.py`; the rule names both), the
 sizing `wip/contraste/m15-units-gate-sizing-2026-11-14.md` (accepted partial) and the decisions of 2026-11-14
 (`plans/contraste/post-1-0-cycle.md`, "The units gate (M15)").
 

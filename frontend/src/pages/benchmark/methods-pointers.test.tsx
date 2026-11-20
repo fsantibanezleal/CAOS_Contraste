@@ -98,7 +98,7 @@ describe('BM-111 the counts of the pointers are the document\'s', () => {
     expect(doc.not_built.length).toBeGreaterThan(0);
     const en = plain(introHtml('en'));
     expect(en).toContain(`${doc.left_out.length} methods are left out and ${doc.not_built.length} questions are not compared, with their reasons on the Benchmark page`);
-    expect(plain(introHtml('es'))).toContain(`${doc.left_out.length} métodos quedan fuera y ${doc.not_built.length} preguntas no se comparan, con sus razones en la página Benchmark`);
+    expect(plain(introHtml('es'))).toContain(`${doc.left_out.length} métodos quedan fuera y ${doc.not_built.length} preguntas no se comparan, con sus razones en la página de los métodos comparados`);
     const planted = clone(doc);
     planted.left_out = [];
     planted.not_built = planted.not_built.slice(0, 1);
