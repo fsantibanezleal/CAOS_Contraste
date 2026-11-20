@@ -444,22 +444,49 @@ export function MethodsOverviewView({ doc, onOpen }: { doc: MethodsCompared; onO
               'Cada pregunta pone lado a lado los métodos que el producto ejecuta sobre ella con un mismo protocolo: métodos de larga data, métodos publicados recientemente y los métodos propuestos en este trabajo, cada uno con su fuente y año. El mejor método de cada medida se lee de los números con la regla declarada para ella; un método propuesto que pierde se muestra perdiendo. Cada pregunta se abre en la pestaña de su caso.',
             )}
           </p>
-          <Table
-            head={[t('Question', 'Pregunta'), t('Protocol', 'Protocolo'), t('Best method on each measure (columns won of the columns compared)', 'Mejor método en cada medida (columnas ganadas de las comparadas)'), t('Proposed in this work', 'Propuesto en este trabajo')]}
-            wide={3}
-            rows={rows.map((r) => [
-              <span key="q">
-                <strong>{`${r.question.id}: ${docText(r.question.title, lang)}`}</strong>
-                <br />
-                <button type="button" className="btn" data-open-question={r.question.id} onClick={() => onOpen(r.question.id, r.home)}>
-                  {t(`Open in ${r.home}`, `Abrir en ${r.home}`)}
-                </button>
-              </span>,
-              <span key="p">{docText(r.protocol, lang)}</span>,
-              <OverviewBest key="b" row={r} lang={lang} />,
-              <span key="x">{proposed(r)}</span>,
-            ])}
-          />
+          {/* four text columns do not fit a phone: there the protocol and the proposed-method line are repeated under the question and
+              their columns are hidden (the product's rule: a column is hidden only when its value is repeated in the row), so the
+              question and the best methods are read without scrolling sideways */}
+          <div data-table-box="" style={BOX}>
+            <table className="caos-table ct-top" data-state="ready" data-methods-overview-table="">
+              <thead>
+                <tr>
+                  <th className="caos-col-text">{t('Question', 'Pregunta')}</th>
+                  <th className="caos-col-text ct-wide-only ct-repeated">{t('Protocol', 'Protocolo')}</th>
+                  <th className="caos-col-text">{t('Best method on each measure (columns won of the columns compared)', 'Mejor método en cada medida (columnas ganadas de las comparadas)')}</th>
+                  <th className="caos-col-text ct-wide-only ct-repeated">{t('Proposed in this work', 'Propuesto en este trabajo')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.question.id} data-overview-row={r.question.id}>
+                    <td className="caos-col-text">
+                      <strong>{`${r.question.id}: ${docText(r.question.title, lang)}`}</strong>
+                      <br />
+                      <button type="button" className="btn" data-open-question={r.question.id} onClick={() => onOpen(r.question.id, r.home)}>
+                        {t(`Open in ${r.home}`, `Abrir en ${r.home}`)}
+                      </button>
+                      <span className="ct-narrow-only" data-repeats="protocol">
+                        {docText(r.protocol, lang)}
+                      </span>
+                      <span className="ct-narrow-only" data-repeats="proposed">
+                        {t('Proposed in this work', 'Propuesto en este trabajo')}: {proposed(r)}
+                      </span>
+                    </td>
+                    <td className="caos-col-text ct-wide-only ct-repeated" data-column="protocol">
+                      {docText(r.protocol, lang)}
+                    </td>
+                    <td className="caos-col-text">
+                      <OverviewBest row={r} lang={lang} />
+                    </td>
+                    <td className="caos-col-text ct-wide-only ct-repeated" data-column="proposed">
+                      {proposed(r)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </DocSection>
       <DocSection

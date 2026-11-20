@@ -2,7 +2,7 @@
 // from the committed document (data/derived/benchmark/methods-compared.json), in both languages, and read back as a reader sees them:
 // the standing labels, the nulls with their reasons, the best marks, no tier word, no raw id. Requirements BM-102 to BM-110
 // (docs/design/features/benchmark-methods/requirements.md); BM-101 is in benchmark-tabs.test.tsx; BM-115 to BM-117 (the truth status of a run,
-// the published title and DOI of a manuscript, no process word) close the file.
+// the published title and DOI of a manuscript, no process word) and BM-118 (the overview on a phone) close the file.
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { MethodsCompared, McQuestion } from '../../lib/methodsCompared';
@@ -603,6 +603,51 @@ describe('BM-117: no process id or process word reaches a rendered text of the p
     const q4 = dirty.questions.find((q) => q.id === 'Q4')!;
     q4.absent[0].reason.en = 'a later computation adds it (backlog BL-119, K-4)';
     expect(plain(render(q4, 'en', undefined, undefined, dirty))).toMatch(PROCESS);
+  });
+  afterEach(() => setLang('en'));
+});
+
+// ------------------------------------------------------------------------------ BM-118 (the overview on a phone)
+
+/** The rows of the overview table of a markup, each as its own markup. */
+const overviewRowsOf = (markup: string) => markup.split('data-overview-row="').slice(1).map((part) => part.slice(0, part.indexOf('</tr>')));
+/** The text of the first element of a row's markup that carries the attribute and value. */
+const partOf = (row: string, attribute: string, value: string) => {
+  const at = row.indexOf(`${attribute}="${value}"`);
+  if (at < 0) return null;
+  const open = row.indexOf('>', at) + 1;
+  const close = row.indexOf(row[row.lastIndexOf('<', at) + 1] === 's' ? '</span>' : '</td>', open);
+  return plain(row.slice(open, close));
+};
+
+describe('BM-118: on a phone the overview hides a column only when the row repeats its value', () => {
+  it('repeats the protocol and the proposed-method line under the question, in both languages, and hides only those two columns', () => {
+    for (const lang of ['en', 'es'] as const) {
+      const markup = overview(lang);
+      const rows = overviewRowsOf(markup);
+      expect(rows.length).toBe(doc.questions.length);
+      for (const row of rows) {
+        for (const column of ['protocol', 'proposed'] as const) {
+          const hidden = partOf(row, 'data-column', column);
+          const repeated = partOf(row, 'data-repeats', column);
+          expect(hidden, column).toBeTruthy();
+          expect(repeated, column).toContain(hidden!);
+        }
+        // the hidden cells are the two repeated ones and no other: the question and the best methods always show
+        expect(row.split('ct-wide-only ct-repeated').length - 1).toBe(2);
+        expect(row.split('class="ct-narrow-only"').length - 1).toBe(2);
+      }
+      const head = markup.slice(markup.indexOf('data-methods-overview-table'), markup.indexOf('</thead>'));
+      expect(head.split('ct-wide-only ct-repeated').length - 1).toBe(2);
+    }
+  });
+  it('adversarial: a hidden column whose value the row does not repeat is found by the same reading', () => {
+    const markup = overview('en');
+    const row = overviewRowsOf(markup)[0];
+    const start = row.indexOf('data-repeats="protocol"');
+    const stripped = row.slice(0, row.lastIndexOf('<span', start)) + row.slice(row.indexOf('</span>', start) + '</span>'.length);
+    expect(partOf(stripped, 'data-repeats', 'protocol')).toBeNull();
+    expect(partOf(stripped, 'data-column', 'protocol')).toBeTruthy();
   });
   afterEach(() => setLang('en'));
 });
