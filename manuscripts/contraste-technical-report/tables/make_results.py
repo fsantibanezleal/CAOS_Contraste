@@ -490,6 +490,19 @@ def versions_table() -> None:
 # ----------------------------------------------------------------------------------------------------------------------
 # macros
 
+def pipeline_others(others: list[tuple[str, str]]) -> str:
+    """The cases whose artifacts record another pipeline version than most, grouped by that version."""
+    by_version: dict[str, list[str]] = {}
+    for cid, version in others:
+        by_version.setdefault(version, []).append(cid)
+
+    def names(ids: list[str]) -> str:
+        return ids[0] if len(ids) == 1 else ", ".join(ids[:-1]) + " and " + ids[-1]
+
+    parts = [f"{names(by_version[v])} (re-baked at {v})" for v in sorted(by_version)]
+    return ", except " + (parts[0] if len(parts) == 1 else "; ".join(parts[:-1]) + "; and " + parts[-1])
+
+
 def numbers(data: dict) -> dict[str, str]:
     out: dict[str, str] = {}
     cases = data["cases"]
@@ -567,13 +580,14 @@ def numbers(data: dict) -> dict[str, str]:
     out["rsSeedDefault"] = str(max(set(c["seed"] for c in with_result), key=[c["seed"] for c in with_result].count))
     out["rsSeedDefaultCases"] = str([c["seed"] for c in with_result].count(int(out["rsSeedDefault"])))
     first = with_result[0]["engine"]
-    # the pipeline version the artifacts record: the one most cases carry, and the cases re-baked at another (C16 at 1.00.001,
-    # whose tests re-bake it at every release)
+    # the pipeline version the artifacts record: the one most cases carry, and the cases re-baked at another, grouped by version
+    # (C16 is re-baked at every release, its tests re-bake it; a case changed while a release is developed records the number
+    # the code carried then)
     pipelines = [c["engine"]["pipeline"] for c in with_result]
     common = max(set(pipelines), key=pipelines.count)
     out["rsEnginePipeline"] = common
     others = sorted((c["id"], c["engine"]["pipeline"]) for c in with_result if c["engine"]["pipeline"] != common)
-    out["rsEnginePipelineOthers"] = (", except " + ", ".join(f"{cid} (re-baked at {v})" for cid, v in others)) if others else ""
+    out["rsEnginePipelineOthers"] = pipeline_others(others) if others else ""
     out["rsEngineRv"] = first["riskvalidation"]
     out["rsAlphaAmber"] = "0.05"
     out["rsAlphaRed"] = "0.01"

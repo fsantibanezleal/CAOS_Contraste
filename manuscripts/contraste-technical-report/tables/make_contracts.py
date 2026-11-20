@@ -360,6 +360,7 @@ def producer_text(owner: str) -> str:
     out = re.sub(r"\bconsumer BL-\d+ T\d+ in\b", "consumer in", out)
     out = re.sub(r"\breleased v(\d)", r"release \1", out)  # an engine release number, not a document version
     out = re.sub(r"\breleased in engine v(\d)", r"released in engine \1", out)
+    out = re.sub(r"^producer (in )?", "", out.strip())  # the cell names its role itself; the sentence already says producer
     return re.sub(r"\s{2,}", " ", out).strip()
 
 
