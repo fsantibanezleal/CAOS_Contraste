@@ -1,1 +1,0 @@
-- The methods-compared document writes its Spanish texts in Spanish form: a decimal with a comma ("0,85", "Agrupamiento 0,1") and the ordered categories of a rule by their Spanish words ("verde es lo mejor, luego ámbar, rojo"). The numbers, the cells and the English texts are unchanged; requirement BM-017 with its adversarial test.

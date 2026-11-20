@@ -3,6 +3,201 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [1.01.000], 2026-11-20
+
+A minor release: the methods compared on one protocol per question (a committed document under the new contract `benchmark-methods`, a tab and one section per question on the Benchmark page, pointers from the Introduction and the Experiments pages, and a subsection with generated tables in the technical report); the unit checks of the pipeline (the unit gate, the unit pairs of every built case, the check of the committed documents in CI and before a deployment, and the constant check with its reviewed baseline); loan-level bootstrap intervals for C06 and C08 and the hyper-parameter sensitivity of the PC-Hazard rung; the committed verdict of the anchored default probability of C04, which now carries the whole pre-registered rule and reads refuted; the base on product template 0.15.013 and shell 0.26.2; every application chunk under 500 KB; the table-heavy views at 2560 x 1440; and version 1.01.000 of the technical report on Zenodo.
+
+- The table-heavy and bar-list views pass the shell gate's G6 floors at 2560 x 1440 (BL-107: a drawing under 30 % of its stage, the drawn
+  views under 60 % of the viewport, in 23 views of C03, C04, C05, C06, C07, C09, C11, C12, C16 and C22 since 1.00.000). On a screen at least
+  1100 px tall and 1280 px wide a card's table takes its stage: one table alone is the card body's own child, so the shell's rule for a
+  full-height table gives it the body's height; a card with a list, a note or a second table shares the height among its tables in the
+  scroll box, which still scrolls to its last row. C09's by-design bars fill their card, its floors card lets the drawing take the height
+  the table leaves (no fixed 9 rem), and C11's verdict card fills its stage. Under that size (1280 x 800, 1600 x 900, 768, 390) every
+  card keeps the layout it had. The shared box is `workbench/TableBox.tsx`; `ChartAbove` takes `grow` for the second.
+- Findings: the open finding added for uncited red test rows names a model the web's names file does not hold yet from the model's
+  own document, as the names generator will name it (the short title when it is a name, else the title), so its title no longer
+  depends on whether the names file was rewritten before the bake. C17's F-RED-01 said "and 3 more models" in 1.00.000 and 1.00.001
+  where its rows span 10 (9 at tail index 1.1); it says 7 (6). A test recomputes every committed document's generic findings and
+  fails on a document baked against an older names file: it found C11's 2004 to 2006 window still naming the quantile network
+  "(challenger)", re-baked (CT-015, BL-109).
+- Release verdict: a part of a gate that skips because the test runs only in the template repository (the template's own
+  sources, a second instantiation) reads `not applicable` in the product, with its reason, and the row is judged on its other
+  parts; in the template the same skip stays a skip, and it never hides a failed part (CV-014, BL-110). The repository rows
+  RP-022, RP-025, RP-026 and RP-029 can now converge in a product.
+- The methods-compared document writes its Spanish texts in Spanish form: a decimal with a comma ("0,85", "Agrupamiento 0,1") and the ordered categories of a rule by their Spanish words ("verde es lo mejor, luego ámbar, rojo"). The numbers, the cells and the English texts are unchanged; requirement BM-017 with its adversarial test.
+- Methods compared (contract `benchmark-methods` 2.0.0, api 42.0.0): every run of the document states `truth_status`, copied by the builder from the
+  `provenance.truth_status` of the case documents it cites (a run whose documents disagree, or a document without a status, stops the build; the six runs that
+  cite manuscript result files only declare it in the specification with a reason). The Benchmark page labels each chart from that field with `provenanceOf`
+  and keeps no list of run ids: Q10's labelled run now reads synthetic and Q12's twin real, which the typed list had the wrong way round (requirements BM-018, BM-115).
+- The reader texts of the document no longer carry a backlog id, a computation id or the method list by its process name; the pointer is the structured field
+  `backlog` of each `absent[]` and `left_out[]` entry (BM-019, BM-117). A negative result carries the concept DOI of its manuscript and the page shows the
+  published title linked to it instead of a file path (BM-020, BM-116).
+- 1.01.000 BL-113 T2: the methods-compared document `data/derived/benchmark/methods-compared.json` (contract `benchmark-methods` 1.0.0, api 41.0.0), written by
+  `python -m pipeline.benchmark.methods` from `data-pipeline/`. Twelve questions (Q1 to Q12), each method with its standing read from the SDD Method ladder, every value
+  copied from a committed case document or manuscript result file with its path, JSON pointer and SHA-256, every best method and every reading generated from the
+  numbers by the declared rule of each metric; a cell the product does not compute is null with its reason and its backlog row (BL-119); Q13 and Q14 are listed as not built.
+- Feature folder `docs/design/features/benchmark-methods/` (requirements BM-001 to BM-012 with their adversarial checks) and `tests/test_benchmark_methods.py`; the index
+  builder (`pipeline.pipeline.served_files`) lists the document, so the next index rebuild carries it.
+- BL-113 T2 correction after the reader review of the technical report (requirements BM-013 to BM-016): the Kupiec and conditional-coverage p-values of all 18 models
+  of Q1 are copied from the `tests` of each case document (filled cells 1,529 to 1,694 of 1,844; a test the document does not evaluate is null with the note the
+  document gives); no metric whose value is a p-value is ranked (Q1 Kupiec and conditional coverage, Q5 Spiegelhalter); the no-change column of the median first-flag
+  day of Q2 is a context metric of its own and the planted columns keep the lower-is-better rule; the Q12 reduction names the mean signed bias, the Q8 control note
+  no longer denies its ladder standing, and a reading closes the note of an unranked row with a full stop. Contract `benchmark-methods` stays 1.0.0 (no field, no enum change).
+- The technical report's methods-compared tables are regenerated: a column prints the digits that tell a best cell from a cell that would round to it, and the readings of
+  questions 1, 2, 8, 10 and 12 are rewritten on the corrected document (the e-backtest comparison is pointed to, not denied).
+- 1.01.000 BL-113 T3: the methods compared on the Benchmark page. A tab "Methods compared" ("Métodos comparados") is the fourth tab of the reading group: one row per
+  question with its protocol, the best method on each measure, whether a method proposed in this work is the best, a control that opens the question in the tab of its
+  case, and the questions not built with their reasons. Each of the twelve questions is a section of its case's tab (Q1 C11, Q2 C22, Q3 C13, Q4 C04, Q5 and Q12 C01, Q6 C06,
+  Q7 C08, Q8 C17, Q9 C14, Q10 C16, Q11 C20) with its protocol, the document's reading, a table whose rows sit under "Long-established", "Recent published", "Proposed in this
+  work" and "Reference" ("De larga data", "Publicado recientemente", "Propuesto en este trabajo", "Referencia"), each method with its source and year, the best value of each
+  column marked, a cell the product does not compute shown with its numbered reason, a long table split by column (three a page), and a bar chart of the chosen measure and column.
+  C06 leaves the cases with no benchmark and takes a tab in the credit-losses group; C14 and C16 keep their reasons and take a tab for their question. The page keeps six groups
+  and no group above six tabs. Requirements BM-101 to BM-110 in `docs/design/features/benchmark-methods/`; the model is `frontend/src/lib/methodsCompared.ts`.
+- 1.01.000 BL-113 T4: the Introduction and the Experiments point at the methods compared. The technical view of the Introduction says, with a link, that every method is compared
+  with the published practice on one protocol per question, with the number of questions and of methods read from the document; the section of each case on the Experiments page
+  links to the questions of the document that the case answers, each with its number of methods. A link opens the Benchmark page on the tab that holds the methods compared
+  (`#methods`, or `#methods-q<n>` for the tab of the question's case). Requirements BM-111 to BM-114 in `docs/design/features/benchmark-methods/`; the catalog row of
+  `benchmark-methods` names the page's loader and components as its consumer and describes the page's pending state.
+- Notebooks: the comparison section of `03-ratings-and-calibration/10` is headed "Comparison with the published practice"
+  ("Comparación con la práctica publicada"), which no longer reads as a ranking of method families (BL-117).
+- C04: BS-14's committed verdict now carries the whole pre-registered refutation rule and says refuted, as the SDD and the published
+  manuscript do. `c04_bounds.verdict` compared the anchored interval only with the removed, kept and followed treatments and never read
+  the stability clause, so `outputs.bounds_verdict.summary.refuted` was false and the view printed "the hypothesis is not refuted"
+  since 1.00.000. The bake now computes both clauses itself, from the engine on the committed generator and the real cohorts, and reads
+  no manuscript result file: the coverage clause at informative 9 on 1,000 repetitions (the first-year, pooled and ten-fold designs; the
+  anchored interval against the best of the removed, kept, followed and Manski identified-band treatments, +0.0, -0.8 and +0.0 points,
+  the band covering as often or more often at 3.8 to 9.3 times the width) and the stability clause (the share of the annual cohorts
+  whose k band holds the pooled k against 80%, per source and grade: S&P's B 0.68 and CCC to C 0.64 and Fitch's B 0.70 fail; a grade
+  with fewer than five usable cohorts is not judged and never passes). Contract `c04-family` 2.0.0 (two newly required objects and
+  `refuted_on` in `summary`, so major by the ADR-0080 floor) and `api` 39.0.0; requirement CT-416; the case page, the finding F-WITHDRAW-BOUNDS
+  and the Anchored bounds view state the verdict with each clause in English and Spanish. Every other C04 number is byte-equal.
+- The measured gate at 390 x 844, dark, Spanish (BL-120): the 7 failures its reduced run reports on the 1.01.000 line were never measured
+  by the full gate (its contrast check runs at the primary size only, and a case outside the first and the last is walked in the primary
+  mode alone), so none was introduced by a unit; the files are unchanged since 2026-10-13. C14 and C15 draw the value label of their
+  longest negative horizontal bar over its green fill when the plot is narrow (the shell pins the label to the axis start; known shell
+  defect, entry 45): every horizontal bar chart of C14 and C15 that can hold a negative value now gets a domain with 35 % headroom on
+  the negative side (`workbench/barRange.ts`), so the label sits beside its bar (contrast 1.65:1 to the text colour on the card).
+  No threshold, label or text was changed.
+- C08's proxy view stacks its five sentence-valued pairs (definition, why, discounting, open workouts, Freddie Mac) over the full width on
+  a phone, the short pairs keeping their two columns: the text had a 170 px column and the view ran 2,630 px tall in Spanish at 390 px,
+  now 1,845 px. The text is unchanged.
+- Not fixable in the product, reported with the shell: the C10 model and C11 compare charts' faint "no disponible" label under the cursor
+  band at 4.28:1 (known shell defect 71, CAOS_APP_SHELL#232, no override), and the gate's centring of a view taller than the screen, which
+  shows the middle of C08's proxy view and not the chart at its top (`bring` in the shell gate aligns a tall scroll container by its start
+  and a tall document element by its centre).
+- Tests: the capture tool's test stops a run after 540 s instead of 240 s and says so when it does; inside the whole vitest run
+  on every core the variants-all run of C18 and C20 had gone past 240 s and been read as an empty output (the file alone passes, 274 s).
+- Product template 0.15.010 adopted up to 0.15.012 (`template_adopt.py`, `.template-version` v0.15.012): the abstract-length check of
+  `scripts/check_manuscript_depth.py` (0.15.011), the stamped-stage-inputs test taken verbatim from the template (0.15.012, which answers
+  CAOS_PRODUCT_TEMPLATE#139 and ends Contraste's local adaptation of it), `tests/test_local_bootstrap.py` verbatim, the two manuscript-content
+  design files, the manuscript blueprints (`templates/manuscripts/`, 9 files, with `tests/adversarial/test_manuscript_templates.py`; a base folder the product had never received), and the new bootstrap-regression rows in `docs/design/features/repository/validation.md`; Contraste's own rows and its
+  product adaptations (the schema base address in `tests/test_bootstrap_regressions.py`, the blueprint skip, the CI guard step tests) stay.
+- Shell `@fasl-work/caos-app-shell` pinned at 0.26.2 (from 0.26.0; 0.26.1 lets a chart readout wrap, 0.26.2 fixes the keyboard crosshair after
+  a readout grows); no product change was needed.
+- The product's own browser checks (`capture.mjs`, `capture.test.ts`, `check_story_contraste.mjs`, `layout-probe.mjs`, `probe-bars.mjs`) launch
+  Chromium with `--no-proxy-server`, so a new browser context no longer waits about 21 s for proxy auto-detection on this device.
+- C17: each variant's finding F-5 says its hypothesis verdict holds at that tail index only ("at this tail index") and states the verdict of the S-3
+  hypothesis over all 16 cells (4 tail indices x 4 cells) with the pooled counts, so a reader of one variant no longer reads a verdict the hypothesis
+  does not have (it is inconclusive: both robust rungs have the smaller spread in 16 of 16 cells and the smaller bias in 8 and 9). The bake computes
+  every variant's cells before it writes any variant document and records the overall counts and verdict once in the models document
+  (`fit.s3_overall`, required: `c17-models` 2.0.0, `api` 36.0.0).
+- Every application chunk of the build is under 500 KB (the largest is the shell index at 361 KB): the Workbench chunk went from 1,652,474 to
+  135,002 bytes and the Methodology chunk from 913,096 to 119,121 bytes, with no change to what any page shows. Each case's instrument loads
+  when the case is selected (a lazy glob keyed by case id; the component that calls its `useInstrument` is keyed by the case id, so one hook
+  runs per mount, and a loaded module is kept) and each Methodology section's body loads when its tab opens. While a module loads the stage
+  shows the shell's pending state; a failed import shows the absent instrument or the section's absence with its reason.
+- A Methodology section is now two files, `<name>.meta.ts` (`methodologyMeta`: id, group, order, title; eager) and `<name>.tsx` (the lazy
+  body, `methodologySection`); the registry pairs them by stem and fails at load, naming the file, on an orphan on either side.
+- `node scripts/check-chunk-sizes.mjs` (in `frontend/`, after `npm run build`) lists the chunks of `dist/assets` and exits 1 for any at or over 500,000 bytes.
+- The unit gate (units gates, M15 T1): `data-pipeline/pipeline/stages/unit_gate.py`, one standard-library function the bake and the
+  shipped check will both use to judge whether a method's answer lies in the units of its question (CONTRACT 3 of the units rule). It
+  checks pairs of a prediction and its target of four kinds (a series, a 0/1 outcome, a known truth, a declared bound) and raises three
+  classes: a non-finite prediction and a prediction wholly outside its widened observable block, a constant prediction over a varying
+  target is recorded; paths are written with `[]`, `<m>`, glob segments and `group_by`. Nothing calls it yet: the pairs specification,
+  the bake and the shipped check follow in the next tasks. The units feature folder (`docs/design/features/units/`, planned) enters the
+  product with it.
+- The unit pairs specification (units gates, M15 T2): `data-pipeline/config/unit_pairs.json` declares, for every built case, the
+  predictions and the targets the unit gate compares (18 cases with 51 pairs, C13 and C20 checked only inside the bake, C11's four
+  withheld windows checked in memory, C21 with nothing to score), each with its target kind, its unit and, for a bound, its
+  reason. Tests keep it complete: a case built later fails until it is added, every file pattern matches a committed artifact and
+  every path resolves on it, and a percentage written for a fraction is caught in a copy of a committed document. Run over the 171
+  committed documents the gate finds no blocking violation (the sizing's seven all vanish under the kinds the design chose) and
+  records 70 advisories. Nothing calls the specification yet: the bake and the shipped check follow.
+- Unit gate (M15 T2b): an exact zero carries no evidence about scale, so the gate judges the nonzero predictions; a pair whose observable is bounded by
+  its definition declares `domain` with `domain_reason` and any prediction outside it blocks as `prediction_outside_domain` (CT-2402, CT-2410).
+- `scripts/check_units.py` (standard library only) applies the bake's unit rule to the committed artifacts: it loads `data-pipeline/pipeline/stages/unit_gate.py` by path, without the pipeline installed, reads `data-pipeline/config/unit_pairs.json` and judges every committed document under `data/derived/` with the same `check_document`, so an artifact baked before the gate existed cannot ship (CT-2404, CT-2409). A glob that matches no committed file, a case folder without a specification entry and a withheld verdict that records a blocking violation each fail it; bake-only and not-applicable cases are reported. It runs as one step in `ci.yml`, in `deploy-pages.yml` before a Pages deploy and in `scripts/smoke.sh` and `scripts/smoke.ps1`, adding no job.
+- The constant check of the units rule (units gates, M15 T5, CONTRACT 3b): `scripts/check_unit_constants.py` walks every float
+  literal of the reviewed method and parameter modules under `data-pipeline/pipeline/` and fails on one without a baseline entry
+  keyed `module::qualname::value::ordinal` with its class, unit and reason, naming the module, the line and the value; a module in
+  none of the three lists in `scripts/unit_constants_modules.json` (172 method, 27 parameter, 78 outside, each outside entry with its
+  reason) fails too. `0.0`, `1.0`, `0.5`, `2.0`, `10.0` and `abs(v) < 1e-5` are exempt; `100.0` and `1000.0` are walked.
+  `--update` writes `scripts/unit_constants_baseline.json` with the 2,067 literals as `TODO` (T6 classifies them), so the check fails
+  by design until then and is not yet in CI or the smoke scripts. Standard library only, about 1.3 s on the whole tree.
+- Units gate, constant baseline fix after the review of T6: every listing-classed entry of `scripts/unit_constants_baseline.json` (1,508)
+  reread in its own code line; 570 of the 2,067 entries changed (398 in class); a literal sharing a line with another unit is classified
+  one by one; a reason that quotes code must quote its literal's line (new test).
+- The closed class list gains `stated-assumption` (a case assumption with a unit and no source) and `run-budget` (a wall-clock or
+  iteration limit of a run); `source-cited-input` keeps only literals whose source the file cites; `unit-conversion` only true conversions.
+- Three page modules that compute values (`cases/c15/page`, `cases/c08/page`, `cases/c11/page`) move from `outside` to `method`
+  with their 19 literals classified (175 method, 27 parameter, 75 outside; 2,086 literals).
+- `scripts/smoke.ps1` exits with the failing check's exit code under Windows PowerShell 5.1 (it exited 0 before); tested under
+  `powershell.exe`.
+- Units gate, second fix of the constant baseline: the three code findings of the re-review are rewritten against their source, each
+  with a test (`tests/test_t6_code_findings.py`): a C20 subsample run records the declared range of each observable and compares none
+  with a stand-in interval of its own; the C02 and C21 expected ranges are chosen by an explicit key prefix and an unknown key raises;
+  the C15 page reads the EVE threshold from the model's `THRESHOLDS`.
+- The three remaining `RUN_MS` timeouts (C01, C04, C05) are `run-budget`; the 197 units that hedged with "or" are one unit per literal;
+  the 939 entries confirmed from their code line were reread in their enclosing functions and corrected where their unit, class or
+  reason was not their own (the re-review's error kinds swept over the whole baseline). Three new guards in
+  `tests/test_unit_constants.py` (no unit with the word "or", every `RUN_MS` a `run-budget`, no entry for the removed literals).
+- The baseline holds 2,083 entries for 2,083 literals (202 modules).
+- Units gate, third fix of the constant baseline: the eight entries of the third review corrected (the four C22 `SWAP` reasons, C15
+  `cpi` as `stated-assumption`, the two C12 `IID_CRITICAL` as `ratio`, C13 `ecdf_step` as `probability`) and three sweeps of the same
+  error kinds over the whole baseline; the C02 planted run records its declared ranges and compares none, with its test and
+  strengthened guards in `tests/test_t6_code_findings.py`.
+- The 38 units that listed several meanings are one unit each, the hedged reasons name one role, and four new guards in
+  `tests/test_unit_constants.py` refuse a unit with "as its key", a semicolon or a parenthesised list, a reason that hedges with "or",
+  a dimension on a `ratio` or `probability`, and a `stated-assumption` that says dimensionless. 2,083 entries for 2,083 literals.
+- The constant baseline of the units rule is complete (CONTRACT 3b, M15 T6): all 2,067 float literals of the 172 method and 27 parameter modules
+  carry a class, a unit and a reason in `scripts/unit_constants_baseline.json` (no `TODO`), and `scripts/check_unit_constants.py` runs in
+  `ci.yml` beside the tier-name check and in `scripts/smoke.sh` and `smoke.ps1`, adding no job. No literal of the rule's defect class was
+  found, so no pipeline module changed and no document was re-baked.
+- C06 and C08: loan-level bootstrap intervals beside the pre-registered verdicts of the S-4 comparison (PC-Hazard against Cox at each reporting
+  date) and the S-5 benchmark (the better of the random forest and the neural network against each of the six earlier rungs, per test cohort).
+  The out-of-time accounts (C06) or defaults (C08) are resampled with replacement, 1,000 times with the seed of the bake, the predictions held
+  fixed (the interval is the sampling noise of the comparison, not the uncertainty of the fits); each difference of the integrated Brier score and
+  of the mean absolute decile gap (C06) or of the RMSE (C08) carries the 2.5 and 97.5 percentiles of its replicates, null with its reason where a
+  rung is not fitted or a date has fewer than 30 defaults. The documents count how many of the dates or cohorts where the hypothesis holds have
+  an interval that excludes zero; the verdicts are unchanged. One shared helper (`pipeline/cases/bootstrap.py`); the integrated Brier score of
+  every replicate is the engine's `lifetime_pd_backtest`. Contracts `c06-models` 2.0.0 (`fit.s4_bootstrap`) and `c08-outputs` 4.0.0
+  (`outputs.ml_benchmark`), `api` 37.0.0 (a newly required property is breaking by the ADR-0080 floor, so major, not the minor the brief named);
+  requirements CT-518 to CT-520 and CT-918 to CT-920; the PC-Hazard and Models views and both case pages print each interval beside its
+  difference and the count, in English and Spanish.
+- C06: the hyper-parameter sensitivity of the PC-Hazard rung (S-4), reported beside the pre-registered verdict. At every reporting date the
+  rung is refitted under nine settings, one hyper-parameter moved at a time around the defaults and never a grid: the interval width 1.5, 3
+  and 6 months with the interval count 120, 60 and 30 (every grid covers the same 180 months), the hidden layers (16, 16), (32, 32) and
+  (64, 64), the weight decay 1e-5, 1e-4 and 1e-3 and the learning rate 0.003, 0.01 and 0.03. Each refit trains on the same loans, hold-out
+  split and seed as the main fit and is judged by `s4_evaluation` on the same out-of-time accounts: the integrated Brier score, the mean
+  absolute decile gap, the c-index and both criteria per setting and date; a fit that fails or runs to the epoch cap is recorded with its
+  status and reason, never dropped. Each setting gets the verdict `s4_verdict` gives its dates; the verdict of the case stays the default's
+  and the documents count the settings whose verdict agrees with it. No setting is chosen. Contracts `c06-models` 3.0.0
+  (`fit.pch_sensitivity`, a newly required object, so major by the ADR-0080 floor) and `api` 38.0.0; `fit_pch` takes the settings as keyword
+  arguments (defaults unchanged); requirements CT-521 to CT-523; the PC-Hazard view and the case page print the nine settings and the count
+  in English and Spanish.
+- Technical report for 1.01.000: the data-contracts appendix maps the contract `benchmark-methods` 1.0.0 (generated subsection and field table, `coverage.json` entry) and reads `api` 41.0.0 and the current schema versions of the other contracts; the contract generator drops a backlog task id and a doubled article from the catalog text.
+- Technical report: the Results chapter gains the subsection "The methods compared, question by question" (`sec:results-methods-compared`): the twelve questions of the committed document `data/derived/benchmark/methods-compared.json`, each with its protocol, a table of its methods (standing, source, section of the report), one generated table of values per metric group with the best cell in bold, the reason of every null cell, the document's own reading and a reading of the tables that states what they show and do not show, including the questions where the product's own method loses or is refuted. The tables are written by the new `manuscripts/contraste-technical-report/tables/make_methods-compared.py`, byte-equal on every run, and tested by `tests/test_report_methods_compared.py`.
+- Technical report: the section on the published e-backtests gives the expected shortfall e-statistic of Wang, Wang and Ziegel (2022), its null and its expectation identity as numbered equations, and states that the product runs the value-at-risk statistic only; `references-proposed.bib` gains the Zenodo concept DOI entries of the four manuscripts the readings cite.
+- Technical report, after the reader review of 1.01.000: every count of proposed methods is seven and of the other contributions nine (the abstract, the introduction, the section of the product's own contributions, the summary of the proposed methods in the results, the discussion, the limitations and the conclusions), with the results of the behavioural-assumption test, the three corrections and the reverse liquidity stress read from their own sections; the sentences that said the artifacts hold no loan-level bootstrap are replaced by the intervals of `fit.s4_bootstrap` (C06, per reporting date) and `outputs.ml_benchmark` (C08, per cohort), written by `make_provisions.py` and `make_lgd-ead.py`; the report gains the nine-setting sensitivity of the PC-Hazard rung (`fit.pch_sensitivity`) and the verdict of the robust severity hypothesis over all sixteen cells (`fit.s3_overall`), each with generated numbers and tested in `tests/test_report_generators_1_01.py`.
+- Technical report, after the reader review of 1.01.000: the penalised logistic tree criterion is stated as the design document states it (stability measured and reported, unstable on these data); the reproducibility section lists the commands that rebuild the methods-compared document, its tables and the contract appendix; the expected shortfall e-statistic identity is stated under its condition and the e-process is a supermartingale under the one-sided null; the contract appendix drops the leading catalog-row version and the internal ids of the schema descriptions; the design document row of CAViaR and the score-driven models says that only the rungs that forecast an expected shortfall have an FZ0 loss.
+- Technical report (BL-116): the ladder row M-38 (CAViaR and the GAS models under the FZ0 loss) has a subsection of its own in the market section, "CAViaR and the score-driven models" (label `sec:m38`, mapped in `coverage.json`; the estimator subsection of M-18 no longer holds it, so the two coverage regions do not overlap), with its parameters, cost and implementation. The published e-backtest of value at risk and expected shortfall, the comparator of the sequential monitors, gets a subsubsection of its own after the expected shortfall tests (`sec:m39`, not mapped until its ladder row exists, BL-121): the exceedance e-statistic, the betting process and its growth-rate rule as equations, what the guarantee gives and where it fails (no bet while the betting process is learned), and its measured size, delay, power and flags on the C11 windows, read through `tables/make_proposed.py` from the number file of the monitors manuscript (22 new number macros). The same subsubsection gives the expected shortfall e-statistic of the paper as equations (the one-sided null, the statistic and its expectation identity under an exact value at risk) and states that the product runs the value-at-risk statistic only, so no measured result depends on the expected shortfall one; the symbols of the e-backtest have rows in the notation table.
+- Product template 0.15.013 adopted (from 0.15.012; shell 0.26.2 was already pinned exactly): `scripts/local/workflow.py` and
+  `tests/adversarial/test_stamped_stage_inputs_0_15_007.py` taken verbatim, so a version-stamped stage input is refused only
+  inside a promoted folder (RP-030; a stamped fixture outside every promoted folder is carried); the repository feature's
+  design and its RP-030 requirement and validation rows follow the template.
+- Method tiers (BL-114, BL-115, BL-116). M-3's criterion is restated as the measurement it is: PLTR's rule sets are unstable on these data (the mean Jaccard over 20 bootstraps is 0.411 on the Taiwan fit, 0.349 on its small sample and 0.280 on the German fit, all below 0.5), a partial result that is never tuned away; `tests/test_c01.py` asserts the committed values, and the C01 page, the PLTR view and the level 3 notebook (both languages) say it in plain words.
+- C01 (BL-115): every rung of `outputs.rungs` stores `brier`, the Brier score of the evaluated PD, beside `brier_raw`, the Brier score of the raw score before the calibration map (null for a rung with no map), next to the two reliability tables; contract `c01-variant` 4.0.0 (two newly required properties, major by the ADR-0080 floor) and `api` 40.0.0; M-4's gate names `frontend/src/engine/parity.test.ts`, which asserts live equals offline within 1e-9, and M-5's names the test that reads both Briers.
+- The tier ruling of 2026-11-15 is applied (BL-116): M-10, M-17, M-18, M-20, M-22, M-24, M-25 and M-35 move to `classical`; M-18 keeps historical simulation, age-weighted, EWMA, GARCH-t and the extension (delta-normal and Cornish-Fisher, GJR-GARCH, EGARCH, filtered historical simulation, McNeil and Frey's EVT) and the new `sota` row M-38 holds CAViaR and the GAS models under the FZ0 loss; BS-8, BS-10 and BS-11 count as proposed methods in `## Beyond the state of the art`, with their after-the-fact notes kept; requirement MT-013 and its adversarial test hold the ruling. The notebooks follow: `caos.methods` lists only `sota` rows, the three level 3 notebooks left with no such method (topics 06, 08 and 09, notebook 07) become level 2 with their index rows saying why, and `notebooks/methods-taught` declares the `classical` methods they teach.
+
 ## [1.00.001], 2026-11-14
 
 A patch release: the base on template 0.15.010 and shell 0.26.0; the three defects the live gate of 1.00.000 found (the C02 transfer zoom, the frame rate of the step into the Basel light, a callout over its anchor on a phone); the publications linked by their concept DOIs; the technical report and eleven manuscripts corrected after a reader review and published as new versions; the release's generated convergence verdict, which 1.00.000 shipped as its sample.
