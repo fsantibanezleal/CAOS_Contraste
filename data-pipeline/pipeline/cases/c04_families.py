@@ -89,7 +89,8 @@ from riskvalidation.validation.transitions import rating_momentum
 
 from ..io.cerep import GRADES as CEREP_GRADES
 from .c01_ladder import _t
-from .c04_bounds import (CLAUSE_AT, CLAUSE_REPS, bounds_rung, bounds_verdict, clause_seed_keys,
+from .c04_bounds import CLAUSE_REPS as CLAUSE_REPS  # re-exported: the bake (c04_transitions) passes it as clause_reps
+from .c04_bounds import (CLAUSE_AT, bounds_rung, bounds_verdict, clause_seed_keys,
                          seed_keys as bounds_keys)
 
 FAMILIES = ("markov", "momentum", "cycle", "withdrawals", "thin")
