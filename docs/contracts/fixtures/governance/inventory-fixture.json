@@ -20,17 +20,17 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "29ce63a839578b00ea6b4428aae3fdd900af20507a3866df3b70431af3ea92b1",
+    "sha256": "6795e2068a5d94d3c3e0dc7c356a8f923d95663f940127b32f25b028fb2d160a",
     "ref": null
    },
    {
     "path": "data/derived/C01/models-german.json",
-    "sha256": "8788f4e1dd1973a048256d23e9939d1f40b2a56f63d51e10b82b12c0c08c805b",
+    "sha256": "bcdf1a6734732bc5a158a348c720762a7edc2d047c2018fcc47c1d575f584baa",
     "ref": null
    },
    {
     "path": "data/derived/C01/german-twin.json",
-    "sha256": "eac642124d2570f99c09b919285918a26665dd3ca3f8635496dd552f1bf9c19f",
+    "sha256": "1132cf1a8a4b559f906e7270218759f56c56b79a91dc6c8ea588229e4b2a5bb8",
     "ref": null
    },
    {
@@ -274,7 +274,7 @@
      "basis": "read at data/derived/manifests/C01.json#/title"
     },
     "A03": {
-     "value": "german@1.00.000/riskvalidation-1.1.0",
+     "value": "german@1.00.001/riskvalidation-1.1.0",
      "status": "derivable",
      "basis": "no model version field: the fit id with the code and engine versions identify the build (A D1 A03): data/derived/C01/models-german.json#/fit_id | data/derived/C01/models-german.json#/provenance/code_version | data/derived/C01/models-german.json#/provenance/riskvalidation_version"
     },
@@ -508,14 +508,14 @@
     },
     "A34": {
      "value": {
-      "date": "2026-11-08",
+      "date": "2026-11-14",
       "type": "full battery"
      },
      "status": "derivable",
-     "basis": "the release date of code version 1.00.000 in CHANGELOG.md; the type is one full battery: data/derived/C01/models-german.json#/provenance/code_version"
+     "basis": "the release date of code version 1.00.001 in CHANGELOG.md; the type is one full battery: data/derived/C01/models-german.json#/provenance/code_version"
     },
     "A35": {
-     "value": "2027-11-08",
+     "value": "2027-11-14",
      "status": "convention",
      "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
     },
@@ -542,7 +542,7 @@
     },
     "A38": {
      "value": {
-      "earliest_due": "2027-03-08"
+      "earliest_due": "2027-03-14"
      },
      "status": "convention",
      "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
@@ -846,13 +846,13 @@
     "profile": "default",
     "review_kind": "review",
     "last_validation": {
-     "date": "2026-11-08",
+     "date": "2026-11-14",
      "type": "full battery",
      "basis": "A34: the release date of the code version"
     },
-    "next_review": "2027-11-08",
-    "next_full_revalidation": "2029-11-08",
-    "next_monitoring": "2027-05-08",
+    "next_review": "2027-11-14",
+    "next_full_revalidation": "2029-11-14",
+    "next_monitoring": "2027-05-14",
     "null_reason": null
    },
    "graph": {
