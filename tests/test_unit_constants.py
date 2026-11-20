@@ -298,21 +298,24 @@ def test_the_constant_check_adds_no_job_to_ci():
 POWERSHELL = shutil.which("powershell.exe")
 
 
-def _smoke_copy(tmp: Path, artifacts_exit: int, constants_exit: int) -> Path:
-    """A throwaway repo with the real smoke.ps1 and two stub checks that exit with the given codes."""
+def _smoke_copy(tmp: Path, artifacts_exit: int, units_exit: int, constants_exit: int) -> Path:
+    """A throwaway repo with the real smoke.ps1 and its three checks as stubs that exit with the given codes."""
     scripts = tmp / "scripts"
     scripts.mkdir(parents=True)
     shutil.copy(ROOT / "scripts" / "smoke.ps1", scripts / "smoke.ps1")
     (scripts / "check_artifacts.py").write_text(f"import sys\nsys.exit({artifacts_exit})\n", encoding="utf-8")
+    (scripts / "check_units.py").write_text(f"import sys\nsys.exit({units_exit})\n", encoding="utf-8")
     (scripts / "check_unit_constants.py").write_text(f"import sys\nsys.exit({constants_exit})\n", encoding="utf-8")
     return scripts / "smoke.ps1"
 
 
 @pytest.mark.skipif(POWERSHELL is None, reason="Windows PowerShell 5.1 is not on this machine")
-@pytest.mark.parametrize("artifacts_exit,constants_exit,expected", [(0, 0, 0), (0, 1, 1), (1, 0, 1), (3, 0, 3), (0, 7, 7)])
-def test_smoke_ps1_exits_with_the_failing_check_under_windows_powershell(tmp_path, artifacts_exit, constants_exit, expected):
+@pytest.mark.parametrize("artifacts_exit,units_exit,constants_exit,expected",
+                         [(0, 0, 0, 0), (0, 0, 1, 1), (1, 0, 0, 1), (3, 0, 0, 3), (0, 0, 7, 7), (0, 1, 0, 1), (0, 5, 0, 5)])
+def test_smoke_ps1_exits_with_the_failing_check_under_windows_powershell(tmp_path, artifacts_exit, units_exit, constants_exit,
+                                                                         expected):
     """Windows PowerShell 5.1 does not propagate a native exit code to a script's own: each call needs `exit $LASTEXITCODE`."""
-    smoke = _smoke_copy(tmp_path, artifacts_exit, constants_exit)
+    smoke = _smoke_copy(tmp_path, artifacts_exit, units_exit, constants_exit)
     env = {**os.environ, "PYTHON": sys.executable}
     out = subprocess.run([POWERSHELL, "-NoProfile", "-NonInteractive", "-File", str(smoke)], capture_output=True, text=True,
                          timeout=120, env=env, stdin=subprocess.DEVNULL)

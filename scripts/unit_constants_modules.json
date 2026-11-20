@@ -207,7 +207,9 @@
   ],
   "outside": {
     "__init__": "a package marker with its docstring; it holds no executable constant",
-    "cases/__init__": "a package marker with its docstring; it holds no executable constant",
+    "benchmark/__init__": "the path names and the schema tag of the benchmark documents and the list of files the index serves: strings only, no quantity",
+    "benchmark/methods": "builds the methods-compared document: every number is copied from a committed document with its path, pointer and hash, and the copied values are ordered per metric by the rule the metric declares; it holds no float literal and predicts nothing",
+    "cases/__init__":"a package marker with its docstring; it holds no executable constant",
     "cases/c02/__init__": "a package marker with its docstring; it holds no executable constant",
     "cases/c02/page": "renders a block of its case page from the committed documents, every figure read from them; its float literals are display scales and the level keys that select a row, and it predicts nothing",
     "cases/c03/__init__": "a package marker with its docstring; it holds no executable constant",
