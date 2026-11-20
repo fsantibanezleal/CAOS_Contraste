@@ -204,6 +204,8 @@
    "01-getting-started/01-install-the-engine-and-open-an-artifact.ipynb",
    "01-getting-started/02-a-first-testresult-on-a-real-slice.ipynb",
    "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb",
+   "01-getting-started/06-the-unit-gate-and-the-unit-of-an-answer.ipynb",
+   "01-getting-started/07-the-methods-compared-on-one-protocol.ipynb",
    "02-credit-scoring/01-the-scorecard-idea-woe-iv-and-points.ipynb",
    "02-credit-scoring/02-the-leakage-safe-fit-of-the-monotone-scorecard.ipynb",
    "02-credit-scoring/03-the-validation-battery-on-a-ladder-of-models.ipynb",
@@ -230,6 +232,7 @@
    "03-ratings-and-calibration/12-an-anchored-pd-under-informative-withdrawals.ipynb"
   ],
   "c04-family": [
+   "01-getting-started/07-the-methods-compared-on-one-protocol.ipynb",
    "03-ratings-and-calibration/02-cohort-duration-and-aalen-johansen-estimators.ipynb",
    "03-ratings-and-calibration/04-markov-tests-momentum-and-stability-tests.ipynb",
    "03-ratings-and-calibration/08-transition-estimators.ipynb",
@@ -252,6 +255,7 @@
    "03-ratings-and-calibration/11-the-reconciliations-against-printed-answers.ipynb"
   ],
   "c05-ldp": [
+   "01-getting-started/06-the-unit-gate-and-the-unit-of-an-answer.ipynb",
    "03-ratings-and-calibration/06-low-default-portfolios-the-most-prudent-estimate.ipynb",
    "03-ratings-and-calibration/11-the-reconciliations-against-printed-answers.ipynb"
   ],
@@ -302,6 +306,8 @@
    "01-getting-started/01-install-the-engine-and-open-an-artifact.ipynb",
    "01-getting-started/02-a-first-testresult-on-a-real-slice.ipynb",
    "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb",
+   "01-getting-started/06-the-unit-gate-and-the-unit-of-an-answer.ipynb",
+   "01-getting-started/07-the-methods-compared-on-one-protocol.ipynb",
    "02-credit-scoring/01-the-scorecard-idea-woe-iv-and-points.ipynb",
    "02-credit-scoring/02-the-leakage-safe-fit-of-the-monotone-scorecard.ipynb",
    "02-credit-scoring/03-the-validation-battery-on-a-ladder-of-models.ipynb",
@@ -422,6 +428,7 @@
    "02-credit-scoring/07-the-leakage-safe-protocol-per-case-with-gates.ipynb"
   ],
   "c06-outputs": [
+   "01-getting-started/07-the-methods-compared-on-one-protocol.ipynb",
    "04-provisions/01-expected-credit-loss-of-one-account.ipynb",
    "04-provisions/02-staging-and-the-significant-increase-in-credit-risk.ipynb",
    "04-provisions/03-scenarios-weights-and-the-non-linearity-of-ecl.ipynb",
@@ -457,6 +464,7 @@
    "02-credit-scoring/07-the-leakage-safe-protocol-per-case-with-gates.ipynb"
   ],
   "c08-outputs": [
+   "01-getting-started/07-the-methods-compared-on-one-protocol.ipynb",
    "05-lgd-and-ead/01-workout-lgd-cash-flows-and-incomplete-workouts.ipynb",
    "05-lgd-and-ead/03-the-lgd-ladder-ols-to-tobit.ipynb",
    "05-lgd-and-ead/04-downturn-lgd-and-the-regulatory-floors.ipynb",
@@ -468,6 +476,7 @@
    "05-lgd-and-ead/04-downturn-lgd-and-the-regulatory-floors.ipynb"
   ],
   "c09-outputs": [
+   "01-getting-started/06-the-unit-gate-and-the-unit-of-an-answer.ipynb",
    "05-lgd-and-ead/02-ead-and-the-credit-conversion-factor.ipynb",
    "05-lgd-and-ead/04-downturn-lgd-and-the-regulatory-floors.ipynb",
    "05-lgd-and-ead/05-ccf-estimators-on-a-generator-with-known-truth.ipynb",
@@ -511,6 +520,7 @@
    "09-irrbb/02-the-six-bcbs-shocks-step-by-step.ipynb"
   ],
   "c17-outputs": [
+   "01-getting-started/06-the-unit-gate-and-the-unit-of-an-answer.ipynb",
    "11-operational-risk/01-annual-loss-as-frequency-times-severity.ipynb",
    "11-operational-risk/02-truncated-severity-the-spliced-tail-and-the-threshold.ipynb",
    "11-operational-risk/03-panjer-fft-and-monte-carlo-against-the-benchmark.ipynb",
@@ -550,6 +560,7 @@
    "06-portfolio-capital/08-an-engine-reconciled-to-its-anchors.ipynb"
   ],
   "c11-outputs": [
+   "01-getting-started/07-the-methods-compared-on-one-protocol.ipynb",
    "07-market-risk/01-var-and-es-sign-convention-and-a-first-exceedance-count.ipynb",
    "07-market-risk/02-the-estimator-ladder.ipynb",
    "07-market-risk/03-backtests-kupiec-christoffersen-duration-dynamic-quantile-and-the-basel-light.ipynb",
@@ -575,6 +586,8 @@
    "07-market-risk/03-backtests-kupiec-christoffersen-duration-dynamic-quantile-and-the-basel-light.ipynb"
   ],
   "c16-outputs": [
+   "01-getting-started/06-the-unit-gate-and-the-unit-of-an-answer.ipynb",
+   "01-getting-started/07-the-methods-compared-on-one-protocol.ipynb",
    "10-liquidity/01-the-liquidity-ladder-nlp-and-survival-period.ipynb",
    "10-liquidity/02-run-off-by-daily-compounding.ipynb",
    "10-liquidity/03-the-counterbalancing-capacity.ipynb",
@@ -726,6 +739,9 @@
   "governance-appetite": [
    "14-validating-the-validator/07-from-test-results-to-risk-classes-deadlines-opinions-and-appetite.ipynb"
   ],
+  "benchmark-methods": [
+   "01-getting-started/07-the-methods-compared-on-one-protocol.ipynb"
+  ],
   "engine-governance-api": [
    "14-validating-the-validator/07-from-test-results-to-risk-classes-deadlines-opinions-and-appetite.ipynb"
   ]
@@ -743,6 +759,9 @@
   ],
   "split": [
    "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb"
+  ],
+  "unit_gate": [
+   "01-getting-started/06-the-unit-gate-and-the-unit-of-an-answer.ipynb"
   ]
  },
  "packages": {
@@ -752,6 +771,8 @@
    "01-getting-started/03-policies-and-traffic-lights.ipynb",
    "01-getting-started/04-a-battery-on-your-own-scored-sample.ipynb",
    "01-getting-started/05-from-a-licensed-source-to-a-committed-document.ipynb",
+   "01-getting-started/06-the-unit-gate-and-the-unit-of-an-answer.ipynb",
+   "01-getting-started/07-the-methods-compared-on-one-protocol.ipynb",
    "02-credit-scoring/01-the-scorecard-idea-woe-iv-and-points.ipynb",
    "02-credit-scoring/02-the-leakage-safe-fit-of-the-monotone-scorecard.ipynb",
    "02-credit-scoring/03-the-validation-battery-on-a-ladder-of-models.ipynb",
