@@ -763,9 +763,9 @@ def bounds_finding(out: dict[str, Any]) -> dict[str, Any]:
           f"La regla del plan refuta la hipótesis si el intervalo anclado no es mejor que todo tratamiento, la banda identificada de Manski entre ellos, "
           f"o si el k anclado es inestable entre años. Cláusula de cobertura ({_miles(cov_reps)} repeticiones con k 9): el intervalo anclado gana {', '.join(diffs[1])} puntos "
           f"sobre el mejor otro tratamiento ({', '.join(BOUNDS_DESIGN_WORDS[d][1] for d in designs)}), y la banda de Manski cubre igual o más en {band_n} de 3 diseños "
-          f"con {_num(width_lo, 1)[1]} a {_num(width_hi, 1)[1]} veces el ancho, así que la cláusula {'se cumple' if cov_clause['holds'] else 'falla'}. "
+          f"con {_num(width_lo, 1)[1]} a {_num(width_hi, 1)[1]} veces el ancho, así que la cláusula {'se verifica' if cov_clause['holds'] else 'falla'}. "
           f"Cláusula de estabilidad: las bandas de las cohortes contienen el k agrupado en menos del {_pct(stab['threshold'], 0)[1]} de los años para {unstable_es}, "
-          f"así que la cláusula {'se cumple' if stab['holds'] else 'falla'}. La refutación del plan {'se verifica' if refuted else 'no se verifica'}: la hipótesis {'queda refutada' if refuted else 'no queda refutada'}")
+          f"así que la cláusula {'se verifica' if stab['holds'] else 'falla'}. La refutación del plan {'se verifica' if refuted else 'no se verifica'}: la hipótesis {'queda refutada' if refuted else 'no queda refutada'}")
     return {"id": "F-WITHDRAW-BOUNDS", "severity": "S3", "status": "open",
             "evidence": ["design:bounds_verdict.rows", "design:bounds_verdict.summary", "design:rungs.bounds"], "title": _t(en, es)}
 
